@@ -27,6 +27,10 @@ export function ConnectionLines({ positions, sections, selections }: ConnectionL
 
   const boardCenterX = 400; // Center of the working board
   const boardCenterY = 350; // Center of the working board
+  
+  // Altıgen nesnelerin hit alanı boyutu (HexIcon.tsx'den alındı)
+  const hexSize = 80; // Large size hexagon
+  const hexRadius = hexSize / 2;
 
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
@@ -52,14 +56,23 @@ export function ConnectionLines({ positions, sections, selections }: ConnectionL
         
         if (!currentPos || !nextPos) return null;
         
-        // Calculate center points of hexagons
+        // Altıgen nesnelerin hit alanlarını referans alarak bağlantı noktalarını hesapla
         const x1 = currentPos.x + boardCenterX;
         const y1 = currentPos.y + boardCenterY;
         const x2 = nextPos.x + boardCenterX;
         const y2 = nextPos.y + boardCenterY;
         
-        // Create straight line path from center to center
-        const pathData = `M ${x1} ${y1} L ${x2} ${y2}`;
+        // İki nokta arasındaki açıyı hesapla
+        const angle = Math.atan2(y2 - y1, x2 - x1);
+        
+        // Altıgen kenarlarından başlayacak şekilde başlangıç ve bitiş noktalarını hesapla
+        const startX = x1 + Math.cos(angle) * hexRadius;
+        const startY = y1 + Math.sin(angle) * hexRadius;
+        const endX = x2 - Math.cos(angle) * hexRadius;
+        const endY = y2 - Math.sin(angle) * hexRadius;
+        
+        // Altıgen kenarlarından başlayıp biten çizgi
+        const pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
         
         return (
           <motion.path

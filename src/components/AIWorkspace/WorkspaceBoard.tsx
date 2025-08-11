@@ -24,13 +24,13 @@ interface WorkspaceBoardProps {
   onUpdateWorkspace: (workspace: WorkspaceData) => void;
 }
 
-// Updated tool positions with new x-axis (-4x to +4x scaled to -160 to +160) and y-axis rules
+// Y eksenindeki uzaklıkları 3/4 oranında küçültülmüş ve AI agent'ın ortasına konumlandırılmış tool pozisyonları
 const toolPositions = {
-  leo: { x: -160, y: 80, tools: ['apollo', 'google_maps', 'apify'] },    // 1st: (-4x, +y)
-  mike: { x: -80, y: -80, tools: ['instantly', 'lemlist'] },            // 2nd: (-2x, -y)
-  sophie: { x: 0, y: 80, tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] }, // 3rd: (0, +y)
-  ash: { x: 80, y: -80, tools: ['CalCom'] },                            // 4th: (+2x, -y)
-  clara: { x: 160, y: 80, tools: ['Gmail'] }                            // 5th: (+4x, +y)
+  leo: { x: -120, y: 60, tools: ['apollo', 'google_maps', 'apify'] },    // 1st: (-3x, +0.75y)
+  mike: { x: -60, y: -60, tools: ['instantly', 'lemlist'] },            // 2nd: (-1.5x, -0.75y)
+  sophie: { x: 0, y: 60, tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] }, // 3rd: (0, +0.75y)
+  ash: { x: 60, y: -60, tools: ['CalCom'] },                            // 4th: (+1.5x, -0.75y)
+  clara: { x: 120, y: 60, tools: ['Gmail'] }                            // 5th: (+3x, +0.75y)
 };
 
 const agents = [
@@ -127,8 +127,8 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       
       {/* Main Content - Split into two boards */}
       <div className="flex h-[700px]">
-        {/* Left Board - Messaging Interface */}
-        <div className="w-1/5 p-4 border-r border-slate-700/50">
+        {/* Left Board - Messaging Interface - Genişletilmiş alan */}
+        <div className="w-1/4 p-4 border-r border-slate-700/50">
           <div className="h-full">
             <ChatBox 
               messages={workspace.messages}
@@ -141,8 +141,8 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
           </div>
         </div>
 
-        {/* Right Board - Working Area */}
-        <div className="w-4/5 relative">
+        {/* Right Board - Working Area - Daraltılmış alan */}
+        <div className="w-3/4 relative">
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <svg width="100%" height="100%" className="w-full h-full">
@@ -203,7 +203,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               </AnimatePresence>
             </div>
 
-            {/* Enhanced Start Button - Floating with balloon effect */}
+            {/* Enhanced Start Button - Floating with balloon effect - Pozisyonu düzeltildi */}
             {allToolsSelected && (
               <motion.div
                 initial={{ opacity: 0, scale: 0, y: 100 }}
@@ -211,8 +211,8 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
                   opacity: 1, 
                   scale: 1, 
                   y: 0,
-                  x: 300,
-                  y: -150
+                  x: 200,  // Pozisyon düzeltildi
+                  y: -120  // Pozisyon düzeltildi
                 }}
                 exit={{ opacity: 0, scale: 0, y: 100 }}
                 className="absolute"
