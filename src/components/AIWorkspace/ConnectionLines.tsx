@@ -30,7 +30,7 @@ export function ConnectionLines({ positions, sections, selections }: ConnectionL
   
   // Altıgen nesnelerin hit alanı boyutu (HexIcon.tsx'den alındı)
   const hexSize = 80; // Large size hexagon
-  const hexRadius = hexSize / 2;
+  const hexRadius = hexSize / 2; // 40px radius
 
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
@@ -56,22 +56,31 @@ export function ConnectionLines({ positions, sections, selections }: ConnectionL
         
         if (!currentPos || !nextPos) return null;
         
-        // Altıgen nesnelerin hit alanlarını referans alarak bağlantı noktalarını hesapla
-        const x1 = currentPos.x + boardCenterX;
-        const y1 = currentPos.y + boardCenterY;
-        const x2 = nextPos.x + boardCenterX;
-        const y2 = nextPos.y + boardCenterY;
+        // Altıgen merkezlerinin ekran koordinatlarını hesapla
+        const centerX1 = currentPos.x + boardCenterX;
+        const centerY1 = currentPos.y + boardCenterY;
+        const centerX2 = nextPos.x + boardCenterX;
+        const centerY2 = nextPos.y + boardCenterY;
         
-        // İki nokta arasındaki açıyı hesapla
-        const angle = Math.atan2(y2 - y1, x2 - x1);
+        // İki merkez arasındaki mesafe ve açı
+        const dx = centerX2 - centerX1;
+        const dy = centerY2 - centerY1;
+        const distance = Math.sqrt(dx * dx + dy * dy);
         
-        // Altıgen kenarlarından başlayacak şekilde başlangıç ve bitiş noktalarını hesapla
-        const startX = x1 + Math.cos(angle) * hexRadius;
-        const startY = y1 + Math.sin(angle) * hexRadius;
-        const endX = x2 - Math.cos(angle) * hexRadius;
-        const endY = y2 - Math.sin(angle) * hexRadius;
+        // Eğer nesneler çok yakınsa bağlantı çizme
+        if (distance < hexRadius * 2) return null;
         
-        // Altıgen kenarlarından başlayıp biten çizgi
+        // Normalized direction vectors
+        const dirX = dx / distance;
+        const dirY = dy / distance;
+        
+        // Altıgen kenarlarından başlayıp biten noktalar
+        const startX = centerX1 + dirX * hexRadius;
+        const startY = centerY1 + dirY * hexRadius;
+        const endX = centerX2 - dirX * hexRadius;
+        const endY = centerY2 - dirY * hexRadius;
+        
+        // Bağlantı çizgisini oluştur
         const pathData = `M ${startX} ${startY} L ${endX} ${endY}`;
         
         return (
