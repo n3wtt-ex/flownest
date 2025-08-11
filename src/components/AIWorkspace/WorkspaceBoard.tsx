@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HexIcon } from './HexIcon';
 import { ConnectionLines } from './ConnectionLines';
@@ -24,13 +24,12 @@ interface WorkspaceBoardProps {
   onUpdateWorkspace: (workspace: WorkspaceData) => void;
 }
 
-// Y eksenindeki uzaklıkları 3/4 oranında küçültülmüş ve AI agent'ın ortasına konumlandırılmış tool pozisyonları
 const toolPositions = {
-  leo: { x: -120, y: 60, tools: ['apollo', 'google_maps', 'apify'] },    // 1st: (-3x, +0.75y)
-  mike: { x: -60, y: -60, tools: ['instantly', 'lemlist'] },            // 2nd: (-1.5x, -0.75y)
-  sophie: { x: 0, y: 60, tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] }, // 3rd: (0, +0.75y)
-  ash: { x: 60, y: -60, tools: ['CalCom'] },                            // 4th: (+1.5x, -0.75y)
-  clara: { x: 120, y: 60, tools: ['Gmail'] }                            // 5th: (+3x, +0.75y)
+  leo: { x: -120, y: 60, tools: ['apollo', 'google_maps', 'apify'] },
+  mike: { x: -60, y: -60, tools: ['instantly', 'lemlist'] },
+  sophie: { x: 0, y: 60, tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] },
+  ash: { x: 60, y: -60, tools: ['CalCom'] },
+  clara: { x: 120, y: 60, tools: ['Gmail'] }
 };
 
 const agents = [
@@ -48,6 +47,20 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   const [connectionsValidated, setConnectionsValidated] = useState(false);
   const [validationMessage, setValidationMessage] = useState('');
   const [isValidating, setIsValidating] = useState(false);
+
+  // 📌 Board merkezini ölçmek için ref
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [boardCenter, setBoardCenter] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (boardRef.current) {
+      const rect = boardRef.current.getBoundingClientRect();
+      setBoardCenter({
+        x: rect.width / 2,
+        y: rect.height / 2
+      });
+    }
+  }, []);
 
   const handleToolMention = (agent: string, tool: string) => {
     const agentKey = agent.toLowerCase();
@@ -67,7 +80,6 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         }
       }));
 
-      // Update workspace
       const updatedSelections = { ...workspace.selections, [agentKey]: exactTool };
       const updatedWorkspace = { ...workspace, selections: updatedSelections };
       onUpdateWorkspace(updatedWorkspace);
@@ -78,13 +90,11 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     setIsValidating(true);
     setValidationMessage('Bağlantılar kontrol ediliyor...');
     
-    // Simulate API validation
     setTimeout(() => {
       const selectedCount = Object.keys(selectedTools).length;
       
       if (selectedCount === 5) {
-        // All tools selected - simulate successful validation
-        const success = Math.random() > 0.3; // 70% success rate for demo
+        const success = Math.random() > 0.3;
         
         if (success) {
           setConnectionsValidated(true);
@@ -102,15 +112,6 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     }, 2000);
   };
 
-  const handleStartWorkflow = () => {
-    alert('İş akışı başlatılıyor! n8n entegrasyonu devreye giriyor...');
-  };
-
-  const retryValidation = () => {
-    validateConnections();
-  };
-
-  // Auto-validate when all 5 tools are selected
   useEffect(() => {
     if (Object.keys(selectedTools).length === 5 && !connectionsValidated && !isValidating) {
       validateConnections();
@@ -122,12 +123,9 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
 
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
-      {/* Agent Header */}
       <AgentHeader agents={agents} />
       
-      {/* Main Content - Split into two boards */}
       <div className="flex h-[700px]">
-        {/* Left Board - Messaging Interface - Genişletilmiş alan */}
         <div className="w-1/4 p-4 border-r border-slate-700/50">
           <div className="h-full">
             <ChatBox 
@@ -141,11 +139,9 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
           </div>
         </div>
 
-        {/* Right Board - Working Area - Daraltılmış alan */}
-        <div className="w-3/4 relative">
-          {/* Background Pattern */}
+        <div className="w-3/4 relative" ref={boardRef}>
           <div className="absolute inset-0 opacity-10">
-            <svg width="100%" height="100%" className="w-full h-full">
+            <svg width="100%" height="100%">
               <defs>
                 <pattern id="honeycomb" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
                   <polygon points="30,2 50,15 50,37 30,50 10,37 10,15" fill="none" stroke="currentColor" strokeWidth="0.5"/>
@@ -155,9 +151,8 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
             </svg>
           </div>
 
-          {/* Working Board Content */}
           <div className="relative h-full flex items-center justify-center">
-            {/* Connection Lines - Behind hexagons */}
+            {/* 📌 boardCenter artık ConnectionLines’a gönderiliyor */}
             <div style={{ zIndex: 1 }}>
               <ConnectionLines 
                 positions={Object.fromEntries(
@@ -169,28 +164,25 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
                 selections={Object.fromEntries(
                   Object.entries(selectedTools).map(([agent, data]) => [agent, data.tool])
                 )}
+                boardCenter={boardCenter}
               />
             </div>
 
-            {/* Selected Tools - Above connection lines */}
             <div style={{ zIndex: 2 }}>
               <AnimatePresence>
                 {Object.entries(selectedTools).map(([agent, data]) => (
                   <motion.div
                     key={`${agent}-${data.tool}`}
-                    initial={{ scale: 0, opacity: 0, y: 50 }}
+                    initial={{ scale: 0, opacity: 0 }}
                     animate={{ 
                       scale: 1, 
-                      opacity: 1, 
-                      y: 0,
-                      x: data.position.x,
-                      y: data.position.y
+                      opacity: 1
                     }}
                     exit={{ scale: 0, opacity: 0 }}
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     className="absolute"
                     style={{ 
-                      transform: `translate(${data.position.x}px, ${data.position.y}px)` 
+                      transform: `translate(${boardCenter.x + data.position.x}px, ${boardCenter.y + data.position.y}px)` 
                     }}
                   >
                     <HexIcon 
@@ -202,150 +194,10 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
                 ))}
               </AnimatePresence>
             </div>
-
-            {/* Enhanced Start Button - Floating with balloon effect - Pozisyonu düzeltildi */}
-            {allToolsSelected && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0, y: 100 }}
-                animate={{ 
-                  opacity: 1, 
-                  scale: 1, 
-                  y: 0,
-                  x: 200,  // Pozisyon düzeltildi
-                  y: -120  // Pozisyon düzeltildi
-                }}
-                exit={{ opacity: 0, scale: 0, y: 100 }}
-                className="absolute"
-                style={{ zIndex: 10 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 400,
-                  damping: 20,
-                  delay: 0.5
-                }}
-              >
-                {/* Balloon String */}
-                <motion.div
-                  className="absolute top-16 left-1/2 w-px h-12 bg-gradient-to-b from-yellow-400 to-transparent"
-                  initial={{ scaleY: 0 }}
-                  animate={{ scaleY: 1 }}
-                  transition={{ delay: 1, duration: 0.5 }}
-                />
-                
-                {/* Balloon/Bubble Container */}
-                <motion.div
-                  className="relative"
-                  animate={{ 
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  {/* Main Button Bubble */}
-                  <motion.div
-                    className="relative bg-gradient-to-br from-green-400 via-green-500 to-green-600 rounded-full shadow-2xl"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    animate={{
-                      boxShadow: canStartWorkflow ? [
-                        "0 0 20px rgba(34, 197, 94, 0.5)",
-                        "0 0 40px rgba(34, 197, 94, 0.8)",
-                        "0 0 20px rgba(34, 197, 94, 0.5)"
-                      ] : "0 0 10px rgba(107, 114, 128, 0.3)"
-                    }}
-                    transition={{
-                      boxShadow: { duration: 2, repeat: Infinity }
-                    }}
-                  >
-                    <motion.button
-                      onClick={handleStartWorkflow}
-                      disabled={!canStartWorkflow}
-                      className={`relative w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all duration-300 ${
-                        canStartWorkflow
-                          ? 'cursor-pointer text-white'
-                          : 'cursor-not-allowed opacity-50 text-gray-300'
-                      }`}
-                    >
-                      {/* Animated sparkles */}
-                      {canStartWorkflow && (
-                        <>
-                          <motion.div
-                            className="absolute -top-2 -left-2"
-                            animate={{ 
-                              rotate: 360,
-                              scale: [0.8, 1.2, 0.8]
-                            }}
-                            transition={{ 
-                              rotate: { duration: 4, repeat: Infinity, ease: "linear" },
-                              scale: { duration: 2, repeat: Infinity }
-                            }}
-                          >
-                            <Sparkles className="w-4 h-4 text-yellow-300" />
-                          </motion.div>
-                          <motion.div
-                            className="absolute -bottom-2 -right-2"
-                            animate={{ 
-                              rotate: -360,
-                              scale: [1.2, 0.8, 1.2]
-                            }}
-                            transition={{ 
-                              rotate: { duration: 3, repeat: Infinity, ease: "linear" },
-                              scale: { duration: 2, repeat: Infinity, delay: 1 }
-                            }}
-                          >
-                            <Sparkles className="w-3 h-3 text-yellow-400" />
-                          </motion.div>
-                        </>
-                      )}
-                      
-                      {/* Play icon */}
-                      <motion.div
-                        animate={canStartWorkflow ? {
-                          scale: [1, 1.1, 1]
-                        } : {}}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity
-                        }}
-                      >
-                        <Play className="w-8 h-8 ml-1" fill="currentColor" />
-                      </motion.div>
-                    </motion.button>
-                  </motion.div>
-                  
-                  {/* Floating text label */}
-                  <motion.div
-                    className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 whitespace-nowrap"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.2 }}
-                  >
-                    <div className="bg-slate-800/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg border border-yellow-400/30 shadow-lg">
-                      <span className="text-sm font-semibold">İş Akışını Başlat</span>
-                      {canStartWorkflow && (
-                        <motion.span
-                          className="text-xs text-green-300 block"
-                          animate={{ opacity: [0.5, 1, 0.5] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          ✓ Hazır!
-                        </motion.span>
-                      )}
-                    </div>
-                    {/* Speech bubble pointer */}
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-b-4 border-b-slate-800/90"></div>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-            )}
           </div>
         </div>
       </div>
 
-      {/* Validation Status Panel */}
       {(isValidating || validationMessage) && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -357,19 +209,10 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
             )}
             <span className="text-white text-sm">{validationMessage}</span>
-            {!connectionsValidated && !isValidating && validationMessage && (
-              <button
-                onClick={retryValidation}
-                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Yeniden Dene
-              </button>
-            )}
           </div>
         </motion.div>
       )}
 
-      {/* Right Sidebar */}
       <RightSidebar
         isOpen={isRightSidebarOpen}
         onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
