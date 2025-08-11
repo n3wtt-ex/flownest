@@ -10,9 +10,16 @@ interface ConnectionLinesProps {
   positions: { [key: string]: Position };
   sections: Array<{ id: string; name: string; icons: string[] }>;
   selections: { [key: string]: string };
+  // Yeni prop: gerçek board merkezini dışarıdan al
+  boardCenter?: { x: number; y: number };
 }
 
-export function ConnectionLines({ positions, sections, selections }: ConnectionLinesProps) {
+export function ConnectionLines({ 
+  positions, 
+  sections, 
+  selections, 
+  boardCenter = { x: 400, y: 350 } // Varsayılan değerler
+}: ConnectionLinesProps) {
   const getConnectedSections = () => {
     return sections.filter(section => selections[section.id] && positions[section.id]).sort((a, b) => {
       const posA = positions[a.id];
@@ -24,13 +31,10 @@ export function ConnectionLines({ positions, sections, selections }: ConnectionL
   const connectedSections = getConnectedSections();
   
   if (connectedSections.length < 2) return null;
-
-  const boardCenterX = 400; // Center of the working board
-  const boardCenterY = 350; // Center of the working board
   
-  // Altıgen nesnelerin hit alanı boyutu (HexIcon.tsx'den alındı)
-  const hexSize = 80; // Large size hexagon
-  const hexRadius = hexSize / 2; // 40px radius
+  // Altıgen nesnelerin boyutu
+  const hexSize = 80;
+  const hexRadius = hexSize / 2;
 
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
@@ -56,11 +60,12 @@ export function ConnectionLines({ positions, sections, selections }: ConnectionL
         
         if (!currentPos || !nextPos) return null;
         
-        // Altıgen merkezlerinin ekran koordinatlarını hesapla
-        const centerX1 = currentPos.x + boardCenterX;
-        const centerY1 = currentPos.y + boardCenterY;
-        const centerX2 = nextPos.x + boardCenterX;
-        const centerY2 = nextPos.y + boardCenterY;
+        // Pozisyonlar zaten ekran koordinatlarında mı yoksa relative mi kontrol et
+        // Eğer positions zaten absolute koordinatlarda ise boardCenter ekleme
+        const centerX1 = currentPos.x + (currentPos.x < 100 ? boardCenter.x : 0);
+        const centerY1 = currentPos.y + (currentPos.y < 100 ? boardCenter.y : 0);
+        const centerX2 = nextPos.x + (nextPos.x < 100 ? boardCenter.x : 0);
+        const centerY2 = nextPos.y + (nextPos.y < 100 ? boardCenter.y : 0);
         
         // İki merkez arasındaki mesafe ve açı
         const dx = centerX2 - centerX1;
@@ -68,7 +73,7 @@ export function ConnectionLines({ positions, sections, selections }: ConnectionL
         const distance = Math.sqrt(dx * dx + dy * dy);
         
         // Eğer nesneler çok yakınsa bağlantı çizme
-        if (distance < hexRadius * 2) return null;
+        if (distance < hexRadius * 2.5) return null;
         
         // Normalized direction vectors
         const dirX = dx / distance;
