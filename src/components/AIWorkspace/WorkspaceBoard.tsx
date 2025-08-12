@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Zap, Users, MessageSquare } from 'lucide-react';
 import { HexIcon } from './HexIcon';
 import { ConnectionLines } from './ConnectionLines';
 import { ChatBox } from './ChatBox';
-import { SelectionRow } from './SelectionRow';
+import { AgentHeader } from './AgentHeader';
 import { RightSidebar } from './RightSidebar';
+import { Play } from 'lucide-react';
+
+interface WorkspaceSelection {
+  [key: string]: string;
+}
 
 interface WorkspaceData {
   id: string;
   name: string;
-  selections: { [key: string]: string };
+  selections: WorkspaceSelection;
   messages: any[];
   createdAt: string;
 }
@@ -20,295 +24,211 @@ interface WorkspaceBoardProps {
   onUpdateWorkspace: (workspace: WorkspaceData) => void;
 }
 
-const sections = [
-  {
-    id: 'Leo',
-    name: 'Leo',
-    icons: ['GoogleMaps', 'Apollo', 'Apify']
-  },
-  {
-    id: 'Mike',
-    name: 'Mike',
-    icons: ['Instagram', 'Instantly', 'Lemlist']
-  },
-  {
-    id: 'Sophie',
-    name: 'Sophie',
-    icons: ['LinkedIn', 'Perplexity AI', 'BrightData']
-  },
-  {
-    id: 'Ash',
-    name: 'Ash',
-    icons: ['Gmail', 'CalCom', 'CRM']
-  },
-  {
-    id: 'Clara',
-    name: 'Clara',
-    icons: ['GoogleMaps', 'Apollo', 'LinkedIn']
-  }
+const agents = [
+  { name: 'Eva', role: 'Project Director', avatar: '👩‍💼' },
+  { name: 'Leo', role: 'Lead Researcher', avatar: '👨‍🔬' },
+  { name: 'Mike', role: 'Campaign Manager', avatar: '👨‍💻' },
+  { name: 'Sophie', role: 'Copywriter', avatar: '👩‍✍️' },
+  { name: 'Ash', role: 'Engagement & CRM Assistant', avatar: '👨‍💼' },
+  { name: 'Clara', role: 'Feedback Analyst', avatar: '👩‍📊' }
 ];
 
-// Altıgen nesnelerin konumları - kullanıcının isteklerine göre güncellenmiş
-const toolPositions = {
-  Leo: { x: -160, y: 60 },    // -4x, +y (y değeri küçültüldü)
-  Mike: { x: -80, y: -60 },   // -2x, -y
-  Sophie: { x: 0, y: 60 },    // 0, +y
-  Ash: { x: 80, y: -60 },     // +2x, -y
-  Clara: { x: 160, y: 60 }    // +4x, +y
-};
-
 export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
-  const [selections, setSelections] = useState<{ [key: string]: string }>(workspace.selections || {});
-  const [messages, setMessages] = useState(workspace.messages || []);
-  const [isWorkflowStarted, setIsWorkflowStarted] = useState(false);
-  const [validationStatus, setValidationStatus] = useState<{ [key: string]: boolean }>({});
+  const boardRef = useRef<HTMLDivElement>(null);
+  const [selectedTools, setSelectedTools] = useState<{ [key: string]: { tool: string; position: { x: number; y: number } } }>({});
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+  const [connectionsValidated, setConnectionsValidated] = useState(false);
+  const [validationMessage, setValidationMessage] = useState('');
+  const [isValidating, setIsValidating] = useState(false);
 
-  const allToolsSelected = sections.every(section => selections[section.id]);
+  // Koordinat hesaplama
+  const getAgentPosition = (agentKey: string) => {
+    const width = boardRef.current?.offsetWidth || 800;
+    const height = boardRef.current?.offsetHeight || 600;
+    const a = width / 16;
+    const b = height / 10;
+
+    const positions: Record<string, { x: number; y: number }> = {
+      leo: { x: -4 * a, y: -1 * b },
+      mike: { x: -2 * a, y: 1 * b },
+      sophie: { x: 0, y: -1 * b },
+      ash: { x: 2 * a, y: 1 * b },
+      clara: { x: 4 * a, y: -1 * b }
+    };
+
+    return positions[agentKey];
+  };
+
+  const handleToolMention = (agent: string, tool: string) => {
+    const agentKey = agent.toLowerCase();
+    const agentPosition = getAgentPosition(agentKey);
+
+    if (agentPosition) {
+      setSelectedTools(prev => ({
+        ...prev,
+        [agentKey]: {
+          tool,
+          position: { x: agentPosition.x, y: agentPosition.y }
+        }
+      }));
+
+      const updatedSelections = { ...workspace.selections, [agentKey]: tool };
+      const updatedWorkspace = { ...workspace, selections: updatedSelections };
+      onUpdateWorkspace(updatedWorkspace);
+    }
+  };
+
+  const validateConnections = async () => {
+    setIsValidating(true);
+    setValidationMessage('Bağlantılar kontrol ediliyor...');
+
+    setTimeout(() => {
+      const selectedCount = Object.keys(selectedTools).length;
+
+      if (selectedCount === 5) {
+        const success = Math.random() > 0.3;
+
+        if (success) {
+          setConnectionsValidated(true);
+          setValidationMessage('Tüm bağlantılar hazır, start butonuna bastığında başlayabiliriz');
+        } else {
+          setConnectionsValidated(false);
+          setValidationMessage('Gmail ve Cal.com bağlantıları eksik. API anahtarlarını kontrol edin.');
+        }
+      } else {
+        setConnectionsValidated(false);
+        setValidationMessage(`${5 - selectedCount} araç daha seçilmeli`);
+      }
+
+      setIsValidating(false);
+    }, 2000);
+  };
+
+  const handleStartWorkflow = () => {
+    alert('İş akışı başlatılıyor! n8n entegrasyonu devreye giriyor...');
+  };
+
+  const retryValidation = () => {
+    validateConnections();
+  };
 
   useEffect(() => {
-    const updatedWorkspace = {
-      ...workspace,
-      selections,
-      messages
-    };
-    onUpdateWorkspace(updatedWorkspace);
-  }, [selections, messages]);
+    if (Object.keys(selectedTools).length === 5 && !connectionsValidated && !isValidating) {
+      validateConnections();
+    }
+  }, [selectedTools]);
 
-  const handleIconSelect = (sectionId: string, iconName: string) => {
-    setSelections(prev => ({
-      ...prev,
-      [sectionId]: iconName
-    }));
-    
-    // Validation simulation
-    setTimeout(() => {
-      setValidationStatus(prev => ({
-        ...prev,
-        [sectionId]: true
-      }));
-    }, 500);
-  };
-
-  const startWorkflow = () => {
-    if (!allToolsSelected) return;
-    setIsWorkflowStarted(true);
-    
-    // Add system message
-    const systemMessage = {
-      id: Date.now().toString(),
-      text: 'İş akışı başlatıldı! Seçilen araçlar aktif hale getirildi.',
-      sender: 'ai' as const,
-      timestamp: new Date().toISOString()
-    };
-    
-    setMessages(prev => [...prev, systemMessage]);
-  };
+  const allToolsSelected = Object.keys(selectedTools).length === 5;
+  const canStartWorkflow = allToolsSelected && connectionsValidated;
 
   return (
-    <div className="relative w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, #FFD44D 2px, transparent 2px),
-                           radial-gradient(circle at 75% 75%, #FFD44D 1px, transparent 1px)`,
-          backgroundSize: '50px 50px'
-        }} />
-      </div>
+    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+      <AgentHeader agents={agents} />
 
-      {/* Main Content Area */}
-      <div className="relative z-10 flex h-full">
-        {/* Left Panel - Tool Selection */}
-        <div className="w-80 bg-slate-800/90 backdrop-blur-sm border-r border-slate-700/50 p-6 overflow-y-auto">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-white mb-2">AI Agents</h2>
-            <p className="text-slate-400 text-sm">Her ajan için bir araç seçin</p>
-          </div>
-          
-          <div className="space-y-4">
-            {sections.map((section) => (
-              <div key={section.id} className="space-y-2">
-                <SelectionRow
-                  section={section}
-                  selectedIcon={selections[section.id]}
-                  onIconSelect={(iconName) => handleIconSelect(section.id, iconName)}
-                />
-                
-                {/* Validation Status */}
-                <AnimatePresence>
-                  {validationStatus[section.id] && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="ml-24 text-xs text-green-400 flex items-center"
-                    >
-                      <div className="w-2 h-2 bg-green-400 rounded-full mr-2" />
-                      Araç doğrulandı
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
+      <div className="flex h-[600px]">
+        {/* Chat Area */}
+        <div className="w-1/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="transform scale-75 origin-center">
+              <ChatBox messages={workspace.messages} />
+            </div>
           </div>
         </div>
 
-        {/* Center Panel - Workspace Board */}
-        <div className="flex-1 relative">
-          {/* Connection Lines */}
-          <ConnectionLines
-            positions={toolPositions}
-            sections={sections}
-            selections={selections}
-          />
-          
-          {/* Hexagonal Objects */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative w-full h-full">
-              {sections.map((section) => {
-                const position = toolPositions[section.id as keyof typeof toolPositions];
-                const isSelected = !!selections[section.id];
-                
-                return (
-                  <motion.div
-                    key={section.id}
-                    className="absolute transform -translate-x-1/2 -translate-y-1/2"
-                    style={{
-                      left: `calc(50% + ${position.x}px)`,
-                      top: `calc(50% + ${position.y}px)`,
-                      zIndex: 20
-                    }}
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: sections.indexOf(section) * 0.1 }}
-                  >
-                    <div className="relative">
-                      {/* Agent Name */}
-                      <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-white text-sm font-medium">
-                        {section.name}
-                      </div>
-                      
-                      {/* Hexagon */}
-                      <HexIcon
-                        name={selections[section.id] || section.icons[0]}
-                        isSelected={isSelected}
-                        size="large"
-                      />
-                      
-                      {/* Status Indicator */}
-                      {isSelected && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
-                        >
-                          <div className="w-2 h-2 bg-white rounded-full" />
-                        </motion.div>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
+        {/* Working Area */}
+        <div className="w-4/5 relative" ref={boardRef}>
+          <div className="absolute inset-0 opacity-10">
+            <svg width="100%" height="100%">
+              <defs>
+                <pattern id="honeycomb" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                  <polygon points="30,2 50,15 50,37 30,50 10,37 10,15" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#honeycomb)" />
+            </svg>
           </div>
 
-          {/* Floating Start Button */}
-          <AnimatePresence>
+          <div className="relative h-full flex items-center justify-center">
+            <AnimatePresence>
+              {Object.entries(selectedTools).map(([agent, data]) => (
+                <motion.div
+                  key={`${agent}-${data.tool}`}
+                  initial={{ scale: 0, opacity: 0, y: 50 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  className="absolute"
+                  style={{
+                    transform: `translate(${data.position.x}px, ${data.position.y}px)`,
+                    zIndex: 10
+                  }}
+                >
+                  <HexIcon
+                    name={data.tool}
+                    isSelected={true}
+                    size="large"
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            <ConnectionLines selectedTools={selectedTools} />
+
             {allToolsSelected && (
               <motion.div
-                initial={{ opacity: 0, scale: 0, y: 50 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0, y: 50 }}
-                className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-                style={{ zIndex: 50 }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute"
+                style={{ transform: 'translate(400px, 0px)', zIndex: 20 }}
               >
                 <motion.button
-                  onClick={startWorkflow}
-                  disabled={isWorkflowStarted}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`
-                    relative px-8 py-4 rounded-full font-bold text-lg shadow-2xl
-                    transition-all duration-300 flex items-center space-x-3
-                    ${isWorkflowStarted 
-                      ? 'bg-green-500 text-white cursor-not-allowed' 
-                      : 'bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white hover:shadow-yellow-500/25'
-                    }
-                  `}
+                  onClick={handleStartWorkflow}
+                  disabled={!canStartWorkflow}
+                  whileHover={{ scale: canStartWorkflow ? 1.05 : 1 }}
+                  whileTap={{ scale: canStartWorkflow ? 0.95 : 1 }}
+                  className={`flex flex-col items-center p-6 rounded-xl transition-all duration-300 ${
+                    canStartWorkflow
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg hover:shadow-green-500/25 cursor-pointer'
+                      : 'bg-gray-600 cursor-not-allowed opacity-50'
+                  }`}
                 >
-                  {/* Floating Animation */}
-                  <motion.div
-                    animate={{ y: [-2, 2, -2] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                    className="flex items-center space-x-3"
-                  >
-                    {isWorkflowStarted ? (
-                      <>
-                        <Zap className="w-6 h-6" />
-                        <span>İş Akışı Aktif</span>
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-6 h-6" />
-                        <span>İş Akışını Başlat</span>
-                      </>
-                    )}
-                  </motion.div>
-                  
-                  {/* Glow Effect */}
-                  {!isWorkflowStarted && (
-                    <motion.div
-                      className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 opacity-75 blur-lg"
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      style={{ zIndex: -1 }}
-                    />
-                  )}
+                  <Play className="w-8 h-8 text-white mb-2" />
+                  <span className="text-white text-sm font-medium">İş Akışını Başlat</span>
                 </motion.button>
               </motion.div>
             )}
-          </AnimatePresence>
-
-          {/* Chat Area - Bottom */}
-          <div className="absolute bottom-4 left-4 right-80 h-64">
-            <ChatBox messages={messages} />
           </div>
-        </div>
-
-        {/* Right Panel - Team Chat */}
-        <div className="w-80">
-          <RightSidebar />
         </div>
       </div>
 
-      {/* Validation Status Panel */}
-      <AnimatePresence>
-        {Object.keys(validationStatus).length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, x: 300 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 300 }}
-            className="absolute top-4 right-4 bg-slate-800/90 backdrop-blur-sm rounded-lg p-4 border border-slate-700/50"
-            style={{ zIndex: 30 }}
-          >
-            <h3 className="text-white font-semibold mb-2 flex items-center">
-              <Users className="w-4 h-4 mr-2" />
-              Doğrulama Durumu
-            </h3>
-            <div className="space-y-1">
-              {sections.map((section) => (
-                <div key={section.id} className="flex items-center text-sm">
-                  <div className={`w-2 h-2 rounded-full mr-2 ${
-                    validationStatus[section.id] ? 'bg-green-400' : 'bg-slate-600'
-                  }`} />
-                  <span className={validationStatus[section.id] ? 'text-green-400' : 'text-slate-400'}>
-                    {section.name}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {(isValidating || validationMessage) && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800/90 backdrop-blur-sm rounded-lg p-4 border border-slate-700/50 z-30"
+        >
+          <div className="flex items-center space-x-3">
+            {isValidating && (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
+            )}
+            <span className="text-white text-sm">{validationMessage}</span>
+            {!connectionsValidated && !isValidating && validationMessage && (
+              <button
+                onClick={retryValidation}
+                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Yeniden Dene
+              </button>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      <RightSidebar
+        isOpen={isRightSidebarOpen}
+        onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
+        onToolMention={handleToolMention}
+      />
     </div>
   );
 }

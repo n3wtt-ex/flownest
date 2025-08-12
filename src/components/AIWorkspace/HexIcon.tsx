@@ -73,13 +73,13 @@ export function HexIcon({ name, isSelected = false, size = 'small', onClick }: H
           {/* Hexagon shape */}
           <polygon
             points="50,5 85,25 85,65 50,85 15,65 15,25"
-            fill="rgba(15, 23, 42, 0.9)"
-            stroke="#FFD44D"
+            fill="rgba(15, 23, 42, 0.8)"
+            stroke={isSelected ? "#06b6d4" : "#FFD44D"}
             strokeWidth="2"
             className={`transition-all duration-300 ${
-              isSelected ? 'drop-shadow-[0_0_15px_rgba(255,212,77,0.6)]' : 'drop-shadow-[0_0_8px_rgba(255,212,77,0.3)]'
+              isSelected ? 'drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]' : ''
             }`}
-            filter="url(#glow)"
+            filter={isSelected ? "url(#glow)" : undefined}
           />
         </svg>
         
@@ -87,7 +87,7 @@ export function HexIcon({ name, isSelected = false, size = 'small', onClick }: H
         <div className="absolute inset-0 flex items-center justify-center">
           <IconComponent 
             size={iconSize} 
-            className={`${isSelected ? 'text-yellow-300' : 'text-yellow-400'} transition-colors duration-300`}
+            className={`${isSelected ? 'text-cyan-400' : 'text-black'} transition-colors duration-300`}
           />
         </div>
       </div>
