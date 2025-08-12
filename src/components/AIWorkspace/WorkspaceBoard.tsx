@@ -127,7 +127,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       if (selectedCount === 5) {
         if (Math.random() > 0.3) {
           setConnectionsValidated(true);
-          setValidationMessage('Tüm bağlantılar hazır, Eva'dan komut bekleniyor...');
+          setValidationMessage("Tüm bağlantılar hazır, Eva'dan komut bekleniyor...");
           setShowToolSelection(false);
         } else {
           setConnectionsValidated(false);
