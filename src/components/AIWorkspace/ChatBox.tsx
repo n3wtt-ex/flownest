@@ -32,15 +32,24 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
   const [inputValue, setInputValue] = useState('');
   const [currentMode, setCurrentMode] = useState<'work' | 'ask'>('work');
   const [isTyping, setIsTyping] = useState(false);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (shouldAutoScroll && messagesEndRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 50;
+    setShouldAutoScroll(isNearBottom);
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isTyping]);
+  }, [messages, isTyping, shouldAutoScroll]);
 
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
@@ -55,6 +64,7 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
 
     setMessages(prev => [...prev, newMessage]);
     setInputValue('');
+    setShouldAutoScroll(true); // Yeni mesaj gönderince otomatik scroll aktif
     setIsTyping(true);
 
     setTimeout(() => {
@@ -104,7 +114,10 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar">
+        <div 
+          className="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar"
+          onScroll={handleScroll}
+        >
           <AnimatePresence>
             {messages.map((message) => (
               <motion.div

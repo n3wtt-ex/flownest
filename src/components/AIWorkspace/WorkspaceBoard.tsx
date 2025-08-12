@@ -4,6 +4,7 @@ import { HexIcon } from './HexIcon';
 import { ConnectionLines } from './ConnectionLines';
 import { ChatBox } from './ChatBox';
 import { AgentHeader } from './AgentHeader';
+import { WorkspaceHeader } from './WorkspaceHeader';
 import { RightSidebar } from './RightSidebar';
 import { SelectionRow } from './SelectionRow';
 import { Play } from 'lucide-react';
@@ -23,16 +24,18 @@ interface WorkspaceData {
 interface WorkspaceBoardProps {
   workspace: WorkspaceData;
   onUpdateWorkspace: (workspace: WorkspaceData) => void;
+  onRenameWorkspace?: (id: string, newName: string) => void;
+  onDeleteWorkspace?: (id: string) => void;
 }
 
 const BOARD_WIDTH = 800;
-const BOARD_HEIGHT = 600;
+const BOARD_HEIGHT = 480; // %20 küçültüldü (600 * 0.8 = 480)
 const CENTER_X = BOARD_WIDTH / 2;
 const CENTER_Y = BOARD_HEIGHT / 2;
 
 // ZIGZAG Y SIRALAMA - 5 ikon (+y, -y, +y, -y, +y)
 const HORIZONTAL_SPACING = 120; // İkonlar arası X mesafesi
-const VERTICAL_OFFSET = 80; // Y eksenindeki sapma miktarı
+const VERTICAL_OFFSET = 64; // %20 küçültüldü (80 * 0.8 = 64)
 const START_X = CENTER_X - (4 * HORIZONTAL_SPACING) / 2; // 5 ikon için başlangıç X noktası
 
 const toolPositions = {
@@ -80,7 +83,7 @@ const agents = [
   { name: 'Clara', role: 'Feedback Analyst', avatar: '👩‍📊' }
 ];
 
-export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
+export function WorkspaceBoard({ workspace, onUpdateWorkspace, onRenameWorkspace, onDeleteWorkspace }: WorkspaceBoardProps) {
   const [selectedTools, setSelectedTools] = useState<{ [key: string]: { tool: string; position: { x: number; y: number } } }>({});
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [connectionsValidated, setConnectionsValidated] = useState(false);
@@ -162,6 +165,11 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
 
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+      <WorkspaceHeader 
+        workspaceName={workspace.name}
+        onRename={(newName) => onRenameWorkspace?.(workspace.id, newName)}
+        onDelete={() => onDeleteWorkspace?.(workspace.id)}
+      />
       <AgentHeader agents={agents} />
       
       {showToolSelection && (
@@ -188,7 +196,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         </motion.div>
       )}
 
-      <div className="flex h-[600px]">
+      <div className="flex h-[480px]">
         {/* Left Chat Panel */}
         <div className="w-1/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
           <div className="w-full h-full flex items-center justify-center">
@@ -242,7 +250,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
                   style={{ 
                     left: 0, 
                     top: 0, 
-                    transform: `translate(${data.position.x - 40}px, ${data.position.y - 40}px)`, // 40px = hexSize/2 for large icons
+                    transform: `translate(${data.position.x - 40}px, ${data.position.y - 32}px)`, // Y offset %20 küçültüldü (40 * 0.8 = 32)
                     zIndex: 20 // Çizgilerin üstünde
                   }}
                 >
