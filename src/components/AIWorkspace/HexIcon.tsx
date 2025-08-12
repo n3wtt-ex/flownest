@@ -48,6 +48,7 @@ export function HexIcon({ name, isSelected = false, size = 'small', onClick }: H
       onClick={onClick}
       whileHover={{ scale: onClick ? 1.05 : 1 }}
       whileTap={{ scale: onClick ? 0.95 : 1 }}
+      style={{ zIndex: 15 }} // Bağlantı çizgilerinin üstünde kalması için yüksek z-index
     >
       {/* Hexagon Background */}
       <div className="relative">
@@ -60,7 +61,7 @@ export function HexIcon({ name, isSelected = false, size = 'small', onClick }: H
           {/* Glow effect for selected */}
           {isSelected && (
             <defs>
-              <filter id="glow">
+              <filter id={`glow-${name}`}>
                 <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
                 <feMerge> 
                   <feMergeNode in="coloredBlur"/>
@@ -70,16 +71,16 @@ export function HexIcon({ name, isSelected = false, size = 'small', onClick }: H
             </defs>
           )}
           
-          {/* Hexagon shape */}
+          {/* Hexagon shape - Solid background to hide lines behind */}
           <polygon
             points="50,5 85,25 85,65 50,85 15,65 15,25"
-            fill="rgba(15, 23, 42, 0.8)"
+            fill={isSelected ? "rgba(15, 23, 42, 0.95)" : "rgba(15, 23, 42, 0.9)"}
             stroke={isSelected ? "#06b6d4" : "#FFD44D"}
             strokeWidth="2"
             className={`transition-all duration-300 ${
               isSelected ? 'drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]' : ''
             }`}
-            filter={isSelected ? "url(#glow)" : undefined}
+            filter={isSelected ? `url(#glow-${name})` : undefined}
           />
         </svg>
         
@@ -87,13 +88,13 @@ export function HexIcon({ name, isSelected = false, size = 'small', onClick }: H
         <div className="absolute inset-0 flex items-center justify-center">
           <IconComponent 
             size={iconSize} 
-            className={`${isSelected ? 'text-cyan-400' : 'text-black'} transition-colors duration-300`}
+            className={`${isSelected ? 'text-cyan-400' : 'text-yellow-400'} transition-colors duration-300`}
           />
         </div>
       </div>
       
       {/* Tooltip */}
-      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
         <div className="bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
           {name}
         </div>

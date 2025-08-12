@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HexIcon } from './HexIcon';
 import { ConnectionLines } from './ConnectionLines';
@@ -24,6 +24,40 @@ interface WorkspaceBoardProps {
   onUpdateWorkspace: (workspace: WorkspaceData) => void;
 }
 
+// Yeni koordinat sistemi: 16a x 10b grid, orta nokta (0,0)
+// a ve b birimlerini pixel cinsinden tanımlıyoruz
+const GRID_UNIT_A = 50; // a birimi = 50px
+const GRID_UNIT_B = 40; // b birimi = 40px
+
+// Tool positions - yeni koordinat sistemine göre
+const toolPositions = {
+  leo: { 
+    x: -4 * GRID_UNIT_A, // -4a
+    y: -1 * GRID_UNIT_B, // -1b
+    tools: ['Apollo', 'GoogleMaps', 'Apify'] 
+  },
+  mike: { 
+    x: -2 * GRID_UNIT_A, // -2a
+    y: 1 * GRID_UNIT_B,  // +1b
+    tools: ['Instantly', 'Lemlist'] 
+  },
+  sophie: { 
+    x: 0,                 // 0
+    y: -1 * GRID_UNIT_B,  // -1b
+    tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] 
+  },
+  ash: { 
+    x: 2 * GRID_UNIT_A,   // +2a
+    y: 1 * GRID_UNIT_B,   // +1b
+    tools: ['CalCom', 'CRM', 'Instagram'] 
+  },
+  clara: { 
+    x: 4 * GRID_UNIT_A,   // +4a
+    y: -1 * GRID_UNIT_B,  // -1b
+    tools: ['Gmail', 'BrightData'] 
+  }
+};
+
 const agents = [
   { name: 'Eva', role: 'Project Director', avatar: '👩‍💼' },
   { name: 'Leo', role: 'Lead Researcher', avatar: '👨‍🔬' },
@@ -34,45 +68,32 @@ const agents = [
 ];
 
 export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
-  const boardRef = useRef<HTMLDivElement>(null);
   const [selectedTools, setSelectedTools] = useState<{ [key: string]: { tool: string; position: { x: number; y: number } } }>({});
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [connectionsValidated, setConnectionsValidated] = useState(false);
   const [validationMessage, setValidationMessage] = useState('');
   const [isValidating, setIsValidating] = useState(false);
 
-  // Koordinat hesaplama
-  const getAgentPosition = (agentKey: string) => {
-    const width = boardRef.current?.offsetWidth || 800;
-    const height = boardRef.current?.offsetHeight || 600;
-    const a = width / 16;
-    const b = height / 10;
-
-    const positions: Record<string, { x: number; y: number }> = {
-      leo: { x: -4 * a, y: -1 * b },
-      mike: { x: -2 * a, y: 1 * b },
-      sophie: { x: 0, y: -1 * b },
-      ash: { x: 2 * a, y: 1 * b },
-      clara: { x: 4 * a, y: -1 * b }
-    };
-
-    return positions[agentKey];
-  };
-
   const handleToolMention = (agent: string, tool: string) => {
     const agentKey = agent.toLowerCase();
-    const agentPosition = getAgentPosition(agentKey);
-
-    if (agentPosition) {
+    const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
+    
+    if (agentPosition && agentPosition.tools.some(t => t.toLowerCase() === tool.toLowerCase())) {
+      const exactTool = agentPosition.tools.find(t => t.toLowerCase() === tool.toLowerCase()) || tool;
+      
       setSelectedTools(prev => ({
         ...prev,
         [agentKey]: {
-          tool,
-          position: { x: agentPosition.x, y: agentPosition.y }
+          tool: exactTool,
+          position: {
+            x: agentPosition.x,
+            y: agentPosition.y
+          }
         }
       }));
 
-      const updatedSelections = { ...workspace.selections, [agentKey]: tool };
+      // Update workspace
+      const updatedSelections = { ...workspace.selections, [agentKey]: exactTool };
       const updatedWorkspace = { ...workspace, selections: updatedSelections };
       onUpdateWorkspace(updatedWorkspace);
     }
@@ -81,13 +102,15 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   const validateConnections = async () => {
     setIsValidating(true);
     setValidationMessage('Bağlantılar kontrol ediliyor...');
-
+    
+    // Simulate API validation
     setTimeout(() => {
       const selectedCount = Object.keys(selectedTools).length;
-
+      
       if (selectedCount === 5) {
-        const success = Math.random() > 0.3;
-
+        // All tools selected - simulate successful validation
+        const success = Math.random() > 0.3; // 70% success rate for demo
+        
         if (success) {
           setConnectionsValidated(true);
           setValidationMessage('Tüm bağlantılar hazır, start butonuna bastığında başlayabiliriz');
@@ -99,7 +122,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         setConnectionsValidated(false);
         setValidationMessage(`${5 - selectedCount} araç daha seçilmeli`);
       }
-
+      
       setIsValidating(false);
     }, 2000);
   };
@@ -112,6 +135,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     validateConnections();
   };
 
+  // Auto-validate when all 5 tools are selected
   useEffect(() => {
     if (Object.keys(selectedTools).length === 5 && !connectionsValidated && !isValidating) {
       validateConnections();
@@ -123,10 +147,12 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
 
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+      {/* Agent Header */}
       <AgentHeader agents={agents} />
-
+      
+      {/* Main Content - New Layout: 20% Chat + 80% Working Area */}
       <div className="flex h-[600px]">
-        {/* Chat Area */}
+        {/* Left Chat Area - 20% width */}
         <div className="w-1/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
           <div className="w-full h-full flex items-center justify-center">
             <div className="transform scale-75 origin-center">
@@ -135,10 +161,11 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
           </div>
         </div>
 
-        {/* Working Area */}
-        <div className="w-4/5 relative" ref={boardRef}>
+        {/* Right Working Area - 80% width */}
+        <div className="w-4/5 relative">
+          {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
-            <svg width="100%" height="100%">
+            <svg width="100%" height="100%" className="w-full h-full">
               <defs>
                 <pattern id="honeycomb" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
                   <polygon points="30,2 50,15 50,37 30,50 10,37 10,15" fill="none" stroke="currentColor" strokeWidth="0.5"/>
@@ -148,23 +175,29 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
             </svg>
           </div>
 
+          {/* Working Board Content */}
           <div className="relative h-full flex items-center justify-center">
+            {/* Selected Tools - Only visible when selected */}
             <AnimatePresence>
               {Object.entries(selectedTools).map(([agent, data]) => (
                 <motion.div
                   key={`${agent}-${data.tool}`}
                   initial={{ scale: 0, opacity: 0, y: 50 }}
-                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  animate={{ 
+                    scale: 1, 
+                    opacity: 1, 
+                    y: 0
+                  }}
                   exit={{ scale: 0, opacity: 0 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   className="absolute"
-                  style={{
+                  style={{ 
                     transform: `translate(${data.position.x}px, ${data.position.y}px)`,
                     zIndex: 10
                   }}
                 >
-                  <HexIcon
-                    name={data.tool}
+                  <HexIcon 
+                    name={data.tool} 
                     isSelected={true}
                     size="large"
                   />
@@ -172,14 +205,23 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               ))}
             </AnimatePresence>
 
-            <ConnectionLines selectedTools={selectedTools} />
+            {/* Connection Lines - z-index 5 to stay behind hexagons */}
+            <div style={{ zIndex: 5 }}>
+              <ConnectionLines 
+                selectedTools={selectedTools}
+              />
+            </div>
 
+            {/* Start Button - Only show when tools are selected */}
             {allToolsSelected && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="absolute"
-                style={{ transform: 'translate(400px, 0px)', zIndex: 20 }}
+                style={{ 
+                  transform: `translate(${6 * GRID_UNIT_A}px, 0px)`, // Sağ tarafta konumlandır
+                  zIndex: 20
+                }}
               >
                 <motion.button
                   onClick={handleStartWorkflow}
@@ -201,6 +243,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         </div>
       </div>
 
+      {/* Validation Status Panel */}
       {(isValidating || validationMessage) && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -224,6 +267,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         </motion.div>
       )}
 
+      {/* Right Sidebar */}
       <RightSidebar
         isOpen={isRightSidebarOpen}
         onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)}
