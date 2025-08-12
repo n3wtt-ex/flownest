@@ -127,46 +127,40 @@ export function WorkspaceGrid({
               <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               
               {/* Edit/Delete Buttons */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1 z-10">
-                {editingId === workspace.id ? (
-                  <>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={(e) => handleEditSave(workspace.id, e)}
-                      className="p-1.5 bg-green-500/80 text-white rounded-lg hover:bg-green-600 transition-colors"
-                    >
-                      <Check className="w-4 h-4" />
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={handleEditCancel}
-                      className="p-1.5 bg-red-500/80 text-white rounded-lg hover:bg-red-600 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </motion.button>
-                  </>
-                ) : (
-                  <>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={(e) => handleEditStart(workspace, e)}
-                      className="p-1.5 bg-slate-700/80 text-white rounded-lg hover:bg-cyan-500 transition-colors"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={(e) => handleDeleteClick(workspace.id, e)}
-                      className="p-1.5 bg-slate-700/80 text-white rounded-lg hover:bg-red-500 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </motion.button>
-                  </>
-                )}
+              <div className="absolute top-3 right-3 flex space-x-1 transition-all duration-200" style={{ zIndex: 20 }}>
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1">
+                  {editingId === workspace.id ? (
+                    <>
+                      <button
+                        onClick={(e) => handleEditSave(workspace.id, e)}
+                        className="p-1.5 bg-green-500/90 text-white rounded-lg hover:bg-green-600 transition-colors shadow-lg"
+                      >
+                        <Check className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={handleEditCancel}
+                        className="p-1.5 bg-red-500/90 text-white rounded-lg hover:bg-red-600 transition-colors shadow-lg"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={(e) => handleEditStart(workspace, e)}
+                        className="p-1.5 bg-slate-700/90 text-white rounded-lg hover:bg-cyan-500 transition-colors shadow-lg"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => handleDeleteClick(workspace.id, e)}
+                        className="p-1.5 bg-slate-700/90 text-white rounded-lg hover:bg-red-500 transition-colors shadow-lg"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
 
               {/* Content */}
@@ -260,30 +254,32 @@ export function WorkspaceGrid({
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={!!deleteDialogId} onOpenChange={() => setDeleteDialogId(null)}>
-        <DialogContent className="bg-slate-800 border-slate-700">
+        <DialogContent 
+          className="bg-slate-800 border-slate-700 text-white"
+          aria-describedby="delete-dialog-description"
+        >
           <DialogHeader>
             <DialogTitle className="text-white">Workspace'i Sil</DialogTitle>
-            <DialogDescription className="text-slate-400">
+            <DialogDescription 
+              id="delete-dialog-description"
+              className="text-slate-400"
+            >
               Bu workspace'i silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-3 mt-6">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => setDeleteDialogId(null)}
               className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-500 transition-colors"
             >
               İptal
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            </button>
+            <button
               onClick={handleDeleteConfirm}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
             >
               Sil
-            </motion.button>
+            </button>
           </div>
         </DialogContent>
       </Dialog>
