@@ -22,7 +22,9 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 600;
-  const ICON_Y_OFFSET = 40; // İkonun dikey merkezini bulmak için (80px / 2)
+  // DÜZELTME: İkonları hem dikey hem de yatayda ortalamak için ofsetler
+  const ICON_X_OFFSET = 40; // İkonun yatay merkezini bulmak için (genişlik/2)
+  const ICON_Y_OFFSET = 40; // İkonun dikey merkezini bulmak için (yükseklik/2)
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
@@ -87,10 +89,10 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // DÜZELTME: X ekseninde offset'i kaldırıyor, sadece Y eksenine uyguluyoruz.
-          const startX = toolData.position.x;
+          // DÜZELTME: X ve Y eksenlerinde merkezleme için ofsetler uygulandı.
+          const startX = toolData.position.x - ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = nextToolData.position.x;
+          const endX = nextToolData.position.x - ICON_X_OFFSET;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
           // Zigzag için smooth S-curve hesaplaması
@@ -131,13 +133,13 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Pulsing effect - Bu bölümü de yeni mantıkla hizalıyoruz */}
+        {/* Pulsing effect - Bu bölüm de yeni merkezleme mantığıyla hizalandı */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x;
+          const startX = toolData.position.x - ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = nextToolData.position.x;
+          const endX = nextToolData.position.x - ICON_X_OFFSET;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
           const deltaX = endX - startX;
@@ -172,14 +174,14 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Flow particles - Bu bölümü de yeni mantıkla hizalıyoruz */}
+        {/* Flow particles - Bu bölüm de yeni merkezleme mantığıyla hizalandı */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x;
+          const startX = toolData.position.x - ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
           
-          const endX = nextToolData.position.x;
+          const endX = nextToolData.position.x - ICON_X_OFFSET;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -214,11 +216,11 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Development mode: Debug noktalarını da doğru merkezde gösteriyoruz */}
+        {/* Development mode: Debug noktaları da doğru merkezde gösteriliyor */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => (
           <circle
             key={`debug-${agentKey}`}
-            cx={toolData.position.x} 
+            cx={toolData.position.x - ICON_X_OFFSET} 
             cy={toolData.position.y + ICON_Y_OFFSET}
             r="3"
             fill="red"
