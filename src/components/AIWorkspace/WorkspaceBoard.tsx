@@ -30,12 +30,36 @@ const BOARD_HEIGHT = 600;
 const CENTER_X = BOARD_WIDTH / 2;
 const CENTER_Y = BOARD_HEIGHT / 2;
 
+// YATAY SIRALAMA - 5 ikon yan yana
+const HORIZONTAL_SPACING = 120; // İkonlar arası mesafe
+const START_X = CENTER_X - (4 * HORIZONTAL_SPACING) / 2; // 5 ikon için başlangıç noktası
+
 const toolPositions = {
-  leo: { x: CENTER_X - 50, y: CENTER_Y - 120, tools: ['Apollo', 'GoogleMaps', 'Apify'] },
-  mike: { x: CENTER_X + 80, y: CENTER_Y - 60, tools: ['Instantly', 'Lemlist'] },
-  sophie: { x: CENTER_X, y: CENTER_Y, tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] },
-  ash: { x: CENTER_X + 80, y: CENTER_Y + 60, tools: ['CalCom', 'CRM', 'Instagram'] },
-  clara: { x: CENTER_X - 50, y: CENTER_Y + 120, tools: ['Gmail', 'BrightData'] }
+  leo: { 
+    x: START_X, 
+    y: CENTER_Y, 
+    tools: ['Apollo', 'GoogleMaps', 'Apify'] 
+  },
+  mike: { 
+    x: START_X + HORIZONTAL_SPACING, 
+    y: CENTER_Y, 
+    tools: ['Instantly', 'Lemlist'] 
+  },
+  sophie: { 
+    x: START_X + (2 * HORIZONTAL_SPACING), 
+    y: CENTER_Y, 
+    tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] 
+  },
+  ash: { 
+    x: START_X + (3 * HORIZONTAL_SPACING), 
+    y: CENTER_Y, 
+    tools: ['CalCom', 'CRM', 'Instagram'] 
+  },
+  clara: { 
+    x: START_X + (4 * HORIZONTAL_SPACING), 
+    y: CENTER_Y, 
+    tools: ['Gmail', 'BrightData'] 
+  }
 };
 
 const toolSections = [
@@ -62,11 +86,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   const [validationMessage, setValidationMessage] = useState('');
   const [isValidating, setIsValidating] = useState(false);
   const [showToolSelection, setShowToolSelection] = useState(true);
-
-  // Yeni eklenen state: Eva talimat verdi mi?
   const [evaCommandReceived, setEvaCommandReceived] = useState(false);
-
-  // Start butonunun animasyonu için state
   const [workflowStarted, setWorkflowStarted] = useState(false);
 
   const handleManualToolSelect = (sectionId: string, toolName: string) => {
@@ -80,12 +100,11 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     }
   };
 
-  // Eva komutu geldiğinde çağrılacak
   const handleToolMention = (agent: string, tool: string) => {
     const agentKey = agent.toLowerCase();
 
     if (agentKey === 'eva' && tool.toLowerCase() === 'start') {
-      setEvaCommandReceived(true); // Eva "start" dediğinde buton aktif olacak
+      setEvaCommandReceived(true);
       return;
     }
 
@@ -108,7 +127,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       if (selectedCount === 5) {
         if (Math.random() > 0.3) {
           setConnectionsValidated(true);
-          setValidationMessage('Tüm bağlantılar hazır, Eva’dan komut bekleniyor...');
+          setValidationMessage('Tüm bağlantılar hazır, Eva'dan komut bekleniyor...');
           setShowToolSelection(false);
         } else {
           setConnectionsValidated(false);
@@ -143,20 +162,33 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
       <AgentHeader agents={agents} />
+      
       {showToolSelection && (
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-          className="p-4 bg-slate-800/50 border-b border-slate-700/50">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          exit={{ opacity: 0, y: -20 }}
+          className="p-4 bg-slate-800/50 border-b border-slate-700/50"
+        >
           <h3 className="text-white font-semibold mb-4">Her agent için bir araç seçin:</h3>
           <div className="space-y-4">
             {toolSections.map(section => (
-              <SelectionRow key={section.id} section={section} selectedIcon={selectedTools[section.id]?.tool}
-                onIconSelect={toolName => handleManualToolSelect(section.id, toolName)} />
+              <SelectionRow 
+                key={section.id} 
+                section={section} 
+                selectedIcon={selectedTools[section.id]?.tool}
+                onIconSelect={toolName => handleManualToolSelect(section.id, toolName)} 
+              />
             ))}
           </div>
-          <div className="mt-4 text-slate-400 text-sm">{Object.keys(selectedTools).length}/5 araç seçildi</div>
+          <div className="mt-4 text-slate-400 text-sm">
+            {Object.keys(selectedTools).length}/5 araç seçildi
+          </div>
         </motion.div>
       )}
+
       <div className="flex h-[600px]">
+        {/* Left Chat Panel */}
         <div className="w-1/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
           <div className="w-full h-full flex items-center justify-center">
             <div className="transform scale-75 origin-center">
@@ -164,7 +196,10 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
             </div>
           </div>
         </div>
+
+        {/* Main Workspace Area */}
         <div className="w-4/5 relative overflow-hidden">
+          {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <svg width="100%" height="100%" className="w-full h-full">
               <defs>
@@ -175,29 +210,61 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               <rect width="100%" height="100%" fill="url(#honeycomb)" />
             </svg>
           </div>
+
+          {/* Tools and Connections Container */}
           <div className="relative h-full flex items-center justify-center">
+            {/* Connection Lines - Z-INDEX: 5 (Altında) */}
+            <div style={{ zIndex: 5 }}>
+              <ConnectionLines selectedTools={selectedTools} />
+            </div>
+
+            {/* Selected Tools - Z-INDEX: 20 (Üstte) */}
             <AnimatePresence>
               {Object.entries(selectedTools).map(([agent, data]) => (
-                <motion.div key={`${agent}-${data.tool}`} initial={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
-                  animate={{ scale: 1, opacity: 1, x: data.position.x, y: data.position.y }}
+                <motion.div
+                  key={`${agent}-${data.tool}`}
+                  initial={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
+                  animate={{ 
+                    scale: 1, 
+                    opacity: 1, 
+                    x: data.position.x, 
+                    y: data.position.y 
+                  }}
                   exit={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 25, delay: Object.keys(selectedTools).indexOf(agent) * 0.2 }}
+                  transition={{ 
+                    type: 'spring', 
+                    stiffness: 300, 
+                    damping: 25, 
+                    delay: Object.keys(selectedTools).indexOf(agent) * 0.2 
+                  }}
                   className="absolute"
-                  style={{ left: 0, top: 0, transform: `translate(${data.position.x - 25}px, ${data.position.y - 25}px)`, zIndex: 15 }}>
-                  <HexIcon name={data.tool} isSelected={true} size="large" />
+                  style={{ 
+                    left: 0, 
+                    top: 0, 
+                    transform: `translate(${data.position.x - 40}px, ${data.position.y - 40}px)`, // 40px = hexSize/2 for large icons
+                    zIndex: 20 // Çizgilerin üstünde
+                  }}
+                >
+                  <HexIcon 
+                    name={data.tool} 
+                    isSelected={true} 
+                    size="large" 
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
-            <ConnectionLines selectedTools={selectedTools} />
 
-            {/* Sadece Eva komutu geldiğinde ve koşullar sağlandığında buton */}
+            {/* Start Button */}
             {canShowStartButton && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
-                animate={workflowStarted ? { scale: 0.5, x: BOARD_WIDTH / 2 - 60, y: -260 } : { scale: 1, x: 0, y: 0 }}
+                animate={workflowStarted ? 
+                  { scale: 0.5, x: 0, y: -280 } : 
+                  { scale: 1, x: 0, y: 150 }
+                }
                 transition={{ duration: 1.2, ease: 'easeInOut' }}
                 className="absolute"
-                style={{ zIndex: 20 }}
+                style={{ zIndex: 25 }}
               >
                 <motion.button
                   onClick={handleStartWorkflow}
@@ -214,15 +281,23 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         </div>
       </div>
 
+      {/* Validation Message */}
       {(isValidating || validationMessage) && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800/90 p-4 rounded-lg border border-slate-700/50 z-30">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800/90 p-4 rounded-lg border border-slate-700/50 z-30"
+        >
           <div className="flex items-center space-x-3">
-            {isValidating && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>}
+            {isValidating && (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
+            )}
             <span className="text-white text-sm">{validationMessage}</span>
             {!connectionsValidated && !isValidating && validationMessage && (
-              <button onClick={retryValidation}
-                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors">
+              <button 
+                onClick={retryValidation}
+                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+              >
                 Yeniden Dene
               </button>
             )}
@@ -230,7 +305,12 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         </motion.div>
       )}
 
-      <RightSidebar isOpen={isRightSidebarOpen} onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)} onToolMention={handleToolMention} />
+      {/* Right Sidebar */}
+      <RightSidebar 
+        isOpen={isRightSidebarOpen} 
+        onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)} 
+        onToolMention={handleToolMention} 
+      />
     </div>
   );
 }
