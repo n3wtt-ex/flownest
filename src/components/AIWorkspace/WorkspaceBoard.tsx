@@ -80,7 +80,7 @@ const agents = [
   { name: 'Clara', role: 'Feedback Analyst', avatar: '👩‍📊' }
 ];
 
-export function WorkspaceBoard({ workspace, onUpdateWorkspace, onRenameWorkspace, onDeleteWorkspace }: WorkspaceBoardProps) {
+export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
   const [selectedTools, setSelectedTools] = useState<{ [key: string]: { tool: string; position: { x: number; y: number } } }>({});
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [connectionsValidated, setConnectionsValidated] = useState(false);
