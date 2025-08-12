@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Mail, Phone, Building2, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Filter, Mail, Phone, Building2, Edit, Trash2, Users, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Contact, Company } from '../../types';
 
@@ -10,6 +10,17 @@ export function Contacts() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStage, setSelectedStage] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingContact, setEditingContact] = useState<Contact | null>(null);
+  const [formData, setFormData] = useState({
+    full_name: '',
+    email: '',
+    phone: '',
+    title: '',
+    company_id: '',
+    lifecycle_stage: 'lead',
+    notes: ''
+  });
 
   useEffect(() => {
     loadContacts();
@@ -49,11 +60,111 @@ export function Contacts() {
     }
   };
 
+  const handleAddContact = async () => {
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .insert([{
+          full_name: formData.full_name,
+          email: formData.email,
+          phone: formData.phone || null,
+          title: formData.title || null,
+          company_id: formData.company_id || null,
+          lifecycle_stage: formData.lifecycle_stage,
+          notes: formData.notes || null
+        }]);
+
+      if (error) throw error;
+
+      setShowAddModal(false);
+      resetForm();
+      loadContacts();
+    } catch (error) {
+      console.error('Error adding contact:', error);
+      alert('Kişi eklenirken hata oluştu!');
+    }
+  };
+
+  const handleEditContact = async () => {
+    if (!editingContact) return;
+
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .update({
+          full_name: formData.full_name,
+          email: formData.email,
+          phone: formData.phone || null,
+          title: formData.title || null,
+          company_id: formData.company_id || null,
+          lifecycle_stage: formData.lifecycle_stage,
+          notes: formData.notes || null
+        })
+        .eq('id', editingContact.id);
+
+      if (error) throw error;
+
+      setShowEditModal(false);
+      setEditingContact(null);
+      resetForm();
+      loadContacts();
+    } catch (error) {
+      console.error('Error updating contact:', error);
+      alert('Kişi güncellenirken hata oluştu!');
+    }
+  };
+
+  const handleDeleteContact = async (contact: Contact) => {
+    if (!confirm(`${contact.full_name} kişisini silmek istediğinizden emin misiniz?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('contacts')
+        .delete()
+        .eq('id', contact.id);
+
+      if (error) throw error;
+
+      loadContacts();
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+      alert('Kişi silinirken hata oluştu!');
+    }
+  };
+
+  const openEditModal = (contact: Contact) => {
+    setEditingContact(contact);
+    setFormData({
+      full_name: contact.full_name || '',
+      email: contact.email || '',
+      phone: contact.phone || '',
+      title: contact.title || '',
+      company_id: contact.company_id || '',
+      lifecycle_stage: contact.lifecycle_stage || 'lead',
+      notes: contact.notes || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      full_name: '',
+      email: '',
+      phone: '',
+      title: '',
+      company_id: '',
+      lifecycle_stage: 'lead',
+      notes: ''
+    });
+  };
+
   const filteredContacts = contacts.filter(contact => {
     const matchesSearch = 
       contact.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.company?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      contact.companies?.name?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStage = selectedStage === 'all' || contact.lifecycle_stage === selectedStage;
     
@@ -181,7 +292,7 @@ export function Contacts() {
                     <div className="flex items-center">
                       <Building2 className="w-4 h-4 text-gray-400 mr-2" />
                       <span className="text-sm text-gray-900">
-                        {contact.company?.name || 'Belirtilmemiş'}
+                        {contact.companies?.name || 'Belirtilmemiş'}
                       </span>
                     </div>
                   </td>
@@ -201,10 +312,16 @@ export function Contacts() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900">
+                      <button 
+                        onClick={() => openEditModal(contact)}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button 
+                        onClick={() => handleDeleteContact(contact)}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -232,6 +349,268 @@ export function Contacts() {
             <Plus className="w-4 h-4 mr-2" />
             İlk Kişiyi Ekle
           </button>
+        </div>
+      )}
+
+      {/* Add Contact Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Yeni Kişi Ekle</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleAddContact(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ad Soyad *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.full_name}
+                  onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  E-posta *
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefon
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Pozisyon
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Şirket
+                </label>
+                <select
+                  value={formData.company_id}
+                  onChange={(e) => setFormData({...formData, company_id: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Şirket Seçin</option>
+                  {companies.map(company => (
+                    <option key={company.id} value={company.id}>
+                      {company.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Aşama
+                </label>
+                <select
+                  value={formData.lifecycle_stage}
+                  onChange={(e) => setFormData({...formData, lifecycle_stage: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="lead">Lead</option>
+                  <option value="MQL">MQL</option>
+                  <option value="SQL">SQL</option>
+                  <option value="customer">Müşteri</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notlar
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Kaydet
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Contact Modal */}
+      {showEditModal && editingContact && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Kişiyi Düzenle</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleEditContact(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ad Soyad *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.full_name}
+                  onChange={(e) => setFormData({...formData, full_name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  E-posta *
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefon
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Pozisyon
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Şirket
+                </label>
+                <select
+                  value={formData.company_id}
+                  onChange={(e) => setFormData({...formData, company_id: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Şirket Seçin</option>
+                  {companies.map(company => (
+                    <option key={company.id} value={company.id}>
+                      {company.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Aşama
+                </label>
+                <select
+                  value={formData.lifecycle_stage}
+                  onChange={(e) => setFormData({...formData, lifecycle_stage: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="lead">Lead</option>
+                  <option value="MQL">MQL</option>
+                  <option value="SQL">SQL</option>
+                  <option value="customer">Müşteri</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Notlar
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Güncelle
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

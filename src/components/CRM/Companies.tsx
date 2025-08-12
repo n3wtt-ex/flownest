@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Building2, Globe, MapPin, Users, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Building2, Globe, MapPin, Users, Edit, Trash2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Company } from '../../types';
 
@@ -8,6 +8,18 @@ export function Companies() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    domain: '',
+    industry: '',
+    location: '',
+    size: '',
+    website: '',
+    description: '',
+    phone: ''
+  });
 
   useEffect(() => {
     loadCompanies();
@@ -27,6 +39,110 @@ export function Companies() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddCompany = async () => {
+    try {
+      const { error } = await supabase
+        .from('companies')
+        .insert([{
+          name: formData.name,
+          domain: formData.domain || null,
+          industry: formData.industry || null,
+          location: formData.location || null,
+          size: formData.size || null,
+          website: formData.website || null,
+          description: formData.description || null,
+          phone: formData.phone || null
+        }]);
+
+      if (error) throw error;
+
+      setShowAddModal(false);
+      resetForm();
+      loadCompanies();
+    } catch (error) {
+      console.error('Error adding company:', error);
+      alert('Şirket eklenirken hata oluştu!');
+    }
+  };
+
+  const handleEditCompany = async () => {
+    if (!editingCompany) return;
+
+    try {
+      const { error } = await supabase
+        .from('companies')
+        .update({
+          name: formData.name,
+          domain: formData.domain || null,
+          industry: formData.industry || null,
+          location: formData.location || null,
+          size: formData.size || null,
+          website: formData.website || null,
+          description: formData.description || null,
+          phone: formData.phone || null
+        })
+        .eq('id', editingCompany.id);
+
+      if (error) throw error;
+
+      setShowEditModal(false);
+      setEditingCompany(null);
+      resetForm();
+      loadCompanies();
+    } catch (error) {
+      console.error('Error updating company:', error);
+      alert('Şirket güncellenirken hata oluştu!');
+    }
+  };
+
+  const handleDeleteCompany = async (company: Company) => {
+    if (!confirm(`${company.name} şirketini silmek istediğinizden emin misiniz?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('companies')
+        .delete()
+        .eq('id', company.id);
+
+      if (error) throw error;
+
+      loadCompanies();
+    } catch (error) {
+      console.error('Error deleting company:', error);
+      alert('Şirket silinirken hata oluştu!');
+    }
+  };
+
+  const openEditModal = (company: Company) => {
+    setEditingCompany(company);
+    setFormData({
+      name: company.name || '',
+      domain: company.domain || '',
+      industry: company.industry || '',
+      location: company.location || '',
+      size: company.size || '',
+      website: company.website || '',
+      description: company.description || '',
+      phone: company.phone || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      domain: '',
+      industry: '',
+      location: '',
+      size: '',
+      website: '',
+      description: '',
+      phone: ''
+    });
   };
 
   const filteredCompanies = companies.filter(company =>
@@ -98,10 +214,16 @@ export function Companies() {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <button className="text-gray-400 hover:text-blue-600">
+                <button 
+                  onClick={() => openEditModal(company)}
+                  className="text-gray-400 hover:text-blue-600"
+                >
                   <Edit className="w-4 h-4" />
                 </button>
-                <button className="text-gray-400 hover:text-red-600">
+                <button 
+                  onClick={() => handleDeleteCompany(company)}
+                  className="text-gray-400 hover:text-red-600"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -170,6 +292,276 @@ export function Companies() {
             <Plus className="w-4 h-4 mr-2" />
             İlk Şirketi Ekle
           </button>
+        </div>
+      )}
+
+      {/* Add Company Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Yeni Şirket Ekle</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleAddCompany(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Şirket Adı *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Domain
+                </label>
+                <input
+                  type="text"
+                  value={formData.domain}
+                  onChange={(e) => setFormData({...formData, domain: e.target.value})}
+                  placeholder="örn: company.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Sektör
+                </label>
+                <input
+                  type="text"
+                  value={formData.industry}
+                  onChange={(e) => setFormData({...formData, industry: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Konum
+                </label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({...formData, location: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Çalışan Sayısı
+                </label>
+                <input
+                  type="text"
+                  value={formData.size}
+                  onChange={(e) => setFormData({...formData, size: e.target.value})}
+                  placeholder="örn: 50, 1-10, 100+"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Website
+                </label>
+                <input
+                  type="url"
+                  value={formData.website}
+                  onChange={(e) => setFormData({...formData, website: e.target.value})}
+                  placeholder="https://www.company.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefon
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Açıklama
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Kaydet
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Company Modal */}
+      {showEditModal && editingCompany && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Şirketi Düzenle</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleEditCompany(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Şirket Adı *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Domain
+                </label>
+                <input
+                  type="text"
+                  value={formData.domain}
+                  onChange={(e) => setFormData({...formData, domain: e.target.value})}
+                  placeholder="örn: company.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Sektör
+                </label>
+                <input
+                  type="text"
+                  value={formData.industry}
+                  onChange={(e) => setFormData({...formData, industry: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Konum
+                </label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({...formData, location: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Çalışan Sayısı
+                </label>
+                <input
+                  type="text"
+                  value={formData.size}
+                  onChange={(e) => setFormData({...formData, size: e.target.value})}
+                  placeholder="örn: 50, 1-10, 100+"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Website
+                </label>
+                <input
+                  type="url"
+                  value={formData.website}
+                  onChange={(e) => setFormData({...formData, website: e.target.value})}
+                  placeholder="https://www.company.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefon
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Açıklama
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Güncelle
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

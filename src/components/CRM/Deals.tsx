@@ -1,19 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, DollarSign, Calendar, User, Building2, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, DollarSign, Calendar, User, Building2, Edit, Trash2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { Deal, PipelineStage } from '../../types';
+import { Deal, PipelineStage, Contact, Company } from '../../types';
 
 export function Deals() {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [stages, setStages] = useState<PipelineStage[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    amount: '',
+    currency: 'USD',
+    contact_id: '',
+    company_id: '',
+    pipeline_stage_id: '',
+    close_date: '',
+    status: 'open',
+    source: '',
+    description: ''
+  });
 
   useEffect(() => {
     loadDeals();
     loadStages();
+    loadContacts();
+    loadCompanies();
   }, []);
 
   const loadDeals = async () => {
@@ -49,6 +67,146 @@ export function Deals() {
     } catch (error) {
       console.error('Error loading stages:', error);
     }
+  };
+
+  const loadContacts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('contacts')
+        .select('*')
+        .order('full_name');
+
+      if (error) throw error;
+      setContacts(data || []);
+    } catch (error) {
+      console.error('Error loading contacts:', error);
+    }
+  };
+
+  const loadCompanies = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('companies')
+        .select('*')
+        .order('name');
+
+      if (error) throw error;
+      setCompanies(data || []);
+    } catch (error) {
+      console.error('Error loading companies:', error);
+    }
+  };
+
+  const handleAddDeal = async () => {
+    try {
+      const { error } = await supabase
+        .from('deals')
+        .insert([{
+          title: formData.title,
+          amount: formData.amount ? parseFloat(formData.amount) : null,
+          currency: formData.currency,
+          contact_id: formData.contact_id || null,
+          company_id: formData.company_id || null,
+          pipeline_stage_id: formData.pipeline_stage_id || null,
+          close_date: formData.close_date || null,
+          status: formData.status,
+          source: formData.source || null,
+          description: formData.description || null
+        }]);
+
+      if (error) throw error;
+
+      setShowAddModal(false);
+      resetForm();
+      loadDeals();
+    } catch (error) {
+      console.error('Error adding deal:', error);
+      alert('Fırsat eklenirken hata oluştu!');
+    }
+  };
+
+  const handleEditDeal = async () => {
+    if (!editingDeal) return;
+
+    try {
+      const { error } = await supabase
+        .from('deals')
+        .update({
+          title: formData.title,
+          amount: formData.amount ? parseFloat(formData.amount) : null,
+          currency: formData.currency,
+          contact_id: formData.contact_id || null,
+          company_id: formData.company_id || null,
+          pipeline_stage_id: formData.pipeline_stage_id || null,
+          close_date: formData.close_date || null,
+          status: formData.status,
+          source: formData.source || null,
+          description: formData.description || null
+        })
+        .eq('id', editingDeal.id);
+
+      if (error) throw error;
+
+      setShowEditModal(false);
+      setEditingDeal(null);
+      resetForm();
+      loadDeals();
+    } catch (error) {
+      console.error('Error updating deal:', error);
+      alert('Fırsat güncellenirken hata oluştu!');
+    }
+  };
+
+  const handleDeleteDeal = async (deal: Deal) => {
+    if (!confirm(`${deal.title} fırsatını silmek istediğinizden emin misiniz?`)) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('deals')
+        .delete()
+        .eq('id', deal.id);
+
+      if (error) throw error;
+
+      loadDeals();
+    } catch (error) {
+      console.error('Error deleting deal:', error);
+      alert('Fırsat silinirken hata oluştu!');
+    }
+  };
+
+  const openEditModal = (deal: Deal) => {
+    setEditingDeal(deal);
+    setFormData({
+      title: deal.title || '',
+      amount: deal.amount?.toString() || '',
+      currency: deal.currency || 'USD',
+      contact_id: deal.contact_id || '',
+      company_id: deal.company_id || '',
+      pipeline_stage_id: deal.pipeline_stage_id || '',
+      close_date: deal.close_date || '',
+      status: deal.status || 'open',
+      source: deal.source || '',
+      description: deal.description || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      amount: '',
+      currency: 'USD',
+      contact_id: '',
+      company_id: '',
+      pipeline_stage_id: '',
+      close_date: '',
+      status: 'open',
+      source: '',
+      description: ''
+    });
   };
 
   const filteredDeals = deals.filter(deal => {
@@ -235,10 +393,12 @@ export function Deals() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm text-gray-900">{deal.stage?.name}</div>
-                      <div className="text-xs text-gray-500">
-                        {deal.stage?.probability}% olasılık
-                      </div>
+                      <div className="text-sm text-gray-900">{deal.pipeline_stages?.name || 'Belirtilmemiş'}</div>
+                      {deal.pipeline_stages?.probability && (
+                        <div className="text-xs text-gray-500">
+                          {deal.pipeline_stages.probability}% olasılık
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -264,10 +424,16 @@ export function Deals() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <button className="text-blue-600 hover:text-blue-900">
+                      <button 
+                        onClick={() => openEditModal(deal)}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button 
+                        onClick={() => handleDeleteDeal(deal)}
+                        className="text-red-600 hover:text-red-900"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -295,6 +461,372 @@ export function Deals() {
             <Plus className="w-4 h-4 mr-2" />
             İlk Fırsatı Ekle
           </button>
+        </div>
+      )}
+
+      {/* Add Deal Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Yeni Fırsat Ekle</h2>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleAddDeal(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Fırsat Başlığı *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Değer
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Para Birimi
+                  </label>
+                  <select
+                    value={formData.currency}
+                    onChange={(e) => setFormData({...formData, currency: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="TRY">TRY</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kişi
+                </label>
+                <select
+                  value={formData.contact_id}
+                  onChange={(e) => setFormData({...formData, contact_id: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Kişi Seçin</option>
+                  {contacts.map(contact => (
+                    <option key={contact.id} value={contact.id}>
+                      {contact.full_name} ({contact.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Şirket
+                </label>
+                <select
+                  value={formData.company_id}
+                  onChange={(e) => setFormData({...formData, company_id: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Şirket Seçin</option>
+                  {companies.map(company => (
+                    <option key={company.id} value={company.id}>
+                      {company.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Pipeline Aşaması
+                </label>
+                <select
+                  value={formData.pipeline_stage_id}
+                  onChange={(e) => setFormData({...formData, pipeline_stage_id: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Aşama Seçin</option>
+                  {stages.map(stage => (
+                    <option key={stage.id} value={stage.id}>
+                      {stage.name} ({stage.probability}%)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kapanış Tarihi
+                </label>
+                <input
+                  type="date"
+                  value={formData.close_date}
+                  onChange={(e) => setFormData({...formData, close_date: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Durum
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="open">Aktif</option>
+                  <option value="won">Kazanıldı</option>
+                  <option value="lost">Kaybedildi</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kaynak
+                </label>
+                <input
+                  type="text"
+                  value={formData.source}
+                  onChange={(e) => setFormData({...formData, source: e.target.value})}
+                  placeholder="Website, Referans, vb."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Açıklama
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Kaydet
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Deal Modal */}
+      {showEditModal && editingDeal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Fırsatı Düzenle</h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={(e) => { e.preventDefault(); handleEditDeal(); }} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Fırsat Başlığı *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Değer
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({...formData, amount: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Para Birimi
+                  </label>
+                  <select
+                    value={formData.currency}
+                    onChange={(e) => setFormData({...formData, currency: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="TRY">TRY</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kişi
+                </label>
+                <select
+                  value={formData.contact_id}
+                  onChange={(e) => setFormData({...formData, contact_id: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Kişi Seçin</option>
+                  {contacts.map(contact => (
+                    <option key={contact.id} value={contact.id}>
+                      {contact.full_name} ({contact.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Şirket
+                </label>
+                <select
+                  value={formData.company_id}
+                  onChange={(e) => setFormData({...formData, company_id: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Şirket Seçin</option>
+                  {companies.map(company => (
+                    <option key={company.id} value={company.id}>
+                      {company.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Pipeline Aşaması
+                </label>
+                <select
+                  value={formData.pipeline_stage_id}
+                  onChange={(e) => setFormData({...formData, pipeline_stage_id: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Aşama Seçin</option>
+                  {stages.map(stage => (
+                    <option key={stage.id} value={stage.id}>
+                      {stage.name} ({stage.probability}%)
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kapanış Tarihi
+                </label>
+                <input
+                  type="date"
+                  value={formData.close_date}
+                  onChange={(e) => setFormData({...formData, close_date: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Durum
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="open">Aktif</option>
+                  <option value="won">Kazanıldı</option>
+                  <option value="lost">Kaybedildi</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kaynak
+                </label>
+                <input
+                  type="text"
+                  value={formData.source}
+                  onChange={(e) => setFormData({...formData, source: e.target.value})}
+                  placeholder="Website, Referans, vb."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Açıklama
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                >
+                  İptal
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Güncelle
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
