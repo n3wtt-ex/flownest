@@ -153,63 +153,67 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
               <p className="text-slate-400 text-sm mt-1">Araçlar otomatik seçiliyor</p>
             </div>
 
-            {/* Team Members - Scrollable */}
-            <div className="p-4 border-b border-slate-700/50 max-h-64 overflow-y-auto">
-              <h4 className="text-slate-300 text-sm font-medium mb-3">Aktif Üyeler</h4>
-              <div className="space-y-3">
-                {teamMembers.map((member) => (
-                  <div key={member.name} className="bg-slate-800/50 rounded-lg p-3">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${member.color}`}></div>
-                      <span className="text-slate-300 text-sm font-medium">{member.name}</span>
-                      <span className="text-slate-500 text-xs">• {member.role}</span>
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Team Members */}
+              <div className="p-4 border-b border-slate-700/50">
+                <h4 className="text-slate-300 text-sm font-medium mb-3">Aktif Üyeler</h4>
+                <div className="space-y-3">
+                  {teamMembers.map((member) => (
+                    <div key={member.name} className="bg-slate-800/50 rounded-lg p-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${member.color}`}></div>
+                        <span className="text-slate-300 text-sm font-medium">{member.name}</span>
+                        <span className="text-slate-500 text-xs">• {member.role}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {member.tools.map((tool) => (
+                          <button
+                            key={tool}
+                            onClick={() => handleToolClick(member.name, tool)}
+                            className="px-2 py-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 text-xs rounded-full border border-cyan-500/30 hover:border-cyan-400 transition-colors hover:scale-105"
+                          >
+                            {tool}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-1">
-                      {member.tools.map((tool) => (
-                        <button
-                          key={tool}
-                          onClick={() => handleToolClick(member.name, tool)}
-                          className="px-2 py-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 text-xs rounded-full border border-cyan-500/30 hover:border-cyan-400 transition-colors hover:scale-105"
-                        >
-                          {tool}
-                        </button>
-                      ))}
+                  ))}
+                </div>
+              </div>
+
+              {/* Messages */}
+              <div className="p-4 space-y-3">
+                <h4 className="text-slate-300 text-sm font-medium mb-3">Mesajlar</h4>
+                {messages.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-slate-800/50 rounded-lg p-3"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-cyan-400 text-sm font-medium">{message.agent}</span>
+                      <span className="text-slate-500 text-xs">{message.timestamp}</span>
                     </div>
-                  </div>
+                    <p className="text-slate-200 text-sm mb-2">{message.text}</p>
+                    
+                    {message.mentionedTools && (
+                      <div className="flex flex-wrap gap-1">
+                        {message.mentionedTools.map((tool) => (
+                          <button
+                            key={tool}
+                            onClick={() => handleToolClick(message.agent, tool)}
+                            className="px-2 py-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 text-xs rounded-full border border-cyan-500/30 hover:border-cyan-400 transition-colors"
+                          >
+                            {tool}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
                 ))}
               </div>
-            </div>
-
-            {/* Messages - Scrollable */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3">
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-slate-800/50 rounded-lg p-3"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-cyan-400 text-sm font-medium">{message.agent}</span>
-                    <span className="text-slate-500 text-xs">{message.timestamp}</span>
-                  </div>
-                  <p className="text-slate-200 text-sm mb-2">{message.text}</p>
-                  
-                  {message.mentionedTools && (
-                    <div className="flex flex-wrap gap-1">
-                      {message.mentionedTools.map((tool) => (
-                        <button
-                          key={tool}
-                          onClick={() => handleToolClick(message.agent, tool)}
-                          className="px-2 py-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 text-xs rounded-full border border-cyan-500/30 hover:border-cyan-400 transition-colors"
-                        >
-                          {tool}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </motion.div>
-              ))}
             </div>
 
             {/* Input */}
