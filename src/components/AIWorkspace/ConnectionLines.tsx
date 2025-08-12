@@ -86,14 +86,12 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // İkon merkezleri - CSS TRANSFORM OFFSET'İNİ SVG KOORDİNATLARINA YANSIT
-          // WorkspaceBoard'da transform: translate(x-40px, y-40px) uygulanıyor
-          // SVG'de aynı 40px offset'i uygulayarak koordinatları eşitleriz
-          const ICON_CENTER_OFFSET = 40; // Large icon size (80px) / 2
-          const startX = toolData.position.x - ICON_CENTER_OFFSET;
-          const startY = toolData.position.y - ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x - ICON_CENTER_OFFSET;
-          const endY = nextToolData.position.y - ICON_CENTER_OFFSET;
+          // DÜZELTME: Offset'i kaldırıyoruz. 
+          // toolData.position zaten ikonun merkezini temsil ediyor.
+          const startX = toolData.position.x;
+          const startY = toolData.position.y;
+          const endX = nextToolData.position.x;
+          const endY = nextToolData.position.y;
           
           // Zigzag için smooth S-curve hesaplaması
           const deltaX = endX - startX;
@@ -138,12 +136,11 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Pulse efekti için de aynı offset hesaplaması
-          const ICON_CENTER_OFFSET = 40;
-          const startX = toolData.position.x - ICON_CENTER_OFFSET;
-          const startY = toolData.position.y - ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x - ICON_CENTER_OFFSET;
-          const endY = nextToolData.position.y - ICON_CENTER_OFFSET;
+          // DÜZELTME: Pulse efekti için de offset'i kaldırıyoruz.
+          const startX = toolData.position.x;
+          const startY = toolData.position.y;
+          const endX = nextToolData.position.x;
+          const endY = nextToolData.position.y;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -181,12 +178,11 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Flow particles için de aynı offset hesaplaması
-          const ICON_CENTER_OFFSET = 40;
-          const startX = toolData.position.x - ICON_CENTER_OFFSET;
-          const startY = toolData.position.y - ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x - ICON_CENTER_OFFSET;
-          const endY = nextToolData.position.y - ICON_CENTER_OFFSET;
+          // DÜZELTME: Flow particles için de merkez koordinatlarını kullanıyoruz.
+          const startX = toolData.position.x;
+          const startY = toolData.position.y;
+          const endX = nextToolData.position.x;
+          const endY = nextToolData.position.y;
           
           return (
             <motion.circle
@@ -194,15 +190,14 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
               r="3"
               fill="#06b6d4"
               opacity="0.8"
+              style={{
+                motionPath: `path("${`M ${startX} ${startY} C ${startX + (endX - startX) * 0.3} ${startY - 50}, ${endX - (endX - startX) * 0.3} ${endY + 50}, ${endX} ${endY}`}")`
+              }}
               initial={{ 
-                offsetDistance: "0%",
-                cx: startX,
-                cy: startY
+                offsetDistance: "0%"
               }}
               animate={{ 
-                offsetDistance: "100%",
-                cx: endX,
-                cy: endY
+                offsetDistance: "100%"
               }}
               transition={{
                 duration: 3,
@@ -219,8 +214,9 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => (
           <circle
             key={`debug-${agentKey}`}
-            cx={toolData.position.x - 40} 
-            cy={toolData.position.y - 40}
+            // DÜZELTME: Debug noktalarını da gerçek merkeze alıyoruz.
+            cx={toolData.position.x} 
+            cy={toolData.position.y}
             r="3"
             fill="red"
             opacity="0.8"
