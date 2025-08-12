@@ -1,307 +1,292 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HexIcon } from './HexIcon';
-import { ConnectionLines } from './ConnectionLines';
-import { ChatBox } from './ChatBox';
-import { AgentHeader } from './AgentHeader';
-import { RightSidebar } from './RightSidebar';
-import { SelectionRow } from './SelectionRow';
-import { Play } from 'lucide-react';
+import { Plus, Calendar, Users, Edit2, Trash2, Check, X } from 'lucide-react';
+import { WorkspaceBoard } from './WorkspaceBoard';
 
-interface WorkspaceSelection {
-  [key: string]: string;
-}
+// Dialog bileşenlerini import ediyoruz
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '../ui/dialog';
 
 interface WorkspaceData {
   id: string;
   name: string;
-  selections: WorkspaceSelection;
+  selections: { [key: string]: string };
   messages: any[];
   createdAt: string;
 }
 
-interface WorkspaceBoardProps {
-  workspace: WorkspaceData;
-  onUpdateWorkspace: (workspace: WorkspaceData) => void;
+interface WorkspaceGridProps {
+  workspaces: WorkspaceData[];
+  onSelectWorkspace: (workspace: WorkspaceData) => void;
+  onRenameWorkspace: (id: string, newName: string) => void;
+  onDeleteWorkspace: (id: string) => void;
+  onCreateWorkspace: () => void;
 }
 
-const BOARD_WIDTH = 800;
-const BOARD_HEIGHT = 480;
-const CENTER_X = BOARD_WIDTH / 2;
-const CENTER_Y = BOARD_HEIGHT / 2;
+export function WorkspaceGrid({ 
+  workspaces, 
+  onSelectWorkspace, 
+  onRenameWorkspace, 
+  onDeleteWorkspace,
+  onCreateWorkspace 
+}: WorkspaceGridProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [deleteDialogId, setDeleteDialogId] = useState<string | null>(null);
 
-const HORIZONTAL_SPACING = 120;
-const VERTICAL_OFFSET = 64;
-const START_X = CENTER_X - (4 * HORIZONTAL_SPACING) / 2;
+  const handleEditStart = (workspace: WorkspaceData, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingId(workspace.id);
+    setEditName(workspace.name);
+  };
 
-const toolPositions = {
-  leo: { 
-    x: START_X, 
-    y: CENTER_Y + VERTICAL_OFFSET,
-    tools: ['Apollo', 'GoogleMaps', 'Apify'] 
-  },
-  mike: { 
-    x: START_X + HORIZONTAL_SPACING, 
-    y: CENTER_Y - VERTICAL_OFFSET,
-    tools: ['Instantly', 'Lemlist'] 
-  },
-  sophie: { 
-    x: START_X + (2 * HORIZONTAL_SPACING), 
-    y: CENTER_Y + VERTICAL_OFFSET,
-    tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] 
-  },
-  ash: { 
-    x: START_X + (3 * HORIZONTAL_SPACING), 
-    y: CENTER_Y - VERTICAL_OFFSET,
-    tools: ['CalCom', 'CRM', 'Instagram'] 
-  },
-  clara: { 
-    x: START_X + (4 * HORIZONTAL_SPACING), 
-    y: CENTER_Y + VERTICAL_OFFSET,
-    tools: ['Gmail', 'BrightData'] 
-  }
-};
+  const handleEditSave = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (editName.trim()) {
+      onRenameWorkspace(id, editName.trim());
+    }
+    setEditingId(null);
+    setEditName('');
+  };
 
-const toolSections = [
-  { id: 'leo', name: 'Leo', icons: ['Apollo', 'GoogleMaps', 'Apify'] },
-  { id: 'mike', name: 'Mike', icons: ['Instantly', 'Lemlist'] },
-  { id: 'sophie', name: 'Sophie', icons: ['LinkedIn', 'PerplexityAI', 'BrightData'] },
-  { id: 'ash', name: 'Ash', icons: ['CalCom', 'CRM', 'Instagram'] },
-  { id: 'clara', name: 'Clara', icons: ['Gmail', 'BrightData'] }
-];
+  const handleEditCancel = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingId(null);
+    setEditName('');
+  };
 
-const agents = [
-  { name: 'Eva', role: 'Project Director', avatar: '👩‍💼' },
-  { name: 'Leo', role: 'Lead Researcher', avatar: '👨‍🔬' },
-  { name: 'Mike', role: 'Campaign Manager', avatar: '👨‍💻' },
-  { name: 'Sophie', role: 'Copywriter', avatar: '👩‍✍️' },
-  { name: 'Ash', role: 'Engagement & CRM Assistant', avatar: '👨‍💼' },
-  { name: 'Clara', role: 'Feedback Analyst', avatar: '👩‍📊' }
-];
+  const handleDeleteClick = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeleteDialogId(id);
+  };
 
-export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
-  const [selectedTools, setSelectedTools] = useState<{ [key: string]: { tool: string; position: { x: number; y: number } } }>({});
-  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
-  const [connectionsValidated, setConnectionsValidated] = useState(false);
-  const [validationMessage, setValidationMessage] = useState('');
-  const [isValidating, setIsValidating] = useState(false);
-  const [showToolSelection, setShowToolSelection] = useState(true);
-  const [evaCommandReceived, setEvaCommandReceived] = useState(false);
-  const [workflowStarted, setWorkflowStarted] = useState(false);
-
-  const handleManualToolSelect = (sectionId: string, toolName: string) => {
-    const agentPosition = toolPositions[sectionId as keyof typeof toolPositions];
-    if (agentPosition) {
-      setSelectedTools(prev => ({
-        ...prev,
-        [sectionId]: { tool: toolName, position: { x: agentPosition.x, y: agentPosition.y } }
-      }));
-      onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [sectionId]: toolName } });
+  const handleDeleteConfirm = () => {
+    if (deleteDialogId) {
+      onDeleteWorkspace(deleteDialogId);
+      setDeleteDialogId(null);
     }
   };
 
-  const handleToolMention = (agent: string, tool: string) => {
-    const agentKey = agent.toLowerCase();
-
-    if (agentKey === 'eva' && tool.toLowerCase() === 'start') {
-      setEvaCommandReceived(true);
-      return;
-    }
-
-    const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
-    if (agentPosition && agentPosition.tools.some(t => t.toLowerCase() === tool.toLowerCase())) {
-      const exactTool = agentPosition.tools.find(t => t.toLowerCase() === tool.toLowerCase()) || tool;
-      setSelectedTools(prev => ({
-        ...prev,
-        [agentKey]: { tool: exactTool, position: { x: agentPosition.x, y: agentPosition.y } }
-      }));
-      onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [agentKey]: exactTool } });
-    }
+  const getSelectedToolsCount = (selections: { [key: string]: string }) => {
+    return Object.keys(selections).length;
   };
 
-  const validateConnections = () => {
-    setIsValidating(true);
-    setValidationMessage('Bağlantılar kontrol ediliyor...');
-    setTimeout(() => {
-      const selectedCount = Object.keys(selectedTools).length;
-      if (selectedCount === 5) {
-        if (Math.random() > 0.3) {
-          setConnectionsValidated(true);
-          setValidationMessage("Tüm bağlantılar hazır, Eva'dan komut bekleniyor...");
-          setShowToolSelection(false);
-        } else {
-          setConnectionsValidated(false);
-          setValidationMessage('Gmail ve Cal.com bağlantıları eksik. API anahtarlarını kontrol edin.');
-        }
-      } else {
-        setConnectionsValidated(false);
-        setValidationMessage(`${5 - selectedCount} araç daha seçilmeli`);
-      }
-      setIsValidating(false);
-    }, 2000);
-  };
-
-  const retryValidation = () => validateConnections();
-
-  useEffect(() => {
-    if (Object.keys(selectedTools).length === 5 && !connectionsValidated && !isValidating) {
-      validateConnections();
-    }
-  }, [selectedTools]);
-
-  const allToolsSelected = Object.keys(selectedTools).length === 5;
-  const canShowStartButton = allToolsSelected && connectionsValidated && evaCommandReceived;
-
-  const handleStartWorkflow = () => {
-    setWorkflowStarted(true);
-    setTimeout(() => {
-      alert('İş akışı başlatıldı! n8n entegrasyonu devrede...');
-    }, 1500);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('tr-TR', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
-      <AgentHeader agents={agents} />
-      
-      {showToolSelection && (
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          exit={{ opacity: 0, y: -20 }}
-          className="p-4 bg-slate-800/50 border-b border-slate-700/50"
-        >
-          <h3 className="text-white font-semibold mb-4">Her agent için bir araç seçin:</h3>
-          <div className="space-y-4">
-            {toolSections.map(section => (
-              <SelectionRow 
-                key={section.id} 
-                section={section} 
-                selectedIcon={selectedTools[section.id]?.tool}
-                onIconSelect={toolName => handleManualToolSelect(section.id, toolName)} 
-              />
-            ))}
-          </div>
-          <div className="mt-4 text-slate-400 text-sm">
-            {Object.keys(selectedTools).length}/5 araç seçildi
-          </div>
-        </motion.div>
-      )}
-
-      <div className="flex h-[480px]">
-        <div className="w-1/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="transform scale-75 origin-center">
-              <ChatBox messages={workspace.messages} />
-            </div>
-          </div>
+    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">AI Workspace Yöneticisi</h1>
+          <p className="text-slate-400">Projelerinizi organize edin ve ekip çalışmasını kolaylaştırın</p>
         </div>
 
-        <div className="w-4/5 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            <svg width="100%" height="100%" className="w-full h-full">
-              <defs>
-                <pattern id="honeycomb" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
-                  <polygon points="30,2 50,15 50,37 30,50 10,37 10,15" fill="none" stroke="currentColor" strokeWidth="0.5"/>
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#honeycomb)" />
-            </svg>
-          </div>
-
-          <div className="relative h-full flex items-center justify-center">
-            <div style={{ zIndex: 5 }}>
-              <ConnectionLines selectedTools={selectedTools} />
+        {/* Workspace Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          {/* Create New Workspace Card */}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onCreateWorkspace}
+            className="bg-slate-800/50 backdrop-blur-sm border-2 border-dashed border-slate-600 rounded-xl p-6 cursor-pointer hover:border-cyan-400 transition-all duration-300 group"
+          >
+            <div className="flex flex-col items-center justify-center h-48 text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Plus className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-white font-semibold mb-2">Yeni Workspace</h3>
+              <p className="text-slate-400 text-sm">Yeni bir proje başlatın</p>
             </div>
+          </motion.div>
 
-            <AnimatePresence>
-              {Object.entries(selectedTools).map(([agent, data]) => (
-                <motion.div
-                  key={`${agent}-${data.tool}`}
-                  initial={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
-                  animate={{ 
-                    scale: 1, 
-                    opacity: 1, 
-                    x: data.position.x, 
-                    y: data.position.y 
-                  }}
-                  exit={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
-                  transition={{ 
-                    type: 'spring', 
-                    stiffness: 300, 
-                    damping: 25, 
-                    delay: Object.keys(selectedTools).indexOf(agent) * 0.2 
-                  }}
-                  className="absolute"
-                  style={{ 
-                    left: 0, 
-                    top: 0, 
-                    transform: `translate(${data.position.x - 40}px, ${data.position.y - 32}px)`,
-                    zIndex: 20
-                  }}
-                >
-                  <HexIcon 
-                    name={data.tool} 
-                    isSelected={true} 
-                    size="large" 
+          {/* Existing Workspace Cards */}
+          {workspaces.map((workspace) => (
+            <motion.div
+              key={workspace.id}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onSelectWorkspace(workspace)}
+              className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 cursor-pointer hover:border-cyan-400/50 transition-all duration-300 group relative overflow-hidden"
+            >
+              {/* Background Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Edit/Delete Buttons */}
+              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-1 z-10">
+                {editingId === workspace.id ? (
+                  <>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={(e) => handleEditSave(workspace.id, e)}
+                      className="p-1.5 bg-green-500/80 text-white rounded-lg hover:bg-green-600 transition-colors"
+                    >
+                      <Check className="w-4 h-4" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={handleEditCancel}
+                      className="p-1.5 bg-red-500/80 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </motion.button>
+                  </>
+                ) : (
+                  <>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={(e) => handleEditStart(workspace, e)}
+                      className="p-1.5 bg-slate-700/80 text-white rounded-lg hover:bg-cyan-500 transition-colors"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={(e) => handleDeleteClick(workspace.id, e)}
+                      className="p-1.5 bg-slate-700/80 text-white rounded-lg hover:bg-red-500 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </motion.button>
+                  </>
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="relative z-5">
+                {/* Title */}
+                <div className="mb-4">
+                  {editingId === workspace.id ? (
+                    <input
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleEditSave(workspace.id, e as any);
+                        } else if (e.key === 'Escape') {
+                          handleEditCancel(e as any);
+                        }
+                      }}
+                      className="w-full bg-slate-700 text-white px-3 py-1 rounded-lg border border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      autoFocus
+                    />
+                  ) : (
+                    <h3 className="text-white font-semibold text-lg group-hover:text-cyan-300 transition-colors">
+                      {workspace.name}
+                    </h3>
+                  )}
+                </div>
+
+                {/* Stats */}
+                <div className="space-y-3 mb-4">
+                  <div className="flex items-center text-slate-300">
+                    <Users className="w-4 h-4 mr-2 text-cyan-400" />
+                    <span className="text-sm">{getSelectedToolsCount(workspace.selections)}/5 Araç Seçili</span>
+                  </div>
+                  <div className="flex items-center text-slate-300">
+                    <Calendar className="w-4 h-4 mr-2 text-purple-400" />
+                    <span className="text-sm">{formatDate(workspace.createdAt)}</span>
+                  </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full bg-slate-700 rounded-full h-2 mb-4">
+                  <div 
+                    className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${(getSelectedToolsCount(workspace.selections) / 5) * 100}%` }}
                   />
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                </div>
 
-            {canShowStartButton && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={workflowStarted ? 
-                  { scale: 0.5, x: 0, y: -280 } : 
-                  { scale: 1, x: 0, y: 0 }
-                }
-                transition={{ duration: 1.2, ease: 'easeInOut' }}
-                className="absolute"
-                style={{ zIndex: 25 }}
-              >
-                <motion.button
-                  onClick={handleStartWorkflow}
-                  whileHover={{ scale: workflowStarted ? 0.5 : 1.05 }}
-                  whileTap={{ scale: workflowStarted ? 0.5 : 0.95 }}
-                  className="flex flex-col items-center p-6 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg"
-                >
-                  <Play className="w-8 h-8 mb-2" />
-                  <span className="text-sm font-medium">İş Akışını Başlat</span>
-                </motion.button>
-              </motion.div>
-            )}
-          </div>
+                {/* Status */}
+                <div className="flex items-center justify-between">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    getSelectedToolsCount(workspace.selections) === 5 
+                      ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                      : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
+                  }`}>
+                    {getSelectedToolsCount(workspace.selections) === 5 ? 'Hazır' : 'Yapılandırılıyor'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Hover Effect Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
+            </motion.div>
+          ))}
         </div>
+
+        {/* Empty State */}
+        {workspaces.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-12"
+          >
+            <div className="w-24 h-24 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Users className="w-12 h-12 text-slate-400" />
+            </div>
+            <h3 className="text-white text-xl font-semibold mb-2">Henüz workspace yok</h3>
+            <p className="text-slate-400 mb-6">İlk workspace'inizi oluşturun ve ekip çalışmasına başlayın</p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onCreateWorkspace}
+              className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-6 py-3 rounded-lg hover:shadow-lg transition-shadow duration-200"
+            >
+              Yeni Workspace Oluştur
+            </motion.button>
+          </motion.div>
+        )}
       </div>
 
-      {(isValidating || validationMessage) && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} 
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800/90 p-4 rounded-lg border border-slate-700/50 z-30"
-        >
-          <div className="flex items-center space-x-3">
-            {isValidating && (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
-            )}
-            <span className="text-white text-sm">{validationMessage}</span>
-            {!connectionsValidated && !isValidating && validationMessage && (
-              <button 
-                onClick={retryValidation}
-                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Yeniden Dene
-              </button>
-            )}
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteDialogId} onOpenChange={() => setDeleteDialogId(null)}>
+        <DialogContent className="bg-slate-800 border-slate-700">
+          <DialogHeader>
+            <DialogTitle className="text-white">Workspace'i Sil</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Bu workspace'i silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-3 mt-6">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setDeleteDialogId(null)}
+              className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-500 transition-colors"
+            >
+              İptal
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleDeleteConfirm}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Sil
+            </motion.button>
           </div>
-        </motion.div>
-      )}
-
-      <RightSidebar 
-        isOpen={isRightSidebarOpen} 
-        onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)} 
-        onToolMention={handleToolMention} 
-      />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
