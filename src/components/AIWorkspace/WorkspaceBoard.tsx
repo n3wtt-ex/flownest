@@ -4,7 +4,6 @@ import { HexIcon } from './HexIcon';
 import { ConnectionLines } from './ConnectionLines';
 import { ChatBox } from './ChatBox';
 import { AgentHeader } from './AgentHeader';
-import { WorkspaceHeader } from './WorkspaceHeader';
 import { RightSidebar } from './RightSidebar';
 import { SelectionRow } from './SelectionRow';
 import { Play } from 'lucide-react';
@@ -24,8 +23,6 @@ interface WorkspaceData {
 interface WorkspaceBoardProps {
   workspace: WorkspaceData;
   onUpdateWorkspace: (workspace: WorkspaceData) => void;
-  onRenameWorkspace?: (id: string, newName: string) => void;
-  onDeleteWorkspace?: (id: string) => void;
 }
 
 const BOARD_WIDTH = 800;
@@ -165,11 +162,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace, onRenameWorkspace
 
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
-      <WorkspaceHeader 
-        workspaceName={workspace.name}
-        onRename={(newName) => onRenameWorkspace?.(workspace.id, newName)}
-        onDelete={() => onDeleteWorkspace?.(workspace.id)}
-      />
+      
       <AgentHeader agents={agents} />
       
       {showToolSelection && (
