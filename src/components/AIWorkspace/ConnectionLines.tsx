@@ -86,7 +86,10 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // İkon merkezleri - TAM NOKTA MERKEZ GEÇİŞİ
+          // İkon merkezleri - TRANSFORM OFFSET'İ HESAPLANMİŞ MERKEZ NOKTALARI
+          // WorkspaceBoard'da transform: translate(-40px, -40px) uygulanıyor
+          // SVG koordinat sisteminde bu offset'i hesaba katmıyoruz çünkü 
+          // SVG viewBox koordinatları pozisyon değerlerini direkt kullanır
           const startX = toolData.position.x;
           const startY = toolData.position.y;
           const endX = nextToolData.position.x;
@@ -95,7 +98,6 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           // Zigzag için smooth S-curve hesaplaması
           const deltaX = endX - startX;
           const deltaY = endY - startY;
-          const midX = startX + deltaX / 2;
           
           // Yumuşak S-curve için control points
           const controlOffset = Math.abs(deltaY) * 0.6; // Y farkına göre dinamik curve
@@ -135,6 +137,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {/* Pulsing effect for active connections - zigzag optimized */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
+          
           const startX = toolData.position.x;
           const startY = toolData.position.y;
           const endX = nextToolData.position.x;
@@ -175,6 +178,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {/* Flow particles for enhanced visual effect */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
+          
           const startX = toolData.position.x;
           const startY = toolData.position.y;
           const endX = nextToolData.position.x;
