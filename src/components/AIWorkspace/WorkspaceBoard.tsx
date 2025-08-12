@@ -25,40 +25,41 @@ interface WorkspaceBoardProps {
   onUpdateWorkspace: (workspace: WorkspaceData) => void;
 }
 
-const BOARD_WIDTH = 800;
-const BOARD_HEIGHT = 600;
+// DÜZELTME: Board boyutları ve konumlandırma değerleri %10 küçültüldü.
+const BOARD_WIDTH = 720; // 800 * 0.9
+const BOARD_HEIGHT = 540; // 600 * 0.9
 const CENTER_X = BOARD_WIDTH / 2;
 const CENTER_Y = BOARD_HEIGHT / 2;
 
-// ZIGZAG Y SIRALAMA - 5 ikon (+y, -y, +y, -y, +y)
-const HORIZONTAL_SPACING = 120; // İkonlar arası X mesafesi
-const VERTICAL_OFFSET = 80; // Y eksenindeki sapma miktarı
+// ZIGZAG Y SIRALAMA - Konumlandırma değerleri de orantılı olarak küçültüldü.
+const HORIZONTAL_SPACING = 108; // 120 * 0.9
+const VERTICAL_OFFSET = 72; // 80 * 0.9
 const START_X = CENTER_X - (4 * HORIZONTAL_SPACING) / 2; // 5 ikon için başlangıç X noktası
 
 const toolPositions = {
   leo: { 
     x: START_X, 
-    y: CENTER_Y + VERTICAL_OFFSET, // +y (aşağı)
+    y: CENTER_Y + VERTICAL_OFFSET,
     tools: ['Apollo', 'GoogleMaps', 'Apify'] 
   },
   mike: { 
     x: START_X + HORIZONTAL_SPACING, 
-    y: CENTER_Y - VERTICAL_OFFSET, // -y (yukarı)
+    y: CENTER_Y - VERTICAL_OFFSET,
     tools: ['Instantly', 'Lemlist'] 
   },
   sophie: { 
     x: START_X + (2 * HORIZONTAL_SPACING), 
-    y: CENTER_Y + VERTICAL_OFFSET, // +y (aşağı)
+    y: CENTER_Y + VERTICAL_OFFSET,
     tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] 
   },
   ash: { 
     x: START_X + (3 * HORIZONTAL_SPACING), 
-    y: CENTER_Y - VERTICAL_OFFSET, // -y (yukarı)
+    y: CENTER_Y - VERTICAL_OFFSET,
     tools: ['CalCom', 'CRM', 'Instagram'] 
   },
   clara: { 
     x: START_X + (4 * HORIZONTAL_SPACING), 
-    y: CENTER_Y + VERTICAL_OFFSET, // +y (aşağı)
+    y: CENTER_Y + VERTICAL_OFFSET,
     tools: ['Gmail', 'BrightData'] 
   }
 };
@@ -188,7 +189,8 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         </motion.div>
       )}
 
-      <div className="flex h-[600px]">
+      {/* DÜZELTME: Kapsayıcı div'in yüksekliği de küçültüldü */}
+      <div className="flex h-[540px]">
         {/* Left Chat Panel */}
         <div className="w-1/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
           <div className="w-full h-full flex items-center justify-center">
