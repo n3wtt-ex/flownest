@@ -22,7 +22,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 600;
-  const ICON_CENTER_OFFSET = 40; // İkon boyutunun yarısı (80px / 2)
+  const ICON_Y_OFFSET = 40; // İkonun dikey merkezini bulmak için (80px / 2)
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
@@ -87,11 +87,11 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // DÜZELTME: Sol üst köşe olan pozisyona ikon boyutunun yarısını ekleyerek merkezi buluyoruz.
-          const startX = toolData.position.x + ICON_CENTER_OFFSET;
-          const startY = toolData.position.y + ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
-          const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
+          // DÜZELTME: X ekseninde offset'i kaldırıyor, sadece Y eksenine uyguluyoruz.
+          const startX = toolData.position.x;
+          const startY = toolData.position.y + ICON_Y_OFFSET;
+          const endX = nextToolData.position.x;
+          const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
           // Zigzag için smooth S-curve hesaplaması
           const deltaX = endX - startX;
@@ -131,14 +131,14 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Pulsing effect - Bu bölümü de merkezle hizalıyoruz */}
+        {/* Pulsing effect - Bu bölümü de yeni mantıkla hizalıyoruz */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x + ICON_CENTER_OFFSET;
-          const startY = toolData.position.y + ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
-          const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
+          const startX = toolData.position.x;
+          const startY = toolData.position.y + ICON_Y_OFFSET;
+          const endX = nextToolData.position.x;
+          const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -172,16 +172,15 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Flow particles - Bu bölümü de merkezle hizalıyoruz */}
+        {/* Flow particles - Bu bölümü de yeni mantıkla hizalıyoruz */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x + ICON_CENTER_OFFSET;
-          const startY = toolData.position.y + ICON_CENTER_OFFSET;
+          const startX = toolData.position.x;
+          const startY = toolData.position.y + ICON_Y_OFFSET;
           
-          // motion.circle'ın animasyonu için path'i burada yeniden oluşturuyoruz
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
-          const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
+          const endX = nextToolData.position.x;
+          const endY = nextToolData.position.y + ICON_Y_OFFSET;
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
@@ -215,12 +214,12 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Development mode: Debug noktalarını da merkezde gösteriyoruz */}
+        {/* Development mode: Debug noktalarını da doğru merkezde gösteriyoruz */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => (
           <circle
             key={`debug-${agentKey}`}
-            cx={toolData.position.x + ICON_CENTER_OFFSET} 
-            cy={toolData.position.y + ICON_CENTER_OFFSET}
+            cx={toolData.position.x} 
+            cy={toolData.position.y + ICON_Y_OFFSET}
             r="3"
             fill="red"
             opacity="0.8"
