@@ -1,13 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  MapPin, 
-  Search, 
-  Globe, 
-  Instagram, 
-  Mail, 
-  Linkedin, 
-  Brain, 
+import {
+  MapPin,
+  Search,
+  Globe,
+  Instagram,
+  Mail,
+  Linkedin,
+  Brain,
   Calendar,
   Users,
   Zap,
@@ -48,30 +48,30 @@ export function HexIcon({ name, isSelected = false, size = 'small', onClick }: H
       onClick={onClick}
       whileHover={{ scale: onClick ? 1.05 : 1 }}
       whileTap={{ scale: onClick ? 0.95 : 1 }}
-      style={{ zIndex: 15 }} // Bağlantı çizgilerinin üstünde kalması için yüksek z-index
+      style={{ zIndex: 15 }}
     >
       {/* Hexagon Background */}
       <div className="relative">
-        <svg 
-          width={hexSize} 
-          height={hexSize} 
-          viewBox="0 0 100 100" 
+        <svg
+          width={hexSize}
+          height={hexSize}
+          viewBox="0 0 100 100"
           className="drop-shadow-lg"
         >
           {/* Glow effect for selected */}
           {isSelected && (
             <defs>
               <filter id={`glow-${name}`}>
-                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                <feMerge> 
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
+                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
                 </feMerge>
               </filter>
             </defs>
           )}
-          
-          {/* Hexagon shape - Solid background to hide lines behind */}
+
+          {/* Hexagon shape */}
           <polygon
             points="50,5 85,25 85,65 50,85 15,65 15,25"
             fill={isSelected ? "rgba(15, 23, 42, 0.95)" : "rgba(15, 23, 42, 0.9)"}
@@ -83,19 +83,19 @@ export function HexIcon({ name, isSelected = false, size = 'small', onClick }: H
             filter={isSelected ? `url(#glow-${name})` : undefined}
           />
         </svg>
-        
+
         {/* Icon */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <IconComponent 
-            size={iconSize} 
+          <IconComponent
+            size={iconSize}
             className={`${isSelected ? 'text-cyan-400' : 'text-yellow-400'} transition-colors duration-300`}
           />
         </div>
       </div>
-      
+
       {/* Tooltip */}
-      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
-        <div className="bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+      <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20 whitespace-nowrap">
+        <div className="bg-slate-800 text-white text-xs px-2 py-1 rounded shadow-lg">
           {name}
         </div>
       </div>
