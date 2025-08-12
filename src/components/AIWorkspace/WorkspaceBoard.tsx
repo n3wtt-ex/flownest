@@ -30,34 +30,35 @@ const BOARD_HEIGHT = 600;
 const CENTER_X = BOARD_WIDTH / 2;
 const CENTER_Y = BOARD_HEIGHT / 2;
 
-// YATAY SIRALAMA - 5 ikon yan yana
-const HORIZONTAL_SPACING = 120; // İkonlar arası mesafe
-const START_X = CENTER_X - (4 * HORIZONTAL_SPACING) / 2; // 5 ikon için başlangıç noktası
+// ZIGZAG Y SIRALAMA - 5 ikon (+y, -y, +y, -y, +y)
+const HORIZONTAL_SPACING = 120; // İkonlar arası X mesafesi
+const VERTICAL_OFFSET = 80; // Y eksenindeki sapma miktarı
+const START_X = CENTER_X - (4 * HORIZONTAL_SPACING) / 2; // 5 ikon için başlangıç X noktası
 
 const toolPositions = {
   leo: { 
     x: START_X, 
-    y: CENTER_Y, 
+    y: CENTER_Y + VERTICAL_OFFSET, // +y (aşağı)
     tools: ['Apollo', 'GoogleMaps', 'Apify'] 
   },
   mike: { 
     x: START_X + HORIZONTAL_SPACING, 
-    y: CENTER_Y, 
+    y: CENTER_Y - VERTICAL_OFFSET, // -y (yukarı)
     tools: ['Instantly', 'Lemlist'] 
   },
   sophie: { 
     x: START_X + (2 * HORIZONTAL_SPACING), 
-    y: CENTER_Y, 
+    y: CENTER_Y + VERTICAL_OFFSET, // +y (aşağı)
     tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] 
   },
   ash: { 
     x: START_X + (3 * HORIZONTAL_SPACING), 
-    y: CENTER_Y, 
+    y: CENTER_Y - VERTICAL_OFFSET, // -y (yukarı)
     tools: ['CalCom', 'CRM', 'Instagram'] 
   },
   clara: { 
     x: START_X + (4 * HORIZONTAL_SPACING), 
-    y: CENTER_Y, 
+    y: CENTER_Y + VERTICAL_OFFSET, // +y (aşağı)
     tools: ['Gmail', 'BrightData'] 
   }
 };
@@ -254,13 +255,13 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               ))}
             </AnimatePresence>
 
-            {/* Start Button */}
+            {/* Start Button - Merkez pozisyonda */}
             {canShowStartButton && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={workflowStarted ? 
                   { scale: 0.5, x: 0, y: -280 } : 
-                  { scale: 1, x: 0, y: 150 }
+                  { scale: 1, x: 0, y: 0 } // Merkez pozisyon
                 }
                 transition={{ duration: 1.2, ease: 'easeInOut' }}
                 className="absolute"
