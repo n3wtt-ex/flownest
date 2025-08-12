@@ -5,6 +5,7 @@ import { ConnectionLines } from './ConnectionLines';
 import { ChatBox } from './ChatBox';
 import { AgentHeader } from './AgentHeader';
 import { RightSidebar } from './RightSidebar';
+import { SelectionRow } from './SelectionRow';
 import { Play } from 'lucide-react';
 
 interface WorkspaceSelection {
@@ -58,6 +59,35 @@ const toolPositions = {
   }
 };
 
+// Tool selection sections for manual selection
+const toolSections = [
+  {
+    id: 'leo',
+    name: 'Leo',
+    icons: ['Apollo', 'GoogleMaps', 'Apify']
+  },
+  {
+    id: 'mike', 
+    name: 'Mike',
+    icons: ['Instantly', 'Lemlist']
+  },
+  {
+    id: 'sophie',
+    name: 'Sophie', 
+    icons: ['LinkedIn', 'PerplexityAI', 'BrightData']
+  },
+  {
+    id: 'ash',
+    name: 'Ash',
+    icons: ['CalCom', 'CRM', 'Instagram'] 
+  },
+  {
+    id: 'clara',
+    name: 'Clara',
+    icons: ['Gmail', 'BrightData']
+  }
+];
+
 const agents = [
   { name: 'Eva', role: 'Project Director', avatar: '👩‍💼' },
   { name: 'Leo', role: 'Lead Researcher', avatar: '👨‍🔬' },
@@ -73,6 +103,30 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   const [connectionsValidated, setConnectionsValidated] = useState(false);
   const [validationMessage, setValidationMessage] = useState('');
   const [isValidating, setIsValidating] = useState(false);
+  const [showToolSelection, setShowToolSelection] = useState(true);
+
+  // Manual tool selection handler
+  const handleManualToolSelect = (sectionId: string, toolName: string) => {
+    const agentPosition = toolPositions[sectionId as keyof typeof toolPositions];
+    
+    if (agentPosition) {
+      setSelectedTools(prev => ({
+        ...prev,
+        [sectionId]: {
+          tool: toolName,
+          position: {
+            x: agentPosition.x,
+            y: agentPosition.y
+          }
+        }
+      }));
+
+      // Update workspace
+      const updatedSelections = { ...workspace.selections, [sectionId]: toolName };
+      const updatedWorkspace = { ...workspace, selections: updatedSelections };
+      onUpdateWorkspace(updatedWorkspace);
+    }
+  };
 
   const handleToolMention = (agent: string, tool: string) => {
     const agentKey = agent.toLowerCase();
@@ -114,6 +168,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         if (success) {
           setConnectionsValidated(true);
           setValidationMessage('Tüm bağlantılar hazır, start butonuna bastığında başlayabiliriz');
+          setShowToolSelection(false); // Hide tool selection once validated
         } else {
           setConnectionsValidated(false);
           setValidationMessage('Gmail ve Cal.com bağlantıları eksik. API anahtarlarını kontrol edin.');
@@ -149,6 +204,31 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
       {/* Agent Header */}
       <AgentHeader agents={agents} />
+      
+      {/* Tool Selection Panel - Show until all tools are validated */}
+      {showToolSelection && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="p-4 bg-slate-800/50 border-b border-slate-700/50"
+        >
+          <h3 className="text-white font-semibold mb-4">Her agent için bir araç seçin:</h3>
+          <div className="space-y-4">
+            {toolSections.map((section) => (
+              <SelectionRow
+                key={section.id}
+                section={section}
+                selectedIcon={selectedTools[section.id]?.tool}
+                onIconSelect={(toolName) => handleManualToolSelect(section.id, toolName)}
+              />
+            ))}
+          </div>
+          <div className="mt-4 text-slate-400 text-sm">
+            {Object.keys(selectedTools).length}/5 araç seçildi
+          </div>
+        </motion.div>
+      )}
       
       {/* Main Content - New Layout: 20% Chat + 80% Working Area */}
       <div className="flex h-[600px]">
@@ -193,7 +273,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
                   className="absolute"
                   style={{ 
                     transform: `translate(${data.position.x}px, ${data.position.y}px)`,
-                    zIndex: 10
+                    zIndex: 15
                   }}
                 >
                   <HexIcon 
@@ -212,27 +292,22 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               />
             </div>
 
-            {/* Start Button - Only show when tools are selected */}
-            {allToolsSelected && (
+            {/* Start Button - Only show when validated and ready */}
+            {canStartWorkflow && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="absolute"
                 style={{ 
-                  transform: `translate(${6 * GRID_UNIT_A}px, 0px)`, // Sağ tarafta konumlandır
+                  transform: `translate(${6 * GRID_UNIT_A}px, 0px)`,
                   zIndex: 20
                 }}
               >
                 <motion.button
                   onClick={handleStartWorkflow}
-                  disabled={!canStartWorkflow}
-                  whileHover={{ scale: canStartWorkflow ? 1.05 : 1 }}
-                  whileTap={{ scale: canStartWorkflow ? 0.95 : 1 }}
-                  className={`flex flex-col items-center p-6 rounded-xl transition-all duration-300 ${
-                    canStartWorkflow
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg hover:shadow-green-500/25 cursor-pointer'
-                      : 'bg-gray-600 cursor-not-allowed opacity-50'
-                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex flex-col items-center p-6 rounded-xl transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-600 hover:shadow-lg hover:shadow-green-500/25 cursor-pointer"
                 >
                   <Play className="w-8 h-8 text-white mb-2" />
                   <span className="text-white text-sm font-medium">İş Akışını Başlat</span>

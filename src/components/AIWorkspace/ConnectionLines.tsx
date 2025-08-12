@@ -50,20 +50,20 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
     return `M ${startX} ${startY} L ${midX} ${midY + offsetY} L ${endX} ${endY}`;
   };
 
-  // SVG viewBox boyutlarını hesapla
-  const allPositions = orderedTools.map(([, tool]) => tool.position);
-  const minX = Math.min(...allPositions.map(p => p.x)) - 100;
-  const maxX = Math.max(...allPositions.map(p => p.x)) + 100;
-  const minY = Math.min(...allPositions.map(p => p.y)) - 100;
-  const maxY = Math.max(...allPositions.map(p => p.y)) + 100;
-  const width = maxX - minX;
-  const height = maxY - minY;
+   // Fixed viewBox to match our coordinate system
+  // Working area is 16a x 10b with center at (0,0)
+  const GRID_UNIT_A = 50;
+  const GRID_UNIT_B = 40;
+  const viewBoxX = -8 * GRID_UNIT_A; // -8a
+  const viewBoxY = -5 * GRID_UNIT_B; // -5b  
+  const viewBoxWidth = 16 * GRID_UNIT_A; // 16a
+  const viewBoxHeight = 10 * GRID_UNIT_B; // 10b
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
       <svg 
         className="w-full h-full" 
-        viewBox={`${minX} ${minY} ${width} ${height}`}
+        viewBox={`${viewBoxX} ${viewBoxY} ${viewBoxWidth} ${viewBoxHeight}`}
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
