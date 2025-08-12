@@ -1,104 +1,127 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { 
-  MapPin, 
-  Search, 
-  Globe, 
-  Instagram, 
-  Mail, 
-  Linkedin, 
-  Brain, 
-  Calendar,
-  Users,
-  Zap,
-  MessageSquare
-} from 'lucide-react';
+// WorkspaceBoard.tsx - Yeni koordinat sistemi (90 derece döndürülmüş, ortada)
 
-interface HexIconProps {
-  name: string;
-  isSelected?: boolean;
-  size?: 'small' | 'large';
-  onClick?: () => void;
-}
+const BOARD_WIDTH = 800; // Board genişliği
+const BOARD_HEIGHT = 600; // Board yüksekliği
+const CENTER_X = BOARD_WIDTH / 2; // 400px
+const CENTER_Y = BOARD_HEIGHT / 2; // 300px
 
-const iconMap: { [key: string]: React.ComponentType<any> } = {
-  GoogleMaps: MapPin,
-  Apollo: Search,
-  Apify: Globe,
-  Instagram: Instagram,
-  Instantly: Zap,
-  Lemlist: MessageSquare,
-  LinkedIn: Linkedin,
-  'Perplexity AI': Brain,
-  PerplexityAI: Brain,
-  BrightData: Globe,
-  Gmail: Mail,
-  CalCom: Calendar,
-  CRM: Users
+// 90 derece sağa döndürülmüş ve ortada gruplanmış pozisyonlar
+const toolPositions = {
+  leo: { 
+    x: CENTER_X - 50,  // Merkez sol
+    y: CENTER_Y - 120, // Üst
+    tools: ['Apollo', 'GoogleMaps', 'Apify'] 
+  },
+  mike: { 
+    x: CENTER_X + 80,  // Sağ
+    y: CENTER_Y - 60,  // Üst sağ
+    tools: ['Instantly', 'Lemlist'] 
+  },
+  sophie: { 
+    x: CENTER_X,       // Tam merkez
+    y: CENTER_Y,       // Tam merkez
+    tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] 
+  },
+  ash: { 
+    x: CENTER_X + 80,  // Sağ
+    y: CENTER_Y + 60,  // Alt sağ
+    tools: ['CalCom', 'CRM', 'Instagram'] 
+  },
+  clara: { 
+    x: CENTER_X - 50,  // Merkez sol
+    y: CENTER_Y + 120, // Alt
+    tools: ['Gmail', 'BrightData'] 
+  }
 };
 
-export function HexIcon({ name, isSelected = false, size = 'small', onClick }: HexIconProps) {
-  const IconComponent = iconMap[name] || Search;
-  const iconSize = size === 'large' ? 32 : 20;
-  const hexSize = size === 'large' ? 80 : 50;
+// Bağlantı çizgileri için düzeltilmiş SVG viewBox
+// ConnectionLines.tsx güncellemesi:
+const viewBoxWidth = BOARD_WIDTH;
+const viewBoxHeight = BOARD_HEIGHT;
 
-  return (
-    <motion.div
-      className={`relative cursor-pointer group ${onClick ? 'hover:scale-105' : ''}`}
-      onClick={onClick}
-      whileHover={{ scale: onClick ? 1.05 : 1 }}
-      whileTap={{ scale: onClick ? 0.95 : 1 }}
-      style={{ zIndex: 15 }} // Bağlantı çizgilerinin üstünde kalması için yüksek z-index
+return (
+  <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+    <svg 
+      className="w-full h-full" 
+      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+      preserveAspectRatio="xMidYMid meet"
     >
-      {/* Hexagon Background */}
-      <div className="relative">
-        <svg 
-          width={hexSize} 
-          height={hexSize} 
-          viewBox="0 0 100 100" 
-          className="drop-shadow-lg"
-        >
-          {/* Glow effect for selected */}
-          {isSelected && (
-            <defs>
-              <filter id={`glow-${name}`}>
-                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                <feMerge> 
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-          )}
-          
-          {/* Hexagon shape - Solid background to hide lines behind */}
-          <polygon
-            points="50,5 85,25 85,65 50,85 15,65 15,25"
-            fill={isSelected ? "rgba(15, 23, 42, 0.95)" : "rgba(15, 23, 42, 0.9)"}
-            stroke={isSelected ? "#06b6d4" : "#FFD44D"}
-            strokeWidth="2"
-            className={`transition-all duration-300 ${
-              isSelected ? 'drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]' : ''
-            }`}
-            filter={isSelected ? `url(#glow-${name})` : undefined}
-          />
-        </svg>
-        
-        {/* Icon */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <IconComponent 
-            size={iconSize} 
-            className={`${isSelected ? 'text-cyan-400' : 'text-yellow-400'} transition-colors duration-300`}
-          />
-        </div>
-      </div>
+      {/* Defs aynı kalacak */}
       
-      {/* Tooltip */}
-      <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20">
-        <div className="bg-slate-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-          {name}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+      {/* Düzeltilmiş path hesaplama */}
+      {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
+        const nextEntry = orderedTools[index + 1];
+        const [nextAgentKey, nextToolData] = nextEntry;
+        
+        // Artık koordinatlar doğrudan kullanılabilir
+        const pathData = `M ${toolData.position.x} ${toolData.position.y} L ${nextToolData.position.x} ${nextToolData.position.y}`;
+        
+        return (
+          <motion.path
+            key={`connection-${agentKey}-${nextAgentKey}`}
+            d={pathData}
+            stroke="url(#connectionGradient)"
+            strokeWidth="3"
+            fill="none"
+            filter="url(#connectionGlow)"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
+            transition={{ 
+              duration: 1.2, 
+              delay: index * 0.3,
+              ease: "easeInOut"
+            }}
+          />
+        );
+      })}
+    </svg>
+  </div>
+);
+
+// Board sınırları için container'a overflow:hidden ekle
+// Right Working Area güncellemesi:
+<div className="w-4/5 relative overflow-hidden"> {/* overflow-hidden eklendi */}
+  {/* Background Pattern */}
+  
+  {/* Working Board Content */}
+  <div className="relative h-full flex items-center justify-center">
+    {/* Selected Tools - position artık sınırlarda */}
+    <AnimatePresence>
+      {Object.entries(selectedTools).map(([agent, data]) => (
+        <motion.div
+          key={`${agent}-${data.tool}`}
+          initial={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
+          animate={{ 
+            scale: 1, 
+            opacity: 1, 
+            x: data.position.x,
+            y: data.position.y
+          }}
+          exit={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 300, 
+            damping: 25,
+            delay: Object.keys(selectedTools).indexOf(agent) * 0.2 // Sıralı animasyon
+          }}
+          className="absolute"
+          style={{ 
+            left: 0,
+            top: 0,
+            transform: `translate(${data.position.x - 25}px, ${data.position.y - 25}px)`, // Icon merkezleme
+            zIndex: 15
+          }}
+        >
+          <HexIcon 
+            name={data.tool} 
+            isSelected={true}
+            size="large"
+          />
+        </motion.div>
+      ))}
+    </AnimatePresence>
+    
+    {/* Connection Lines - koordinat sistemi artık uyumlu */}
+    <ConnectionLines selectedTools={selectedTools} />
+  </div>
+</div>
