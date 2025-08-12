@@ -1,305 +1,307 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  Calendar, 
-  Users, 
-  Edit2, 
-  Trash2, 
-  Check, 
-  X,
-  Clock
-} from 'lucide-react';
+import { HexIcon } from './HexIcon';
+import { ConnectionLines } from './ConnectionLines';
+import { ChatBox } from './ChatBox';
+import { AgentHeader } from './AgentHeader';
+import { RightSidebar } from './RightSidebar';
+import { SelectionRow } from './SelectionRow';
+import { Play } from 'lucide-react';
+
+interface WorkspaceSelection {
+  [key: string]: string;
+}
 
 interface WorkspaceData {
   id: string;
   name: string;
-  selections: { [key: string]: string };
+  selections: WorkspaceSelection;
   messages: any[];
   createdAt: string;
 }
 
-interface WorkspaceCardProps {
+interface WorkspaceBoardProps {
   workspace: WorkspaceData;
-  onSelect: (workspace: WorkspaceData) => void;
-  onRename: (id: string, newName: string) => void;
-  onDelete: (id: string) => void;
+  onUpdateWorkspace: (workspace: WorkspaceData) => void;
 }
 
-function WorkspaceCard({ workspace, onSelect, onRename, onDelete }: WorkspaceCardProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(workspace.name);
-  const [showActions, setShowActions] = useState(false);
+const BOARD_WIDTH = 800;
+const BOARD_HEIGHT = 480;
+const CENTER_X = BOARD_WIDTH / 2;
+const CENTER_Y = BOARD_HEIGHT / 2;
 
-  const handleSaveEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (editName.trim() && editName !== workspace.name) {
-      onRename(workspace.id, editName.trim());
+const HORIZONTAL_SPACING = 120;
+const VERTICAL_OFFSET = 64;
+const START_X = CENTER_X - (4 * HORIZONTAL_SPACING) / 2;
+
+const toolPositions = {
+  leo: { 
+    x: START_X, 
+    y: CENTER_Y + VERTICAL_OFFSET,
+    tools: ['Apollo', 'GoogleMaps', 'Apify'] 
+  },
+  mike: { 
+    x: START_X + HORIZONTAL_SPACING, 
+    y: CENTER_Y - VERTICAL_OFFSET,
+    tools: ['Instantly', 'Lemlist'] 
+  },
+  sophie: { 
+    x: START_X + (2 * HORIZONTAL_SPACING), 
+    y: CENTER_Y + VERTICAL_OFFSET,
+    tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] 
+  },
+  ash: { 
+    x: START_X + (3 * HORIZONTAL_SPACING), 
+    y: CENTER_Y - VERTICAL_OFFSET,
+    tools: ['CalCom', 'CRM', 'Instagram'] 
+  },
+  clara: { 
+    x: START_X + (4 * HORIZONTAL_SPACING), 
+    y: CENTER_Y + VERTICAL_OFFSET,
+    tools: ['Gmail', 'BrightData'] 
+  }
+};
+
+const toolSections = [
+  { id: 'leo', name: 'Leo', icons: ['Apollo', 'GoogleMaps', 'Apify'] },
+  { id: 'mike', name: 'Mike', icons: ['Instantly', 'Lemlist'] },
+  { id: 'sophie', name: 'Sophie', icons: ['LinkedIn', 'PerplexityAI', 'BrightData'] },
+  { id: 'ash', name: 'Ash', icons: ['CalCom', 'CRM', 'Instagram'] },
+  { id: 'clara', name: 'Clara', icons: ['Gmail', 'BrightData'] }
+];
+
+const agents = [
+  { name: 'Eva', role: 'Project Director', avatar: '👩‍💼' },
+  { name: 'Leo', role: 'Lead Researcher', avatar: '👨‍🔬' },
+  { name: 'Mike', role: 'Campaign Manager', avatar: '👨‍💻' },
+  { name: 'Sophie', role: 'Copywriter', avatar: '👩‍✍️' },
+  { name: 'Ash', role: 'Engagement & CRM Assistant', avatar: '👨‍💼' },
+  { name: 'Clara', role: 'Feedback Analyst', avatar: '👩‍📊' }
+];
+
+export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
+  const [selectedTools, setSelectedTools] = useState<{ [key: string]: { tool: string; position: { x: number; y: number } } }>({});
+  const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
+  const [connectionsValidated, setConnectionsValidated] = useState(false);
+  const [validationMessage, setValidationMessage] = useState('');
+  const [isValidating, setIsValidating] = useState(false);
+  const [showToolSelection, setShowToolSelection] = useState(true);
+  const [evaCommandReceived, setEvaCommandReceived] = useState(false);
+  const [workflowStarted, setWorkflowStarted] = useState(false);
+
+  const handleManualToolSelect = (sectionId: string, toolName: string) => {
+    const agentPosition = toolPositions[sectionId as keyof typeof toolPositions];
+    if (agentPosition) {
+      setSelectedTools(prev => ({
+        ...prev,
+        [sectionId]: { tool: toolName, position: { x: agentPosition.x, y: agentPosition.y } }
+      }));
+      onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [sectionId]: toolName } });
     }
-    setIsEditing(false);
-    setShowActions(false);
   };
 
-  const handleCancelEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setEditName(workspace.name);
-    setIsEditing(false);
-    setShowActions(false);
-  };
+  const handleToolMention = (agent: string, tool: string) => {
+    const agentKey = agent.toLowerCase();
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (window.confirm(`"${workspace.name}" workspace'ini silmek istediğinizden emin misiniz?`)) {
-      onDelete(workspace.id);
+    if (agentKey === 'eva' && tool.toLowerCase() === 'start') {
+      setEvaCommandReceived(true);
+      return;
     }
-    setShowActions(false);
+
+    const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
+    if (agentPosition && agentPosition.tools.some(t => t.toLowerCase() === tool.toLowerCase())) {
+      const exactTool = agentPosition.tools.find(t => t.toLowerCase() === tool.toLowerCase()) || tool;
+      setSelectedTools(prev => ({
+        ...prev,
+        [agentKey]: { tool: exactTool, position: { x: agentPosition.x, y: agentPosition.y } }
+      }));
+      onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [agentKey]: exactTool } });
+    }
   };
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsEditing(true);
-    setShowActions(false);
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('tr-TR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const selectedToolsCount = Object.keys(workspace.selections).length;
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={{ y: -5, scale: 1.02 }}
-      className="relative group"
-      onMouseEnter={() => setShowActions(true)}
-      onMouseLeave={() => {
-        if (!isEditing) {
-          setShowActions(false);
+  const validateConnections = () => {
+    setIsValidating(true);
+    setValidationMessage('Bağlantılar kontrol ediliyor...');
+    setTimeout(() => {
+      const selectedCount = Object.keys(selectedTools).length;
+      if (selectedCount === 5) {
+        if (Math.random() > 0.3) {
+          setConnectionsValidated(true);
+          setValidationMessage("Tüm bağlantılar hazır, Eva'dan komut bekleniyor...");
+          setShowToolSelection(false);
+        } else {
+          setConnectionsValidated(false);
+          setValidationMessage('Gmail ve Cal.com bağlantıları eksik. API anahtarlarını kontrol edin.');
         }
-      }}
-    >
-      <div
-        onClick={() => !isEditing && onSelect(workspace)}
-        className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10"
-      >
-        {/* Action Buttons */}
-        <AnimatePresence>
-          {showActions && !isEditing && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute top-3 right-3 flex space-x-2 z-10"
-            >
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={handleEdit}
-                className="p-2 bg-slate-700/80 hover:bg-blue-600 text-slate-300 hover:text-white rounded-lg transition-all duration-200"
-              >
-                <Edit2 size={14} />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={handleDelete}
-                className="p-2 bg-slate-700/80 hover:bg-red-600 text-slate-300 hover:text-white rounded-lg transition-all duration-200"
-              >
-                <Trash2 size={14} />
-              </motion.button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      } else {
+        setConnectionsValidated(false);
+        setValidationMessage(`${5 - selectedCount} araç daha seçilmeli`);
+      }
+      setIsValidating(false);
+    }, 2000);
+  };
 
-        {/* Edit Mode Buttons */}
-        {isEditing && (
-          <div className="absolute top-3 right-3 flex space-x-2 z-10">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={handleSaveEdit}
-              className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              <Check size={14} />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={handleCancelEdit}
-              className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
-              <X size={14} />
-            </motion.button>
-          </div>
-        )}
+  const retryValidation = () => validateConnections();
 
-        {/* Workspace Name */}
-        <div className="mb-4">
-          {isEditing ? (
-            <input
-              type="text"
-              value={editName}
-              onChange={(e) => setEditName(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') handleSaveEdit(e as any);
-                if (e.key === 'Escape') handleCancelEdit(e as any);
-              }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full bg-slate-700 text-white px-3 py-2 rounded-lg border border-slate-600 focus:border-cyan-500 focus:outline-none text-xl font-bold"
-              autoFocus
-            />
-          ) : (
-            <h3 className="text-xl font-bold text-white mb-2 pr-20">
-              {workspace.name}
-            </h3>
-          )}
-        </div>
+  useEffect(() => {
+    if (Object.keys(selectedTools).length === 5 && !connectionsValidated && !isValidating) {
+      validateConnections();
+    }
+  }, [selectedTools]);
 
-        {/* Stats */}
-        <div className="space-y-3">
-          <div className="flex items-center text-slate-300">
-            <Users className="w-4 h-4 mr-2 text-cyan-400" />
-            <span className="text-sm">6 AI Agents</span>
-          </div>
-          
-          <div className="flex items-center text-slate-300">
-            <Calendar className="w-4 h-4 mr-2 text-purple-400" />
-            <span className="text-sm">{selectedToolsCount}/5 Tools Selected</span>
-          </div>
-          
-          <div className="flex items-center text-slate-300">
-            <Clock className="w-4 h-4 mr-2 text-yellow-400" />
-            <span className="text-sm">{formatDate(workspace.createdAt)}</span>
-          </div>
-        </div>
+  const allToolsSelected = Object.keys(selectedTools).length === 5;
+  const canShowStartButton = allToolsSelected && connectionsValidated && evaCommandReceived;
 
-        {/* Progress Bar */}
-        <div className="mt-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs text-slate-400">Configuration Progress</span>
-            <span className="text-xs text-slate-400">{Math.round((selectedToolsCount / 5) * 100)}%</span>
-          </div>
-          <div className="w-full bg-slate-700 rounded-full h-2">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${(selectedToolsCount / 5) * 100}%` }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full"
-            />
-          </div>
-        </div>
+  const handleStartWorkflow = () => {
+    setWorkflowStarted(true);
+    setTimeout(() => {
+      alert('İş akışı başlatıldı! n8n entegrasyonu devrede...');
+    }, 1500);
+  };
 
-        {/* Status Badge */}
-        <div className="absolute top-3 left-3">
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-            selectedToolsCount === 5 
-              ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-              : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-          }`}>
-            {selectedToolsCount === 5 ? 'Ready' : 'Setup'}
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-interface WorkspaceGridProps {
-  workspaces: WorkspaceData[];
-  onCreateNew: () => void;
-  onSelectWorkspace: (workspace: WorkspaceData) => void;
-  onRenameWorkspace: (id: string, newName: string) => void;
-  onDeleteWorkspace: (id: string) => void;
-}
-
-export default function WorkspaceGrid({ 
-  workspaces, 
-  onCreateNew, 
-  onSelectWorkspace,
-  onRenameWorkspace,
-  onDeleteWorkspace
-}: WorkspaceGridProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
-        <h1 className="text-4xl font-bold text-white mb-2">AI Workspace</h1>
-        <p className="text-slate-400">Manage your AI agent configurations and workflows</p>
-      </div>
-
-      {/* Workspace Grid */}
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Create New Card */}
-          <motion.div
-            whileHover={{ y: -5, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onCreateNew}
-            className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border-2 border-dashed border-slate-600/50 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10 flex flex-col items-center justify-center min-h-[280px] group"
-          >
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 90 }}
-              transition={{ duration: 0.2 }}
-              className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-cyan-500/25"
-            >
-              <Plus className="w-8 h-8 text-white" />
-            </motion.div>
-            <h3 className="text-xl font-semibold text-white mb-2">Yeni Workspace</h3>
-            <p className="text-slate-400 text-center text-sm">
-              Yeni bir AI workspace oluşturun ve ajanlarınızı yapılandırın
-            </p>
-          </motion.div>
-
-          {/* Existing Workspaces */}
-          <AnimatePresence>
-            {workspaces.map((workspace) => (
-              <WorkspaceCard
-                key={workspace.id}
-                workspace={workspace}
-                onSelect={onSelectWorkspace}
-                onRename={onRenameWorkspace}
-                onDelete={onDeleteWorkspace}
+    <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+      <AgentHeader agents={agents} />
+      
+      {showToolSelection && (
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          exit={{ opacity: 0, y: -20 }}
+          className="p-4 bg-slate-800/50 border-b border-slate-700/50"
+        >
+          <h3 className="text-white font-semibold mb-4">Her agent için bir araç seçin:</h3>
+          <div className="space-y-4">
+            {toolSections.map(section => (
+              <SelectionRow 
+                key={section.id} 
+                section={section} 
+                selectedIcon={selectedTools[section.id]?.tool}
+                onIconSelect={toolName => handleManualToolSelect(section.id, toolName)} 
               />
             ))}
-          </AnimatePresence>
+          </div>
+          <div className="mt-4 text-slate-400 text-sm">
+            {Object.keys(selectedTools).length}/5 araç seçildi
+          </div>
+        </motion.div>
+      )}
+
+      <div className="flex h-[480px]">
+        <div className="w-1/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="transform scale-75 origin-center">
+              <ChatBox messages={workspace.messages} />
+            </div>
+          </div>
         </div>
 
-        {/* Empty State */}
-        {workspaces.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-16"
-          >
-            <div className="w-24 h-24 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Users className="w-12 h-12 text-slate-400" />
+        <div className="w-4/5 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10">
+            <svg width="100%" height="100%" className="w-full h-full">
+              <defs>
+                <pattern id="honeycomb" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                  <polygon points="30,2 50,15 50,37 30,50 10,37 10,15" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#honeycomb)" />
+            </svg>
+          </div>
+
+          <div className="relative h-full flex items-center justify-center">
+            <div style={{ zIndex: 5 }}>
+              <ConnectionLines selectedTools={selectedTools} />
             </div>
-            <h3 className="text-2xl font-semibold text-white mb-2">Henüz workspace yok</h3>
-            <p className="text-slate-400 mb-6 max-w-md mx-auto">
-              AI ajanlarınızı yönetmek ve iş akışlarınızı oluşturmak için ilk workspace'inizi oluşturun.
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onCreateNew}
-              className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white px-6 py-3 rounded-lg font-medium hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-200"
-            >
-              İlk Workspace'i Oluştur
-            </motion.button>
-          </motion.div>
-        )}
+
+            <AnimatePresence>
+              {Object.entries(selectedTools).map(([agent, data]) => (
+                <motion.div
+                  key={`${agent}-${data.tool}`}
+                  initial={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
+                  animate={{ 
+                    scale: 1, 
+                    opacity: 1, 
+                    x: data.position.x, 
+                    y: data.position.y 
+                  }}
+                  exit={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
+                  transition={{ 
+                    type: 'spring', 
+                    stiffness: 300, 
+                    damping: 25, 
+                    delay: Object.keys(selectedTools).indexOf(agent) * 0.2 
+                  }}
+                  className="absolute"
+                  style={{ 
+                    left: 0, 
+                    top: 0, 
+                    transform: `translate(${data.position.x - 40}px, ${data.position.y - 32}px)`,
+                    zIndex: 20
+                  }}
+                >
+                  <HexIcon 
+                    name={data.tool} 
+                    isSelected={true} 
+                    size="large" 
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+
+            {canShowStartButton && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={workflowStarted ? 
+                  { scale: 0.5, x: 0, y: -280 } : 
+                  { scale: 1, x: 0, y: 0 }
+                }
+                transition={{ duration: 1.2, ease: 'easeInOut' }}
+                className="absolute"
+                style={{ zIndex: 25 }}
+              >
+                <motion.button
+                  onClick={handleStartWorkflow}
+                  whileHover={{ scale: workflowStarted ? 0.5 : 1.05 }}
+                  whileTap={{ scale: workflowStarted ? 0.5 : 0.95 }}
+                  className="flex flex-col items-center p-6 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg"
+                >
+                  <Play className="w-8 h-8 mb-2" />
+                  <span className="text-sm font-medium">İş Akışını Başlat</span>
+                </motion.button>
+              </motion.div>
+            )}
+          </div>
+        </div>
       </div>
+
+      {(isValidating || validationMessage) && (
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800/90 p-4 rounded-lg border border-slate-700/50 z-30"
+        >
+          <div className="flex items-center space-x-3">
+            {isValidating && (
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
+            )}
+            <span className="text-white text-sm">{validationMessage}</span>
+            {!connectionsValidated && !isValidating && validationMessage && (
+              <button 
+                onClick={retryValidation}
+                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Yeniden Dene
+              </button>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      <RightSidebar 
+        isOpen={isRightSidebarOpen} 
+        onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)} 
+        onToolMention={handleToolMention} 
+      />
     </div>
   );
 }
