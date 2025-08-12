@@ -22,7 +22,6 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 600;
-  // DÜZELTME: İkonları hem dikey hem de yatayda ortalamak için ofsetler
   const ICON_X_OFFSET = 40; // İkonun yatay merkezini bulmak için (genişlik/2)
   const ICON_Y_OFFSET = 40; // İkonun dikey merkezini bulmak için (yükseklik/2)
 
@@ -68,38 +67,21 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
             />
           </marker>
 
-          {/* Arrow marker for direction */}
-          <marker
-            id="arrowhead"
-            markerWidth="12"
-            markerHeight="8"
-            refX="10"
-            refY="4"
-            orient="auto"
-          >
-            <polygon
-              points="0 0, 12 4, 0 8"
-              fill="#8b5cf6"
-              opacity="0.9"
-            />
-          </marker>
+          {/* DÜZELTME: Ok başı tanımı kaldırıldı */}
         </defs>
 
         {/* Draw connections between consecutive tools with smooth curves */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // DÜZELTME: X ve Y eksenlerinde merkezleme için ofsetler uygulandı.
           const startX = toolData.position.x - ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
           const endX = nextToolData.position.x - ICON_X_OFFSET;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
-          // Zigzag için smooth S-curve hesaplaması
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           
-          // Yumuşak S-curve için control points
           const controlOffset = Math.abs(deltaY) * 0.6; 
           const control1X = startX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
@@ -116,8 +98,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
               strokeWidth="3"
               fill="none"
               filter="url(#connectionGlow)"
-              markerEnd="url(#arrowhead)"
-              markerStart="url(#connectionDot)"
+              markerStart="url(#connectionDot)" // DÜZELTME: markerEnd kaldırıldı
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 0.9 }}
               transition={{ 
@@ -133,7 +114,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Pulsing effect - Bu bölüm de yeni merkezleme mantığıyla hizalandı */}
+        {/* Pulsing effect */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
@@ -174,7 +155,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Flow particles - Bu bölüm de yeni merkezleme mantığıyla hizalandı */}
+        {/* Flow particles */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
@@ -216,7 +197,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Development mode: Debug noktaları da doğru merkezde gösteriliyor */}
+        {/* Development mode: Debug points */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => (
           <circle
             key={`debug-${agentKey}`}
