@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Megaphone, Plus, Play, Pause, BarChart3, Users, Mail, MousePointer, MessageSquare, DollarSign, Search, Filter, MoreHorizontal, Eye, Send } from 'lucide-react';
+import { Megaphone, Plus, Play, Pause, BarChart3, Users, Mail, MousePointer, MessageSquare, DollarSign, Search, Filter, MoreHorizontal, Eye, Send, Trash2, Edit2 } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
@@ -126,6 +126,10 @@ export function Campaigns() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedStep, setSelectedStep] = useState<SequenceStep>(mockSequence[0]);
   const [activeTab, setActiveTab] = useState('analytics');
+  const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [editingCampaign, setEditingCampaign] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
 
   const createCampaign = () => {
     if (!newCampaignName.trim()) return;
@@ -159,6 +163,55 @@ export function Campaigns() {
         ? { ...campaign, status: campaign.status === 'active' ? 'paused' : 'active' }
         : campaign
     ));
+  };
+
+  const deleteCampaign = (campaignId: string) => {
+    setCampaigns(prev => prev.filter(campaign => campaign.id !== campaignId));
+    setOpenDropdown(null);
+  };
+
+  const deleteSelectedCampaigns = () => {
+    setCampaigns(prev => prev.filter(campaign => !selectedCampaigns.includes(campaign.id)));
+    setSelectedCampaigns([]);
+  };
+
+  const startEditCampaign = (campaign: Campaign) => {
+    setEditingCampaign(campaign.id);
+    setEditName(campaign.name);
+    setOpenDropdown(null);
+  };
+
+  const saveEditCampaign = () => {
+    if (!editName.trim()) return;
+    
+    setCampaigns(prev => prev.map(campaign => 
+      campaign.id === editingCampaign 
+        ? { ...campaign, name: editName }
+        : campaign
+    ));
+    setEditingCampaign(null);
+    setEditName('');
+  };
+
+  const cancelEditCampaign = () => {
+    setEditingCampaign(null);
+    setEditName('');
+  };
+
+  const toggleCampaignSelection = (campaignId: string) => {
+    setSelectedCampaigns(prev => 
+      prev.includes(campaignId)
+        ? prev.filter(id => id !== campaignId)
+        : [...prev, campaignId]
+    );
+  };
+
+  const toggleAllCampaigns = () => {
+    if (selectedCampaigns.length === campaigns.length) {
+      setSelectedCampaigns([]);
+    } else {
+      setSelectedCampaigns(campaigns.map(c => c.id));
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -600,7 +653,7 @@ export function Campaigns() {
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl font-bold text-gray-900 mb-2"
+              className="text-3xl font-bold text-gray-900 mb-2"
             >
               Campaigns
             </motion.h1>
@@ -614,47 +667,63 @@ export function Campaigns() {
             </motion.p>
           </div>
           
-          <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-            <DialogTrigger asChild>
+          <div className="flex items-center space-x-3">
+            {selectedCampaigns.length > 0 && (
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={deleteSelectedCampaigns}
+                className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
               >
-                <Plus className="w-5 h-5 mr-2" />
-                Add New Campaign
+                <Trash2 className="w-4 h-4 mr-2" />
+                Delete Selected ({selectedCampaigns.length})
               </motion.button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Campaign</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={newCampaignName}
-                  onChange={(e) => setNewCampaignName(e.target.value)}
-                  placeholder="Enter campaign name..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  onKeyPress={(e) => e.key === 'Enter' && createCampaign()}
-                />
-                <div className="flex justify-end space-x-2">
-                  <button
-                    onClick={() => setIsCreateModalOpen(false)}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={createCampaign}
-                    className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow"
-                  >
-                    Create
-                  </button>
+            )}
+            
+            <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+              <DialogTrigger asChild>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add New Campaign
+                </motion.button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create New Campaign</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={newCampaignName}
+                    onChange={(e) => setNewCampaignName(e.target.value)}
+                    placeholder="Enter campaign name..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    onKeyPress={(e) => e.key === 'Enter' && createCampaign()}
+                  />
+                  <div className="flex justify-end space-x-2">
+                    <button
+                      onClick={() => setIsCreateModalOpen(false)}
+                      className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={createCampaign}
+                      className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow"
+                    >
+                      Create
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         {/* Campaign List */}
@@ -664,7 +733,12 @@ export function Campaigns() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300" />
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-gray-300"
+                    checked={selectedCampaigns.length === campaigns.length && campaigns.length > 0}
+                    onChange={toggleAllCampaigns}
+                  />
                 </div>
                 <div className="grid grid-cols-7 gap-4 flex-1 text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <div>NAME</div>
@@ -687,17 +761,41 @@ export function Campaigns() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
-              onClick={() => setSelectedCampaign(campaign)}
+              className="px-6 py-4 hover:bg-gray-50 transition-colors"
             >
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300" />
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-gray-300"
+                    checked={selectedCampaigns.includes(campaign.id)}
+                    onChange={() => toggleCampaignSelection(campaign.id)}
+                  />
                 </div>
-                <div className="grid grid-cols-7 gap-4 flex-1 items-center">
+                <div 
+                  className="grid grid-cols-7 gap-4 flex-1 items-center cursor-pointer"
+                  onClick={() => setSelectedCampaign(campaign)}
+                >
                   {/* Name */}
                   <div>
-                    <div className="font-medium text-gray-900">{campaign.name}</div>
+                    {editingCampaign === campaign.id ? (
+                      <div className="flex items-center space-x-2">
+                        <input
+                          type="text"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') saveEditCampaign();
+                            if (e.key === 'Escape') cancelEditCampaign();
+                          }}
+                          onBlur={saveEditCampaign}
+                          className="px-2 py-1 text-sm border border-gray-300 rounded"
+                          autoFocus
+                        />
+                      </div>
+                    ) : (
+                      <div className="font-medium text-gray-900">{campaign.name}</div>
+                    )}
                   </div>
                   
                   {/* Status */}
@@ -747,21 +845,53 @@ export function Campaigns() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                  >
-                    <Play className="w-4 h-4" />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleCampaignStatus(campaign.id);
                     }}
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                   >
-                    <MoreHorizontal className="w-4 h-4" />
+                    <Play className="w-4 h-4" />
                   </motion.button>
+                  
+                  <div className="relative">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenDropdown(openDropdown === campaign.id ? null : campaign.id);
+                      }}
+                      className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                    >
+                      <MoreHorizontal className="w-4 h-4" />
+                    </motion.button>
+                    
+                    {openDropdown === campaign.id && (
+                      <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startEditCampaign(campaign);
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center"
+                        >
+                          <Edit2 className="w-4 h-4 mr-2" />
+                          Rename Campaign
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteCampaign(campaign.id);
+                          }}
+                          className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete Campaign
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -812,6 +942,14 @@ export function Campaigns() {
               </DialogContent>
             </Dialog>
           </div>
+        )}
+
+        {/* Click outside to close dropdown */}
+        {openDropdown && (
+          <div 
+            className="fixed inset-0 z-5" 
+            onClick={() => setOpenDropdown(null)}
+          />
         )}
       </div>
     </div>
