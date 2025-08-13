@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { Layout } from './components/Layout/Layout';
 import { LoginForm } from './components/Auth/LoginForm';
@@ -13,6 +13,30 @@ import { Email } from './pages/Email';
 import { Leads } from './pages/Leads';
 import { Campaigns } from './pages/Campaigns';
 import { Responses } from './pages/Responses';
+
+// Dashboard wrapper bileşeni
+function DashboardWrapper() {
+  const navigate = useNavigate();
+
+  const handleNavigate = (section: string) => {
+    switch (section) {
+      case 'contacts':
+        navigate('/crm/contacts');
+        break;
+      case 'companies':
+        navigate('/crm/companies');
+        break;
+      case 'deals':
+        navigate('/crm/deals');
+        break;
+      default:
+        navigate(`/crm/${section}`);
+        break;
+    }
+  };
+
+  return <Dashboard onNavigate={handleNavigate} />;
+}
 
 function App() {
   const { user, loading } = useAuth();
@@ -47,7 +71,7 @@ function App() {
           <Route path="leads" element={<Leads />} />
           <Route path="campaigns" element={<Campaigns />} />
           <Route path="responses" element={<Responses />} />
-          <Route path="crm" element={<Dashboard />} />
+          <Route path="crm" element={<DashboardWrapper />} />
           <Route path="crm/contacts" element={<Contacts />} />
           <Route path="crm/companies" element={<Companies />} />
           <Route path="crm/deals" element={<Deals />} />
