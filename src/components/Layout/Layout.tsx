@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 export function Layout() {
   const location = useLocation();
   return (
-    <div className="flex h-screen bg-slate-900 text-gray-300">
+    <div className="flex h-screen bg-slate-50 text-slate-800">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
