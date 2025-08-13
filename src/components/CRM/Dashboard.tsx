@@ -7,7 +7,8 @@ import {
   DollarSign,
   Calendar,
   Activity,
-  Target
+  Target,
+  Search
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Deal, Contact, Company } from '../../types';
@@ -43,10 +44,64 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const [stageStats, setStageStats] = useState<StageStats[]>([]);
   const [recentDeals, setRecentDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<{contacts: Contact[], companies: Company[], deals: Deal[]}>({
+    contacts: [],
+    companies: [],
+    deals: []
+  });
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      handleSearch();
+    } else {
+      setShowSearchResults(false);
+      setSearchResults({ contacts: [], companies: [], deals: [] });
+    }
+  }, [searchTerm]);
+
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) return;
+
+    try {
+      const searchQuery = searchTerm.toLowerCase();
+
+      // Search contacts
+      const { data: contacts } = await supabase
+        .from('contacts')
+        .select('*, companies(name)')
+        .or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`)
+        .limit(5);
+
+      // Search companies
+      const { data: companies } = await supabase
+        .from('companies')
+        .select('*')
+        .or(`name.ilike.%${searchQuery}%,domain.ilike.%${searchQuery}%,industry.ilike.%${searchQuery}%`)
+        .limit(5);
+
+      // Search deals
+      const { data: deals } = await supabase
+        .from('deals')
+        .select('*, contacts(full_name), companies(name)')
+        .or(`title.ilike.%${searchQuery}%`)
+        .limit(5);
+
+      setSearchResults({
+        contacts: contacts || [],
+        companies: companies || [],
+        deals: deals || []
+      });
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -79,13 +134,13 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         .from('deals')
         .select(`
           amount,
-          pipeline_stages!inner(name)
+          pipeline_stages!deals_stage_id_fkey(name)
         `)
         .eq('status', 'open');
 
       const stageMap = new Map<string, { count: number; value: number }>();
       stageData?.forEach(deal => {
-        const stageName = deal.pipeline_stages.name;
+        const stageName = deal.pipeline_stages?.name || 'Belirtilmemiş';
         const current = stageMap.get(stageName) || { count: 0, value: 0 };
         stageMap.set(stageName, {
           count: current.count + 1,
@@ -108,7 +163,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           *,
           contacts(full_name, email),
           companies(name),
-          pipeline_stages(name)
+          pipeline_stages!deals_stage_id_fkey(name)
         `)
         .order('created_at', { ascending: false })
         .limit(5);
@@ -121,14 +176,17 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     }
   };
 
-  const handleQuickAction = (action: string) => {
+  const handleNavigation = (section: string) => {
     if (onNavigate) {
-      onNavigate(action);
+      onNavigate(section);
     } else {
-      // Fallback - butonları görsel olarak aktif göster
-      console.log(`Navigating to ${action}`);
-      alert(`${action} sayfasına yönlendiriliyorsunuz...`);
+      // Ana uygulama bağlantısı yoksa event dispatch et
+      window.dispatchEvent(new CustomEvent('navigate', { detail: { section } }));
     }
+  };
+
+  const handleQuickAction = (action: string) => {
+    handleNavigation(action);
   };
 
   if (loading) {
@@ -185,10 +243,100 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
+      {/* Header with Search */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">CRM Dashboard</h1>
         <p className="text-gray-600">Satış performansınızın genel görünümü</p>
+        
+        {/* Global Search */}
+        <div className="mt-4 relative">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Kişi, şirket veya fırsat ara..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full max-w-md pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+          
+          {/* Search Results Dropdown */}
+          {showSearchResults && (searchResults.contacts.length > 0 || searchResults.companies.length > 0 || searchResults.deals.length > 0) && (
+            <div className="absolute top-full left-0 right-0 max-w-md mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+              {searchResults.contacts.length > 0 && (
+                <div className="p-3 border-b border-gray-100">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Kişiler</h4>
+                  {searchResults.contacts.map(contact => (
+                    <div 
+                      key={contact.id} 
+                      className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
+                      onClick={() => {
+                        handleNavigation('contacts');
+                        setShowSearchResults(false);
+                        setSearchTerm('');
+                      }}
+                    >
+                      <Users className="w-4 h-4 text-blue-500 mr-2" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{contact.full_name}</p>
+                        <p className="text-xs text-gray-500">{contact.email}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {searchResults.companies.length > 0 && (
+                <div className="p-3 border-b border-gray-100">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Şirketler</h4>
+                  {searchResults.companies.map(company => (
+                    <div 
+                      key={company.id} 
+                      className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
+                      onClick={() => {
+                        handleNavigation('companies');
+                        setShowSearchResults(false);
+                        setSearchTerm('');
+                      }}
+                    >
+                      <Building2 className="w-4 h-4 text-green-500 mr-2" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{company.name}</p>
+                        <p className="text-xs text-gray-500">{company.domain || company.industry}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {searchResults.deals.length > 0 && (
+                <div className="p-3">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Fırsatlar</h4>
+                  {searchResults.deals.map(deal => (
+                    <div 
+                      key={deal.id} 
+                      className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
+                      onClick={() => {
+                        handleNavigation('deals');
+                        setShowSearchResults(false);
+                        setSearchTerm('');
+                      }}
+                    >
+                      <Handshake className="w-4 h-4 text-orange-500 mr-2" />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{deal.title}</p>
+                        <p className="text-xs text-gray-500">
+                          {deal.contacts?.full_name || deal.companies?.name || 'Bilinmeyen'} - ${deal.amount?.toLocaleString() || '0'}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -196,7 +344,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         {statCards.map((card, index) => (
           <div 
             key={index} 
-            className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition-shadow"
+            className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:shadow-md hover:scale-105 transition-all duration-200"
             onClick={card.onClick}
           >
             <div className="flex items-center justify-between">
@@ -221,7 +369,11 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           {stageStats.length > 0 ? (
             <div className="space-y-4">
               {stageStats.map((stage, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                  onClick={() => handleNavigation('deals')}
+                >
                   <div>
                     <p className="font-medium text-gray-900">{stage.stageName}</p>
                     <p className="text-sm text-gray-600">{stage.count} fırsat</p>
@@ -237,8 +389,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               <Target className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500">Henüz aktif pipeline aşaması bulunmuyor</p>
               <button
-                onClick={() => handleQuickAction('deals')}
-                className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                onClick={() => handleNavigation('deals')}
+                className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
               >
                 İlk fırsatınızı oluşturun
               </button>
@@ -251,8 +403,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">Son Fırsatlar</h3>
             <button
-              onClick={() => handleQuickAction('deals')}
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+              onClick={() => handleNavigation('deals')}
+              className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
             >
               Tümünü Gör
             </button>
@@ -260,7 +412,11 @@ export function Dashboard({ onNavigate }: DashboardProps) {
           {recentDeals.length > 0 ? (
             <div className="space-y-4">
               {recentDeals.map((deal) => (
-                <div key={deal.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                <div 
+                  key={deal.id} 
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                  onClick={() => handleNavigation('deals')}
+                >
                   <div>
                     <p className="font-medium text-gray-900">{deal.title}</p>
                     <p className="text-sm text-gray-600">
@@ -290,8 +446,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               <Handshake className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-500">Henüz fırsat bulunmuyor</p>
               <button
-                onClick={() => handleQuickAction('deals')}
-                className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                onClick={() => handleNavigation('deals')}
+                className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline"
               >
                 İlk fırsatınızı oluşturun
               </button>
@@ -305,22 +461,22 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Hızlı İşlemler</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button 
-            onClick={() => handleQuickAction('contacts')}
-            className="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors group"
+            onClick={() => handleNavigation('contacts')}
+            className="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors group hover:scale-105 transform duration-200"
           >
             <Users className="w-5 h-5 text-blue-600 mr-3 group-hover:scale-110 transition-transform" />
             <span className="font-medium text-blue-900">Yeni Kişi Ekle</span>
           </button>
           <button 
-            onClick={() => handleQuickAction('companies')}
-            className="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors group"
+            onClick={() => handleNavigation('companies')}
+            className="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors group hover:scale-105 transform duration-200"
           >
             <Building2 className="w-5 h-5 text-green-600 mr-3 group-hover:scale-110 transition-transform" />
             <span className="font-medium text-green-900">Yeni Şirket Ekle</span>
           </button>
           <button 
-            onClick={() => handleQuickAction('deals')}
-            className="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group"
+            onClick={() => handleNavigation('deals')}
+            className="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors group hover:scale-105 transform duration-200"
           >
             <Handshake className="w-5 h-5 text-purple-600 mr-3 group-hover:scale-110 transition-transform" />
             <span className="font-medium text-purple-900">Yeni Fırsat Ekle</span>
@@ -332,14 +488,14 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Performans Özeti</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center">
+          <div className="text-center cursor-pointer hover:bg-gray-50 p-4 rounded-lg transition-colors" onClick={() => handleNavigation('deals')}>
             <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-3">
               <Activity className="w-6 h-6 text-blue-600" />
             </div>
             <p className="text-2xl font-bold text-gray-900">{((stats.wonDeals / Math.max(stats.totalDeals, 1)) * 100).toFixed(1)}%</p>
             <p className="text-sm text-gray-600">Kazanma Oranı</p>
           </div>
-          <div className="text-center">
+          <div className="text-center cursor-pointer hover:bg-gray-50 p-4 rounded-lg transition-colors" onClick={() => handleNavigation('deals')}>
             <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-3">
               <DollarSign className="w-6 h-6 text-green-600" />
             </div>
@@ -348,7 +504,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             </p>
             <p className="text-sm text-gray-600">Ortalama Fırsat Değeri</p>
           </div>
-          <div className="text-center">
+          <div className="text-center cursor-pointer hover:bg-gray-50 p-4 rounded-lg transition-colors" onClick={() => handleNavigation('deals')}>
             <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mb-3">
               <TrendingUp className="w-6 h-6 text-purple-600" />
             </div>
