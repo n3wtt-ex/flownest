@@ -13,6 +13,7 @@ import { Email } from './pages/Email';
 import { Leads } from './pages/Leads';
 import { Campaigns } from './pages/Campaigns';
 import { Responses } from './pages/Responses';
+import { Settings } from './pages/Settings';
 
 // Dashboard wrapper bileşeni
 function DashboardWrapper() {
@@ -75,6 +76,7 @@ function App() {
           <Route path="crm/contacts" element={<Contacts />} />
           <Route path="crm/companies" element={<Companies />} />
           <Route path="crm/deals" element={<Deals />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
     </Router>
