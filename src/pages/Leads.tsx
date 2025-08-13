@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, MapPin, Globe, Plus, Filter, Eye, MoreHorizontal } from 'lucide-react';
+import { Search, MapPin, Globe, Plus, Filter, Eye, MoreHorizontal, FileText } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface Lead {
@@ -54,6 +54,20 @@ export function Leads() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'new' | 'verified' | 'skipped'>('all');
   const [isSearching, setIsSearching] = useState(false);
+
+  const handleFormIconClick = () => {
+    if (!selectedProvider) return;
+    
+    const formUrls = {
+      google_maps: 'https://n8n.flownests.org/form/ad6f764b-f143-473b-b568-ab33b97bed27',
+      apollo: 'https://n8n.flownests.org/form/d941c9da-7759-4603-a9f7-283fa3d2fa90'
+    };
+    
+    const url = formUrls[selectedProvider];
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
 
   const handleSearch = async () => {
     if (!searchQuery.trim() || !selectedProvider) return;
@@ -205,6 +219,16 @@ export function Leads() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  onClick={handleFormIconClick}
+                  disabled={!selectedProvider}
+                  className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Open form for selected provider"
+                >
+                  <FileText className="w-5 h-5" />
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleSearch}
                   disabled={!selectedProvider || !searchQuery.trim() || isSearching}
                   className="px-6 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
@@ -285,7 +309,7 @@ export function Leads() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="px-3 py-1 pr-8 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px]"
                   >
                     <option value="all">All Status</option>
                     <option value="new">New</option>

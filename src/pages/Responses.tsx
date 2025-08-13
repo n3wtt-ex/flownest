@@ -147,6 +147,36 @@ export function Responses() {
           </motion.p>
         </div>
 
+        {/* Summary Stats - Moved to top */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Özet İstatistikler</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-green-600 mb-1">
+                {groupedEmails['İlgili']?.length || 0}
+              </div>
+              <div className="text-sm text-gray-600">İlgili Yanıtlar</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-yellow-600 mb-1">
+                {groupedEmails['Soru Soruyor']?.length || 0}
+              </div>
+              <div className="text-sm text-gray-600">Soru Soranlar</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-red-600 mb-1">
+                {groupedEmails['İlgisiz']?.length || 0}
+              </div>
+              <div className="text-sm text-gray-600">İlgisiz Yanıtlar</div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Email Cards by Category */}
         <div className="space-y-8">
           {Object.entries(groupedEmails).map(([tag, tagEmails]) => (
@@ -231,36 +261,6 @@ export function Responses() {
             </motion.div>
           ))}
         </div>
-
-        {/* Summary Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
-        >
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Özet İstatistikler</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-1">
-                {groupedEmails['İlgili']?.length || 0}
-              </div>
-              <div className="text-sm text-gray-600">İlgili Yanıtlar</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-600 mb-1">
-                {groupedEmails['Soru Soruyor']?.length || 0}
-              </div>
-              <div className="text-sm text-gray-600">Soru Soranlar</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-red-600 mb-1">
-                {groupedEmails['İlgisiz']?.length || 0}
-              </div>
-              <div className="text-sm text-gray-600">İlgisiz Yanıtlar</div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </div>
   );

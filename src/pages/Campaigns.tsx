@@ -231,54 +231,93 @@ export function Campaigns() {
             </TabsList>
 
             <TabsContent value="analytics" className="space-y-6">
-              {/* KPI Cards */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <div className="flex items-center">
-                    <Mail className="w-8 h-8 text-blue-500 mb-2" />
+              {/* Summary Stats - Moved to top */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Campaign Overview</h3>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-500">Status:</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedCampaign.status)}`}>
+                      {getStatusLabel(selectedCampaign.status)}
+                    </span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{selectedCampaign.sent}</div>
-                  <div className="text-sm text-gray-600">Sequence Started</div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <div className="flex items-center">
-                    <Eye className="w-8 h-8 text-green-500 mb-2" />
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">{selectedCampaign.sent}</div>
+                    <div className="text-sm text-gray-600">Sequence Started</div>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{selectedCampaign.openRate}%</div>
-                  <div className="text-sm text-gray-600">Open Rate</div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <div className="flex items-center">
-                    <MousePointer className="w-8 h-8 text-purple-500 mb-2" />
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">{selectedCampaign.openRate}%</div>
+                    <div className="text-sm text-gray-600">Open Rate</div>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{selectedCampaign.clickRate}%</div>
-                  <div className="text-sm text-gray-600">Click Rate</div>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <div className="flex items-center">
-                    <MessageSquare className="w-8 h-8 text-orange-500 mb-2" />
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600">{selectedCampaign.clickRate}%</div>
+                    <div className="text-sm text-gray-600">Click Rate</div>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{selectedCampaign.replyRate}%</div>
-                  <div className="text-sm text-gray-600">Reply Rate</div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                    <div className="text-2xl font-bold text-orange-600">{selectedCampaign.replyRate}%</div>
+                    <div className="text-sm text-gray-600">Reply Rate</div>
+                  </div>
+                  <div className="text-center p-4 bg-indigo-50 rounded-lg">
+                    <div className="text-2xl font-bold text-indigo-600">{selectedCampaign.positiveReplyRate}%</div>
+                    <div className="text-sm text-gray-600">Positive Reply Rate</div>
+                  </div>
                 </div>
               </div>
 
-              {/* Opportunities and Conversions */}
+              {/* KPI Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Opportunities</h3>
-                  <div className="text-3xl font-bold text-gray-900 mb-2">{selectedCampaign.opportunities}</div>
-                  <div className="text-sm text-gray-600">Positive replies converted to opportunities</div>
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Performance Metrics</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Emails Sent</span>
+                      <span className="font-semibold">{selectedCampaign.sent}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Total Opens</span>
+                      <span className="font-semibold">{Math.round(selectedCampaign.sent * selectedCampaign.openRate / 100)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Total Clicks</span>
+                      <span className="font-semibold">{selectedCampaign.clicks}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Total Replies</span>
+                      <span className="font-semibold">{selectedCampaign.replied}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Conversions</h3>
-                  <div className="text-3xl font-bold text-gray-900 mb-2">{selectedCampaign.conversions}</div>
-                  <div className="text-sm text-gray-600">${selectedCampaign.revenue.toLocaleString()} revenue generated</div>
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900">Conversion Funnel</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Opportunities</span>
+                      <span className="font-semibold text-blue-600">{selectedCampaign.opportunities}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Conversions</span>
+                      <span className="font-semibold text-green-600">{selectedCampaign.conversions}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Revenue Generated</span>
+                      <span className="font-semibold text-purple-600">${selectedCampaign.revenue.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Conversion Rate</span>
+                      <span className="font-semibold">{((selectedCampaign.conversions / selectedCampaign.sent) * 100).toFixed(1)}%</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Chart Placeholder */}
-              <div className="bg-white p-6 rounded-lg shadow-sm">
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Performance Over Time</h3>
                   <select className="px-3 py-1 border border-gray-300 rounded-lg text-sm">
@@ -619,62 +658,99 @@ export function Campaigns() {
         </div>
 
         {/* Campaign List */}
-        <div className="space-y-4">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          {/* Table Header */}
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <input type="checkbox" className="rounded border-gray-300" />
+                </div>
+                <div className="grid grid-cols-7 gap-4 flex-1 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <div>NAME</div>
+                  <div>STATUS</div>
+                  <div>PROGRESS</div>
+                  <div>SENT</div>
+                  <div>CLICK</div>
+                  <div>REPLIED</div>
+                  <div>OPPORTUNITIES</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Campaign Rows */}
+          <div className="divide-y divide-gray-200">
           {campaigns.map((campaign, index) => (
             <motion.div
               key={campaign.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+              className="px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer"
               onClick={() => setSelectedCampaign(campaign)}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <h3 className="text-xl font-semibold text-gray-900">{campaign.name}</h3>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <input type="checkbox" className="rounded border-gray-300" />
+                </div>
+                <div className="grid grid-cols-7 gap-4 flex-1 items-center">
+                  {/* Name */}
+                  <div>
+                    <div className="font-medium text-gray-900">{campaign.name}</div>
+                  </div>
+                  
+                  {/* Status */}
+                  <div>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(campaign.status)}`}>
                       {getStatusLabel(campaign.status)}
                     </span>
                   </div>
                   
-                  {/* Progress Bar */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm text-gray-600">Progress</span>
-                      <span className="text-sm text-gray-600">{campaign.progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${campaign.progress}%` }}
-                      ></div>
+                  {/* Progress */}
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <div className="flex-1 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${campaign.progress}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm text-gray-600 min-w-[40px]">{campaign.progress}%</span>
                     </div>
                   </div>
 
-                  {/* KPI Metrics */}
-                  <div className="grid grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">{campaign.sent}</div>
-                      <div className="text-sm text-gray-600">Sent</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">{campaign.clicks}</div>
-                      <div className="text-sm text-gray-600">Clicks</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">{campaign.replied}</div>
-                      <div className="text-sm text-gray-600">Replied</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-900">{campaign.replyRate}%</div>
-                      <div className="text-sm text-gray-600">Reply Rate</div>
-                    </div>
+                  {/* Sent */}
+                  <div>
+                    <div className="font-semibold text-gray-900">{campaign.sent}</div>
+                  </div>
+
+                  {/* Click */}
+                  <div>
+                    <div className="font-semibold text-gray-900">{campaign.clicks}</div>
+                  </div>
+
+                  {/* Replied */}
+                  <div>
+                    <div className="font-semibold text-gray-900">{campaign.replied}</div>
+                    <div className="text-sm text-gray-500">{campaign.replyRate}%</div>
+                  </div>
+
+                  {/* Opportunities */}
+                  <div>
+                    <div className="font-semibold text-gray-900">{campaign.opportunities}</div>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex items-center space-x-3 ml-6">
+                <div className="flex items-center space-x-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                  >
+                    <Play className="w-4 h-4" />
+                  </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -682,28 +758,15 @@ export function Campaigns() {
                       e.stopPropagation();
                       toggleCampaignStatus(campaign.id);
                     }}
-                    className={`flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                      campaign.status === 'active'
-                        ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                        : 'bg-green-100 text-green-800 hover:bg-green-200'
-                    }`}
+                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                   >
-                    {campaign.status === 'active' ? (
-                      <>
-                        <Pause className="w-4 h-4 mr-2" />
-                        Pause
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-4 h-4 mr-2" />
-                        Start
-                      </>
-                    )}
+                    <MoreHorizontal className="w-4 h-4" />
                   </motion.button>
                 </div>
               </div>
             </motion.div>
           ))}
+          </div>
         </div>
 
         {campaigns.length === 0 && (
