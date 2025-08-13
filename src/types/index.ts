@@ -19,6 +19,7 @@ export interface Contact {
   phone?: string;
   linkedin_url?: string;
   website?: string;
+  notes?: string;
   created_at: string;
   updated_at: string;
   company?: Company;
@@ -33,6 +34,8 @@ export interface Company {
   location?: string;
   size?: string;
   industry?: string;
+  description?: string;
+  phone?: string;
   created_at: string;
   updated_at: string;
 }
@@ -68,6 +71,7 @@ export interface Deal {
   close_date?: string;
   status: 'open' | 'won' | 'lost';
   source?: string;
+  description?: string;
   notes?: string;
   created_at: string;
   updated_at: string;
