@@ -42,10 +42,10 @@ export function Deals() {
           *,
           contacts(full_name, email),
           companies(name),
-          pipeline_stages(name, probability)
+          pipeline_stages!deals_stage_id_fkey(name, probability)
         `)
         .order('created_at', { ascending: false });
-
+  
       if (error) throw error;
       setDeals(data || []);
     } catch (error) {
@@ -99,6 +99,13 @@ export function Deals() {
 
   const handleAddDeal = async () => {
     try {
+      // Önce varsayılan pipeline ID'sini al
+      const { data: pipelineData } = await supabase
+        .from('pipelines')
+        .select('id')
+        .eq('is_default', true)
+        .single();
+  
       const { error } = await supabase
         .from('deals')
         .insert([{
@@ -107,15 +114,16 @@ export function Deals() {
           currency: formData.currency,
           contact_id: formData.contact_id || null,
           company_id: formData.company_id || null,
-          pipeline_stage_id: formData.pipeline_stage_id || null,
+          pipeline_id: pipelineData?.id, // YENİ: Zorunlu pipeline_id
+          stage_id: formData.pipeline_stage_id || null, // DEĞİŞTİ: pipeline_stage_id -> stage_id
           close_date: formData.close_date || null,
           status: formData.status,
           source: formData.source || null,
-          description: formData.description || null
+          notes: formData.description || null // DEĞİŞTİ: description -> notes
         }]);
-
+  
       if (error) throw error;
-
+  
       setShowAddModal(false);
       resetForm();
       loadDeals();
@@ -127,7 +135,7 @@ export function Deals() {
 
   const handleEditDeal = async () => {
     if (!editingDeal) return;
-
+  
     try {
       const { error } = await supabase
         .from('deals')
@@ -137,16 +145,16 @@ export function Deals() {
           currency: formData.currency,
           contact_id: formData.contact_id || null,
           company_id: formData.company_id || null,
-          pipeline_stage_id: formData.pipeline_stage_id || null,
+          stage_id: formData.pipeline_stage_id || null, // DEĞİŞTİ: pipeline_stage_id -> stage_id
           close_date: formData.close_date || null,
           status: formData.status,
           source: formData.source || null,
-          description: formData.description || null
+          notes: formData.description || null // DEĞİŞTİ: description -> notes
         })
         .eq('id', editingDeal.id);
-
+  
       if (error) throw error;
-
+  
       setShowEditModal(false);
       setEditingDeal(null);
       resetForm();
