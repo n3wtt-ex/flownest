@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Megaphone, Plus, Play, Pause, BarChart3, Users, Mail, MousePointer, MessageSquare, DollarSign, Search, Filter, MoreHorizontal, Eye, Send, Trash2, Edit2 } from 'lucide-react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
-import { Switch } from '../components/ui/switch';
+import { Megaphone, Plus, Play, Pause, BarChart3, Users, Mail, MousePointer, MessageSquare, DollarSign, Search, Filter, MoreHorizontal, Eye, Send, Trash2, Edit2, Upload, UserPlus, ChevronDown, ChevronUp } from 'lucide-react';
+import { useLocalStorage } from './hooks/useLocalStorage';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './components/ui/dialog';
+import { Switch } from './components/ui/switch';
 
 interface Campaign {
   id: string;
@@ -31,6 +31,7 @@ interface Lead {
   status: 'completed' | 'pending' | 'failed';
   contact: string;
   company: string;
+  expanded?: boolean;
 }
 
 interface SequenceStep {
@@ -38,6 +39,18 @@ interface SequenceStep {
   subject: string;
   body: string;
   variants: number;
+}
+
+interface PersonalizedEmail {
+  step: number;
+  subject: string;
+  body: string;
+}
+
+interface LeadPersonalization {
+  emails: PersonalizedEmail[];
+  linkedinStatus: string;
+  linkedinMessage: string;
 }
 
 const mockCampaigns: Campaign[] = [
@@ -119,17 +132,60 @@ const mockSequence: SequenceStep[] = [
   }
 ];
 
+const mockPersonalization: Record<string, LeadPersonalization> = {
+  '1': {
+    emails: [
+      {
+        step: 1,
+        subject: 'Quick question about TechCorp',
+        body: 'Hi John,\n\nI noticed TechCorp is doing great work in the technology space. I had a quick question about your current approach to digital transformation.\n\nWould you be open to a brief chat this week?\n\nBest,\nSales Team'
+      },
+      {
+        step: 2,
+        subject: 'Following up on TechCorp',
+        body: 'Hi John,\n\nI wanted to follow up on my previous email about TechCorp\'s digital transformation strategy.\n\nI have some insights that might be valuable for your team. Would you have 15 minutes for a quick call?\n\nBest regards,\nSales Team'
+      },
+      {
+        step: 3,
+        subject: 'Final follow-up',
+        body: 'Hi John,\n\nThis is my final follow-up regarding our conversation about digital transformation solutions.\n\nIf you\'re interested, please let me know. Otherwise, I\'ll respect your time.\n\nBest,\nSales Team'
+      }
+    ],
+    linkedinStatus: 'Connected',
+    linkedinMessage: 'Hi John, I sent you an email about digital transformation solutions for TechCorp. Would love to connect and discuss further!'
+  }
+};
+
 export function Campaigns() {
   const [campaigns, setCampaigns] = useLocalStorage<Campaign[]>('campaigns', mockCampaigns);
+  const [leads, setLeads] = useLocalStorage<Lead[]>('leads', mockLeads);
+  const [sequences, setSequences] = useLocalStorage<SequenceStep[]>('sequences', mockSequence);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [newCampaignName, setNewCampaignName] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isAddLeadsModalOpen, setIsAddLeadsModalOpen] = useState(false);
   const [selectedStep, setSelectedStep] = useState<SequenceStep>(mockSequence[0]);
   const [activeTab, setActiveTab] = useState('analytics');
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+  const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [editingCampaign, setEditingCampaign] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [newLeadEmail, setNewLeadEmail] = useState('');
+  const [newLeadName, setNewLeadName] = useState('');
+  const [newLeadCompany, setNewLeadCompany] = useState('');
+  const [addLeadMethod, setAddLeadMethod] = useState<'manual' | 'import'>('manual');
+
+  // Scheduling options state
+  const [selectedDays, setSelectedDays] = useState<string[]>(['Mon', 'Tue', 'Wed', 'Thu', 'Fri']);
+  const [dailyLimit, setDailyLimit] = useState(50);
+  const [startTime, setStartTime] = useState('09:00');
+  const [endTime, setEndTime] = useState('17:00');
+  const [openTracking, setOpenTracking] = useState(true);
+  const [clickTracking, setClickTracking] = useState(true);
+  const [replyTracking, setReplyTracking] = useState(true);
 
   const createCampaign = () => {
     if (!newCampaignName.trim()) return;
@@ -163,6 +219,14 @@ export function Campaigns() {
         ? { ...campaign, status: campaign.status === 'active' ? 'paused' : 'active' }
         : campaign
     ));
+    
+    // Update selected campaign if it's the one being toggled
+    if (selectedCampaign && selectedCampaign.id === campaignId) {
+      setSelectedCampaign(prev => prev ? {
+        ...prev,
+        status: prev.status === 'active' ? 'paused' : 'active'
+      } : null);
+    }
   };
 
   const deleteCampaign = (campaignId: string) => {
@@ -173,6 +237,11 @@ export function Campaigns() {
   const deleteSelectedCampaigns = () => {
     setCampaigns(prev => prev.filter(campaign => !selectedCampaigns.includes(campaign.id)));
     setSelectedCampaigns([]);
+  };
+
+  const deleteSelectedLeads = () => {
+    setLeads(prev => prev.filter(lead => !selectedLeads.includes(lead.id)));
+    setSelectedLeads([]);
   };
 
   const startEditCampaign = (campaign: Campaign) => {
@@ -206,12 +275,120 @@ export function Campaigns() {
     );
   };
 
+  const toggleLeadSelection = (leadId: string) => {
+    setSelectedLeads(prev => 
+      prev.includes(leadId)
+        ? prev.filter(id => id !== leadId)
+        : [...prev, leadId]
+    );
+  };
+
   const toggleAllCampaigns = () => {
     if (selectedCampaigns.length === campaigns.length) {
       setSelectedCampaigns([]);
     } else {
       setSelectedCampaigns(campaigns.map(c => c.id));
     }
+  };
+
+  const toggleAllLeads = () => {
+    const filteredLeads = leads.filter(lead => 
+      lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lead.company.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    if (selectedLeads.length === filteredLeads.length) {
+      setSelectedLeads([]);
+    } else {
+      setSelectedLeads(filteredLeads.map(l => l.id));
+    }
+  };
+
+  const toggleLeadExpansion = (leadId: string) => {
+    setLeads(prev => prev.map(lead => 
+      lead.id === leadId 
+        ? { ...lead, expanded: !lead.expanded }
+        : lead
+    ));
+  };
+
+  const handlePersonalize = async (leadEmail: string) => {
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook/ec3cae8c-e51b-46cc-806d-bad0ad47820e', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: leadEmail,
+          timestamp: new Date().toISOString()
+        })
+      });
+      
+      if (response.ok) {
+        console.log('Personalization webhook triggered successfully for:', leadEmail);
+      }
+    } catch (error) {
+      console.error('Error triggering personalization webhook:', error);
+    }
+  };
+
+  const addManualLead = () => {
+    if (!newLeadEmail.trim() || !newLeadName.trim() || !newLeadCompany.trim()) return;
+
+    const newLead: Lead = {
+      id: Date.now().toString(),
+      email: newLeadEmail,
+      provider: newLeadEmail.includes('@gmail.com') ? 'Gmail' : 'Outlook',
+      status: 'pending',
+      contact: newLeadName,
+      company: newLeadCompany
+    };
+
+    setLeads(prev => [...prev, newLead]);
+    setNewLeadEmail('');
+    setNewLeadName('');
+    setNewLeadCompany('');
+    setIsAddLeadsModalOpen(false);
+  };
+
+  const addSequenceStep = () => {
+    const newStep: SequenceStep = {
+      id: Date.now().toString(),
+      subject: 'New Email Step',
+      body: 'Enter your email content here...',
+      variants: 1
+    };
+
+    setSequences(prev => [...prev, newStep]);
+    setSelectedStep(newStep);
+  };
+
+  const deleteSequenceStep = (stepId: string) => {
+    setSequences(prev => prev.filter(step => step.id !== stepId));
+    if (selectedStep.id === stepId && sequences.length > 1) {
+      const remainingSteps = sequences.filter(step => step.id !== stepId);
+      setSelectedStep(remainingSteps[0]);
+    }
+  };
+
+  const saveSequenceStep = () => {
+    setSequences(prev => prev.map(step => 
+      step.id === selectedStep.id ? selectedStep : step
+    ));
+  };
+
+  const updateSelectedStep = (field: keyof SequenceStep, value: string | number) => {
+    setSelectedStep(prev => ({ ...prev, [field]: value }));
+  };
+
+  const toggleDay = (day: string) => {
+    setSelectedDays(prev => 
+      prev.includes(day) 
+        ? prev.filter(d => d !== day)
+        : [...prev, day]
+    );
   };
 
   const getStatusColor = (status: string) => {
@@ -231,6 +408,12 @@ export function Campaigns() {
       default: return status;
     }
   };
+
+  const filteredLeads = leads.filter(lead => 
+    lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    lead.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    lead.company.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (selectedCampaign) {
     return (
@@ -284,7 +467,7 @@ export function Campaigns() {
             </TabsList>
 
             <TabsContent value="analytics" className="space-y-6">
-              {/* Summary Stats - Moved to top */}
+              {/* Summary Stats */}
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Campaign Overview</h3>
@@ -369,15 +552,18 @@ export function Campaigns() {
                 </div>
               </div>
 
-              {/* Chart Placeholder */}
+              {/* Chart Placeholder - Fixed dropdown positioning */}
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Performance Over Time</h3>
-                  <select className="px-3 py-1 border border-gray-300 rounded-lg text-sm">
-                    <option>Last 4 weeks</option>
-                    <option>Last 8 weeks</option>
-                    <option>Last 12 weeks</option>
-                  </select>
+                  <div className="relative">
+                    <select className="pl-3 pr-8 py-1 border border-gray-300 rounded-lg text-sm bg-white appearance-none cursor-pointer min-w-[140px]">
+                      <option>Last 4 weeks</option>
+                      <option>Last 8 weeks</option>
+                      <option>Last 12 weeks</option>
+                    </select>
+                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
                 </div>
                 <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
                   <div className="text-center">
@@ -401,18 +587,131 @@ export function Campaigns() {
                       <input
                         type="text"
                         placeholder="Search leads..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
-                    <button className="flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-                      <Filter className="w-4 h-4 mr-2" />
-                      Filter
-                    </button>
+                    <div className="relative">
+                      <button 
+                        onClick={() => setFilterOpen(!filterOpen)}
+                        className="flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                      >
+                        <Filter className="w-4 h-4 mr-2" />
+                        Filter
+                      </button>
+                      {filterOpen && (
+                        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                          <div className="p-3">
+                            <div className="space-y-2">
+                              <label className="flex items-center">
+                                <input type="checkbox" className="rounded mr-2" />
+                                <span className="text-sm">Completed</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input type="checkbox" className="rounded mr-2" />
+                                <span className="text-sm">Pending</span>
+                              </label>
+                              <label className="flex items-center">
+                                <input type="checkbox" className="rounded mr-2" />
+                                <span className="text-sm">Failed</span>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <button className="flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Leads
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    {selectedLeads.length > 0 && (
+                      <button 
+                        onClick={deleteSelectedLeads}
+                        className="flex items-center px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        Delete ({selectedLeads.length})
+                      </button>
+                    )}
+                    <Dialog open={isAddLeadsModalOpen} onOpenChange={setIsAddLeadsModalOpen}>
+                      <DialogTrigger asChild>
+                        <button className="flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Leads
+                        </button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Add New Leads</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => setAddLeadMethod('manual')}
+                              className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'manual' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                            >
+                              <UserPlus className="w-4 h-4 inline mr-2" />
+                              Manual Entry
+                            </button>
+                            <button
+                              onClick={() => setAddLeadMethod('import')}
+                              className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'import' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                            >
+                              <Upload className="w-4 h-4 inline mr-2" />
+                              Import CSV
+                            </button>
+                          </div>
+                          
+                          {addLeadMethod === 'manual' ? (
+                            <div className="space-y-3">
+                              <input
+                                type="email"
+                                placeholder="Email address"
+                                value={newLeadEmail}
+                                onChange={(e) => setNewLeadEmail(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Contact name"
+                                value={newLeadName}
+                                onChange={(e) => setNewLeadName(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Company name"
+                                value={newLeadCompany}
+                                onChange={(e) => setNewLeadCompany(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              />
+                            </div>
+                          ) : (
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                              <p className="text-gray-600">Drop your CSV file here or click to browse</p>
+                              <input type="file" accept=".csv" className="hidden" />
+                            </div>
+                          )}
+                          
+                          <div className="flex justify-end space-x-2">
+                            <button
+                              onClick={() => setIsAddLeadsModalOpen(false)}
+                              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={addManualLead}
+                              disabled={addLeadMethod === 'manual' && (!newLeadEmail || !newLeadName || !newLeadCompany)}
+                              className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
+                            >
+                              {addLeadMethod === 'manual' ? 'Add Lead' : 'Import'}
+                            </button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </div>
 
                 {/* Leads Table */}
@@ -421,7 +720,12 @@ export function Campaigns() {
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          <input type="checkbox" className="rounded" />
+                          <input 
+                            type="checkbox" 
+                            className="rounded"
+                            checked={selectedLeads.length === filteredLeads.length && filteredLeads.length > 0}
+                            onChange={toggleAllLeads}
+                          />
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
@@ -433,31 +737,93 @@ export function Campaigns() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {mockLeads.map((lead, index) => (
-                        <tr key={lead.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <input type="checkbox" className="rounded" />
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index + 1}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.email}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.provider}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                              lead.status === 'completed' ? 'bg-green-100 text-green-800' :
-                              lead.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-red-100 text-red-800'
-                            }`}>
-                              {lead.status}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.contact}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.company}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            <button className="text-gray-400 hover:text-gray-600">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </button>
-                          </td>
-                        </tr>
+                      {filteredLeads.map((lead, index) => (
+                        <React.Fragment key={lead.id}>
+                          <tr className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <input 
+                                type="checkbox" 
+                                className="rounded"
+                                checked={selectedLeads.includes(lead.id)}
+                                onChange={() => toggleLeadSelection(lead.id)}
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index + 1}</td>
+                            <td 
+                              className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 cursor-pointer hover:text-blue-600"
+                              onClick={() => toggleLeadExpansion(lead.id)}
+                            >
+                              {lead.email}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.provider}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                                lead.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                lead.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
+                                {lead.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.contact}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.company}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                              <button 
+                                onClick={() => handlePersonalize(lead.email)}
+                                className="px-3 py-1 bg-green-500 text-white text-xs rounded-full hover:bg-green-600 transition-colors"
+                              >
+                                Personalize
+                              </button>
+                            </td>
+                          </tr>
+                          {lead.expanded && (
+                            <tr>
+                              <td colSpan={8} className="px-6 py-4 bg-gray-50">
+                                <div className="space-y-4">
+                                  <h4 className="font-semibold text-gray-900">Personalized Content</h4>
+                                  
+                                  {/* Email Steps */}
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {mockPersonalization[lead.id]?.emails.map((email) => (
+                                      <div key={email.step} className="bg-white p-4 rounded-lg border">
+                                        <h5 className="font-medium text-gray-900 mb-2">Email Step {email.step}</h5>
+                                        <div className="text-sm text-gray-600 mb-2">
+                                          <strong>Subject:</strong> {email.subject}
+                                        </div>
+                                        <div className="text-sm text-gray-600">
+                                          <strong>Body:</strong>
+                                          <div className="mt-1 p-2 bg-gray-50 rounded text-xs">
+                                            {email.body.substring(0, 100)}...
+                                          </div>
+                                        </div>
+                                      </div>
+                                    )) || (
+                                      <div className="col-span-3 text-center text-gray-500 py-4">
+                                        No personalized emails available
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* LinkedIn Section */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="bg-white p-4 rounded-lg border">
+                                      <h5 className="font-medium text-gray-900 mb-2">LinkedIn Status</h5>
+                                      <div className="text-sm text-gray-600">
+                                        {mockPersonalization[lead.id]?.linkedinStatus || 'Not connected'}
+                                      </div>
+                                    </div>
+                                    <div className="bg-white p-4 rounded-lg border">
+                                      <h5 className="font-medium text-gray-900 mb-2">LinkedIn Message</h5>
+                                      <div className="text-sm text-gray-600">
+                                        {mockPersonalization[lead.id]?.linkedinMessage || 'No message available'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
                       ))}
                     </tbody>
                   </table>
@@ -471,22 +837,34 @@ export function Campaigns() {
                 <div className="bg-white rounded-lg shadow-sm p-4">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Sequence Steps</h3>
                   <div className="space-y-3">
-                    {mockSequence.map((step, index) => (
+                    {sequences.map((step, index) => (
                       <div
                         key={step.id}
                         onClick={() => setSelectedStep(step)}
-                        className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                        className={`relative p-3 rounded-lg cursor-pointer transition-colors ${
                           selectedStep.id === step.id 
                             ? 'bg-blue-50 border-2 border-blue-300' 
                             : 'bg-gray-50 hover:bg-gray-100'
                         }`}
                       >
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteSequenceStep(step.id);
+                          }}
+                          className="absolute top-2 right-2 p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                         <div className="font-medium text-gray-900">Step {index + 1}</div>
-                        <div className="text-sm text-gray-600 truncate">{step.subject}</div>
+                        <div className="text-sm text-gray-600 truncate pr-8">{step.subject}</div>
                         <div className="text-xs text-gray-500 mt-1">{step.variants} variant(s)</div>
                       </div>
                     ))}
-                    <button className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors">
+                    <button 
+                      onClick={addSequenceStep}
+                      className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
+                    >
                       + Add Step
                     </button>
                   </div>
@@ -512,6 +890,7 @@ export function Campaigns() {
                       <input
                         type="text"
                         value={selectedStep.subject}
+                        onChange={(e) => updateSelectedStep('subject', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="Email subject..."
                       />
@@ -521,6 +900,7 @@ export function Campaigns() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">Body</label>
                       <textarea
                         value={selectedStep.body}
+                        onChange={(e) => updateSelectedStep('body', e.target.value)}
                         rows={12}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="Email body..."
@@ -534,7 +914,10 @@ export function Campaigns() {
                         <button className="text-sm text-blue-600 hover:text-blue-800">Variables</button>
                         <button className="text-sm text-blue-600 hover:text-blue-800">Formatting</button>
                       </div>
-                      <button className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                      <button 
+                        onClick={saveSequenceStep}
+                        className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow"
+                      >
                         Save
                       </button>
                     </div>
@@ -556,7 +939,12 @@ export function Campaigns() {
                         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                           <button
                             key={day}
-                            className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-blue-500"
+                            onClick={() => toggleDay(day)}
+                            className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
+                              selectedDays.includes(day)
+                                ? 'bg-blue-500 text-white border-blue-500'
+                                : 'border-gray-300 hover:bg-gray-50'
+                            }`}
                           >
                             {day}
                           </button>
@@ -568,7 +956,8 @@ export function Campaigns() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">Daily Send Limit</label>
                       <input
                         type="number"
-                        defaultValue="50"
+                        value={dailyLimit}
+                        onChange={(e) => setDailyLimit(Number(e.target.value))}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -578,13 +967,15 @@ export function Campaigns() {
                       <div className="flex items-center space-x-2">
                         <input
                           type="time"
-                          defaultValue="09:00"
+                          value={startTime}
+                          onChange={(e) => setStartTime(e.target.value)}
                           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                         <span className="text-gray-500">to</span>
                         <input
                           type="time"
-                          defaultValue="17:00"
+                          value={endTime}
+                          onChange={(e) => setEndTime(e.target.value)}
                           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
@@ -602,7 +993,10 @@ export function Campaigns() {
                         <div className="font-medium text-gray-900">Open Rate Tracking</div>
                         <div className="text-sm text-gray-600">Track when emails are opened</div>
                       </div>
-                      <Switch defaultChecked />
+                      <Switch 
+                        checked={openTracking}
+                        onCheckedChange={setOpenTracking}
+                      />
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -610,7 +1004,10 @@ export function Campaigns() {
                         <div className="font-medium text-gray-900">Click Tracking</div>
                         <div className="text-sm text-gray-600">Track link clicks in emails</div>
                       </div>
-                      <Switch defaultChecked />
+                      <Switch 
+                        checked={clickTracking}
+                        onCheckedChange={setClickTracking}
+                      />
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -618,7 +1015,10 @@ export function Campaigns() {
                         <div className="font-medium text-gray-900">Reply Tracking</div>
                         <div className="text-sm text-gray-600">Track email replies</div>
                       </div>
-                      <Switch defaultChecked />
+                      <Switch 
+                        checked={replyTracking}
+                        onCheckedChange={setReplyTracking}
+                      />
                     </div>
 
                     <div className="pt-4 border-t border-gray-200">
@@ -945,10 +1345,13 @@ export function Campaigns() {
         )}
 
         {/* Click outside to close dropdown */}
-        {openDropdown && (
+        {(openDropdown || filterOpen) && (
           <div 
             className="fixed inset-0 z-5" 
-            onClick={() => setOpenDropdown(null)}
+            onClick={() => {
+              setOpenDropdown(null);
+              setFilterOpen(false);
+            }}
           />
         )}
       </div>
