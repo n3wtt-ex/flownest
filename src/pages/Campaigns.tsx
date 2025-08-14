@@ -152,7 +152,7 @@ const mockPersonalization: Record<string, LeadPersonalization> = {
       }
     ],
     linkedinStatus: 'Connected',
-    linkedinMessage: 'Hi John, I sent you an email about digital transformation solutions for TechCorp. Would love to connect and discuss further!'
+    linkedinMessage: 'Hi John, I sent you an email about digital transformation solutions for TechCorp. Would love to connect and discuss further! This is a really long LinkedIn message to test how the UI handles longer content that might overflow the container and require scrolling or proper wrapping to maintain the layout integrity.'
   }
 };
 
@@ -220,7 +220,6 @@ export function Campaigns() {
         : campaign
     ));
     
-    // Update selected campaign if it's the one being toggled
     if (selectedCampaign && selectedCampaign.id === campaignId) {
       setSelectedCampaign(prev => prev ? {
         ...prev,
@@ -552,7 +551,7 @@ export function Campaigns() {
                 </div>
               </div>
 
-              {/* Chart Placeholder - Fixed dropdown positioning */}
+              {/* Chart Placeholder */}
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Performance Over Time</h3>
@@ -579,138 +578,140 @@ export function Campaigns() {
 
             <TabsContent value="leads" className="space-y-6">
               <div className="bg-white rounded-lg shadow-sm">
-                {/* Leads Header */}
-                <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="Search leads..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                    <div className="relative">
-                      <button 
-                        onClick={() => setFilterOpen(!filterOpen)}
-                        className="flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                      >
-                        <Filter className="w-4 h-4 mr-2" />
-                        Filter
-                      </button>
-                      {filterOpen && (
-                        <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-                          <div className="p-3">
-                            <div className="space-y-2">
-                              <label className="flex items-center">
-                                <input type="checkbox" className="rounded mr-2" />
-                                <span className="text-sm">Completed</span>
-                              </label>
-                              <label className="flex items-center">
-                                <input type="checkbox" className="rounded mr-2" />
-                                <span className="text-sm">Pending</span>
-                              </label>
-                              <label className="flex items-center">
-                                <input type="checkbox" className="rounded mr-2" />
-                                <span className="text-sm">Failed</span>
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    {selectedLeads.length > 0 && (
-                      <button 
-                        onClick={deleteSelectedLeads}
-                        className="flex items-center px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                      >
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete ({selectedLeads.length})
-                      </button>
-                    )}
-                    <Dialog open={isAddLeadsModalOpen} onOpenChange={setIsAddLeadsModalOpen}>
-                      <DialogTrigger asChild>
-                        <button className="flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow">
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Leads
+                {/* Search and Filter moved to top */}
+                <div className="p-4 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <input
+                          type="text"
+                          placeholder="Search leads..."
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div className="relative">
+                        <button 
+                          onClick={() => setFilterOpen(!filterOpen)}
+                          className="flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        >
+                          <Filter className="w-4 h-4 mr-2" />
+                          Filter
                         </button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Add New Leads</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => setAddLeadMethod('manual')}
-                              className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'manual' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
-                            >
-                              <UserPlus className="w-4 h-4 inline mr-2" />
-                              Manual Entry
-                            </button>
-                            <button
-                              onClick={() => setAddLeadMethod('import')}
-                              className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'import' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
-                            >
-                              <Upload className="w-4 h-4 inline mr-2" />
-                              Import CSV
-                            </button>
-                          </div>
-                          
-                          {addLeadMethod === 'manual' ? (
-                            <div className="space-y-3">
-                              <input
-                                type="email"
-                                placeholder="Email address"
-                                value={newLeadEmail}
-                                onChange={(e) => setNewLeadEmail(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Contact name"
-                                value={newLeadName}
-                                onChange={(e) => setNewLeadName(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              />
-                              <input
-                                type="text"
-                                placeholder="Company name"
-                                value={newLeadCompany}
-                                onChange={(e) => setNewLeadCompany(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              />
+                        {filterOpen && (
+                          <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                            <div className="p-3">
+                              <div className="space-y-2">
+                                <label className="flex items-center">
+                                  <input type="checkbox" className="rounded mr-2" />
+                                  <span className="text-sm">Completed</span>
+                                </label>
+                                <label className="flex items-center">
+                                  <input type="checkbox" className="rounded mr-2" />
+                                  <span className="text-sm">Pending</span>
+                                </label>
+                                <label className="flex items-center">
+                                  <input type="checkbox" className="rounded mr-2" />
+                                  <span className="text-sm">Failed</span>
+                                </label>
+                              </div>
                             </div>
-                          ) : (
-                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                              <p className="text-gray-600">Drop your CSV file here or click to browse</p>
-                              <input type="file" accept=".csv" className="hidden" />
-                            </div>
-                          )}
-                          
-                          <div className="flex justify-end space-x-2">
-                            <button
-                              onClick={() => setIsAddLeadsModalOpen(false)}
-                              className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              onClick={addManualLead}
-                              disabled={addLeadMethod === 'manual' && (!newLeadEmail || !newLeadName || !newLeadCompany)}
-                              className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
-                            >
-                              {addLeadMethod === 'manual' ? 'Add Lead' : 'Import'}
-                            </button>
                           </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {selectedLeads.length > 0 && (
+                        <button 
+                          onClick={deleteSelectedLeads}
+                          className="flex items-center px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete ({selectedLeads.length})
+                        </button>
+                      )}
+                      <Dialog open={isAddLeadsModalOpen} onOpenChange={setIsAddLeadsModalOpen}>
+                        <DialogTrigger asChild>
+                          <button className="flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow">
+                            <Plus className="w-4 h-4 mr-2" />
+                            Add Leads
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Add New Leads</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="flex space-x-2">
+                              <button
+                                onClick={() => setAddLeadMethod('manual')}
+                                className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'manual' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                              >
+                                <UserPlus className="w-4 h-4 inline mr-2" />
+                                Manual Entry
+                              </button>
+                              <button
+                                onClick={() => setAddLeadMethod('import')}
+                                className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'import' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                              >
+                                <Upload className="w-4 h-4 inline mr-2" />
+                                Import CSV
+                              </button>
+                            </div>
+                            
+                            {addLeadMethod === 'manual' ? (
+                              <div className="space-y-3">
+                                <input
+                                  type="email"
+                                  placeholder="Email address"
+                                  value={newLeadEmail}
+                                  onChange={(e) => setNewLeadEmail(e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Contact name"
+                                  value={newLeadName}
+                                  onChange={(e) => setNewLeadName(e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Company name"
+                                  value={newLeadCompany}
+                                  onChange={(e) => setNewLeadCompany(e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                              </div>
+                            ) : (
+                              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                                <p className="text-gray-600">Drop your CSV file here or click to browse</p>
+                                <input type="file" accept=".csv" className="hidden" />
+                              </div>
+                            )}
+                            
+                            <div className="flex justify-end space-x-2">
+                              <button
+                                onClick={() => setIsAddLeadsModalOpen(false)}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                              >
+                                Cancel
+                              </button>
+                              <button
+                                onClick={addManualLead}
+                                disabled={addLeadMethod === 'manual' && (!newLeadEmail || !newLeadName || !newLeadCompany)}
+                                className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
+                              >
+                                {addLeadMethod === 'manual' ? 'Add Lead' : 'Import'}
+                              </button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </div>
                 </div>
 
@@ -792,8 +793,8 @@ export function Campaigns() {
                                         </div>
                                         <div className="text-sm text-gray-600">
                                           <strong>Body:</strong>
-                                          <div className="mt-1 p-2 bg-gray-50 rounded text-xs">
-                                            {email.body.substring(0, 100)}...
+                                          <div className="mt-1 p-2 bg-gray-50 rounded text-xs max-h-32 overflow-y-auto">
+                                            {email.body}
                                           </div>
                                         </div>
                                       </div>
@@ -814,7 +815,7 @@ export function Campaigns() {
                                     </div>
                                     <div className="bg-white p-4 rounded-lg border">
                                       <h5 className="font-medium text-gray-900 mb-2">LinkedIn Message</h5>
-                                      <div className="text-sm text-gray-600">
+                                      <div className="text-sm text-gray-600 max-h-24 overflow-y-auto">
                                         {mockPersonalization[lead.id]?.linkedinMessage || 'No message available'}
                                       </div>
                                     </div>
@@ -1087,9 +1088,9 @@ export function Campaigns() {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium"
+                  className="flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow font-medium"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Plus className="w-5 h-5 mr-2" />
                   Add New Campaign
                 </motion.button>
               </DialogTrigger>
@@ -1304,43 +1305,6 @@ export function Campaigns() {
             <Megaphone className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No campaigns yet</h3>
             <p className="text-gray-600 mb-4">Create your first email campaign to get started.</p>
-            <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-              <DialogTrigger asChild>
-                <button className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create First Campaign
-                </button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create New Campaign</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    value={newCampaignName}
-                    onChange={(e) => setNewCampaignName(e.target.value)}
-                    placeholder="Enter campaign name..."
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    onKeyPress={(e) => e.key === 'Enter' && createCampaign()}
-                  />
-                  <div className="flex justify-end space-x-2">
-                    <button
-                      onClick={() => setIsCreateModalOpen(false)}
-                      className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={createCampaign}
-                      className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow"
-                    >
-                      Create
-                    </button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
           </div>
         )}
 
