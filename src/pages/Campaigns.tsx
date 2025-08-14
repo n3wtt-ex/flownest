@@ -22,6 +22,7 @@ interface Campaign {
   conversions: number;
   revenue: number;
   createdAt: string;
+  webhookCampaignId?: string; // Added to store the ID from the webhook
 }
 
 interface Lead {
@@ -215,11 +216,40 @@ export function Campaigns() {
   const [clickTracking, setClickTracking] = useState(true);
   const [replyTracking, setReplyTracking] = useState(true);
 
-  const createCampaign = () => {
+  const createCampaign = async () => {
     if (!newCampaignName.trim()) return;
 
+    const newCampaignId = Date.now().toString();
+    let webhookCampaignId: string | undefined;
+
+    try {
+      const webhookUrl = 'https://n8n.flownests.org/webhook-test/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: newCampaignName }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        // Assuming the webhook returns an array and the campaign_id is in the first element
+        if (responseData && responseData.length > 0 && responseData[0].campaign_id) {
+          webhookCampaignId = responseData[0].campaign_id;
+          console.log('Webhook successful, campaign_id:', webhookCampaignId);
+        } else {
+          console.warn('Webhook successful but campaign_id not found in response:', responseData);
+        }
+      } else {
+        console.error('Webhook failed with status:', response.status, await response.text());
+      }
+    } catch (error) {
+      console.error('Error calling webhook:', error);
+    }
+
     const newCampaign: Campaign = {
-      id: Date.now().toString(),
+      id: newCampaignId,
       name: newCampaignName,
       status: 'paused',
       progress: 0,
@@ -233,7 +263,8 @@ export function Campaigns() {
       opportunities: 0,
       conversions: 0,
       revenue: 0,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      webhookCampaignId: webhookCampaignId, // Save the ID from the webhook
     };
 
     setCampaigns((prev: Campaign[]) => [...prev, newCampaign]);
