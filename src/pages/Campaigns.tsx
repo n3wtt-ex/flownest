@@ -153,6 +153,33 @@ const mockPersonalization: Record<string, LeadPersonalization> = {
     ],
     linkedinStatus: 'Connected',
     linkedinMessage: 'Hi John, I sent you an email about digital transformation solutions for TechCorp. Would love to connect and discuss further! This is a really long LinkedIn message to test how the UI handles longer content that might overflow the container and require scrolling or proper wrapping to maintain the layout integrity.'
+  },
+  '2': {
+    emails: [
+      {
+        step: 1,
+        subject: 'Quick question about Innovate Solutions',
+        body: 'Hi Sarah,\n\nI noticed Innovate Solutions is doing great work in the innovation space. I had a quick question about your current approach to product development.\n\nWould you be open to a brief chat this week?\n\nBest,\nSales Team'
+      },
+      {
+        step: 2,
+        subject: 'Following up on Innovate Solutions',
+        body: 'Hi Sarah,\n\nI wanted to follow up on my previous email about Innovate Solutions\'s product development strategy.\n\nI have some insights that might be valuable for your team. Would you have 15 minutes for a quick call?\n\nBest regards,\nSales Team'
+      }
+    ],
+    linkedinStatus: 'Not connected',
+    linkedinMessage: 'No message available'
+  },
+  '3': {
+    emails: [
+      {
+        step: 1,
+        subject: 'Quick question about Startup Co.',
+        body: 'Hi Mike,\n\nI noticed Startup Co. is doing great work in the startup space. I had a quick question about your current approach to market entry.\n\nWould you be open to a brief chat this week?\n\nBest,\nSales Team'
+      }
+    ],
+    linkedinStatus: 'Not connected',
+    linkedinMessage: 'No message available'
   }
 };
 
