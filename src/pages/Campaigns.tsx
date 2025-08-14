@@ -357,10 +357,15 @@ export function Campaigns() {
         const rawResponseData = await response.json();
         const responseData = rawResponseData[0]; // n8n output is an array, take the first item
 
+        if (!responseData) {
+          console.warn('Personalization webhook returned no data for:', leadEmail);
+          return; // Exit if no data is returned
+        }
+
         const transformedData: LeadPersonalization = {
           emails: [],
-          linkedinStatus: responseData.linkedin_kontak || 'Not connected',
-          linkedinMessage: responseData.linkedin_mesaj || 'No message available',
+          linkedinStatus: responseData?.linkedin_kontak || 'Not connected',
+          linkedinMessage: responseData?.linkedin_mesaj || 'No message available',
         };
 
         if (responseData.generated_subject && responseData.generated_body) {
