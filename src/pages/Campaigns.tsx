@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Megaphone, Plus, Play, Pause, BarChart3, Users, Mail, MousePointer, MessageSquare, DollarSign, Search, Filter, MoreHorizontal, Eye, Send, Trash2, Edit2, Upload, UserPlus, ChevronDown, ChevronUp } from 'lucide-react';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './components/ui/dialog';
-import { Switch } from './components/ui/switch';
+import { Megaphone, Plus, Play, BarChart3, Search, Filter, MoreHorizontal, Eye, Send, Trash2, Edit2, Upload, UserPlus, ChevronDown } from 'lucide-react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { Switch } from '../components/ui/switch';
 
 interface Campaign {
   id: string;
@@ -208,20 +208,20 @@ export function Campaigns() {
       createdAt: new Date().toISOString()
     };
 
-    setCampaigns(prev => [...prev, newCampaign]);
+    setCampaigns((prev: Campaign[]) => [...prev, newCampaign]);
     setNewCampaignName('');
     setIsCreateModalOpen(false);
   };
 
   const toggleCampaignStatus = (campaignId: string) => {
-    setCampaigns(prev => prev.map(campaign => 
+    setCampaigns((prev: Campaign[]) => prev.map((campaign: Campaign) => 
       campaign.id === campaignId 
         ? { ...campaign, status: campaign.status === 'active' ? 'paused' : 'active' }
         : campaign
     ));
     
     if (selectedCampaign && selectedCampaign.id === campaignId) {
-      setSelectedCampaign(prev => prev ? {
+      setSelectedCampaign((prev: Campaign | null) => prev ? {
         ...prev,
         status: prev.status === 'active' ? 'paused' : 'active'
       } : null);
@@ -229,17 +229,17 @@ export function Campaigns() {
   };
 
   const deleteCampaign = (campaignId: string) => {
-    setCampaigns(prev => prev.filter(campaign => campaign.id !== campaignId));
+    setCampaigns((prev: Campaign[]) => prev.filter((campaign: Campaign) => campaign.id !== campaignId));
     setOpenDropdown(null);
   };
 
   const deleteSelectedCampaigns = () => {
-    setCampaigns(prev => prev.filter(campaign => !selectedCampaigns.includes(campaign.id)));
+    setCampaigns((prev: Campaign[]) => prev.filter((campaign: Campaign) => !selectedCampaigns.includes(campaign.id)));
     setSelectedCampaigns([]);
   };
 
   const deleteSelectedLeads = () => {
-    setLeads(prev => prev.filter(lead => !selectedLeads.includes(lead.id)));
+    setLeads((prev: Lead[]) => prev.filter((lead: Lead) => !selectedLeads.includes(lead.id)));
     setSelectedLeads([]);
   };
 
@@ -252,7 +252,7 @@ export function Campaigns() {
   const saveEditCampaign = () => {
     if (!editName.trim()) return;
     
-    setCampaigns(prev => prev.map(campaign => 
+    setCampaigns((prev: Campaign[]) => prev.map((campaign: Campaign) => 
       campaign.id === editingCampaign 
         ? { ...campaign, name: editName }
         : campaign
@@ -267,7 +267,7 @@ export function Campaigns() {
   };
 
   const toggleCampaignSelection = (campaignId: string) => {
-    setSelectedCampaigns(prev => 
+    setSelectedCampaigns((prev: string[]) => 
       prev.includes(campaignId)
         ? prev.filter(id => id !== campaignId)
         : [...prev, campaignId]
@@ -275,7 +275,7 @@ export function Campaigns() {
   };
 
   const toggleLeadSelection = (leadId: string) => {
-    setSelectedLeads(prev => 
+    setSelectedLeads((prev: string[]) => 
       prev.includes(leadId)
         ? prev.filter(id => id !== leadId)
         : [...prev, leadId]
@@ -286,12 +286,12 @@ export function Campaigns() {
     if (selectedCampaigns.length === campaigns.length) {
       setSelectedCampaigns([]);
     } else {
-      setSelectedCampaigns(campaigns.map(c => c.id));
+      setSelectedCampaigns(campaigns.map((c: Campaign) => c.id));
     }
   };
 
   const toggleAllLeads = () => {
-    const filteredLeads = leads.filter(lead => 
+    const filteredLeads = leads.filter((lead: Lead) => 
       lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
       lead.company.toLowerCase().includes(searchTerm.toLowerCase())
@@ -300,12 +300,12 @@ export function Campaigns() {
     if (selectedLeads.length === filteredLeads.length) {
       setSelectedLeads([]);
     } else {
-      setSelectedLeads(filteredLeads.map(l => l.id));
+      setSelectedLeads(filteredLeads.map((l: Lead) => l.id));
     }
   };
 
   const toggleLeadExpansion = (leadId: string) => {
-    setLeads(prev => prev.map(lead => 
+    setLeads((prev: Lead[]) => prev.map((lead: Lead) => 
       lead.id === leadId 
         ? { ...lead, expanded: !lead.expanded }
         : lead
@@ -345,7 +345,7 @@ export function Campaigns() {
       company: newLeadCompany
     };
 
-    setLeads(prev => [...prev, newLead]);
+    setLeads((prev: Lead[]) => [...prev, newLead]);
     setNewLeadEmail('');
     setNewLeadName('');
     setNewLeadCompany('');
@@ -360,32 +360,32 @@ export function Campaigns() {
       variants: 1
     };
 
-    setSequences(prev => [...prev, newStep]);
+    setSequences((prev: SequenceStep[]) => [...prev, newStep]);
     setSelectedStep(newStep);
   };
 
   const deleteSequenceStep = (stepId: string) => {
-    setSequences(prev => prev.filter(step => step.id !== stepId));
+    setSequences((prev: SequenceStep[]) => prev.filter((step: SequenceStep) => step.id !== stepId));
     if (selectedStep.id === stepId && sequences.length > 1) {
-      const remainingSteps = sequences.filter(step => step.id !== stepId);
+      const remainingSteps = sequences.filter((step: SequenceStep) => step.id !== stepId);
       setSelectedStep(remainingSteps[0]);
     }
   };
 
   const saveSequenceStep = () => {
-    setSequences(prev => prev.map(step => 
+    setSequences((prev: SequenceStep[]) => prev.map((step: SequenceStep) => 
       step.id === selectedStep.id ? selectedStep : step
     ));
   };
 
   const updateSelectedStep = (field: keyof SequenceStep, value: string | number) => {
-    setSelectedStep(prev => ({ ...prev, [field]: value }));
+    setSelectedStep((prev: SequenceStep) => ({ ...prev, [field]: value }));
   };
 
   const toggleDay = (day: string) => {
-    setSelectedDays(prev => 
+    setSelectedDays((prev: string[]) => 
       prev.includes(day) 
-        ? prev.filter(d => d !== day)
+        ? prev.filter((d: string) => d !== day)
         : [...prev, day]
     );
   };
@@ -738,7 +738,7 @@ export function Campaigns() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {filteredLeads.map((lead, index) => (
+                      {filteredLeads.map((lead: Lead, index: number) => (
                         <React.Fragment key={lead.id}>
                           <tr className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -785,7 +785,7 @@ export function Campaigns() {
                                   
                                   {/* Email Steps */}
                                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {mockPersonalization[lead.id]?.emails.map((email) => (
+                                    {mockPersonalization[lead.id]?.emails.map((email: PersonalizedEmail) => (
                                       <div key={email.step} className="bg-white p-4 rounded-lg border">
                                         <h5 className="font-medium text-gray-900 mb-2">Email Step {email.step}</h5>
                                         <div className="text-sm text-gray-600 mb-2">
@@ -838,7 +838,7 @@ export function Campaigns() {
                 <div className="bg-white rounded-lg shadow-sm p-4">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Sequence Steps</h3>
                   <div className="space-y-3">
-                    {sequences.map((step, index) => (
+                    {sequences.map((step: SequenceStep, index: number) => (
                       <div
                         key={step.id}
                         onClick={() => setSelectedStep(step)}
@@ -937,7 +937,7 @@ export function Campaigns() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Days of Week</label>
                       <div className="flex space-x-2">
-                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day: string) => (
                           <button
                             key={day}
                             onClick={() => toggleDay(day)}
@@ -1156,7 +1156,7 @@ export function Campaigns() {
 
           {/* Campaign Rows */}
           <div className="divide-y divide-gray-200">
-          {campaigns.map((campaign, index) => (
+                    {campaigns.map((campaign: Campaign, index: number) => (
             <motion.div
               key={campaign.id}
               initial={{ opacity: 0, y: 20 }}
