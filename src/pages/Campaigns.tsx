@@ -354,12 +354,42 @@ export function Campaigns() {
       });
       
       if (response.ok) {
-        const responseData: LeadPersonalization = await response.json();
+        const rawResponseData = await response.json();
+        const responseData = rawResponseData[0]; // n8n output is an array, take the first item
+
+        const transformedData: LeadPersonalization = {
+          emails: [],
+          linkedinStatus: responseData.linkedin_kontak || 'Not connected',
+          linkedinMessage: responseData.linkedin_mesaj || 'No message available',
+        };
+
+        if (responseData.generated_subject && responseData.generated_body) {
+          transformedData.emails.push({
+            step: 1,
+            subject: responseData.generated_subject,
+            body: responseData.generated_body,
+          });
+        }
+        if (responseData.generated_subject_step2 && responseData.generated_body_step2) {
+          transformedData.emails.push({
+            step: 2,
+            subject: responseData.generated_subject_step2,
+            body: responseData.generated_body_step2,
+          });
+        }
+        if (responseData.generated_subject_step3 && responseData.generated_body_step3) {
+          transformedData.emails.push({
+            step: 3,
+            subject: responseData.generated_subject_step3,
+            body: responseData.generated_body_step3,
+          });
+        }
+
         setPersonalizationData(prevData => ({
           ...prevData,
-          [leadId]: responseData
+          [leadId]: transformedData
         }));
-        console.log('Personalization webhook triggered successfully for:', leadEmail, responseData);
+        console.log('Personalization webhook triggered successfully for:', leadEmail, transformedData);
       }
     } catch (error) {
       console.error('Error triggering personalization webhook:', error);
@@ -818,7 +848,7 @@ export function Campaigns() {
                                   
                                   {/* Email Steps */}
                                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {personalizationData[lead.id]?.emails.map((email: PersonalizedEmail) => (
+                                    {(personalizationData[lead.id]?.emails || []).map((email: PersonalizedEmail) => (
                                       <div key={email.step} className="bg-white p-4 rounded-lg border">
                                         <h5 className="font-medium text-gray-900 mb-2">Email Step {email.step}</h5>
                                         <div className="text-sm text-gray-600 mb-2">
@@ -831,7 +861,8 @@ export function Campaigns() {
                                           </div>
                                         </div>
                                       </div>
-                                    )) || (
+                                    ))}
+                                    {(personalizationData[lead.id]?.emails || []).length === 0 && (
                                       <div className="col-span-3 text-center text-gray-500 py-4">
                                         No personalized emails available
                                       </div>
