@@ -341,7 +341,7 @@ export function Campaigns() {
 
   const handlePersonalize = async (leadEmail: string) => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook/ec3cae8c-e51b-46cc-806d-bad0ad47820e', {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/ec3cae8c-e51b-46cc-806d-bad0ad47820e', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
