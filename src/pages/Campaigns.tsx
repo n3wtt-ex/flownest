@@ -132,7 +132,7 @@ const mockSequence: SequenceStep[] = [
   }
 ];
 
-const mockPersonalization: Record<string, LeadPersonalization> = {
+const initialPersonalizationData: Record<string, LeadPersonalization> = {
   '1': {
     emails: [
       {
@@ -187,6 +187,7 @@ export function Campaigns() {
   const [campaigns, setCampaigns] = useLocalStorage<Campaign[]>('campaigns', mockCampaigns);
   const [leads, setLeads] = useLocalStorage<Lead[]>('leads', mockLeads);
   const [sequences, setSequences] = useLocalStorage<SequenceStep[]>('sequences', mockSequence);
+  const [personalizationData, setPersonalizationData] = useLocalStorage<Record<string, LeadPersonalization>>('personalizationData', initialPersonalizationData);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [newCampaignName, setNewCampaignName] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -339,7 +340,7 @@ export function Campaigns() {
     ));
   };
 
-  const handlePersonalize = async (leadEmail: string) => {
+  const handlePersonalize = async (leadId: string, leadEmail: string) => {
     try {
       const response = await fetch('https://n8n.flownests.org/webhook-test/ec3cae8c-e51b-46cc-806d-bad0ad47820e', {
         method: 'POST',
@@ -353,7 +354,12 @@ export function Campaigns() {
       });
       
       if (response.ok) {
-        console.log('Personalization webhook triggered successfully for:', leadEmail);
+        const responseData: LeadPersonalization = await response.json();
+        setPersonalizationData(prevData => ({
+          ...prevData,
+          [leadId]: responseData
+        }));
+        console.log('Personalization webhook triggered successfully for:', leadEmail, responseData);
       }
     } catch (error) {
       console.error('Error triggering personalization webhook:', error);
@@ -797,7 +803,7 @@ export function Campaigns() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.company}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                               <button 
-                                onClick={() => handlePersonalize(lead.email)}
+                                onClick={() => handlePersonalize(lead.id, lead.email)}
                                 className="px-3 py-1 bg-green-500 text-white text-xs rounded-full hover:bg-green-600 transition-colors"
                               >
                                 Personalize
@@ -812,7 +818,7 @@ export function Campaigns() {
                                   
                                   {/* Email Steps */}
                                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {mockPersonalization[lead.id]?.emails.map((email: PersonalizedEmail) => (
+                                    {personalizationData[lead.id]?.emails.map((email: PersonalizedEmail) => (
                                       <div key={email.step} className="bg-white p-4 rounded-lg border">
                                         <h5 className="font-medium text-gray-900 mb-2">Email Step {email.step}</h5>
                                         <div className="text-sm text-gray-600 mb-2">
@@ -837,13 +843,13 @@ export function Campaigns() {
                                     <div className="bg-white p-4 rounded-lg border">
                                       <h5 className="font-medium text-gray-900 mb-2">LinkedIn Status</h5>
                                       <div className="text-sm text-gray-600">
-                                        {mockPersonalization[lead.id]?.linkedinStatus || 'Not connected'}
+                                        {personalizationData[lead.id]?.linkedinStatus || 'Not connected'}
                                       </div>
                                     </div>
                                     <div className="bg-white p-4 rounded-lg border">
                                       <h5 className="font-medium text-gray-900 mb-2">LinkedIn Message</h5>
                                       <div className="text-sm text-gray-600 max-h-24 overflow-y-auto">
-                                        {mockPersonalization[lead.id]?.linkedinMessage || 'No message available'}
+                                        {personalizationData[lead.id]?.linkedinMessage || 'No message available'}
                                       </div>
                                     </div>
                                   </div>
@@ -1161,8 +1167,8 @@ export function Campaigns() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     className="rounded border-gray-300"
                     checked={selectedCampaigns.length === campaigns.length && campaigns.length > 0}
                     onChange={toggleAllCampaigns}
@@ -1193,14 +1199,14 @@ export function Campaigns() {
             >
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     className="rounded border-gray-300"
                     checked={selectedCampaigns.includes(campaign.id)}
                     onChange={() => toggleCampaignSelection(campaign.id)}
                   />
                 </div>
-                <div 
+                <div
                   className="grid grid-cols-7 gap-4 flex-1 items-center cursor-pointer"
                   onClick={() => setSelectedCampaign(campaign)}
                 >
@@ -1225,19 +1231,19 @@ export function Campaigns() {
                       <div className="font-medium text-gray-900">{campaign.name}</div>
                     )}
                   </div>
-                  
+
                   {/* Status */}
                   <div>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(campaign.status)}`}>
                       {getStatusLabel(campaign.status)}
                     </span>
                   </div>
-                  
+
                   {/* Progress */}
                   <div>
                     <div className="flex items-center space-x-2">
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${campaign.progress}%` }}
                         ></div>
@@ -1281,7 +1287,7 @@ export function Campaigns() {
                   >
                     <Play className="w-4 h-4" />
                   </motion.button>
-                  
+
                   <div className="relative">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
@@ -1294,7 +1300,7 @@ export function Campaigns() {
                     >
                       <MoreHorizontal className="w-4 h-4" />
                     </motion.button>
-                    
+
                     {openDropdown === campaign.id && (
                       <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
                         <button
@@ -1337,8 +1343,8 @@ export function Campaigns() {
 
         {/* Click outside to close dropdown */}
         {(openDropdown || filterOpen) && (
-          <div 
-            className="fixed inset-0 z-5" 
+          <div
+            className="fixed inset-0 z-5"
             onClick={() => {
               setOpenDropdown(null);
               setFilterOpen(false);
