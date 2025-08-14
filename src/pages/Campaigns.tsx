@@ -308,12 +308,45 @@ export function Campaigns() {
     setOpenDropdown(null);
   };
 
-  const saveEditCampaign = () => {
-    if (!editName.trim()) return;
+  const saveEditCampaign = async () => {
+    if (!editName.trim() || !editingCampaign) return;
+
+    const campaignToEdit = campaigns.find(c => c.id === editingCampaign);
+    if (!campaignToEdit) return;
+
+    let updatedWebhookCampaignId = campaignToEdit.webhookCampaignId;
+
+    try {
+      const webhookUrl = 'https://n8n.flownests.org/webhook-test/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          campaign_name: editName,
+          campaign_id: campaignToEdit.webhookCampaignId, // Send existing ID
+        }),
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        if (responseData && responseData.length > 0 && responseData[0].campaign_id) {
+          updatedWebhookCampaignId = responseData[0].campaign_id; // Update with new ID from webhook
+          console.log('Rename webhook successful, updated campaign_id:', updatedWebhookCampaignId);
+        } else {
+          console.warn('Rename webhook successful but campaign_id not found in response:', responseData);
+        }
+      } else {
+        console.error('Rename webhook failed with status:', response.status, await response.text());
+      }
+    } catch (error) {
+      console.error('Error calling rename webhook:', error);
+    }
     
     setCampaigns((prev: Campaign[]) => prev.map((campaign: Campaign) => 
       campaign.id === editingCampaign 
-        ? { ...campaign, name: editName }
+        ? { ...campaign, name: editName, webhookCampaignId: updatedWebhookCampaignId }
         : campaign
     ));
     setEditingCampaign(null);
