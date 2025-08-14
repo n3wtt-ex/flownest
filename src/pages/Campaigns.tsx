@@ -292,7 +292,31 @@ export function Campaigns() {
     setOpenDropdown(null);
   };
 
-  const deleteSelectedCampaigns = () => {
+  const deleteSelectedCampaigns = async () => {
+    const campaignsToDelete = campaigns.filter((campaign: Campaign) => selectedCampaigns.includes(campaign.id));
+    const webhookCampaignIds = campaignsToDelete.map(c => c.webhookCampaignId).filter(Boolean); // Get only existing webhook IDs
+
+    if (webhookCampaignIds.length > 0) {
+      try {
+        const webhookUrl = 'https://n8n.flownests.org/webhook-test/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ campaign_ids: webhookCampaignIds }), // Send an array of IDs
+        });
+
+        if (response.ok) {
+          console.log('Delete selected campaigns webhook successful for IDs:', webhookCampaignIds);
+        } else {
+          console.error('Delete selected campaigns webhook failed with status:', response.status, await response.text());
+        }
+      } catch (error) {
+        console.error('Error calling delete selected campaigns webhook:', error);
+      }
+    }
+
     setCampaigns((prev: Campaign[]) => prev.filter((campaign: Campaign) => !selectedCampaigns.includes(campaign.id)));
     setSelectedCampaigns([]);
   };
