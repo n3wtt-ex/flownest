@@ -240,7 +240,7 @@ export function Campaigns() {
     let webhookCampaignId: string | undefined;
 
     try {
-      const webhookUrl = 'https://n8n.flownests.org/webhook-test/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+      const webhookUrl = 'https://n8n.flownests.org/webhook/076869a4-06b2-4d19-8e2b-544306c9b1f7';
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
@@ -361,7 +361,7 @@ export function Campaigns() {
     // Webhook call for single delete (existing functionality)
     if (campaignToDelete.webhook_campaign_id) {
       try {
-        const webhookUrl = 'https://n8n.flownests.org/webhook-test/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+        const webhookUrl = 'https://n8n.flownests.org/webhook/076869a4-06b2-4d19-8e2b-544306c9b1f7';
         const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
@@ -408,7 +408,7 @@ export function Campaigns() {
 
     if (webhookCampaignIds.length > 0) {
       try {
-        const webhookUrl = 'https://n8n.flownests.org/webhook-test/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+        const webhookUrl = 'https://n8n.flownests.org/webhook/076869a4-06b2-4d19-8e2b-544306c9b1f7';
         const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
@@ -468,7 +468,7 @@ export function Campaigns() {
     let updatedWebhookCampaignId = campaignToEdit.webhook_campaign_id;
 
     try {
-      const webhookUrl = 'https://n8n.flownests.org/webhook-test/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+      const webhookUrl = 'https://n8n.flownests.org/webhook/076869a4-06b2-4d19-8e2b-544306c9b1f7';
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
@@ -581,7 +581,7 @@ export function Campaigns() {
 
   const handlePersonalize = async (leadId: string, leadEmail: string) => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/ec3cae8c-e51b-46cc-806d-bad0ad47820e', {
+      const response = await fetch('https://n8n.flownests.org/webhook/ec3cae8c-e51b-46cc-806d-bad0ad47820e', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
