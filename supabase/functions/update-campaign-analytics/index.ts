@@ -91,10 +91,10 @@ Deno.serve(async (req) => {
           sent: emails_sent_count,
           clicks: link_click_count,
           replied: reply_count,
-          open_rate: parseFloat(openRate.toFixed(1)),
-          click_rate: parseFloat(clickRate.toFixed(1)),
-          reply_rate: parseFloat(replyRate.toFixed(1)),
-          positive_reply_rate: parseFloat(positiveReplyRate.toFixed(1)), // Adjust if actual logic is different
+          open_rate: parseFloat(openRate.toFixed(1)), // Corrected to snake_case
+          click_rate: parseFloat(clickRate.toFixed(1)), // Corrected to snake_case
+          reply_rate: parseFloat(replyRate.toFixed(1)), // Corrected to snake_case
+          positive_reply_rate: parseFloat(positiveReplyRate.toFixed(1)), // Corrected to snake_case
           opportunities: total_opportunities,
           revenue: total_opportunity_value,
           // progress: (emails_sent_count / total_leads_in_campaign) * 100, // Requires total_leads_in_campaign
