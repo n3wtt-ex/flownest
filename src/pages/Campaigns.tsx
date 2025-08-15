@@ -361,7 +361,7 @@ export function Campaigns() {
     // Webhook call for single delete (existing functionality)
     if (campaignToDelete.webhook_campaign_id) {
       try {
-        const webhookUrl = 'https://n8n.flownests.org/webhook/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+        const webhookUrl = 'https://n8n.flownests.org/webhook/5c383936-cd76-439f-8db4-e22033ed59a0';
         const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
@@ -408,7 +408,7 @@ export function Campaigns() {
 
     if (webhookCampaignIds.length > 0) {
       try {
-        const webhookUrl = 'https://n8n.flownests.org/webhook/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+        const webhookUrl = 'https://n8n.flownests.org/webhook/5c383936-cd76-439f-8db4-e22033ed59a0';
         const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
@@ -468,7 +468,7 @@ export function Campaigns() {
     let updatedWebhookCampaignId = campaignToEdit.webhook_campaign_id;
 
     try {
-      const webhookUrl = 'https://n8n.flownests.org/webhook/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+      const webhookUrl = 'https://n8n.flownests.org/webhook/8c7a0c8e-fb2c-4e91-894b-acf536bb1c33';
       const response = await fetch(webhookUrl, {
         method: 'POST',
         headers: {
