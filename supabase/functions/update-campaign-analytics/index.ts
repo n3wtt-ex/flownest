@@ -8,7 +8,7 @@ import { createClient } from 'npm:@supabase/supabase-js';
 
 console.log("Hello from update-campaign-analytics Function!")
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
       status: 405,
@@ -115,10 +115,14 @@ Deno.serve(async (req) => {
       { headers: { "Content-Type": "application/json" } },
     );
 
-  } catch (error) {
-    console.error('Error processing webhook:', error.message);
+  } catch (error: unknown) {
+    let errorMessage = 'An unknown error occurred.';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    console.error('Error processing webhook:', errorMessage);
     return new Response(
-      JSON.stringify({ error: 'Internal Server Error', details: error.message }),
+      JSON.stringify({ error: 'Internal Server Error', details: errorMessage }),
       { status: 500, headers: { "Content-Type": "application/json" } },
     );
   }

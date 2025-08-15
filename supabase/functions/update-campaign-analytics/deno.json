@@ -1,5 +1,9 @@
 {
   "imports": {
     "npm:@supabase/supabase-js": "npm:@supabase/supabase-js@^2.0.0"
+  },
+  "compilerOptions": {
+    "lib": ["deno.ns", "deno.window"],
+    "types": ["npm:@supabase/supabase-js"]
   }
 }

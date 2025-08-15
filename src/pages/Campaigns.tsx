@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Megaphone, Plus, Play, BarChart3, Search, Filter, MoreHorizontal, Eye, Send, Trash2, Edit2, Upload, UserPlus, ChevronDown } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Switch } from '../components/ui/switch';
+
+import { supabase } from '../lib/supabase';
+
 
 interface Campaign {
   id: string;
@@ -14,15 +17,15 @@ interface Campaign {
   sent: number;
   clicks: number;
   replied: number;
-  openRate: number;
-  clickRate: number;
-  replyRate: number;
-  positiveReplyRate: number;
+  open_rate: number;
+  click_rate: number;
+  reply_rate: number;
+  positive_reply_rate: number;
   opportunities: number;
   conversions: number;
   revenue: number;
-  createdAt: string;
-  webhookCampaignId?: string; // Added to store the ID from the webhook
+  created_at: string;
+  webhook_campaign_id?: string;
 }
 
 interface Lead {
@@ -53,43 +56,6 @@ interface LeadPersonalization {
   linkedinStatus: string;
   linkedinMessage: string;
 }
-
-const mockCampaigns: Campaign[] = [
-  {
-    id: '1',
-    name: 'SaaS Outreach Q1',
-    status: 'completed',
-    progress: 100,
-    sent: 1250,
-    clicks: 89,
-    replied: 45,
-    openRate: 34.2,
-    clickRate: 7.1,
-    replyRate: 3.6,
-    positiveReplyRate: 2.1,
-    opportunities: 12,
-    conversions: 3,
-    revenue: 15000,
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    name: 'Enterprise Leads',
-    status: 'active',
-    progress: 67,
-    sent: 890,
-    clicks: 67,
-    replied: 23,
-    openRate: 28.9,
-    clickRate: 7.5,
-    replyRate: 2.6,
-    positiveReplyRate: 1.8,
-    opportunities: 8,
-    conversions: 1,
-    revenue: 8500,
-    createdAt: '2024-02-01'
-  }
-];
 
 const mockLeads: Lead[] = [
   {
@@ -185,7 +151,10 @@ const initialPersonalizationData: Record<string, LeadPersonalization> = {
 };
 
 export function Campaigns() {
-  const [campaigns, setCampaigns] = useLocalStorage<Campaign[]>('campaigns', mockCampaigns);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(true);
+  const [errorCampaigns, setErrorCampaigns] = useState<string | null>(null);
+
   const [leads, setLeads] = useLocalStorage<Lead[]>('leads', mockLeads);
   const [sequences, setSequences] = useLocalStorage<SequenceStep[]>('sequences', mockSequence);
   const [personalizationData, setPersonalizationData] = useLocalStorage<Record<string, LeadPersonalization>>('personalizationData', initialPersonalizationData);
@@ -216,10 +185,58 @@ export function Campaigns() {
   const [clickTracking, setClickTracking] = useState(true);
   const [replyTracking, setReplyTracking] = useState(true);
 
+  // Supabase'den kampanyaları çekme fonksiyonu
+  const fetchCampaigns = async () => {
+    setLoadingCampaigns(true);
+    setErrorCampaigns(null);
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('id, name, status, progress, sent, clicks, replied, open_rate, click_rate, reply_rate, positive_reply_rate, opportunities, conversions, revenue, created_at, webhook_campaign_id'); // Sadece UI'da kullanılan sütunları çekiyoruz
+
+      if (error) {
+        console.error('Error fetching campaigns:', error);
+        setErrorCampaigns(error.message);
+        setCampaigns([]);
+      } else {
+        // Supabase'den gelen veriyi Campaign interface'ine dönüştürüyoruz
+        const mappedCampaigns: Campaign[] = data.map(c => ({
+          id: c.id,
+          name: c.name,
+          status: c.status as 'active' | 'paused' | 'completed', // Supabase'den gelen string'i uygun tipe dönüştürüyoruz
+          progress: c.progress || 0,
+          sent: c.sent || 0,
+          clicks: c.clicks || 0,
+          replied: c.replied || 0,
+          open_rate: c.open_rate || 0,
+          click_rate: c.click_rate || 0,
+          reply_rate: c.reply_rate || 0,
+          positive_reply_rate: c.positive_reply_rate || 0,
+          opportunities: c.opportunities || 0,
+          conversions: c.conversions || 0,
+          revenue: c.revenue || 0,
+          created_at: c.created_at,
+          webhook_campaign_id: c.webhook_campaign_id || undefined,
+        }));
+        setCampaigns(mappedCampaigns);
+      }
+    } catch (err: any) {
+      console.error('Unexpected error fetching campaigns:', err);
+      setErrorCampaigns(err.message);
+      setCampaigns([]);
+    } finally {
+      setLoadingCampaigns(false);
+    }
+  };
+
+  // Sayfa yüklendiğinde kampanyaları çek
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
+
   const createCampaign = async () => {
     if (!newCampaignName.trim()) return;
 
-    const newCampaignId = Date.now().toString();
     let webhookCampaignId: string | undefined;
 
     try {
@@ -248,53 +265,146 @@ export function Campaigns() {
       console.error('Error calling webhook:', error);
     }
 
-    const newCampaign: Campaign = {
-      id: newCampaignId,
-      name: newCampaignName,
-      status: 'paused',
-      progress: 0,
-      sent: 0,
-      clicks: 0,
-      replied: 0,
-      openRate: 0,
-      clickRate: 0,
-      replyRate: 0,
-      positiveReplyRate: 0,
-      opportunities: 0,
-      conversions: 0,
-      revenue: 0,
-      createdAt: new Date().toISOString(),
-      webhookCampaignId: webhookCampaignId, // Save the ID from the webhook
-    };
+    try {
+      const { data: createdCampaign, error } = await supabase
+        .from('campaigns')
+        .insert({
+          name: newCampaignName,
+          status: 'paused',
+          progress: 0,
+          sent: 0,
+          clicks: 0,
+          replied: 0,
+          open_rate: 0,
+          click_rate: 0,
+          reply_rate: 0,
+          positive_reply_rate: 0,
+          opportunities: 0,
+          conversions: 0,
+          revenue: 0,
+          webhook_campaign_id: webhookCampaignId, // Save the ID from the webhook
+        })
+        .select();
 
-    setCampaigns((prev: Campaign[]) => [...prev, newCampaign]);
-    setNewCampaignName('');
-    setIsCreateModalOpen(false);
-  };
-
-  const toggleCampaignStatus = (campaignId: string) => {
-    setCampaigns((prev: Campaign[]) => prev.map((campaign: Campaign) => 
-      campaign.id === campaignId 
-        ? { ...campaign, status: campaign.status === 'active' ? 'paused' : 'active' }
-        : campaign
-    ));
-    
-    if (selectedCampaign && selectedCampaign.id === campaignId) {
-      setSelectedCampaign((prev: Campaign | null) => prev ? {
-        ...prev,
-        status: prev.status === 'active' ? 'paused' : 'active'
-      } : null);
+      if (error) {
+        console.error('Error creating campaign in Supabase:', error);
+        setErrorCampaigns(error.message);
+      } else if (createdCampaign && createdCampaign.length > 0) {
+        // Supabase'den dönen veriyi Campaign interface'ine dönüştürüp state'e ekliyoruz
+        const newCampaign: Campaign = {
+          id: createdCampaign[0].id,
+          name: createdCampaign[0].name,
+          status: createdCampaign[0].status as 'active' | 'paused' | 'completed',
+          progress: createdCampaign[0].progress || 0,
+          sent: createdCampaign[0].sent || 0,
+          clicks: createdCampaign[0].clicks || 0,
+          replied: createdCampaign[0].replied || 0,
+          open_rate: createdCampaign[0].open_rate || 0,
+          click_rate: createdCampaign[0].click_rate || 0,
+          reply_rate: createdCampaign[0].reply_rate || 0,
+          positive_reply_rate: createdCampaign[0].positive_reply_rate || 0,
+          opportunities: createdCampaign[0].opportunities || 0,
+          conversions: createdCampaign[0].conversions || 0,
+          revenue: createdCampaign[0].revenue || 0,
+          created_at: createdCampaign[0].created_at,
+          webhook_campaign_id: createdCampaign[0].webhook_campaign_id || undefined,
+        };
+        setCampaigns((prev: Campaign[]) => [...prev, newCampaign]);
+        setNewCampaignName('');
+        setIsCreateModalOpen(false);
+      }
+    } catch (err: any) {
+      console.error('Unexpected error creating campaign:', err);
+      setErrorCampaigns(err.message);
     }
   };
 
-  const deleteCampaign = (campaignId: string) => {
-    setCampaigns((prev: Campaign[]) => prev.filter((campaign: Campaign) => campaign.id !== campaignId));
-    setOpenDropdown(null);
+  const toggleCampaignStatus = async (campaignId: string) => {
+    const campaignToUpdate = campaigns.find(c => c.id === campaignId);
+    if (!campaignToUpdate) return;
+
+    const newStatus = campaignToUpdate.status === 'active' ? 'paused' : 'active';
+
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .update({ status: newStatus })
+        .eq('id', campaignId)
+        .select();
+
+      if (error) {
+        console.error('Error updating campaign status in Supabase:', error);
+        setErrorCampaigns(error.message);
+      } else if (data && data.length > 0) {
+        setCampaigns((prev: Campaign[]) => prev.map((campaign: Campaign) =>
+          campaign.id === campaignId
+            ? { ...campaign, status: newStatus }
+            : campaign
+        ));
+        if (selectedCampaign && selectedCampaign.id === campaignId) {
+          setSelectedCampaign((prev: Campaign | null) => prev ? {
+            ...prev,
+            status: newStatus
+          } : null);
+        }
+      }
+    } catch (err: any) {
+      console.error('Unexpected error toggling campaign status:', err);
+      setErrorCampaigns(err.message);
+    }
+  };
+
+  const deleteCampaign = async (campaignId: string) => {
+    const campaignToDelete = campaigns.find(c => c.id === campaignId);
+    if (!campaignToDelete) return;
+
+    // Webhook call for single delete (existing functionality)
+    if (campaignToDelete.webhook_campaign_id) {
+      try {
+        const webhookUrl = 'https://n8n.flownests.org/webhook-test/076869a4-06b2-4d19-8e2b-544306c9b1f7';
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ campaign_ids: [campaignToDelete.webhook_campaign_id] }),
+        });
+        if (response.ok) {
+          console.log('Single delete webhook successful for ID:', campaignToDelete.webhook_campaign_id);
+        } else {
+          console.error('Single delete webhook failed with status:', response.status, await response.text());
+        }
+      } catch (error) {
+        console.error('Error calling single delete webhook:', error);
+      }
+    }
+
+    // Delete from Supabase
+    try {
+      const { error } = await supabase
+        .from('campaigns')
+        .delete()
+        .eq('id', campaignId);
+
+      if (error) {
+        console.error('Error deleting campaign from Supabase:', error);
+        setErrorCampaigns(error.message);
+      } else {
+        setCampaigns((prev: Campaign[]) => prev.filter((campaign: Campaign) => campaign.id !== campaignId));
+        setOpenDropdown(null);
+        if (selectedCampaign && selectedCampaign.id === campaignId) {
+          setSelectedCampaign(null);
+        }
+      }
+    } catch (err: any) {
+      console.error('Unexpected error deleting campaign:', err);
+      setErrorCampaigns(err.message);
+    }
   };
 
   const deleteSelectedCampaigns = async () => {
     const campaignsToDelete = campaigns.filter((campaign: Campaign) => selectedCampaigns.includes(campaign.id));
-    const webhookCampaignIds = campaignsToDelete.map(c => c.webhookCampaignId).filter(Boolean); // Get only existing webhook IDs
+    const webhookCampaignIds = campaignsToDelete.map(c => c.webhook_campaign_id).filter(Boolean); // Get only existing webhook IDs
 
     if (webhookCampaignIds.length > 0) {
       try {
@@ -317,8 +427,25 @@ export function Campaigns() {
       }
     }
 
-    setCampaigns((prev: Campaign[]) => prev.filter((campaign: Campaign) => !selectedCampaigns.includes(campaign.id)));
-    setSelectedCampaigns([]);
+    // Delete from Supabase
+    try {
+      const { error } = await supabase
+        .from('campaigns')
+        .delete()
+        .in('id', selectedCampaigns); // Delete multiple by ID
+
+      if (error) {
+        console.error('Error deleting selected campaigns from Supabase:', error);
+        setErrorCampaigns(error.message);
+      } else {
+        setCampaigns((prev: Campaign[]) => prev.filter((campaign: Campaign) => !selectedCampaigns.includes(campaign.id)));
+        setSelectedCampaigns([]);
+        setSelectedCampaign(null); // Clear selected campaign if it was deleted
+      }
+    } catch (err: any) {
+      console.error('Unexpected error deleting selected campaigns:', err);
+      setErrorCampaigns(err.message);
+    }
   };
 
   const deleteSelectedLeads = () => {
@@ -338,7 +465,7 @@ export function Campaigns() {
     const campaignToEdit = campaigns.find(c => c.id === editingCampaign);
     if (!campaignToEdit) return;
 
-    let updatedWebhookCampaignId = campaignToEdit.webhookCampaignId;
+    let updatedWebhookCampaignId = campaignToEdit.webhook_campaign_id;
 
     try {
       const webhookUrl = 'https://n8n.flownests.org/webhook-test/076869a4-06b2-4d19-8e2b-544306c9b1f7';
@@ -349,7 +476,7 @@ export function Campaigns() {
         },
         body: JSON.stringify({
           campaign_name: editName,
-          campaign_id: campaignToEdit.webhookCampaignId, // Send existing ID
+          campaign_id: campaignToEdit.webhook_campaign_id, // Send existing ID (snake_case)
         }),
       });
 
@@ -368,13 +495,37 @@ export function Campaigns() {
       console.error('Error calling rename webhook:', error);
     }
     
-    setCampaigns((prev: Campaign[]) => prev.map((campaign: Campaign) => 
-      campaign.id === editingCampaign 
-        ? { ...campaign, name: editName, webhookCampaignId: updatedWebhookCampaignId }
-        : campaign
-    ));
-    setEditingCampaign(null);
-    setEditName('');
+    // Update in Supabase
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .update({ name: editName, webhook_campaign_id: updatedWebhookCampaignId }) // Use snake_case
+        .eq('id', editingCampaign)
+        .select();
+
+      if (error) {
+        console.error('Error updating campaign name in Supabase:', error);
+        setErrorCampaigns(error.message);
+      } else if (data && data.length > 0) {
+        setCampaigns((prev: Campaign[]) => prev.map((campaign: Campaign) => 
+          campaign.id === editingCampaign 
+            ? { ...campaign, name: editName, webhook_campaign_id: updatedWebhookCampaignId }
+            : campaign
+        ));
+        setEditingCampaign(null);
+        setEditName('');
+        if (selectedCampaign && selectedCampaign.id === editingCampaign) {
+          setSelectedCampaign((prev: Campaign | null) => prev ? {
+            ...prev,
+            name: editName,
+            webhook_campaign_id: updatedWebhookCampaignId
+          } : null);
+        }
+      }
+    } catch (err: any) {
+      console.error('Unexpected error saving edited campaign:', err);
+      setErrorCampaigns(err.message);
+    }
   };
 
   const cancelEditCampaign = () => {
@@ -623,7 +774,7 @@ export function Campaigns() {
 
             <TabsContent value="analytics" className="space-y-6">
               {/* Summary Stats */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Campaign Overview</h3>
                   <div className="flex items-center space-x-2">
@@ -639,19 +790,19 @@ export function Campaigns() {
                     <div className="text-sm text-gray-600">Sequence Started</div>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{selectedCampaign.openRate}%</div>
+                    <div className="text-2xl font-bold text-green-600">{selectedCampaign.open_rate}%</div>
                     <div className="text-sm text-gray-600">Open Rate</div>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">{selectedCampaign.clickRate}%</div>
+                    <div className="text-2xl font-bold text-purple-600">{selectedCampaign.click_rate}%</div>
                     <div className="text-sm text-gray-600">Click Rate</div>
                   </div>
                   <div className="text-center p-4 bg-orange-50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">{selectedCampaign.replyRate}%</div>
+                    <div className="text-2xl font-bold text-orange-600">{selectedCampaign.reply_rate}%</div>
                     <div className="text-sm text-gray-600">Reply Rate</div>
                   </div>
                   <div className="text-center p-4 bg-indigo-50 rounded-lg">
-                    <div className="text-2xl font-bold text-indigo-600">{selectedCampaign.positiveReplyRate}%</div>
+                    <div className="text-2xl font-bold text-indigo-600">{selectedCampaign.positive_reply_rate}%</div>
                     <div className="text-sm text-gray-600">Positive Reply Rate</div>
                   </div>
                 </div>
@@ -670,7 +821,7 @@ export function Campaigns() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600">Total Opens</span>
-                      <span className="font-semibold">{Math.round(selectedCampaign.sent * selectedCampaign.openRate / 100)}</span>
+                      <span className="font-semibold">{Math.round(selectedCampaign.sent * selectedCampaign.open_rate / 100)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-600">Total Clicks</span>
@@ -1389,7 +1540,7 @@ export function Campaigns() {
                   {/* Replied */}
                   <div>
                     <div className="font-semibold text-gray-900">{campaign.replied}</div>
-                    <div className="text-sm text-gray-500">{campaign.replyRate}%</div>
+                    <div className="text-sm text-gray-500">{campaign.reply_rate}%</div>
                   </div>
 
                   {/* Opportunities */}
@@ -1457,7 +1608,19 @@ export function Campaigns() {
           </div>
         </div>
 
-        {campaigns.length === 0 && (
+        {loadingCampaigns && (
+          <div className="text-center py-12">
+            <p className="text-gray-600">Campaigns yükleniyor...</p>
+          </div>
+        )}
+
+        {errorCampaigns && (
+          <div className="text-center py-12 text-red-500">
+            <p>Kampanyalar yüklenirken bir hata oluştu: {errorCampaigns}</p>
+          </div>
+        )}
+
+        {!loadingCampaigns && !errorCampaigns && campaigns.length === 0 && (
           <div className="text-center py-12">
             <Megaphone className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No campaigns yet</h3>
