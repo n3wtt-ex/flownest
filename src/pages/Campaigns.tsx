@@ -329,7 +329,7 @@ export function Campaigns() {
     // Webhook call for status change
     if (campaignToUpdate.webhook_campaign_id) {
       try {
-        const webhookUrl = 'https://n8n.flownests.org/webhook-test/99a2cf56-8403-462e-8994-c1a4cbbfcd8b';
+        const webhookUrl = 'https://n8n.flownests.org/webhook/99a2cf56-8403-462e-8994-c1a4cbbfcd8b';
         const response = await fetch(webhookUrl, {
           method: 'POST',
           headers: {
