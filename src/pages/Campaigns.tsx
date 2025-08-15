@@ -324,6 +324,32 @@ export function Campaigns() {
     if (!campaignToUpdate) return;
 
     const newStatus = campaignToUpdate.status === 'active' ? 'paused' : 'active';
+    const action = newStatus === 'active' ? 'active' : 'pause';
+
+    // Webhook call for status change
+    if (campaignToUpdate.webhook_campaign_id) {
+      try {
+        const webhookUrl = 'https://n8n.flownests.org/webhook-test/99a2cf56-8403-462e-8994-c1a4cbbfcd8b';
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: action,
+            campaign_id: campaignToUpdate.webhook_campaign_id,
+          }),
+        });
+
+        if (response.ok) {
+          console.log(`Webhook successful for campaign ID: ${campaignToUpdate.webhook_campaign_id}, action: ${action}`);
+        } else {
+          console.error('Webhook failed with status:', response.status, await response.text());
+        }
+      } catch (error) {
+        console.error('Error calling webhook for status change:', error);
+      }
+    }
 
     try {
       const { data, error } = await supabase
