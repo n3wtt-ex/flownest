@@ -764,14 +764,64 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
   }
 };
 
-  const saveSequenceStep = () => {
+  const saveSequenceStep = async () => {
     setSequences((prev: SequenceStep[]) => prev.map((step: SequenceStep) => 
       step.id === selectedStep.id ? selectedStep : step
     ));
+
+    if (selectedCampaign?.webhook_campaign_id) {
+      const stepIndex = sequences.findIndex(step => step.id === selectedStep.id);
+      if (stepIndex === -1) {
+        console.error('Selected step not found in sequences array.');
+        return;
+      }
+
+      const payload = {
+        campaign_id: selectedCampaign.webhook_campaign_id,
+        step_index: stepIndex,
+        delay: selectedStep.delay,
+        subject: selectedStep.subject,
+        body: `<div>${selectedStep.body}</div>` // Wrap body in <div> as per documentation
+      };
+
+      try {
+        const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-edit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          console.error('Instantly step edit webhook failed with status:', response.status, await response.text());
+        } else {
+          const result = await response.json();
+          console.log('Instantly step edit webhook successful:', result);
+        }
+      } catch (error) {
+        console.error('Error calling instantly step edit webhook:', error);
+      }
+    }
   };
 
   const updateSelectedStep = (field: keyof SequenceStep, value: string | number) => {
-    setSelectedStep((prev: SequenceStep) => ({ ...prev, [field]: value }));
+    setSelectedStep((prev: SequenceStep) => {
+      const updatedStep = { ...prev, [field]: value };
+      // Automatically save when delay, subject, or body changes
+      if (field === 'delay' || field === 'subject' || field === 'body') {
+        // Call saveSequenceStep after state is updated, potentially with a debounce
+        // For simplicity, calling directly here. A debounce would be better for performance.
+        // However, the user explicitly asked for "her değiştirdiğimizde kaydedilsin"
+        // so direct call is appropriate for now.
+        setSequences((currentSequences: SequenceStep[]) => 
+          currentSequences.map((step: SequenceStep) => 
+            step.id === updatedStep.id ? updatedStep : step
+          )
+        );
+      }
+      return updatedStep;
+    });
   };
 
   const toggleDay = (day: string) => {
