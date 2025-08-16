@@ -89,14 +89,28 @@ const mockSequence: SequenceStep[] = [
   {
     id: '1',
     subject: 'Quick question about {{Company}}',
-    body: 'Hi {{FirstName}},\\n\\nI noticed {{Company}} is doing great work in the {{Industry}} space. I had a quick question about your current approach to {{PainPoint}}.\\n\\nWould you be open to a brief chat this week?\\n\\nBest,\\n{{SenderName}}',
+    body: `Hi {{FirstName}},
+
+I noticed {{Company}} is doing great work in the {{Industry}} space. I had a quick question about your current approach to {{PainPoint}}.
+
+Would you be open to a brief chat this week?
+
+Best,
+{{SenderName}}`,
     variants: 2,
     delay: 2
   },
   {
     id: '2',
     subject: 'Following up on {{Company}}',
-    body: 'Hi {{FirstName}},\\n\\nI wanted to follow up on my previous email about {{Company}}\\'s {{PainPoint}} strategy.\\n\\nI have some insights that might be valuable for your team. Would you have 15 minutes for a quick call?\\n\\nBest regards,\\n{{SenderName}}',
+    body: `Hi {{FirstName}},
+
+I wanted to follow up on my previous email about {{Company}}'s {{PainPoint}} strategy.
+
+I have some insights that might be valuable for your team. Would you have 15 minutes for a quick call?
+
+Best regards,
+{{SenderName}}`,
     variants: 1,
     delay: 5
   }
