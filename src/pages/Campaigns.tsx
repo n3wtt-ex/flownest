@@ -715,7 +715,7 @@ const addSequenceStep = async () => {
 
   if (selectedCampaign?.webhook_campaign_id) {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-edit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -742,7 +742,7 @@ const addSequenceStep = async () => {
 const deleteSequenceStep = async (stepId: string, position: number) => {
   if (selectedCampaign?.webhook_campaign_id) {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-edit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -776,7 +776,7 @@ const saveSequenceStep = async () => {
   // Webhook integration
   if (selectedCampaign?.webhook_campaign_id && stepIndex !== -1) {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-edit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
