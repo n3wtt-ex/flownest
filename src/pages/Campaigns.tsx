@@ -43,6 +43,7 @@ interface SequenceStep {
   subject: string;
   body: string;
   variants: number;
+  delay: number;
 }
 
 interface PersonalizedEmail {
@@ -88,14 +89,16 @@ const mockSequence: SequenceStep[] = [
   {
     id: '1',
     subject: 'Quick question about {{Company}}',
-    body: 'Hi {{FirstName}},\n\nI noticed {{Company}} is doing great work in the {{Industry}} space. I had a quick question about your current approach to {{PainPoint}}.\n\nWould you be open to a brief chat this week?\n\nBest,\n{{SenderName}}',
-    variants: 2
+    body: 'Hi {{FirstName}},\\n\\nI noticed {{Company}} is doing great work in the {{Industry}} space. I had a quick question about your current approach to {{PainPoint}}.\\n\\nWould you be open to a brief chat this week?\\n\\nBest,\\n{{SenderName}}',
+    variants: 2,
+    delay: 2
   },
   {
     id: '2',
     subject: 'Following up on {{Company}}',
-    body: 'Hi {{FirstName}},\n\nI wanted to follow up on my previous email about {{Company}}\'s {{PainPoint}} strategy.\n\nI have some insights that might be valuable for your team. Would you have 15 minutes for a quick call?\n\nBest regards,\n{{SenderName}}',
-    variants: 1
+    body: 'Hi {{FirstName}},\\n\\nI wanted to follow up on my previous email about {{Company}}\\'s {{PainPoint}} strategy.\\n\\nI have some insights that might be valuable for your team. Would you have 15 minutes for a quick call?\\n\\nBest regards,\\n{{SenderName}}',
+    variants: 1,
+    delay: 5
   }
 ];
 
@@ -685,25 +688,67 @@ export function Campaigns() {
     setIsAddLeadsModalOpen(false);
   };
 
-  const addSequenceStep = () => {
-    const newStep: SequenceStep = {
-      id: Date.now().toString(),
-      subject: 'New Email Step',
-      body: 'Enter your email content here...',
-      variants: 1
-    };
-
-    setSequences((prev: SequenceStep[]) => [...prev, newStep]);
-    setSelectedStep(newStep);
+const addSequenceStep = async () => {
+  const newStep: SequenceStep = {
+    id: Date.now().toString(),
+    subject: 'New Email Step',
+    body: 'Enter your email content here...',
+    variants: 1,
+    delay: 1
   };
 
-  const deleteSequenceStep = (stepId: string) => {
-    setSequences((prev: SequenceStep[]) => prev.filter((step: SequenceStep) => step.id !== stepId));
-    if (selectedStep.id === stepId && sequences.length > 1) {
-      const remainingSteps = sequences.filter((step: SequenceStep) => step.id !== stepId);
-      setSelectedStep(remainingSteps[0]);
+  const newPosition = sequences.length + 1;
+
+  if (selectedCampaign?.webhook_campaign_id) {
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'add_step',
+          campaign_id: selectedCampaign.webhook_campaign_id,
+          step_data: {
+            position: newPosition,
+            delay: newStep.delay,
+            subject: newStep.subject,
+            body: newStep.body
+          }
+        })
+      });
+      if (!response.ok) console.error('Add step webhook failed');
+    } catch (error) {
+      console.error('Error adding step via webhook:', error);
     }
-  };
+  }
+
+  setSequences((prev: SequenceStep[]) => [...prev, newStep]);
+  setSelectedStep(newStep);
+};
+
+const deleteSequenceStep = async (stepId: string, position: number) => {
+  if (selectedCampaign?.webhook_campaign_id) {
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'remove_step',
+          campaign_id: selectedCampaign.webhook_campaign_id,
+          step_data: { position }
+        })
+      });
+      if (!response.ok) console.error('Remove step webhook failed');
+    } catch (error) {
+      console.error('Error removing step via webhook:', error);
+    }
+  }
+
+  setSequences((prev: SequenceStep[]) => prev.filter((step: SequenceStep) => step.id !== stepId));
+  if (selectedStep.id === stepId && sequences.length > 1) {
+    const remainingSteps = sequences.filter((step: SequenceStep) => step.id !== stepId);
+    setSelectedStep(remainingSteps[0]);
+  }
+};
 
   const saveSequenceStep = () => {
     setSequences((prev: SequenceStep[]) => prev.map((step: SequenceStep) => 
@@ -1182,18 +1227,53 @@ export function Campaigns() {
                             : 'bg-gray-50 hover:bg-gray-100'
                         }`}
                       >
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteSequenceStep(step.id);
-                          }}
-                          className="absolute top-2 right-2 p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
-                        >
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteSequenceStep(step.id, index + 1);
+                        }}
+                        className="absolute top-2 right-2 p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded"
+                      >
                           <Trash2 className="w-4 h-4" />
                         </button>
                         <div className="font-medium text-gray-900">Step {index + 1}</div>
                         <div className="text-sm text-gray-600 truncate pr-8">{step.subject}</div>
                         <div className="text-xs text-gray-500 mt-1">{step.variants} variant(s)</div>
+                        
+                        {/* Delay Input */}
+                        <div className="mt-2 flex items-center space-x-2">
+                          <label className="text-xs text-gray-600 whitespace-nowrap">
+                            Next step delay (days):
+                          </label>
+                            <input
+                              type="number"
+                              min="0"
+                              value={step.delay}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                const newDelay = parseInt(e.target.value) || 0;
+                                updateSelectedStep('delay', newDelay);
+                                
+                                // Webhook for delay update
+                                if (selectedCampaign?.webhook_campaign_id) {
+                                  fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      action: 'update_step_delay',
+                                      campaign_id: selectedCampaign.webhook_campaign_id,
+                                      step_data: {
+                                        position: index + 1,
+                                        delay: newDelay
+                                      }
+                                    })
+                                  }).catch(error => console.error('Error updating delay:', error));
+                                }
+                              }}
+                              className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                              onClick={(e) => e.stopPropagation()}
+                            />
+                        </div>
                       </div>
                     ))}
                     <button 
