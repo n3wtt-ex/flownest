@@ -764,11 +764,38 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
   }
 };
 
-  const saveSequenceStep = () => {
-    setSequences((prev: SequenceStep[]) => prev.map((step: SequenceStep) => 
-      step.id === selectedStep.id ? selectedStep : step
-    ));
-  };
+const saveSequenceStep = async () => {
+  // Find current step index before state update
+  const stepIndex = sequences.findIndex(step => step.id === selectedStep.id);
+  
+  // Update local state first
+  setSequences((prev: SequenceStep[]) => prev.map((step: SequenceStep) => 
+    step.id === selectedStep.id ? selectedStep : step
+  ));
+
+  // Webhook integration
+  if (selectedCampaign?.webhook_campaign_id && stepIndex !== -1) {
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          campaign_id: selectedCampaign.webhook_campaign_id,
+          step_index: stepIndex,
+          delay: selectedStep.delay,
+          subject: selectedStep.subject,
+          body: selectedStep.body
+        })
+      });
+
+      if (!response.ok) {
+        console.error('Webhook update failed for step:', selectedStep.id);
+      }
+    } catch (error) {
+      console.error('Error updating step via webhook:', error);
+    }
+  }
+};
 
   const updateSelectedStep = (field: keyof SequenceStep, value: string | number) => {
     setSelectedStep((prev: SequenceStep) => ({ ...prev, [field]: value }));
