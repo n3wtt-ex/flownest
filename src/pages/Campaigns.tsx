@@ -714,8 +714,9 @@ const addSequenceStep = async () => {
   const newPosition = sequences.length + 1;
 
   if (selectedCampaign?.webhook_campaign_id) {
+    console.log('Attempting to call add step webhook for campaign ID:', selectedCampaign.webhook_campaign_id);
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+      const response = await fetch('https://n8n.flownests.org/webhook/instantly-step-sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -729,10 +730,16 @@ const addSequenceStep = async () => {
           }
         })
       });
-      if (!response.ok) console.error('Add step webhook failed');
+      if (!response.ok) {
+        console.error('Add step webhook failed with status:', response.status, await response.text());
+      } else {
+        console.log('Add step webhook successful.');
+      }
     } catch (error) {
       console.error('Error adding step via webhook:', error);
     }
+  } else {
+    console.warn('Add step webhook not called: selectedCampaign or webhook_campaign_id is missing.');
   }
 
   setSequences((prev: SequenceStep[]) => [...prev, newStep]);
@@ -742,7 +749,7 @@ const addSequenceStep = async () => {
 const deleteSequenceStep = async (stepId: string, position: number) => {
   if (selectedCampaign?.webhook_campaign_id) {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+      const response = await fetch('https://n8n.flownests.org/webhook/instantly-step-sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -785,7 +792,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
       };
 
       try {
-        const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-step-edit', {
+        const response = await fetch('https://n8n.flownests.org/webhook/instantly-step-edit', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1320,7 +1327,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                 
                                 // Webhook for delay update
                                 if (selectedCampaign?.webhook_campaign_id) {
-                                  fetch('https://n8n.flownests.org/webhook-test/instantly-step-sync', {
+                                  fetch('https://n8n.flownests.org/webhook/instantly-step-sync', {
                                     method: 'POST',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({
