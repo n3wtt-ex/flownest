@@ -455,6 +455,34 @@ export function Campaigns() {
           });
           setLeads(newLeads);
           console.log('Leads refreshed successfully:', newLeads);
+        }
+        // Check if data is a simple object with Email adress and Contact name
+        else if (data && typeof data === 'object' && data['Email adress']) {
+          // Handle the new format
+          const newLeads: Lead[] = [{
+            id: Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID
+            email: data['Email adress'] || '',
+            provider: (data['Email adress'] || '').includes('@gmail.com') ? 'Gmail' : 'Outlook',
+            status: 'pending', // Default status
+            contact: data['Contact name'] || data['Email adress'] || '',
+            company: data['Company name'] || '' // If available
+          }];
+          setLeads(newLeads);
+          console.log('Leads refreshed successfully:', newLeads);
+        }
+        // Handle array of simple objects
+        else if (Array.isArray(data) && data.length > 0 && data[0]['Email adress']) {
+          // Handle array of new format
+          const newLeads: Lead[] = data.map((item: any) => ({
+            id: item.id || Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID if not provided
+            email: item['Email adress'] || '',
+            provider: (item['Email adress'] || '').includes('@gmail.com') ? 'Gmail' : 'Outlook',
+            status: 'pending', // Default status
+            contact: item['Contact name'] || item['Email adress'] || '',
+            company: item['Company name'] || '' // If available
+          }));
+          setLeads(newLeads);
+          console.log('Leads refreshed successfully:', newLeads);
         } else {
           console.error('Webhook response is not in expected format:', data);
           // Handle the case where data is not in expected format
