@@ -1514,17 +1514,9 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     </div>
 
                     <div className="pt-4 border-t border-gray-200">
-                      <button className="w-full mb-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow">
-                        Manage Senders
+                      <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        Save as Draft
                       </button>
-                      <div className="flex space-x-2">
-                        <button className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50">
-                          Save as Draft
-                        </button>
-                        <button className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                          Publish
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </div>
