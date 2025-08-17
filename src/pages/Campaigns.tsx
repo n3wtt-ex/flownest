@@ -410,7 +410,7 @@ export function Campaigns() {
   const refreshLeads = async (campaignId: string) => {
     setRefreshingLeads(true);
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook/82feec0d-a525-4c8f-a006-4c446e0d4664', {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/82feec0d-a525-4c8f-a006-4c446e0d4664', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -652,6 +652,53 @@ export function Campaigns() {
     }
 
     // Close the modal
+    setIsAddLeadsModalOpen(false);
+  };
+
+  const addManualLead = async () => {
+    if (!newLeadEmail.trim() || !newLeadName.trim() || !newLeadCompany.trim()) return;
+
+    // Send data to webhook
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/76fc948b-7221-496b-8868-05fc50a7a7b2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          campaign_id: selectedCampaign?.id,
+          email: newLeadEmail,
+          contact_name: newLeadName,
+          company_name: newLeadCompany,
+          website: newLeadWebsite,
+          linkedin_url: newLeadLinkedIn,
+          sector: newLeadSector
+        }),
+      });
+
+      if (!response.ok) {
+        console.error('Webhook request failed:', response.status, await response.text());
+      }
+    } catch (error) {
+      console.error('Error sending data to webhook:', error);
+    }
+
+    const newLead: Lead = {
+      id: Date.now().toString(),
+      email: newLeadEmail,
+      provider: newLeadEmail.includes('@gmail.com') ? 'Gmail' : 'Outlook',
+      status: 'pending',
+      contact: newLeadName,
+      company: newLeadCompany
+    };
+
+    setLeads((prev: Lead[]) => [...prev, newLead]);
+    setNewLeadEmail('');
+    setNewLeadName('');
+    setNewLeadCompany('');
+    setNewLeadWebsite('');
+    setNewLeadLinkedIn('');
+    setNewLeadSector('');
     setIsAddLeadsModalOpen(false);
   };
 
