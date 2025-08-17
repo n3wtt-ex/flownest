@@ -104,8 +104,6 @@ export function Campaigns() {
   const [dailyLimit, setDailyLimit] = useState(50);
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('17:00');
-  const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0]); // Today's date in YYYY-MM-DD format
-  const [endDate, setEndDate] = useState<string>(''); // Empty by default
   const [openTracking, setOpenTracking] = useState(true);
   const [clickTracking, setClickTracking] = useState(true);
   const [onlyText, setOnlyText] = useState(false);
@@ -752,6 +750,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
         ? prev.filter((d: string) => d !== day)
         : [...prev, day]
     );
+    // Mark as having unsaved changes
+    setHasUnsavedChanges(true);
   };
 
   const getStatusColor = (status: string) => {
@@ -795,10 +795,6 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
       scheduleName = 'Hiçbir Gün Programı';
     }
 
-    // Format dates to ISO string
-    const formattedStartDate = startDate ? new Date(startDate).toISOString() : new Date().toISOString();
-    const formattedEndDate = endDate ? new Date(endDate).toISOString() : null;
-
     // Create the payload
     const payload = {
       campaign_id: selectedCampaign.id,
@@ -812,8 +808,6 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
       friday: selectedDays.includes('Fri'),
       saturday: selectedDays.includes('Sat'),
       sunday: selectedDays.includes('Sun'),
-      start_date: formattedStartDate,
-      end_date: formattedEndDate,
       daily_limit: dailyLimit,
       text_only: onlyText,
       stop_on_reply: stopOnReply,
@@ -833,6 +827,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
       if (response.ok) {
         console.log('Draft saved successfully');
         // You might want to show a success message to the user
+        // Reset the unsaved changes flag after successful save
+        setHasUnsavedChanges(false);
       } else {
         console.error('Failed to save draft', await response.text());
         // You might want to show an error message to the user
@@ -1480,7 +1476,10 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       <input
                         type="number"
                         value={dailyLimit}
-                        onChange={(e) => setDailyLimit(Number(e.target.value))}
+                        onChange={(e) => {
+                          setDailyLimit(Number(e.target.value));
+                          setHasUnsavedChanges(true);
+                        }}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
@@ -1491,37 +1490,23 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         <input
                           type="time"
                           value={startTime}
-                          onChange={(e) => setStartTime(e.target.value)}
+                          onChange={(e) => {
+                            setStartTime(e.target.value);
+                            setHasUnsavedChanges(true);
+                          }}
                           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                         <span className="text-gray-500">to</span>
                         <input
                           type="time"
                           value={endTime}
-                          onChange={(e) => setEndTime(e.target.value)}
+                          onChange={(e) => {
+                            setEndTime(e.target.value);
+                            setHasUnsavedChanges(true);
+                          }}
                           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
                       </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                      <input
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">End Date (Optional)</label>
-                      <input
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
                     </div>
                   </div>
                 </div>
@@ -1537,7 +1522,10 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         <div className="text-sm text-gray-600">Track when emails are opened</div>
                       </div>
                       <div 
-                        onClick={() => setOpenTracking(!openTracking)}
+                        onClick={() => {
+                          setOpenTracking(!openTracking);
+                          setHasUnsavedChanges(true);
+                        }}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
                           openTracking ? 'bg-indigo-600' : 'bg-gray-300'
                         }`}
@@ -1556,7 +1544,10 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         <div className="text-sm text-gray-600">Track link clicks in emails</div>
                       </div>
                       <div 
-                        onClick={() => setClickTracking(!clickTracking)}
+                        onClick={() => {
+                          setClickTracking(!clickTracking);
+                          setHasUnsavedChanges(true);
+                        }}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
                           clickTracking ? 'bg-indigo-600' : 'bg-gray-300'
                         }`}
@@ -1576,7 +1567,10 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-700">Only Text</span>
                           <div 
-                            onClick={() => setOnlyText(!onlyText)}
+                            onClick={() => {
+                              setOnlyText(!onlyText);
+                              setHasUnsavedChanges(true);
+                            }}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
                               onlyText ? 'bg-indigo-600' : 'bg-gray-300'
                             }`}
@@ -1591,7 +1585,10 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-700">Stop on Reply</span>
                           <div 
-                            onClick={() => setStopOnReply(!stopOnReply)}
+                            onClick={() => {
+                              setStopOnReply(!stopOnReply);
+                              setHasUnsavedChanges(true);
+                            }}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
                               stopOnReply ? 'bg-indigo-600' : 'bg-gray-300'
                             }`}
