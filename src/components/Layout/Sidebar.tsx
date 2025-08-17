@@ -204,8 +204,8 @@ export function Sidebar() {
         ref={collapseButtonRef}
         onClick={toggleSidebar}
         className={clsx(
-          "absolute top-1/2 transform -translate-y-1/2 bg-white border border-slate-200 rounded-r-lg shadow-md hover:bg-slate-50 transition-all duration-200 flex items-center justify-center",
-          isCollapsed ? "-right-3 w-6 h-10" : "right-0 w-4 h-8"
+          "fixed top-1/2 transform -translate-y-1/2 bg-white border border-slate-200 rounded-r-lg shadow-md hover:bg-slate-50 transition-all duration-200 flex items-center justify-center z-50",
+          isCollapsed ? "left-16 w-6 h-10" : "left-64 w-4 h-8"
         )}
       >
         {isCollapsed ? (
