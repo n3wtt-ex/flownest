@@ -437,31 +437,22 @@ export function Campaigns() {
       if (response.ok) {
         const data = await response.json();
         console.log('Webhook response data:', data); // Log the actual response
-        // Check if data is an array
-        if (Array.isArray(data)) {
-          // Assuming data is an array of leads in the format:
-          // [{ id: string, email: string, provider: string, status: string, contact: string, company: string }, ...]
-          // Map the data to match our Lead interface
-          const newLeads: Lead[] = data.map((lead: any) => ({
-            id: lead.id || Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID if not provided
-            email: lead.email,
-            provider: lead.provider || (lead.email.includes('@gmail.com') ? 'Gmail' : 'Outlook'),
-            status: lead.status || 'pending',
-            contact: lead.contact || '',
-            company: lead.company || ''
-          }));
-          setLeads(newLeads);
-          console.log('Leads refreshed successfully:', newLeads);
-        } else if (data && typeof data === 'object' && data.leads && Array.isArray(data.leads)) {
-          // If data is an object containing a leads array
-          const newLeads: Lead[] = data.leads.map((lead: any) => ({
-            id: lead.id || Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID if not provided
-            email: lead.email,
-            provider: lead.provider || (lead.email.includes('@gmail.com') ? 'Gmail' : 'Outlook'),
-            status: lead.status || 'pending',
-            contact: lead.contact || '',
-            company: lead.company || ''
-          }));
+        // Check if data is an array and has the expected structure
+        if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0].items)) {
+          // Extract leads from the items array
+          const items = data[0].items;
+          const newLeads: Lead[] = items.map((item: any) => {
+            // Use payload data
+            const payload = item.payload || {};
+            return {
+              id: item.id || Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID if not provided
+              email: payload.email || item.email || '',
+              provider: (payload.email || item.email || '').includes('@gmail.com') ? 'Gmail' : 'Outlook',
+              status: 'pending', // Default status
+              contact: `${payload.firstName || ''} ${payload.lastName || ''}`.trim() || (payload.email || item.email || ''),
+              company: payload.companyName || ''
+            };
+          });
           setLeads(newLeads);
           console.log('Leads refreshed successfully:', newLeads);
         } else {
