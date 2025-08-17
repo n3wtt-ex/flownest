@@ -404,10 +404,17 @@ export function Campaigns() {
     setSelectedLeads([]);
   };
 
-  const refreshLeads = async () => {
+  const refreshLeads = async (campaignId: string) => {
     setRefreshingLeads(true);
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/82feec0d-a525-4c8f-a006-4c446e0d4664');
+      const response = await fetch('https://n8n.flownests.org/webhook-test/82feec0d-a525-4c8f-a006-4c446e0d4664', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ campaign_id: campaignId }),
+      });
+      
       if (response.ok) {
         const data = await response.json();
         // Assuming data is an array of leads in the format:
@@ -1130,7 +1137,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       )}
                       {/* Refresh Leads Button */}
                       <button
-                        onClick={refreshLeads}
+                        onClick={() => refreshLeads(selectedCampaign.id)}
                         disabled={refreshingLeads}
                         className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
                           refreshingLeads 
