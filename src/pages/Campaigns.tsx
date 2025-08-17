@@ -97,6 +97,9 @@ export function Campaigns() {
   const [newLeadEmail, setNewLeadEmail] = useState('');
   const [newLeadName, setNewLeadName] = useState('');
   const [newLeadCompany, setNewLeadCompany] = useState('');
+  const [newLeadWebsite, setNewLeadWebsite] = useState('');
+  const [newLeadLinkedIn, setNewLeadLinkedIn] = useState('');
+  const [newLeadSector, setNewLeadSector] = useState('');
   const [addLeadMethod, setAddLeadMethod] = useState<'manual' | 'import'>('manual');
   const [refreshingLeads, setRefreshingLeads] = useState(false);
 
@@ -407,7 +410,7 @@ export function Campaigns() {
   const refreshLeads = async (campaignId: string) => {
     setRefreshingLeads(true);
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/82feec0d-a525-4c8f-a006-4c446e0d4664', {
+      const response = await fetch('https://n8n.flownests.org/webhook/82feec0d-a525-4c8f-a006-4c446e0d4664', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -627,22 +630,28 @@ export function Campaigns() {
     }
   };
 
-  const addManualLead = () => {
-    if (!newLeadEmail.trim() || !newLeadName.trim() || !newLeadCompany.trim()) return;
+  const handleImportCSV = async () => {
+    // Send request to webhook
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/76fc948b-7221-496b-8868-05fc50a7a7b2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          campaign_id: selectedCampaign?.id,
+          action: 'import_csv'
+        }),
+      });
 
-    const newLead: Lead = {
-      id: Date.now().toString(),
-      email: newLeadEmail,
-      provider: newLeadEmail.includes('@gmail.com') ? 'Gmail' : 'Outlook',
-      status: 'pending',
-      contact: newLeadName,
-      company: newLeadCompany
-    };
+      if (!response.ok) {
+        console.error('Webhook request failed:', response.status, await response.text());
+      }
+    } catch (error) {
+      console.error('Error sending data to webhook:', error);
+    }
 
-    setLeads((prev: Lead[]) => [...prev, newLead]);
-    setNewLeadEmail('');
-    setNewLeadName('');
-    setNewLeadCompany('');
+    // Close the modal
     setIsAddLeadsModalOpen(false);
   };
 
@@ -1178,7 +1187,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                 Manual Entry
                               </button>
                               <button
-                                onClick={() => setAddLeadMethod('import')}
+                                onClick={handleImportCSV}
                                 className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'import' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
                               >
                                 <Upload className="w-4 h-4 inline mr-2" />
@@ -1209,24 +1218,52 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                   onChange={(e) => setNewLeadCompany(e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
+                                <input
+                                  type="text"
+                                  placeholder="Website"
+                                  value={newLeadWebsite}
+                                  onChange={(e) => setNewLeadWebsite(e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="LinkedIn URL"
+                                  value={newLeadLinkedIn}
+                                  onChange={(e) => setNewLeadLinkedIn(e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Sector"
+                                  value={newLeadSector}
+                                  onChange={(e) => setNewLeadSector(e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
                               </div>
                             ) : (
                               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                                 <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                                <p className="text-gray-600">Drop your CSV file here or click to browse</p>
-                                <input type="file" accept=".csv" className="hidden" />
+                                <p className="text-gray-600">CSV import is handled via n8n. Click the Import CSV button to start the process.</p>
                               </div>
                             )}
                             
                             <div className="flex justify-end space-x-2">
                               <button
-                                onClick={() => setIsAddLeadsModalOpen(false)}
+                                onClick={() => {
+                                  setNewLeadEmail('');
+                                  setNewLeadName('');
+                                  setNewLeadCompany('');
+                                  setNewLeadWebsite('');
+                                  setNewLeadLinkedIn('');
+                                  setNewLeadSector('');
+                                  setIsAddLeadsModalOpen(false);
+                                }}
                                 className="px-4 py-2 text-gray-600 hover:text-gray-800"
                               >
                                 Cancel
                               </button>
                               <button
-                                onClick={addManualLead}
+                                onClick={addLeadMethod === 'manual' ? addManualLead : handleImportCSV}
                                 disabled={addLeadMethod === 'manual' && (!newLeadEmail || !newLeadName || !newLeadCompany)}
                                 className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
                               >
@@ -1711,10 +1748,10 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={deleteSelectedCampaigns}
-                className="flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className="flex items-center justify-center w-10 h-10 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                title={`Delete Selected (${selectedCampaigns.length})`}
               >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete Selected ({selectedCampaigns.length})
+                <Trash2 className="w-5 h-5" />
               </motion.button>
             )}
             
