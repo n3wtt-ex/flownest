@@ -77,7 +77,7 @@ export function Campaigns() {
   const [newCampaignName, setNewCampaignName] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddLeadsModalOpen, setIsAddLeadsModalOpen] = useState(false);
-  const [selectedStep, setSelectedStep] = useState<SequenceStep>(mockSequence[0]);
+  const [selectedStep, setSelectedStep] = useState<SequenceStep | null>(null);
   const [activeTab, setActiveTab] = useState('analytics');
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
@@ -670,6 +670,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 };
 
   const saveSequenceStep = async () => {
+    if (!selectedStep) return;
+    
     setSequences((prev: SequenceStep[]) => prev.map((step: SequenceStep) => 
       step.id === selectedStep.id ? selectedStep : step
     ));
@@ -714,6 +716,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
   };
 
   const updateSelectedStep = (field: keyof SequenceStep, value: string | number) => {
+    if (!selectedStep) return;
+    
     setSelectedStep((prev: SequenceStep) => {
       const updatedStep = { ...prev, [field]: value };
       // Set unsaved changes flag when delay, subject, or body changes
@@ -1232,7 +1236,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                           }
                         }}
                         className={`relative p-3 rounded-lg cursor-pointer transition-colors ${
-                          selectedStep.id === step.id 
+                          selectedStep && selectedStep.id === step.id 
                             ? 'bg-blue-50 border-2 border-blue-300' 
                             : 'bg-gray-50 hover:bg-gray-100'
                         }`}
@@ -1315,44 +1319,50 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     </div>
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
-                      <input
-                        type="text"
-                        value={selectedStep.subject}
-                        onChange={(e) => updateSelectedStep('subject', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Email subject..."
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Body</label>
-                      <textarea
-                        value={selectedStep.body}
-                        onChange={(e) => updateSelectedStep('body', e.target.value)}
-                        rows={12}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Email body..."
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                      <div className="flex items-center space-x-4">
-                        <button className="text-sm text-blue-600 hover:text-blue-800">AI Tools</button>
-                        <button className="text-sm text-blue-600 hover:text-blue-800">Templates</button>
-                        <button className="text-sm text-blue-600 hover:text-blue-800">Variables</button>
-                        <button className="text-sm text-blue-600 hover:text-blue-800">Formatting</button>
+                  {selectedStep ? (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                        <input
+                          type="text"
+                          value={selectedStep.subject}
+                          onChange={(e) => updateSelectedStep('subject', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Email subject..."
+                        />
                       </div>
-                      <button 
-                        onClick={saveSequenceStep}
-                        className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow"
-                      >
-                        Save
-                      </button>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Body</label>
+                        <textarea
+                          value={selectedStep.body}
+                          onChange={(e) => updateSelectedStep('body', e.target.value)}
+                          rows={12}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          placeholder="Email body..."
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                        <div className="flex items-center space-x-4">
+                          <button className="text-sm text-blue-600 hover:text-blue-800">AI Tools</button>
+                          <button className="text-sm text-blue-600 hover:text-blue-800">Templates</button>
+                          <button className="text-sm text-blue-600 hover:text-blue-800">Variables</button>
+                          <button className="text-sm text-blue-600 hover:text-blue-800">Formatting</button>
+                        </div>
+                        <button 
+                          onClick={saveSequenceStep}
+                          className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow"
+                        >
+                          Save
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-64">
+                      <p className="text-gray-500">Düzenlemek için bir adım seçin veya yeni bir adım ekleyin</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </TabsContent>
