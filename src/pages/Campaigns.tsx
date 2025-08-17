@@ -58,114 +58,11 @@ interface LeadPersonalization {
   linkedinMessage: string;
 }
 
-const mockLeads: Lead[] = [
-  {
-    id: '1',
-    email: 'john@techcorp.com',
-    provider: 'Gmail',
-    status: 'completed',
-    contact: 'John Smith',
-    company: 'TechCorp Inc.'
-  },
-  {
-    id: '2',
-    email: 'sarah@innovate.io',
-    provider: 'Outlook',
-    status: 'completed',
-    contact: 'Sarah Johnson',
-    company: 'Innovate Solutions'
-  },
-  {
-    id: '3',
-    email: 'mike@startup.co',
-    provider: 'Gmail',
-    status: 'pending',
-    contact: 'Mike Chen',
-    company: 'Startup Co.'
-  }
-];
+const mockLeads: Lead[] = [];
 
-const mockSequence: SequenceStep[] = [
-  {
-    id: '1',
-    subject: 'Quick question about {{Company}}',
-    body: `Hi {{FirstName}},
+const mockSequence: SequenceStep[] = [];
 
-I noticed {{Company}} is doing great work in the {{Industry}} space. I had a quick question about your current approach to {{PainPoint}}.
-
-Would you be open to a brief chat this week?
-
-Best,
-{{SenderName}}`,
-    variants: 2,
-    delay: 2
-  },
-  {
-    id: '2',
-    subject: 'Following up on {{Company}}',
-    body: `Hi {{FirstName}},
-
-I wanted to follow up on my previous email about {{Company}}'s {{PainPoint}} strategy.
-
-I have some insights that might be valuable for your team. Would you have 15 minutes for a quick call?
-
-Best regards,
-{{SenderName}}`,
-    variants: 1,
-    delay: 5
-  }
-];
-
-const initialPersonalizationData: Record<string, LeadPersonalization> = {
-  '1': {
-    emails: [
-      {
-        step: 1,
-        subject: 'Quick question about TechCorp',
-        body: 'Hi John,\n\nI noticed TechCorp is doing great work in the technology space. I had a quick question about your current approach to digital transformation.\n\nWould you be open to a brief chat this week?\n\nBest,\nSales Team'
-      },
-      {
-        step: 2,
-        subject: 'Following up on TechCorp',
-        body: 'Hi John,\n\nI wanted to follow up on my previous email about TechCorp\'s digital transformation strategy.\n\nI have some insights that might be valuable for your team. Would you have 15 minutes for a quick call?\n\nBest regards,\nSales Team'
-      },
-      {
-        step: 3,
-        subject: 'Final follow-up',
-        body: 'Hi John,\n\nThis is my final follow-up regarding our conversation about digital transformation solutions.\n\nIf you\'re interested, please let me know. Otherwise, I\'ll respect your time.\n\nBest,\nSales Team'
-      }
-    ],
-    linkedinStatus: 'Connected',
-    linkedinMessage: 'Hi John, I sent you an email about digital transformation solutions for TechCorp. Would love to connect and discuss further! This is a really long LinkedIn message to test how the UI handles longer content that might overflow the container and require scrolling or proper wrapping to maintain the layout integrity.'
-  },
-  '2': {
-    emails: [
-      {
-        step: 1,
-        subject: 'Quick question about Innovate Solutions',
-        body: 'Hi Sarah,\n\nI noticed Innovate Solutions is doing great work in the innovation space. I had a quick question about your current approach to product development.\n\nWould you be open to a brief chat this week?\n\nBest,\nSales Team'
-      },
-      {
-        step: 2,
-        subject: 'Following up on Innovate Solutions',
-        body: 'Hi Sarah,\n\nI wanted to follow up on my previous email about Innovate Solutions\'s product development strategy.\n\nI have some insights that might be valuable for your team. Would you have 15 minutes for a quick call?\n\nBest regards,\nSales Team'
-      }
-    ],
-    linkedinStatus: 'Not connected',
-    linkedinMessage: 'No message available'
-  },
-  '3': {
-    emails: [
-      {
-        step: 1,
-        subject: 'Quick question about Startup Co.',
-        body: 'Hi Mike,\n\nI noticed Startup Co. is doing great work in the startup space. I had a quick question about your current approach to market entry.\n\nWould you be open to a brief chat this week?\n\nBest,\nSales Team'
-      }
-    ],
-    linkedinStatus: 'Not connected',
-    linkedinMessage: 'No message available'
-  }
-};
+const initialPersonalizationData: Record<string, LeadPersonalization> = {};
 
 export function Campaigns() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
