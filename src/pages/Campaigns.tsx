@@ -413,7 +413,7 @@ export function Campaigns() {
   const refreshLeads = async (campaignId: string) => {
     setRefreshingLeads(true);
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/82feec0d-a525-4c8f-a006-4c446e0d4664', {
+      const response = await fetch('https://n8n.flownests.org/webhook/82feec0d-a525-4c8f-a006-4c446e0d4664', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -695,7 +695,7 @@ export function Campaigns() {
 
     // Send data to webhook
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/76fc948b-7221-496b-8868-05fc50a7a7b2', {
+      const response = await fetch('https://n8n.flownests.org/webhook/76fc948b-7221-496b-8868-05fc50a7a7b2', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
