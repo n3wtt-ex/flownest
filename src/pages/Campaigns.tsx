@@ -630,31 +630,6 @@ export function Campaigns() {
     }
   };
 
-  const handleImportCSV = async () => {
-    // Send request to webhook
-    try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/76fc948b-7221-496b-8868-05fc50a7a7b2', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          campaign_id: selectedCampaign?.id,
-          action: 'import_csv'
-        }),
-      });
-
-      if (!response.ok) {
-        console.error('Webhook request failed:', response.status, await response.text());
-      }
-    } catch (error) {
-      console.error('Error sending data to webhook:', error);
-    }
-
-    // Close the modal
-    setIsAddLeadsModalOpen(false);
-  };
-
   const addManualLead = async () => {
     if (!newLeadEmail.trim() || !newLeadName.trim() || !newLeadCompany.trim()) return;
 
@@ -1234,7 +1209,10 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                 Manual Entry
                               </button>
                               <button
-                                onClick={handleImportCSV}
+                                onClick={() => {
+                                  window.open('https://n8n.flownests.org/form/f361872c-8943-498c-8a32-b8ab1683eb18', '_blank');
+                                  setIsAddLeadsModalOpen(false);
+                                }}
                                 className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'import' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
                               >
                                 <Upload className="w-4 h-4 inline mr-2" />
@@ -1290,7 +1268,13 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                             ) : (
                               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                                 <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                                <p className="text-gray-600">CSV import is handled via n8n. Click the Import CSV button to start the process.</p>
+                                <p className="text-gray-600 mb-4">Click the Import CSV button to start the import process via n8n.</p>
+                                <button
+                                  onClick={() => window.open('https://n8n.flownests.org/form/f361872c-8943-498c-8a32-b8ab1683eb18', '_blank')}
+                                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow"
+                                >
+                                  Import CSV
+                                </button>
                               </div>
                             )}
                             
@@ -1310,7 +1294,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                 Cancel
                               </button>
                               <button
-                                onClick={addLeadMethod === 'manual' ? addManualLead : handleImportCSV}
+                                onClick={addLeadMethod === 'manual' ? addManualLead : () => window.open('https://n8n.flownests.org/form/f361872c-8943-498c-8a32-b8ab1683eb18', '_blank')}
                                 disabled={addLeadMethod === 'manual' && (!newLeadEmail || !newLeadName || !newLeadCompany)}
                                 className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
                               >
