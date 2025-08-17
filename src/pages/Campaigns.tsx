@@ -418,24 +418,42 @@ export function Campaigns() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ campaign_id: campaignId }),
+        body: JSON.stringify({ 
+          campaign_id: campaignId,
+          email: '',
+          contact_name: '',
+          company_name: '',
+          website: '',
+          linkedin_url: '',
+          sector: '',
+          job_title: '',
+          location: '',
+          country: ''
+        }),
       });
       
       if (response.ok) {
         const data = await response.json();
-        // Assuming data is an array of leads in the format:
-        // [{ id: string, email: string, provider: string, status: string, contact: string, company: string }, ...]
-        // Map the data to match our Lead interface
-        const newLeads: Lead[] = data.map((lead: any) => ({
-          id: lead.id || Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID if not provided
-          email: lead.email,
-          provider: lead.provider || (lead.email.includes('@gmail.com') ? 'Gmail' : 'Outlook'),
-          status: lead.status || 'pending',
-          contact: lead.contact || '',
-          company: lead.company || ''
-        }));
-        setLeads(newLeads);
-        console.log('Leads refreshed successfully:', newLeads);
+        // Check if data is an array
+        if (Array.isArray(data)) {
+          // Assuming data is an array of leads in the format:
+          // [{ id: string, email: string, provider: string, status: string, contact: string, company: string }, ...]
+          // Map the data to match our Lead interface
+          const newLeads: Lead[] = data.map((lead: any) => ({
+            id: lead.id || Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID if not provided
+            email: lead.email,
+            provider: lead.provider || (lead.email.includes('@gmail.com') ? 'Gmail' : 'Outlook'),
+            status: lead.status || 'pending',
+            contact: lead.contact || '',
+            company: lead.company || ''
+          }));
+          setLeads(newLeads);
+          console.log('Leads refreshed successfully:', newLeads);
+        } else {
+          console.error('Webhook response is not an array:', data);
+          // Handle the case where data is not an array
+          setLeads([]);
+        }
       } else {
         console.error('Failed to refresh leads:', response.status, await response.text());
       }
@@ -1226,7 +1244,16 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                       'Content-Type': 'application/json',
                                     },
                                     body: JSON.stringify({
-                                      campaign_id: selectedCampaign?.id
+                                      campaign_id: selectedCampaign?.webhook_campaign_id,
+                                      email: '',
+                                      contact_name: '',
+                                      company_name: '',
+                                      website: '',
+                                      linkedin_url: '',
+                                      sector: '',
+                                      job_title: '',
+                                      location: '',
+                                      country: ''
                                     }),
                                   }).catch(error => {
                                     console.error('Error sending data to webhook:', error);
@@ -1324,7 +1351,16 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                         'Content-Type': 'application/json',
                                       },
                                       body: JSON.stringify({
-                                        campaign_id: selectedCampaign?.id
+                                        campaign_id: selectedCampaign?.webhook_campaign_id,
+                                        email: '',
+                                        contact_name: '',
+                                        company_name: '',
+                                        website: '',
+                                        linkedin_url: '',
+                                        sector: '',
+                                        job_title: '',
+                                        location: '',
+                                        country: ''
                                       }),
                                     }).catch(error => {
                                       console.error('Error sending data to webhook:', error);
@@ -1370,7 +1406,16 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                       'Content-Type': 'application/json',
                                     },
                                     body: JSON.stringify({
-                                      campaign_id: selectedCampaign?.id
+                                      campaign_id: selectedCampaign?.webhook_campaign_id,
+                                      email: '',
+                                      contact_name: '',
+                                      company_name: '',
+                                      website: '',
+                                      linkedin_url: '',
+                                      sector: '',
+                                      job_title: '',
+                                      location: '',
+                                      country: ''
                                     }),
                                   }).catch(error => {
                                     console.error('Error sending data to webhook:', error);
