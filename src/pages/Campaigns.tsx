@@ -797,7 +797,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 
     // Create the payload
     const payload = {
-      campaign_id: selectedCampaign.id,
+      campaign_id: selectedCampaign.webhook_campaign_id,
       schedule_name: scheduleName,
       timing_from: startTime,
       timing_to: endTime,
