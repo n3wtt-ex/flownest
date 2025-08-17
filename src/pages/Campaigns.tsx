@@ -816,7 +816,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
     };
 
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-update', {
+      const response = await fetch('https://n8n.flownests.org/webhook/instantly-update', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
