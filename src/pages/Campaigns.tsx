@@ -106,7 +106,8 @@ export function Campaigns() {
   const [endTime, setEndTime] = useState('17:00');
   const [openTracking, setOpenTracking] = useState(true);
   const [clickTracking, setClickTracking] = useState(true);
-  const [replyOption, setReplyOption] = useState<'text' | 'step'>('text');
+  const [onlyText, setOnlyText] = useState(false);
+  const [stopOnReply, setStopOnReply] = useState(false);
 
   // Supabase'den kampanyaları çekme fonksiyonu
   const fetchCampaigns = async () => {
@@ -1445,7 +1446,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       <Switch 
                         checked={openTracking}
                         onCheckedChange={setOpenTracking}
-                        className="[&>span]:bg-blue-600"
+                        className="[&>span]:bg-indigo-700 [&>span]:border-2 [&>span]:border-indigo-800 [&_[data-state='checked']]:bg-white"
                       />
                     </div>
 
@@ -1457,30 +1458,28 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       <Switch 
                         checked={clickTracking}
                         onCheckedChange={setClickTracking}
-                        className="[&>span]:bg-blue-600"
+                        className="[&>span]:bg-indigo-700 [&>span]:border-2 [&>span]:border-indigo-800 [&_[data-state='checked']]:bg-white"
                       />
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium text-gray-900">Reply Handling</div>
-                        <div className="text-sm text-gray-600">Choose how to handle replies</div>
-                      </div>
-                      <div className="flex flex-col space-y-2">
+                    <div>
+                      <div className="font-medium text-gray-900 mb-2">Reply Handling</div>
+                      <div className="text-sm text-gray-600 mb-3">Choose how to handle replies</div>
+                      <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-700 mr-4">Only Text</span>
+                          <span className="text-sm text-gray-700">Only Text</span>
                           <Switch 
-                            checked={replyOption === 'text'}
-                            onCheckedChange={(checked) => checked && setReplyOption('text')}
-                            className="[&>span]:bg-blue-600"
+                            checked={onlyText}
+                            onCheckedChange={setOnlyText}
+                            className="[&>span]:bg-indigo-700 [&>span]:border-2 [&>span]:border-indigo-800 [&_[data-state='checked']]:bg-white"
                           />
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-700 mr-4">Stop on Reply</span>
+                          <span className="text-sm text-gray-700">Stop on Reply</span>
                           <Switch 
-                            checked={replyOption === 'step'}
-                            onCheckedChange={(checked) => checked && setReplyOption('step')}
-                            className="[&>span]:bg-blue-600"
+                            checked={stopOnReply}
+                            onCheckedChange={setStopOnReply}
+                            className="[&>span]:bg-indigo-700 [&>span]:border-2 [&>span]:border-indigo-800 [&_[data-state='checked']]:bg-white"
                           />
                         </div>
                       </div>
