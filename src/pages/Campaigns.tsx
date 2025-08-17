@@ -1177,7 +1177,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       )}
                       {/* Refresh Leads Button */}
                       <button
-                        onClick={() => refreshLeads(selectedCampaign.id)}
+                        onClick={() => refreshLeads(selectedCampaign.webhook_campaign_id || selectedCampaign.id)}
                         disabled={refreshingLeads}
                         className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
                           refreshingLeads 
