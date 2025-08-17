@@ -69,12 +69,52 @@ export function Leads() {
     }
   };
 
+  const handleWebhookClick = () => {
+    if (!selectedProvider) return;
+    
+    const webhookUrls = {
+      google_maps: 'https://n8n.flownests.org/webhook/google-maps-leads',
+      apollo: 'https://n8n.flownests.org/webhook/apollo-leads'
+    };
+    
+    const url = webhookUrls[selectedProvider];
+    if (url) {
+      navigator.clipboard.writeText(url);
+      alert(`${selectedProvider.replace('_', ' ')} webhook URL copied to clipboard!`);
+    }
+  };
+
   const handleSearch = async () => {
     if (!searchQuery.trim() || !selectedProvider) return;
 
     setIsSearching(true);
     
-    // Simulate API call
+    // Google Maps webhook integration
+    if (selectedProvider === 'google_maps') {
+      try {
+        const response = await fetch('https://n8n.flownests.org/webhook-test/c57b89db-80ac-4908-8f2c-4d710690901b', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: searchQuery,
+            source: 'google_maps',
+            timestamp: new Date().toISOString()
+          }),
+        });
+        
+        if (response.ok) {
+          console.log('Webhook sent successfully');
+        } else {
+          console.error('Webhook failed:', response.status);
+        }
+      } catch (error) {
+        console.error('Webhook error:', error);
+      }
+    }
+    
+    // Simulate API call for other providers
     setTimeout(() => {
       const newResults = mockLeads.map(lead => ({
         ...lead,
@@ -206,13 +246,21 @@ export function Leads() {
 
             {/* Search Input */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search Query</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {selectedProvider === 'google_maps' ? 'Message for Webhook' : 'Search Query'}
+              </label>
               <div className="flex space-x-2">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={selectedProvider === 'apollo' ? 'e.g., SaaS companies in San Francisco' : 'e.g., restaurants in New York'}
+                  placeholder={
+                    selectedProvider === 'apollo' 
+                      ? 'e.g., SaaS companies in San Francisco' 
+                      : selectedProvider === 'google_maps'
+                        ? 'Enter message to send via webhook'
+                        : 'Enter search query'
+                  }
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
@@ -233,70 +281,74 @@ export function Leads() {
                   disabled={!selectedProvider || !searchQuery.trim() || isSearching}
                   className="px-6 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSearching ? 'Searching...' : 'Search'}
+                  {isSearching ? 'Searching...' : selectedProvider === 'google_maps' ? 'Send Message' : 'Search'}
                 </motion.button>
               </div>
             </div>
 
             {/* Quick Presets */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Quick Presets</label>
-              <div className="flex flex-wrap gap-2">
-                {selectedProvider === 'apollo' ? (
-                  <>
-                    <button
-                      onClick={() => setSearchQuery('SaaS companies 50-200 employees')}
-                      className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
-                    >
-                      SaaS Companies
-                    </button>
-                    <button
-                      onClick={() => setSearchQuery('Marketing agencies in California')}
-                      className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
-                    >
-                      Marketing Agencies
-                    </button>
-                    <button
-                      onClick={() => setSearchQuery('E-commerce startups')}
-                      className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
-                    >
-                      E-commerce
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => setSearchQuery('restaurants in Manhattan')}
-                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
-                    >
-                      Restaurants
-                    </button>
-                    <button
-                      onClick={() => setSearchQuery('gyms in Los Angeles')}
-                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
-                    >
-                      Gyms
-                    </button>
-                    <button
-                      onClick={() => setSearchQuery('coffee shops in Seattle')}
-                      className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
-                    >
-                      Coffee Shops
-                    </button>
-                  </>
-                )}
+            {selectedProvider !== 'google_maps' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Quick Presets</label>
+                <div className="flex flex-wrap gap-2">
+                  {selectedProvider === 'apollo' ? (
+                    <>
+                      <button
+                        onClick={() => setSearchQuery('SaaS companies 50-200 employees')}
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
+                      >
+                        SaaS Companies
+                      </button>
+                      <button
+                        onClick={() => setSearchQuery('Marketing agencies in California')}
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
+                      >
+                        Marketing Agencies
+                      </button>
+                      <button
+                        onClick={() => setSearchQuery('E-commerce startups')}
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
+                      >
+                        E-commerce
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setSearchQuery('restaurants in Manhattan')}
+                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
+                      >
+                        Restaurants
+                      </button>
+                      <button
+                        onClick={() => setSearchQuery('gyms in Los Angeles')}
+                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
+                      >
+                        Gyms
+                      </button>
+                      <button
+                        onClick={() => setSearchQuery('coffee shops in Seattle')}
+                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
+                      >
+                        Coffee Shops
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Search History */}
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Recent Searches</h3>
-              <div className="space-y-1">
-                <div className="text-sm text-gray-600">• SaaS companies in San Francisco</div>
-                <div className="text-sm text-gray-600">• Marketing agencies 10-50 employees</div>
-                <div className="text-sm text-gray-600">• E-commerce startups</div>
+            {selectedProvider !== 'google_maps' && (
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                <h3 className="text-sm font-medium text-gray-700 mb-2">Recent Searches</h3>
+                <div className="space-y-1">
+                  <div className="text-sm text-gray-600">• SaaS companies in San Francisco</div>
+                  <div className="text-sm text-gray-600">• Marketing agencies 10-50 employees</div>
+                  <div className="text-sm text-gray-600">• E-commerce startups</div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Results Area */}
@@ -334,7 +386,19 @@ export function Leads() {
               {isSearching ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-                  <div className="text-gray-600">Searching for leads...</div>
+                  <div className="text-gray-600">
+                    {selectedProvider === 'google_maps' ? 'Sending message...' : 'Searching for leads...'}
+                  </div>
+                </div>
+              ) : selectedProvider === 'google_maps' ? (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Message Sent Successfully</h3>
+                  <p className="text-gray-600">Your message has been sent via webhook to n8n.</p>
                 </div>
               ) : filteredResults.length === 0 ? (
                 <div className="text-center py-12">
