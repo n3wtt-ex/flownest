@@ -1443,11 +1443,18 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         <div className="font-medium text-gray-900">Open Rate Tracking</div>
                         <div className="text-sm text-gray-600">Track when emails are opened</div>
                       </div>
-                      <Switch 
-                        checked={openTracking}
-                        onCheckedChange={setOpenTracking}
-                        className="[&>span]:bg-indigo-800 [&>span]:border-2 [&>span]:border-indigo-900 [&_[data-state='checked']]:bg-white [&_[data-state='unchecked']_.bg-background]:bg-gray-300 [&_[data-state='checked']_.bg-background]:bg-indigo-300 [&>span]:h-6 [&>span]:w-11 [&_[data-state='unchecked']_.bg-background]:translate-x-0 [&_[data-state='checked']_.bg-background]:translate-x-5 [&_[data-state='unchecked']_.bg-background]:shadow-lg [&_[data-state='checked']_.bg-background]:shadow-lg transition-all duration-200 ease-in-out [&>span]:rounded-full [&_[data-state='unchecked']_.bg-background]:rounded-full [&_[data-state='checked']_.bg-background]:rounded-full [&_[data-state='unchecked']_.bg-background]:h-5 [&_[data-state='unchecked']_.bg-background]:w-5 [&_[data-state='checked']_.bg-background]:h-5 [&_[data-state='checked']_.bg-background]:w-5 [&_[data-state='unchecked']_.bg-background]:block [&_[data-state='checked']_.bg-background]:block [&_[data-state='unchecked']_.bg-background]:pointer-events-none [&_[data-state='checked']_.bg-background]:pointer-events-none [&_[data-state='unchecked']_.bg-background]:ring-0 [&_[data-state='checked']_.bg-background]:ring-0 [&>span]:inline-flex [&>span]:shrink-0 [&>span]:cursor-pointer [&>span]:items-center [&>span]:border-2 [&>span]:border-transparent [&>span]:transition-colors [&_[data-state='unchecked']_.bg-background]:bg-background [&_[data-state='checked']_.bg-background]:bg-background [&_[data-state='unchecked']_.bg-background]:shadow-lg [&_[data-state='checked']_.bg-background]:shadow-lg [&_[data-state='unchecked']_.bg-background]:transition-transform [&_[data-state='checked']_.bg-background]:transition-transform [&_[data-state='unchecked']_.bg-background]:duration-200 [&_[data-state='checked']_.bg-background]:duration-200 [&_[data-state='unchecked']_.bg-background]:ease-in-out [&_[data-state='checked']_.bg-background]:ease-in-out [&>span]:focus-visible:outline-none [&>span]:focus-visible:ring-2 [&>span]:focus-visible:ring-ring [&>span]:focus-visible:ring-offset-2 [&>span]:focus-visible:ring-offset-background [&_[data-state='unchecked']_.bg-background]:disabled:cursor-not-allowed [&_[data-state='checked']_.bg-background]:disabled:cursor-not-allowed [&_[data-state='unchecked']_.bg-background]:disabled:opacity-50 [&_[data-state='checked']_.bg-background]:disabled:opacity-50"
-                      />
+                      <div 
+                        onClick={() => setOpenTracking(!openTracking)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
+                          openTracking ? 'bg-indigo-600' : 'bg-gray-300'
+                        }`}
+                      >
+                        <span 
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out ${
+                            openTracking ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between">
@@ -1455,11 +1462,18 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         <div className="font-medium text-gray-900">Link Tracking</div>
                         <div className="text-sm text-gray-600">Track link clicks in emails</div>
                       </div>
-                      <Switch 
-                        checked={clickTracking}
-                        onCheckedChange={setClickTracking}
-                        className="[&>span]:bg-indigo-800 [&>span]:border-2 [&>span]:border-indigo-900 [&_[data-state='checked']]:bg-white [&_[data-state='unchecked']_.bg-background]:bg-gray-300 [&_[data-state='checked']_.bg-background]:bg-indigo-300 [&>span]:h-6 [&>span]:w-11 [&_[data-state='unchecked']_.bg-background]:translate-x-0 [&_[data-state='checked']_.bg-background]:translate-x-5 [&_[data-state='unchecked']_.bg-background]:shadow-lg [&_[data-state='checked']_.bg-background]:shadow-lg transition-all duration-200 ease-in-out [&>span]:rounded-full [&_[data-state='unchecked']_.bg-background]:rounded-full [&_[data-state='checked']_.bg-background]:rounded-full [&_[data-state='unchecked']_.bg-background]:h-5 [&_[data-state='unchecked']_.bg-background]:w-5 [&_[data-state='checked']_.bg-background]:h-5 [&_[data-state='checked']_.bg-background]:w-5 [&_[data-state='unchecked']_.bg-background]:block [&_[data-state='checked']_.bg-background]:block [&_[data-state='unchecked']_.bg-background]:pointer-events-none [&_[data-state='checked']_.bg-background]:pointer-events-none [&_[data-state='unchecked']_.bg-background]:ring-0 [&_[data-state='checked']_.bg-background]:ring-0 [&>span]:inline-flex [&>span]:shrink-0 [&>span]:cursor-pointer [&>span]:items-center [&>span]:border-2 [&>span]:border-transparent [&>span]:transition-colors [&_[data-state='unchecked']_.bg-background]:bg-background [&_[data-state='checked']_.bg-background]:bg-background [&_[data-state='unchecked']_.bg-background]:shadow-lg [&_[data-state='checked']_.bg-background]:shadow-lg [&_[data-state='unchecked']_.bg-background]:transition-transform [&_[data-state='checked']_.bg-background]:transition-transform [&_[data-state='unchecked']_.bg-background]:duration-200 [&_[data-state='checked']_.bg-background]:duration-200 [&_[data-state='unchecked']_.bg-background]:ease-in-out [&_[data-state='checked']_.bg-background]:ease-in-out [&>span]:focus-visible:outline-none [&>span]:focus-visible:ring-2 [&>span]:focus-visible:ring-ring [&>span]:focus-visible:ring-offset-2 [&>span]:focus-visible:ring-offset-background [&_[data-state='unchecked']_.bg-background]:disabled:cursor-not-allowed [&_[data-state='checked']_.bg-background]:disabled:cursor-not-allowed [&_[data-state='unchecked']_.bg-background]:disabled:opacity-50 [&_[data-state='checked']_.bg-background]:disabled:opacity-50"
-                      />
+                      <div 
+                        onClick={() => setClickTracking(!clickTracking)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
+                          clickTracking ? 'bg-indigo-600' : 'bg-gray-300'
+                        }`}
+                      >
+                        <span 
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out ${
+                            clickTracking ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </div>
                     </div>
 
                     <div>
@@ -1468,19 +1482,33 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-700">Only Text</span>
-                          <Switch 
-                            checked={onlyText}
-                            onCheckedChange={setOnlyText}
-                            className="[&>span]:bg-indigo-800 [&>span]:border-2 [&>span]:border-indigo-900 [&_[data-state='checked']]:bg-white [&_[data-state='unchecked']_.bg-background]:bg-gray-300 [&_[data-state='checked']_.bg-background]:bg-indigo-300 [&>span]:h-6 [&>span]:w-11 [&_[data-state='unchecked']_.bg-background]:translate-x-0 [&_[data-state='checked']_.bg-background]:translate-x-5 [&_[data-state='unchecked']_.bg-background]:shadow-lg [&_[data-state='checked']_.bg-background]:shadow-lg transition-all duration-200 ease-in-out [&>span]:rounded-full [&_[data-state='unchecked']_.bg-background]:rounded-full [&_[data-state='checked']_.bg-background]:rounded-full [&_[data-state='unchecked']_.bg-background]:h-5 [&_[data-state='unchecked']_.bg-background]:w-5 [&_[data-state='checked']_.bg-background]:h-5 [&_[data-state='checked']_.bg-background]:w-5 [&_[data-state='unchecked']_.bg-background]:block [&_[data-state='checked']_.bg-background]:block [&_[data-state='unchecked']_.bg-background]:pointer-events-none [&_[data-state='checked']_.bg-background]:pointer-events-none [&_[data-state='unchecked']_.bg-background]:ring-0 [&_[data-state='checked']_.bg-background]:ring-0 [&>span]:inline-flex [&>span]:shrink-0 [&>span]:cursor-pointer [&>span]:items-center [&>span]:border-2 [&>span]:border-transparent [&>span]:transition-colors [&_[data-state='unchecked']_.bg-background]:bg-background [&_[data-state='checked']_.bg-background]:bg-background [&_[data-state='unchecked']_.bg-background]:shadow-lg [&_[data-state='checked']_.bg-background]:shadow-lg [&_[data-state='unchecked']_.bg-background]:transition-transform [&_[data-state='checked']_.bg-background]:transition-transform [&_[data-state='unchecked']_.bg-background]:duration-200 [&_[data-state='checked']_.bg-background]:duration-200 [&_[data-state='unchecked']_.bg-background]:ease-in-out [&_[data-state='checked']_.bg-background]:ease-in-out [&>span]:focus-visible:outline-none [&>span]:focus-visible:ring-2 [&>span]:focus-visible:ring-ring [&>span]:focus-visible:ring-offset-2 [&>span]:focus-visible:ring-offset-background [&_[data-state='unchecked']_.bg-background]:disabled:cursor-not-allowed [&_[data-state='checked']_.bg-background]:disabled:cursor-not-allowed [&_[data-state='unchecked']_.bg-background]:disabled:opacity-50 [&_[data-state='checked']_.bg-background]:disabled:opacity-50"
-                          />
+                          <div 
+                            onClick={() => setOnlyText(!onlyText)}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
+                              onlyText ? 'bg-indigo-600' : 'bg-gray-300'
+                            }`}
+                          >
+                            <span 
+                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out ${
+                                onlyText ? 'translate-x-6' : 'translate-x-1'
+                              }`}
+                            />
+                          </div>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-700">Stop on Reply</span>
-                          <Switch 
-                            checked={stopOnReply}
-                            onCheckedChange={setStopOnReply}
-                            className="[&>span]:bg-indigo-800 [&>span]:border-2 [&>span]:border-indigo-900 [&_[data-state='checked']]:bg-white [&_[data-state='unchecked']_.bg-background]:bg-gray-300 [&_[data-state='checked']_.bg-background]:bg-indigo-300 [&>span]:h-6 [&>span]:w-11 [&_[data-state='unchecked']_.bg-background]:translate-x-0 [&_[data-state='checked']_.bg-background]:translate-x-5 [&_[data-state='unchecked']_.bg-background]:shadow-lg [&_[data-state='checked']_.bg-background]:shadow-lg transition-all duration-200 ease-in-out [&>span]:rounded-full [&_[data-state='unchecked']_.bg-background]:rounded-full [&_[data-state='checked']_.bg-background]:rounded-full [&_[data-state='unchecked']_.bg-background]:h-5 [&_[data-state='unchecked']_.bg-background]:w-5 [&_[data-state='checked']_.bg-background]:h-5 [&_[data-state='checked']_.bg-background]:w-5 [&_[data-state='unchecked']_.bg-background]:block [&_[data-state='checked']_.bg-background]:block [&_[data-state='unchecked']_.bg-background]:pointer-events-none [&_[data-state='checked']_.bg-background]:pointer-events-none [&_[data-state='unchecked']_.bg-background]:ring-0 [&_[data-state='checked']_.bg-background]:ring-0 [&>span]:inline-flex [&>span]:shrink-0 [&>span]:cursor-pointer [&>span]:items-center [&>span]:border-2 [&>span]:border-transparent [&>span]:transition-colors [&_[data-state='unchecked']_.bg-background]:bg-background [&_[data-state='checked']_.bg-background]:bg-background [&_[data-state='unchecked']_.bg-background]:shadow-lg [&_[data-state='checked']_.bg-background]:shadow-lg [&_[data-state='unchecked']_.bg-background]:transition-transform [&_[data-state='checked']_.bg-background]:transition-transform [&_[data-state='unchecked']_.bg-background]:duration-200 [&_[data-state='checked']_.bg-background]:duration-200 [&_[data-state='unchecked']_.bg-background]:ease-in-out [&_[data-state='checked']_.bg-background]:ease-in-out [&>span]:focus-visible:outline-none [&>span]:focus-visible:ring-2 [&>span]:focus-visible:ring-ring [&>span]:focus-visible:ring-offset-2 [&>span]:focus-visible:ring-offset-background [&_[data-state='unchecked']_.bg-background]:disabled:cursor-not-allowed [&_[data-state='checked']_.bg-background]:disabled:cursor-not-allowed [&_[data-state='unchecked']_.bg-background]:disabled:opacity-50 [&_[data-state='checked']_.bg-background]:disabled:opacity-50"
-                          />
+                          <div 
+                            onClick={() => setStopOnReply(!stopOnReply)}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
+                              stopOnReply ? 'bg-indigo-600' : 'bg-gray-300'
+                            }`}
+                          >
+                            <span 
+                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out ${
+                                stopOnReply ? 'translate-x-6' : 'translate-x-1'
+                              }`}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
