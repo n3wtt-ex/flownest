@@ -2,8 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { Layout } from './components/Layout/Layout';
-import { LoginForm } from './components/Auth/LoginForm';
-import { RegisterForm } from './components/Auth/RegisterForm';
+import { LoginRegister } from './components/Auth/LoginRegister';
 import { Dashboard } from './components/CRM/Dashboard';
 import { Contacts } from './components/CRM/Contacts';
 import { Companies } from './components/CRM/Companies';
@@ -54,8 +53,8 @@ function App() {
     return (
       <Router>
         <Routes>
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/login" element={<LoginRegister />} />
+          <Route path="/register" element={<LoginRegister />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
