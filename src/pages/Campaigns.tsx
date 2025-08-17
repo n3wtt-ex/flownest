@@ -411,7 +411,7 @@ export function Campaigns() {
     
     for (const lead of selectedLeadObjects) {
       try {
-        await fetch('https://n8n.flownests.org/webhook-test/124d80bd-1c27-44ae-befa-0652877817d4', {
+        await fetch('https://n8n.flownests.org/webhook/124d80bd-1c27-44ae-befa-0652877817d4', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -437,7 +437,7 @@ export function Campaigns() {
     
     if (leadToDelete) {
       try {
-        await fetch('https://n8n.flownests.org/webhook-test/124d80bd-1c27-44ae-befa-0652877817d4', {
+        await fetch('https://n8n.flownests.org/webhook/124d80bd-1c27-44ae-befa-0652877817d4', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
