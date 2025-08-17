@@ -60,7 +60,15 @@ interface LeadPersonalization {
 
 const mockLeads: Lead[] = [];
 
-const mockSequence: SequenceStep[] = [];
+const mockSequence: SequenceStep[] = [
+  {
+    id: '1',
+    subject: 'New Email Step',
+    body: 'Enter your email content here...',
+    variants: 1,
+    delay: 1
+  }
+];
 
 const initialPersonalizationData: Record<string, LeadPersonalization> = {};
 
@@ -77,7 +85,7 @@ export function Campaigns() {
   const [newCampaignName, setNewCampaignName] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddLeadsModalOpen, setIsAddLeadsModalOpen] = useState(false);
-  const [selectedStep, setSelectedStep] = useState<SequenceStep | null>(null);
+  const [selectedStep, setSelectedStep] = useState<SequenceStep | null>(mockSequence[0] || null);
   const [activeTab, setActiveTab] = useState('analytics');
   const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
   const [selectedLeads, setSelectedLeads] = useState<string[]>([]);
@@ -783,6 +791,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 
   // Also handle navigation within the app
   const handleNavigationAway = () => {
+    console.log('handleNavigationAway called, hasUnsavedChanges:', hasUnsavedChanges);
     if (hasUnsavedChanges) {
       const confirmLeave = window.confirm("Kaydedilmemiş değişiklikler var. Çıkmak istediğinize emin misiniz?");
       if (confirmLeave) {
