@@ -819,19 +819,16 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
   const updateSelectedStep = (field: keyof SequenceStep, value: string | number) => {
     setSelectedStep((prev: SequenceStep) => {
       const updatedStep = { ...prev, [field]: value };
-      // Automatically save when delay, subject, or body changes
+      // Set unsaved changes flag when delay, subject, or body changes
       if (field === 'delay' || field === 'subject' || field === 'body') {
-        // Call saveSequenceStep after state is updated, potentially with a debounce
-        // For simplicity, calling directly here. A debounce would be better for performance.
-        // However, the user explicitly asked for "her değiştirdiğimizde kaydedilsin"
-        // so direct call is appropriate for now.
+        setHasUnsavedChanges(true);
+        
+        // Update sequences without auto-saving
         setSequences((currentSequences: SequenceStep[]) => 
           currentSequences.map((step: SequenceStep) => 
             step.id === updatedStep.id ? updatedStep : step
           )
         );
-        // Set unsaved changes flag
-        setHasUnsavedChanges(true);
       }
       return updatedStep;
     });
@@ -883,6 +880,19 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
+  // Also handle navigation within the app
+  const handleNavigationAway = () => {
+    if (hasUnsavedChanges) {
+      const confirmLeave = window.confirm("Kaydedilmemiş değişiklikler var. Çıkmak istediğinize emin misiniz?");
+      if (confirmLeave) {
+        setHasUnsavedChanges(false);
+        return true;
+      }
+      return false;
+    }
+    return true;
+  };
+
   if (selectedCampaign) {
     return (
       <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -892,13 +902,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
             <div>
               <button
                 onClick={() => {
-                  if (hasUnsavedChanges) {
-                    const confirmLeave = window.confirm("Kaydedilmemiş değişiklikler var. Çıkmak istediğinize emin misiniz?");
-                    if (confirmLeave) {
-                      setHasUnsavedChanges(false);
-                      setSelectedCampaign(null);
-                    }
-                  } else {
+                  if (handleNavigationAway()) {
                     setSelectedCampaign(null);
                   }
                 }}
@@ -1342,40 +1346,41 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         <div className="text-xs text-gray-500 mt-1">{step.variants} variant(s)</div>
                         
                         {/* Delay Input */}
-                        <div className="mt-2 flex items-center space-x-2">
-                          <label className="text-xs text-gray-600 whitespace-nowrap">
-                            Next step delay (days):
-                          </label>
-                            <input
-                              type="number"
-                              min="0"
-                              value={step.delay}
-                              onChange={(e) => {
-                                e.stopPropagation();
-                                const newDelay = parseInt(e.target.value) || 0;
-                                updateSelectedStep('delay', newDelay);
-                                
-                                // Webhook for delay update
-                                if (selectedCampaign?.webhook_campaign_id) {
-                                  fetch('https://n8n.flownests.org/webhook/instantly-step-sync', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                      action: 'update_step_delay',
-                                      campaign_id: selectedCampaign.webhook_campaign_id,
-                                      step_data: {
-                                        position: index + 1,
-                                        delay: newDelay
-                                      }
-                                    })
-                                  }).catch(error => console.error('Error updating delay:', error));
-                                }
-                              }}
-                              className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
-                              onClick={(e) => e.stopPropagation()}
-                              disabled={index === sequences.length - 1} // Disable for last step
-                            />
-                        </div>
+                        {index < sequences.length - 1 && (
+                          <div className="mt-2 flex items-center space-x-2">
+                            <label className="text-xs text-gray-600 whitespace-nowrap">
+                              Next step delay (days):
+                            </label>
+                              <input
+                                type="number"
+                                min="0"
+                                value={step.delay}
+                                onChange={(e) => {
+                                  e.stopPropagation();
+                                  const newDelay = parseInt(e.target.value) || 0;
+                                  updateSelectedStep('delay', newDelay);
+                                  
+                                  // Webhook for delay update
+                                  if (selectedCampaign?.webhook_campaign_id) {
+                                    fetch('https://n8n.flownests.org/webhook/instantly-step-sync', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({
+                                        action: 'update_step_delay',
+                                        campaign_id: selectedCampaign.webhook_campaign_id,
+                                        step_data: {
+                                          position: index + 1,
+                                          delay: newDelay
+                                        }
+                                      })
+                                    }).catch(error => console.error('Error updating delay:', error));
+                                  }
+                                }}
+                                className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                          </div>
+                        )}
                       </div>
                     ))}
                     <button 
