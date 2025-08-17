@@ -176,6 +176,7 @@ export function Campaigns() {
   const [sequences, setSequences] = useLocalStorage<SequenceStep[]>('sequences', mockSequence);
   const [personalizationData, setPersonalizationData] = useLocalStorage<Record<string, LeadPersonalization>>('personalizationData', initialPersonalizationData);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [newCampaignName, setNewCampaignName] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAddLeadsModalOpen, setIsAddLeadsModalOpen] = useState(false);
@@ -810,6 +811,9 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
         console.error('Error calling instantly step edit webhook:', error);
       }
     }
+    
+    // Reset unsaved changes flag
+    setHasUnsavedChanges(false);
   };
 
   const updateSelectedStep = (field: keyof SequenceStep, value: string | number) => {
@@ -826,6 +830,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
             step.id === updatedStep.id ? updatedStep : step
           )
         );
+        // Set unsaved changes flag
+        setHasUnsavedChanges(true);
       }
       return updatedStep;
     });
@@ -863,6 +869,20 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
     lead.company.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Handle unsaved changes warning
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = ''; // Required for Chrome
+        return ''; // Required for other browsers
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges]);
+
   if (selectedCampaign) {
     return (
       <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -871,7 +891,17 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
           <div className="flex items-center justify-between mb-6">
             <div>
               <button
-                onClick={() => setSelectedCampaign(null)}
+                onClick={() => {
+                  if (hasUnsavedChanges) {
+                    const confirmLeave = window.confirm("Kaydedilmemiş değişiklikler var. Çıkmak istediğinize emin misiniz?");
+                    if (confirmLeave) {
+                      setHasUnsavedChanges(false);
+                      setSelectedCampaign(null);
+                    }
+                  } else {
+                    setSelectedCampaign(null);
+                  }
+                }}
                 className="text-blue-600 hover:text-blue-800 mb-2"
               >
                 ← Back to Campaigns
@@ -1343,6 +1373,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                               }}
                               className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
                               onClick={(e) => e.stopPropagation()}
+                              disabled={index === sequences.length - 1} // Disable for last step
                             />
                         </div>
                       </div>
