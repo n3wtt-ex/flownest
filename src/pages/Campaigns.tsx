@@ -644,7 +644,7 @@ export function Campaigns() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          campaign_id: selectedCampaign?.id,
+          campaign_id: selectedCampaign?.webhook_campaign_id,
           email: newLeadEmail,
           contact_name: newLeadName,
           company_name: newLeadCompany,
