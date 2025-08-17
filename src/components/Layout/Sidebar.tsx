@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import clsx from 'clsx';
+import { useSidebar } from '../../contexts/SidebarContext';
 
 // DO NOT MODIFY CRM/ACCOUNT PAGES - These are production components
 const mainNavItems = [
@@ -37,16 +38,12 @@ const crmNavItems = [
 
 export function Sidebar() {
   const { signOut } = useAuth();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { isCollapsed, toggleSidebar } = useSidebar();
   const [tooltip, setTooltip] = useState<{name: string, x: number, y: number} | null>(null);
   const collapseButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleSignOut = async () => {
     await signOut();
-  };
-
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
   };
 
   const handleMouseEnter = (e: React.MouseEvent, name: string) => {
