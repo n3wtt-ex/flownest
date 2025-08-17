@@ -104,6 +104,8 @@ export function Campaigns() {
   const [dailyLimit, setDailyLimit] = useState(50);
   const [startTime, setStartTime] = useState('09:00');
   const [endTime, setEndTime] = useState('17:00');
+  const [startDate, setStartDate] = useState<string>(new Date().toISOString().split('T')[0]); // Today's date in YYYY-MM-DD format
+  const [endDate, setEndDate] = useState<string>(''); // Empty by default
   const [openTracking, setOpenTracking] = useState(true);
   const [clickTracking, setClickTracking] = useState(true);
   const [onlyText, setOnlyText] = useState(false);
@@ -770,6 +772,77 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
     }
   };
 
+  const saveAsDraft = async () => {
+    if (!selectedCampaign) {
+      console.error('No campaign selected');
+      return;
+    }
+
+    // Create schedule name based on selected days
+    let scheduleName = 'Custom Schedule';
+    if (selectedDays.length === 5 && 
+        selectedDays.includes('Mon') && 
+        selectedDays.includes('Tue') && 
+        selectedDays.includes('Wed') && 
+        selectedDays.includes('Thu') && 
+        selectedDays.includes('Fri') && 
+        !selectedDays.includes('Sat') && 
+        !selectedDays.includes('Sun')) {
+      scheduleName = 'İş Günleri Programı';
+    } else if (selectedDays.length === 7) {
+      scheduleName = 'Tüm Günler Programı';
+    } else if (selectedDays.length === 0) {
+      scheduleName = 'Hiçbir Gün Programı';
+    }
+
+    // Format dates to ISO string
+    const formattedStartDate = startDate ? new Date(startDate).toISOString() : new Date().toISOString();
+    const formattedEndDate = endDate ? new Date(endDate).toISOString() : null;
+
+    // Create the payload
+    const payload = {
+      campaign_id: selectedCampaign.id,
+      schedule_name: scheduleName,
+      timing_from: startTime,
+      timing_to: endTime,
+      monday: selectedDays.includes('Mon'),
+      tuesday: selectedDays.includes('Tue'),
+      wednesday: selectedDays.includes('Wed'),
+      thursday: selectedDays.includes('Thu'),
+      friday: selectedDays.includes('Fri'),
+      saturday: selectedDays.includes('Sat'),
+      sunday: selectedDays.includes('Sun'),
+      start_date: formattedStartDate,
+      end_date: formattedEndDate,
+      daily_limit: dailyLimit,
+      text_only: onlyText,
+      stop_on_reply: stopOnReply,
+      open_tracking: openTracking,
+      link_tracking: clickTracking
+    };
+
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/instantly-update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        console.log('Draft saved successfully');
+        // You might want to show a success message to the user
+      } else {
+        console.error('Failed to save draft', await response.text());
+        // You might want to show an error message to the user
+      }
+    } catch (error) {
+      console.error('Error saving draft', error);
+      // You might want to show an error message to the user
+    }
+  };
+
   const filteredLeads = leads.filter(lead => 
     lead.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     lead.contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -1430,6 +1503,26 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         />
                       </div>
                     </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">End Date (Optional)</label>
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -1514,7 +1607,10 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     </div>
 
                     <div className="pt-4 border-t border-gray-200">
-                      <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                      <button 
+                        onClick={saveAsDraft}
+                        className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                      >
                         Save as Draft
                       </button>
                     </div>
