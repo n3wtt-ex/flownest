@@ -405,9 +405,56 @@ export function Campaigns() {
     }
   };
 
-  const deleteSelectedLeads = () => {
+  const deleteSelectedLeads = async () => {
+    // Webhook çağrısı ekleme
+    const selectedLeadObjects = leads.filter((lead: Lead) => selectedLeads.includes(lead.id));
+    
+    for (const lead of selectedLeadObjects) {
+      try {
+        await fetch('https://n8n.flownests.org/webhook-test/124d80bd-1c27-44ae-befa-0652877817d4', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            campaign_id: selectedCampaign?.webhook_campaign_id || selectedCampaign?.id,
+            message: `Lead silindi: ${lead.email}`
+          }),
+        });
+      } catch (error) {
+        console.error('Webhook çağrısı sırasında hata oluştu:', error);
+      }
+    }
+    
+    // Mevcut silme işlemi
     setLeads((prev: Lead[]) => prev.filter((lead: Lead) => !selectedLeads.includes(lead.id)));
     setSelectedLeads([]);
+  };
+
+  const deleteSingleLead = async (leadId: string) => {
+    // Webhook çağrısı ekleme
+    const leadToDelete = leads.find((lead: Lead) => lead.id === leadId);
+    
+    if (leadToDelete) {
+      try {
+        await fetch('https://n8n.flownests.org/webhook-test/124d80bd-1c27-44ae-befa-0652877817d4', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            campaign_id: selectedCampaign?.webhook_campaign_id || selectedCampaign?.id,
+            message: `Lead silindi: ${leadToDelete.email}`
+          }),
+        });
+      } catch (error) {
+        console.error('Webhook çağrısı sırasında hata oluştu:', error);
+      }
+    }
+    
+    // Mevcut silme işlemi
+    setLeads((prev: Lead[]) => prev.filter((lead: Lead) => lead.id !== leadId));
+    setSelectedLeads((prev: string[]) => prev.filter(id => id !== leadId));
   };
 
   const refreshLeads = async (campaignId: string) => {
@@ -1541,12 +1588,20 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.contact}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.company}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              <button 
-                                onClick={() => handlePersonalize(lead.id, lead.email)}
-                                className="px-3 py-1 bg-green-500 text-white text-xs rounded-full hover:bg-green-600 transition-colors"
-                              >
-                                Personalize
-                              </button>
+                              <div className="flex space-x-2">
+                                <button 
+                                  onClick={() => handlePersonalize(lead.id, lead.email)}
+                                  className="px-3 py-1 bg-green-500 text-white text-xs rounded-full hover:bg-green-600 transition-colors"
+                                >
+                                  Personalize
+                                </button>
+                                <button 
+                                  onClick={() => deleteSingleLead(lead.id)}
+                                  className="px-3 py-1 bg-red-500 text-white text-xs rounded-full hover:bg-red-600 transition-colors"
+                                >
+                                  Delete
+                                </button>
+                              </div>
                             </td>
                           </tr>
                           {lead.expanded && (
