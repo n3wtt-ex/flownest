@@ -100,6 +100,9 @@ export function Campaigns() {
   const [newLeadWebsite, setNewLeadWebsite] = useState('');
   const [newLeadLinkedIn, setNewLeadLinkedIn] = useState('');
   const [newLeadSector, setNewLeadSector] = useState('');
+  const [newLeadJobTitle, setNewLeadJobTitle] = useState('');
+  const [newLeadLocation, setNewLeadLocation] = useState('');
+  const [newLeadCountry, setNewLeadCountry] = useState('');
   const [addLeadMethod, setAddLeadMethod] = useState<'manual' | 'import'>('manual');
   const [refreshingLeads, setRefreshingLeads] = useState(false);
 
@@ -647,7 +650,10 @@ export function Campaigns() {
           company_name: newLeadCompany,
           website: newLeadWebsite,
           linkedin_url: newLeadLinkedIn,
-          sector: newLeadSector
+          sector: newLeadSector,
+          job_title: newLeadJobTitle,
+          location: newLeadLocation,
+          country: newLeadCountry
         }),
       });
 
@@ -674,6 +680,9 @@ export function Campaigns() {
     setNewLeadWebsite('');
     setNewLeadLinkedIn('');
     setNewLeadSector('');
+    setNewLeadJobTitle('');
+    setNewLeadLocation('');
+    setNewLeadCountry('');
     setIsAddLeadsModalOpen(false);
   };
 
@@ -1210,7 +1219,23 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                               </button>
                               <button
                                 onClick={() => {
+                                  // Send data to webhook
+                                  fetch('https://n8n.flownests.org/webhook/0e5b6fe7-3f8c-428b-aae2-049d806a2b2f', {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                      campaign_id: selectedCampaign?.id
+                                    }),
+                                  }).catch(error => {
+                                    console.error('Error sending data to webhook:', error);
+                                  });
+                                  
+                                  // Open n8n form in new tab
                                   window.open('https://n8n.flownests.org/form/f361872c-8943-498c-8a32-b8ab1683eb18', '_blank');
+                                  
+                                  // Close the modal
                                   setIsAddLeadsModalOpen(false);
                                 }}
                                 className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'import' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
@@ -1264,13 +1289,53 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                   onChange={(e) => setNewLeadSector(e.target.value)}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
+                                <input
+                                  type="text"
+                                  placeholder="Job Title"
+                                  value={newLeadJobTitle}
+                                  onChange={(e) => setNewLeadJobTitle(e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Location"
+                                  value={newLeadLocation}
+                                  onChange={(e) => setNewLeadLocation(e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Country"
+                                  value={newLeadCountry}
+                                  onChange={(e) => setNewLeadCountry(e.target.value)}
+                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
                               </div>
                             ) : (
                               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                                 <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                                 <p className="text-gray-600 mb-4">Click the Import CSV button to start the import process via n8n.</p>
                                 <button
-                                  onClick={() => window.open('https://n8n.flownests.org/form/f361872c-8943-498c-8a32-b8ab1683eb18', '_blank')}
+                                  onClick={() => {
+                                    // Send data to webhook
+                                    fetch('https://n8n.flownests.org/webhook/0e5b6fe7-3f8c-428b-aae2-049d806a2b2f', {
+                                      method: 'POST',
+                                      headers: {
+                                        'Content-Type': 'application/json',
+                                      },
+                                      body: JSON.stringify({
+                                        campaign_id: selectedCampaign?.id
+                                      }),
+                                    }).catch(error => {
+                                      console.error('Error sending data to webhook:', error);
+                                    });
+                                    
+                                    // Open n8n form in new tab
+                                    window.open('https://n8n.flownests.org/form/f361872c-8943-498c-8a32-b8ab1683eb18', '_blank');
+                                    
+                                    // Close the modal
+                                    setIsAddLeadsModalOpen(false);
+                                  }}
                                   className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow"
                                 >
                                   Import CSV
@@ -1287,6 +1352,9 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                   setNewLeadWebsite('');
                                   setNewLeadLinkedIn('');
                                   setNewLeadSector('');
+                                  setNewLeadJobTitle('');
+                                  setNewLeadLocation('');
+                                  setNewLeadCountry('');
                                   setIsAddLeadsModalOpen(false);
                                 }}
                                 className="px-4 py-2 text-gray-600 hover:text-gray-800"
@@ -1294,7 +1362,26 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                 Cancel
                               </button>
                               <button
-                                onClick={addLeadMethod === 'manual' ? addManualLead : () => window.open('https://n8n.flownests.org/form/f361872c-8943-498c-8a32-b8ab1683eb18', '_blank')}
+                                onClick={addLeadMethod === 'manual' ? addManualLead : () => {
+                                  // Send data to webhook
+                                  fetch('https://n8n.flownests.org/webhook/0e5b6fe7-3f8c-428b-aae2-049d806a2b2f', {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                      campaign_id: selectedCampaign?.id
+                                    }),
+                                  }).catch(error => {
+                                    console.error('Error sending data to webhook:', error);
+                                  });
+                                  
+                                  // Open n8n form in new tab
+                                  window.open('https://n8n.flownests.org/form/f361872c-8943-498c-8a32-b8ab1683eb18', '_blank');
+                                  
+                                  // Close the modal
+                                  setIsAddLeadsModalOpen(false);
+                                }}
                                 disabled={addLeadMethod === 'manual' && (!newLeadEmail || !newLeadName || !newLeadCompany)}
                                 className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-shadow disabled:opacity-50"
                               >
