@@ -940,7 +940,11 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
           </div>
 
           {/* Campaign Detail Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={(value) => {
+            if (handleNavigationAway()) {
+              setActiveTab(value);
+            }
+          }} className="w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
               <TabsTrigger value="leads">Leads</TabsTrigger>
@@ -1325,7 +1329,11 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     {sequences.map((step: SequenceStep, index: number) => (
                       <div
                         key={step.id}
-                        onClick={() => setSelectedStep(step)}
+                        onClick={() => {
+                          if (handleNavigationAway()) {
+                            setSelectedStep(step);
+                          }
+                        }}
                         className={`relative p-3 rounded-lg cursor-pointer transition-colors ${
                           selectedStep.id === step.id 
                             ? 'bg-blue-50 border-2 border-blue-300' 
@@ -1384,7 +1392,11 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       </div>
                     ))}
                     <button 
-                      onClick={addSequenceStep}
+                      onClick={() => {
+                        if (handleNavigationAway()) {
+                          addSequenceStep();
+                        }
+                      }}
                       className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
                     >
                       + Add Step
