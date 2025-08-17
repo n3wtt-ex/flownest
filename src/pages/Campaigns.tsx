@@ -1445,6 +1445,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       <Switch 
                         checked={openTracking}
                         onCheckedChange={setOpenTracking}
+                        className="[&>span]:bg-blue-600"
                       />
                     </div>
 
@@ -1456,35 +1457,32 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       <Switch 
                         checked={clickTracking}
                         onCheckedChange={setClickTracking}
+                        className="[&>span]:bg-blue-600"
                       />
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="font-medium text-gray-900">Reply Options</div>
-                        <div className="text-sm text-gray-600">Choose reply handling method</div>
+                        <div className="font-medium text-gray-900">Reply Handling</div>
+                        <div className="text-sm text-gray-600">Choose how to handle replies</div>
                       </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => setReplyOption('text')}
-                          className={`px-4 py-2 rounded-lg transition-colors ${
-                            replyOption === 'text'
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                          }`}
-                        >
-                          Only Text
-                        </button>
-                        <button
-                          onClick={() => setReplyOption('step')}
-                          className={`px-4 py-2 rounded-lg transition-colors ${
-                            replyOption === 'step'
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                          }`}
-                        >
-                          Step on Reply
-                        </button>
+                      <div className="flex flex-col space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-700 mr-4">Only Text</span>
+                          <Switch 
+                            checked={replyOption === 'text'}
+                            onCheckedChange={(checked) => checked && setReplyOption('text')}
+                            className="[&>span]:bg-blue-600"
+                          />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-700 mr-4">Stop on Reply</span>
+                          <Switch 
+                            checked={replyOption === 'step'}
+                            onCheckedChange={(checked) => checked && setReplyOption('step')}
+                            className="[&>span]:bg-blue-600"
+                          />
+                        </div>
                       </div>
                     </div>
 
