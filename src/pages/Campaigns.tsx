@@ -422,6 +422,8 @@ export function Campaigns() {
           campaign_id: campaignId,
           email: '',
           contact_name: '',
+          firstName: '',
+          lastName: '',
           company_name: '',
           website: '',
           linkedin_url: '',
@@ -434,6 +436,7 @@ export function Campaigns() {
       
       if (response.ok) {
         const data = await response.json();
+        console.log('Webhook response data:', data); // Log the actual response
         // Check if data is an array
         if (Array.isArray(data)) {
           // Assuming data is an array of leads in the format:
@@ -449,9 +452,21 @@ export function Campaigns() {
           }));
           setLeads(newLeads);
           console.log('Leads refreshed successfully:', newLeads);
+        } else if (data && typeof data === 'object' && data.leads && Array.isArray(data.leads)) {
+          // If data is an object containing a leads array
+          const newLeads: Lead[] = data.leads.map((lead: any) => ({
+            id: lead.id || Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID if not provided
+            email: lead.email,
+            provider: lead.provider || (lead.email.includes('@gmail.com') ? 'Gmail' : 'Outlook'),
+            status: lead.status || 'pending',
+            contact: lead.contact || '',
+            company: lead.company || ''
+          }));
+          setLeads(newLeads);
+          console.log('Leads refreshed successfully:', newLeads);
         } else {
-          console.error('Webhook response is not an array:', data);
-          // Handle the case where data is not an array
+          console.error('Webhook response is not in expected format:', data);
+          // Handle the case where data is not in expected format
           setLeads([]);
         }
       } else {
@@ -654,6 +669,11 @@ export function Campaigns() {
   const addManualLead = async () => {
     if (!newLeadEmail.trim() || !newLeadName.trim() || !newLeadCompany.trim()) return;
 
+    // Split the newLeadName into firstName and lastName
+    const nameParts = newLeadName.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
     // Send data to webhook
     try {
       const response = await fetch('https://n8n.flownests.org/webhook-test/76fc948b-7221-496b-8868-05fc50a7a7b2', {
@@ -664,7 +684,9 @@ export function Campaigns() {
         body: JSON.stringify({
           campaign_id: selectedCampaign?.webhook_campaign_id,
           email: newLeadEmail,
-          contact_name: newLeadName,
+          contact_name: newLeadName, // Keep the original full name
+          firstName: firstName, // First name part
+          lastName: lastName, // Last name part
           company_name: newLeadCompany,
           website: newLeadWebsite,
           linkedin_url: newLeadLinkedIn,
@@ -1247,6 +1269,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                       campaign_id: selectedCampaign?.webhook_campaign_id,
                                       email: '',
                                       contact_name: '',
+                                      firstName: '',
+                                      lastName: '',
                                       company_name: '',
                                       website: '',
                                       linkedin_url: '',
@@ -1354,6 +1378,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                         campaign_id: selectedCampaign?.webhook_campaign_id,
                                         email: '',
                                         contact_name: '',
+                                        firstName: '',
+                                        lastName: '',
                                         company_name: '',
                                         website: '',
                                         linkedin_url: '',
@@ -1409,6 +1435,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                       campaign_id: selectedCampaign?.webhook_campaign_id,
                                       email: '',
                                       contact_name: '',
+                                      firstName: '',
+                                      lastName: '',
                                       company_name: '',
                                       website: '',
                                       linkedin_url: '',
