@@ -106,7 +106,7 @@ export function Campaigns() {
   const [endTime, setEndTime] = useState('17:00');
   const [openTracking, setOpenTracking] = useState(true);
   const [clickTracking, setClickTracking] = useState(true);
-  const [replyTracking, setReplyTracking] = useState(true);
+  const [replyOption, setReplyOption] = useState<'text' | 'step'>('text');
 
   // Supabase'den kampanyaları çekme fonksiyonu
   const fetchCampaigns = async () => {
@@ -791,7 +791,6 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 
   // Also handle navigation within the app
   const handleNavigationAway = () => {
-    console.log('handleNavigationAway called, hasUnsavedChanges:', hasUnsavedChanges);
     if (hasUnsavedChanges) {
       const confirmLeave = window.confirm("Kaydedilmemiş değişiklikler var. Çıkmak istediğinize emin misiniz?");
       if (confirmLeave) {
@@ -1451,7 +1450,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="font-medium text-gray-900">Click Tracking</div>
+                        <div className="font-medium text-gray-900">Link Tracking</div>
                         <div className="text-sm text-gray-600">Track link clicks in emails</div>
                       </div>
                       <Switch 
@@ -1462,13 +1461,31 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="font-medium text-gray-900">Reply Tracking</div>
-                        <div className="text-sm text-gray-600">Track email replies</div>
+                        <div className="font-medium text-gray-900">Reply Options</div>
+                        <div className="text-sm text-gray-600">Choose reply handling method</div>
                       </div>
-                      <Switch 
-                        checked={replyTracking}
-                        onCheckedChange={setReplyTracking}
-                      />
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => setReplyOption('text')}
+                          className={`px-4 py-2 rounded-lg transition-colors ${
+                            replyOption === 'text'
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                          }`}
+                        >
+                          Only Text
+                        </button>
+                        <button
+                          onClick={() => setReplyOption('step')}
+                          className={`px-4 py-2 rounded-lg transition-colors ${
+                            replyOption === 'step'
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                          }`}
+                        >
+                          Step on Reply
+                        </button>
+                      </div>
                     </div>
 
                     <div className="pt-4 border-t border-gray-200">
