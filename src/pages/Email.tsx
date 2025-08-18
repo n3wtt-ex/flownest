@@ -23,6 +23,15 @@ const eventContents = {
   'report': 'Access our latest industry report featuring market analysis, trends, and data-driven insights that will inform your business decisions.'
 };
 
+// Event type labels
+const eventLabels = {
+  'demo': 'Demo',
+  'e-book': 'E-book',
+  'loom': 'Loom',
+  'proposal': 'Proposal',
+  'report': 'Report'
+};
+
 export function Email() {
   const [emailAccounts, setEmailAccounts] = useState<EmailAccount[]>(mockEmailAccounts);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -60,9 +69,26 @@ export function Email() {
     return 'text-red-600';
   };
 
-  const handleEventChange = (event: string) => {
+  const handleEventChange = async (event: string) => {
     setSelectedEvent(event);
-    setEditContent(eventContents[event]);
+    
+    // Webhook'tan bu event için kaydedilmiş içeriği çek
+    try {
+      const response = await fetch(`https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8?eventType=${event}`);
+      const data = await response.json();
+      
+      if (data.content) {
+        setEditContent(data.content);
+      } else {
+        // Eğer bu event için kaydedilmiş bir içerik yoksa, varsayılan içeriği kullan
+        setEditContent(eventContents[event] || '');
+      }
+    } catch (error) {
+      console.error('Error fetching event content:', error);
+      // Hata durumunda varsayılan içeriği kullan
+      setEditContent(eventContents[event] || '');
+    }
+    
     setIsContentModified(false);
   };
 
@@ -81,12 +107,14 @@ export function Email() {
   const handleIntroductionClick = () => {
     setIsIntroductionMode(true);
     setSelectedEvent('introduction');
+    fetchIntroductionData(); // Verileri tekrar çek
   };
 
   const handleEventModeClick = () => {
     setIsIntroductionMode(false);
     setSelectedEvent('demo');
     setEditContent(eventContents['demo']);
+    fetchEventContentData(); // Verileri tekrar çek
   };
 
     const handleSaveIntroduction = () => {
@@ -112,8 +140,10 @@ export function Email() {
   // Yeni eklenen fonksiyonlar
   const fetchIntroductionData = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook/c9deff5f-039f-4fb0-8a84-1868063e9e65');
+      const response = await fetch('https://n8n.flownests.org/webhook-test/c9deff5f-039f-4fb0-8a84-1868063e9e65');
       const data = await response.json();
+      
+      console.log('Introduction data:', data); // Gelen verileri console'a yazdır
       
       // Gelen verileri state'lere ata
       if (data.name) setIntroName(data.name);
@@ -126,13 +156,20 @@ export function Email() {
 
   const fetchEventContentData = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8');
+      const response = await fetch('https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8');
       const data = await response.json();
+      
+      console.log('Event content data:', data); // Gelen verileri console'a yazdır
       
       // Gelen verileri state'e ata
       if (data.content) {
         setEventContent(data.content);
         setEditContent(data.content); // Event content'ini de editContent state'ine ata
+      }
+      
+      // Event tipini de ayarla
+      if (data.eventType) {
+        setSelectedEvent(data.eventType);
       }
     } catch (error) {
       console.error('Error fetching event content data:', error);
@@ -355,7 +392,13 @@ export function Email() {
                           </label>
                           <select
                             value={selectedEvent}
-                            onChange={(e) => handleEventChange(e.target.value)}
+                            onChange={(e) => {
+                              setSelectedEvent(e.target.value);
+                              // Eğer bu event için önceden kaydedilmiş bir içerik varsa, onu yükle
+                              if (eventContents[e.target.value]) {
+                                setEditContent(eventContents[e.target.value]);
+                              }
+                            }}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                           >
                             <option value="e-book">E-book</option>
