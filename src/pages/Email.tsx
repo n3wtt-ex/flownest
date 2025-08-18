@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Settings, Shield, Zap, Plus, ChevronDown, Upload, Sparkles, Edit3, Save, FileText } from 'lucide-react';
+import { Mail, Settings, Shield, Zap, Plus, ChevronDown, Upload, Sparkles, Edit3, Save, FileText, RefreshCw } from 'lucide-react';
 
 interface EmailAccount {
   id: string;
@@ -9,34 +9,10 @@ interface EmailAccount {
   warmupEmails: number;
   healthScore: number;
   status: 'active' | 'warming' | 'paused';
+  dailyLimit: number;
 }
 
-const mockEmailAccounts: EmailAccount[] = [
-  {
-    id: '1',
-    email: 'john@company.com',
-    emailsSent: 1250,
-    warmupEmails: 45,
-    healthScore: 92,
-    status: 'active'
-  },
-  {
-    id: '2',
-    email: 'sarah@business.io',
-    emailsSent: 890,
-    warmupEmails: 32,
-    healthScore: 87,
-    status: 'warming'
-  },
-  {
-    id: '3',
-    email: 'mike@startup.co',
-    emailsSent: 567,
-    warmupEmails: 28,
-    healthScore: 95,
-    status: 'active'
-  }
-];
+const mockEmailAccounts: EmailAccount[] = [];
 
 // Mock content for different event types
 const eventContents = {
@@ -59,6 +35,10 @@ export function Email() {
   const [introName, setIntroName] = useState('');
   const [introCompany, setIntroCompany] = useState('');
   const [isIntroModified, setIsIntroModified] = useState(false);
+
+  // Webhook state
+  const [dailyLimit, setDailyLimit] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -119,6 +99,41 @@ export function Email() {
     setIsIntroModified(false);
   };
 
+  const fetchEmailAccounts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/c2a80579-f1eb-43dc-a996-068affa17420');
+      const data = await response.json();
+      
+      // Gelen verileri filtrele ve EmailAccount formatına dönüştür
+      const accounts: EmailAccount[] = data.map((item: any, index: number) => ({
+        id: `${index + 1}`, // Basit bir ID oluşturma
+        email: item.email,
+        emailsSent: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
+        warmupEmails: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
+        healthScore: item.start_warmup_score || 0,
+        status: item.warmup_status === 1 ? 'active' : 'paused',
+        dailyLimit: item.daily_limit || dailyLimit // daily_limit sadece bir kere geliyor, önceki değerleri koru
+      }));
+      
+      // daily_limit sadece bir kere geliyorsa, tüm hesaplar için aynı değeri kullan
+      if (data.length > 0 && data[0].daily_limit) {
+        setDailyLimit(data[0].daily_limit);
+      }
+      
+      setEmailAccounts(accounts);
+    } catch (error) {
+      console.error('Error fetching email accounts:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Bileşen yüklendiğinde verileri al
+  useEffect(() => {
+    fetchEmailAccounts();
+  }, []);
+
   return (
     <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="max-w-7xl mx-auto">
@@ -155,7 +170,7 @@ export function Email() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6 overflow-hidden"
         >
-          <div className={`flex ${!isSettingsOpen ? 'h-32' : ''}`}>
+          <div className={`flex ${!isSettingsOpen ? 'h-[76px]' : ''}`}>
             {/* Left Side - Settings Panel (Half Width) */}
             <div className="w-1/2 border-r border-gray-200">
               <button
@@ -452,14 +467,29 @@ export function Email() {
           {/* Table Header */}
           <div className="p-6 border-b border-gray-200 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-gray-900">Email Accounts</h2>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-shadow"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Account
-            </motion.button>
+            <div className="flex items-center space-x-2">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={fetchEmailAccounts}
+                disabled={isLoading}
+                className="flex items-center justify-center p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                {isLoading ? (
+                  <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <RefreshCw className="w-5 h-5" />
+                )}
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-shadow"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Account
+              </motion.button>
+            </div>
           </div>
 
           {/* Table */}
@@ -471,16 +501,13 @@ export function Email() {
                     Email
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Emails Sent
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Warmup Emails
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Health Score
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Daily Limit
                   </th>
                 </tr>
               </thead>
@@ -504,16 +531,6 @@ export function Email() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {account.emailsSent.toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {account.warmupEmails}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className={`text-sm font-bold ${getHealthScoreColor(account.healthScore)}`}>
                         {account.healthScore}%
                       </div>
@@ -523,6 +540,9 @@ export function Email() {
                         {account.status === 'active' ? 'Active' : 
                          account.status === 'warming' ? 'Warming' : 'Paused'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {account.dailyLimit}
                     </td>
                   </motion.tr>
                 ))}
@@ -553,9 +573,9 @@ export function Email() {
               <Mail className="w-8 h-8 text-blue-600 mb-2" />
             </div>
             <div className="text-2xl font-bold text-gray-900">
-              {emailAccounts.reduce((sum, acc) => sum + acc.emailsSent, 0).toLocaleString()}
+              {emailAccounts.length}
             </div>
-            <div className="text-sm text-gray-600">Total Emails Sent</div>
+            <div className="text-sm text-gray-600">Total Accounts</div>
           </div>
           
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
@@ -563,7 +583,7 @@ export function Email() {
               <Zap className="w-8 h-8 text-purple-600 mb-2" />
             </div>
             <div className="text-2xl font-bold text-gray-900">
-              {Math.round(emailAccounts.reduce((sum, acc) => sum + acc.healthScore, 0) / emailAccounts.length)}%
+              {emailAccounts.length > 0 ? Math.round(emailAccounts.reduce((sum, acc) => sum + acc.healthScore, 0) / emailAccounts.length) : 0}%
             </div>
             <div className="text-sm text-gray-600">Average Health Score</div>
           </div>

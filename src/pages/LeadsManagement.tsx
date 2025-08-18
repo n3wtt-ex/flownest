@@ -59,7 +59,7 @@ export function Leads() {
       }
       
       // Send webhook request with all lead information
-      const response = await fetch('https://n8n.flownests.org/webhook-test/f0117984-5614-470c-8e23-a0428357e83c', {
+      const response = await fetch('https://n8n.flownests.org/webhook/f0117984-5614-470c-8e23-a0428357e83c', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
