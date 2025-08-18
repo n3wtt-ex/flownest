@@ -1,118 +1,148 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, MapPin, Globe, Plus, Filter, Eye, MoreHorizontal, FileText, Trash2, Edit3, Check, X } from 'lucide-react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Lead as LeadType } from '../types';
+import { supabase } from '../lib/supabase';
 
-const mockLeads: LeadType[] = [
-  {
-    id: '1',
-    name: 'John Smith',
-    email: 'john@techcorp.com',
-    linkedin: 'John Smith',
-    linkedinURL: 'https://linkedin.com/in/johnsmith',
-    jobTitle: 'VP of Sales',
-    companyName: 'TechCorp Inc.',
-    location: 'San Francisco',
-    country: 'USA',
-    website: 'https://techcorp.com',
-    sector: 'Technology',
-    status: 'New',
-    campaign_id: 'campaign-1',
-    lead_id: 'lead-1',
-    created_at: '2024-01-15T10:30:00Z'
-  },
-  {
-    id: '2',
-    name: 'Sarah Johnson',
-    email: 'sarah@innovate.io',
-    linkedin: 'Sarah Johnson',
-    linkedinURL: 'https://linkedin.com/in/sarahjohnson',
-    jobTitle: 'Marketing Director',
-    companyName: 'Innovate Solutions',
-    location: 'New York',
-    country: 'USA',
-    website: 'https://innovate.io',
-    sector: 'Marketing',
-    status: 'Verified',
-    campaign_id: 'campaign-2',
-    lead_id: 'lead-2',
-    created_at: '2024-01-15T11:45:00Z'
-  },
-  {
-    id: '3',
-    name: 'Mike Chen',
-    email: 'mike@startup.co',
-    linkedin: 'Mike Chen',
-    linkedinURL: 'https://linkedin.com/in/mikechen',
-    jobTitle: 'Founder',
-    companyName: 'Startup Co.',
-    location: 'London',
-    country: 'UK',
-    website: 'https://startup.co',
-    sector: 'E-commerce',
-    status: 'Skipped',
-    campaign_id: 'campaign-3',
-    lead_id: 'lead-3',
-    created_at: '2024-01-15T14:20:00Z'
-  }
-];
+// Mock data is no longer needed as we're fetching from Supabase
+// const mockLeads: LeadType[] = [
+//   {
+//     id: '1',
+//     name: 'John Smith',
+//     email: 'john@techcorp.com',
+//     linkedin: 'John Smith',
+//     linkedinURL: 'https://linkedin.com/in/johnsmith',
+//     jobTitle: 'VP of Sales',
+//     companyName: 'TechCorp Inc.',
+//     location: 'San Francisco',
+//     country: 'USA',
+//     website: 'https://techcorp.com',
+//     sector: 'Technology',
+//     status: 'New',
+//     campaign_id: 'campaign-1',
+//     lead_id: 'lead-1',
+//     created_at: '2024-01-15T10:30:00Z'
+//   },
+//   // ... other mock data
+// ];
 
 export function Leads() {
-  const [leads, setLeads] = useLocalStorage<LeadType[]>('leads', []);
-  const [searchResults, setSearchResults] = useState<LeadType[]>(mockLeads);
+  const [leads, setLeads] = useState<LeadType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'New' | 'Verified' | 'Skipped'>('all');
   const [isSearching, setIsSearching] = useState(false);
-  const [showResults, setShowResults] = useState(false);
   const [editingLeadId, setEditingLeadId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<LeadType>>({});
 
   useEffect(() => {
-    // Initialize with mock data if localStorage is empty
-    if (leads.length === 0) {
-      setLeads(mockLeads);
+    fetchLeads();
+  }, []);
+
+  const fetchLeads = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('leads')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        throw error;
+      }
+
+      // Map Supabase data to our Lead type
+      const mappedLeads: LeadType[] = data.map(lead => ({
+        id: lead.id.toString(),
+        name: lead.name,
+        email: lead.email,
+        linkedin: lead.linkedin,
+        linkedinURL: lead.linkedin_url,
+        jobTitle: lead.job_title,
+        companyName: lead.company_name,
+        location: lead.location,
+        country: lead.country,
+        website: lead.website,
+        sector: lead.sector,
+        status: lead.status as 'New' | 'Verified' | 'Skipped',
+        campaign_id: lead.campaign_id,
+        lead_id: lead.lead_id,
+        created_at: lead.created_at
+      }));
+
+      setLeads(mappedLeads);
+    } catch (err) {
+      console.error('Error fetching leads:', err);
+      setError('Failed to fetch leads');
+    } finally {
+      setLoading(false);
     }
-  }, [leads.length, setLeads]);
+  };
 
   const handleSearch = () => {
     if (!searchQuery.trim()) return;
     
     setIsSearching(true);
     
-    // Simulate API call
+    // Filter leads based on search query
+    const filtered = leads.filter(lead => 
+      (lead.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.jobTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.sector?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lead.country?.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+    
+    // In a real implementation, you might want to filter in the database
+    // For now, we'll just simulate a delay
     setTimeout(() => {
-      const filtered = mockLeads.filter(lead => 
-        (lead.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        lead.jobTitle?.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-      
-      setSearchResults(filtered);
       setIsSearching(false);
-      setShowResults(true);
-    }, 1000);
+    }, 500);
   };
 
-  const updateLeadStatus = (leadId: string, status: 'New' | 'Verified' | 'Skipped') => {
-    const updatedLeads = leads.map(lead => 
-      lead.id === leadId ? { ...lead, status } : lead
-    );
-    setLeads(updatedLeads);
-    
-    const updatedResults = searchResults.map(lead => 
-      lead.id === leadId ? { ...lead, status } : lead
-    );
-    setSearchResults(updatedResults);
+  const updateLeadStatus = async (leadId: string, status: 'New' | 'Verified' | 'Skipped') => {
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .update({ status })
+        .eq('id', leadId);
+
+      if (error) {
+        throw error;
+      }
+
+      // Update local state
+      const updatedLeads = leads.map(lead => 
+        lead.id === leadId ? { ...lead, status } : lead
+      );
+      setLeads(updatedLeads);
+    } catch (err) {
+      console.error('Error updating lead status:', err);
+      setError('Failed to update lead status');
+    }
   };
 
-  const deleteLead = (leadId: string) => {
-    const updatedLeads = leads.filter(lead => lead.id !== leadId);
-    setLeads(updatedLeads);
-    
-    const updatedResults = searchResults.filter(lead => lead.id !== leadId);
-    setSearchResults(updatedResults);
+  const deleteLead = async (leadId: string) => {
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .delete()
+        .eq('id', leadId);
+
+      if (error) {
+        throw error;
+      }
+
+      // Update local state
+      const updatedLeads = leads.filter(lead => lead.id !== leadId);
+      setLeads(updatedLeads);
+    } catch (err) {
+      console.error('Error deleting lead:', err);
+      setError('Failed to delete lead');
+    }
   };
 
   const startEditing = (lead: LeadType) => {
@@ -120,21 +150,48 @@ export function Leads() {
     setEditForm({ ...lead });
   };
 
-  const saveEdit = () => {
+  const saveEdit = async () => {
     if (!editingLeadId) return;
     
-    const updatedLeads = leads.map(lead => 
-      lead.id === editingLeadId ? { ...lead, ...editForm } as LeadType : lead
-    );
-    setLeads(updatedLeads);
-    
-    const updatedResults = searchResults.map(lead => 
-      lead.id === editingLeadId ? { ...lead, ...editForm } as LeadType : lead
-    );
-    setSearchResults(updatedResults);
-    
-    setEditingLeadId(null);
-    setEditForm({});
+    try {
+      // Map editForm to Supabase column names
+      const updateData = {
+        name: editForm.name,
+        email: editForm.email,
+        linkedin: editForm.linkedin,
+        linkedin_url: editForm.linkedinURL,
+        job_title: editForm.jobTitle,
+        company_name: editForm.companyName,
+        location: editForm.location,
+        country: editForm.country,
+        website: editForm.website,
+        sector: editForm.sector,
+        status: editForm.status,
+        campaign_id: editForm.campaign_id,
+        lead_id: editForm.lead_id
+      };
+
+      const { error } = await supabase
+        .from('leads')
+        .update(updateData)
+        .eq('id', editingLeadId);
+
+      if (error) {
+        throw error;
+      }
+
+      // Update local state
+      const updatedLeads = leads.map(lead => 
+        lead.id === editingLeadId ? { ...lead, ...editForm } as LeadType : lead
+      );
+      setLeads(updatedLeads);
+      
+      setEditingLeadId(null);
+      setEditForm({});
+    } catch (err) {
+      console.error('Error updating lead:', err);
+      setError('Failed to update lead');
+    }
   };
 
   const cancelEdit = () => {
@@ -146,10 +203,37 @@ export function Leads() {
     setEditForm(prev => ({ ...prev, [field]: value }));
   };
 
-  const filteredResults = searchResults.filter(lead => {
+  const filteredResults = leads.filter(lead => {
     if (statusFilter === 'all') return true;
     return lead.status === statusFilter;
   });
+
+  if (loading) {
+    return (
+      <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading leads...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 mb-4">Error: {error}</div>
+          <button
+            onClick={fetchLeads}
+            className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg hover:shadow-lg transition-shadow"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">

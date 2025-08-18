@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Search, MapPin, Globe, Plus, Filter, Eye, MoreHorizontal, FileText } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Lead } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface LeadSearchResult {
   id: string;
@@ -195,10 +196,10 @@ export function Leads() {
     }, 2000);
   };
 
-  const addToLeads = (lead: LeadSearchResult) => {
+  const addToLeads = async (lead: LeadSearchResult) => {
     // Convert LeadSearchResult to Lead
     const newLead: Lead = {
-      id: lead.id,
+      id: Date.now().toString(), // Geçici ID, Supabase otomatik olarak atayacak
       name: lead.name,
       email: lead.email,
       linkedin: null,
@@ -210,13 +211,40 @@ export function Leads() {
       website: null,
       sector: null,
       status: 'Verified', // Default to Verified when added
-      created_at: lead.created_at
+      created_at: new Date().toISOString()
     };
-    
-    setLeads(prev => [...prev, newLead]);
-    setSearchResults(prev => 
-      prev.map(l => l.id === lead.id ? {...lead, status: 'verified' as const} : l)
-    );
+
+    try {
+      // Supabase'e lead ekle
+      const { data, error } = await supabase
+        .from('leads')
+        .insert({
+          name: newLead.name,
+          email: newLead.email,
+          job_title: newLead.jobTitle,
+          company_name: newLead.companyName,
+          status: newLead.status,
+          created_at: newLead.created_at
+        })
+        .select();
+
+      if (error) {
+        throw error;
+      }
+
+      // localStorage'ı güncelle
+      setLeads(prev => [...prev, newLead]);
+      setSearchResults(prev => 
+        prev.map(l => l.id === lead.id ? {...lead, status: 'verified' as const} : l)
+      );
+    } catch (err) {
+      console.error('Error adding lead to Supabase:', err);
+      // localStorage'ı yine de güncelle
+      setLeads(prev => [...prev, newLead]);
+      setSearchResults(prev => 
+        prev.map(l => l.id === lead.id ? {...lead, status: 'verified' as const} : l)
+      );
+    }
   };
 
   const getSourceIcon = (source: string) => {
