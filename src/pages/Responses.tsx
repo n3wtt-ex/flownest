@@ -135,6 +135,10 @@ export function Responses() {
     }, 3000);
   };
 
+  const isCrmTransferred = (emailId: string) => {
+    return crmTransfers.has(emailId);
+  };
+
   const addEmail = async (email: Omit<EmailCard, 'id' | 'timestamp'>) => {
     try {
       const { data, error } = await supabase
@@ -322,6 +326,12 @@ export function Responses() {
     // Special handling for "CRM'e Aktar" action
     else if (action === 'CRM\'e Aktar') {
       try {
+        // Önce lead zaten CRM'e aktarılmış mı diye kontrol et
+        if (isCrmTransferred(emailId)) {
+          showNotification('Bu lead zaten CRM\'e aktarılmış!', 'error');
+          return;
+        }
+
         // Yükleme durumunu başlat
         setCrmTransferLoading(prev => new Set(prev).add(emailId));
         
@@ -397,7 +407,7 @@ export function Responses() {
           // Email adresinden kişi adını çıkar
           let contactName = email.sender.split('@')[0];
           // Adı daha düzgün hale getir (nokta, tire gibi karakterleri boşlukla değiştir)
-          contactName = contactName.replace(/[\.\-_]/g, ' ');
+          contactName = contactName.replace(/[.\-_]/g, ' ');
           // Kelimelerin ilk harflerini büyük yap
           contactName = contactName.split(' ').map(word => 
             word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
@@ -421,7 +431,25 @@ export function Responses() {
           contactId = newContact.id;
         }
 
-        // 3. Fırsat ekle
+        // 3. Fırsat ekle - Önce aynı kişi ve şirket için fırsat olup olmadığını kontrol et
+        const { data: existingDeals, error: dealSearchError } = await supabase
+          .from('deals')
+          .select('id')
+          .eq('contact_id', contactId)
+          .eq('company_id', companyId)
+          .limit(1);
+
+        if (dealSearchError) {
+          console.error('Error searching deals:', dealSearchError);
+        } else if (existingDeals && existingDeals.length > 0) {
+          // Zaten aynı kişi ve şirket için fırsat var
+          showNotification('Bu kişi ve şirket için zaten bir fırsat oluşturulmuş!', 'error');
+          // CRM aktarımını state'e ekle
+          setCrmTransfers(prev => new Set(prev).add(emailId));
+          return;
+        }
+
+        // Yeni fırsat ekle
         // Önce varsayılan pipeline ID'sini al
         const { data: pipelineData, error: pipelineError } = await supabase
           .from('pipelines')
@@ -464,7 +492,10 @@ export function Responses() {
               stage_id: stageData.id,
               status: 'open',
               source: 'Email Yanıt Takibi',
-              notes: `Otomatik olarak ${email.tag} kategorisinden oluşturuldu.\n\nEmail içeriği:\n${email.content}`
+              notes: `Otomatik olarak ${email.tag} kategorisinden oluşturuldu.
+
+Email içeriği:
+${email.content}`
             }
           ])
           .select()
@@ -698,7 +729,7 @@ export function Responses() {
                             {getActionButtons(email.tag, email.id).map((action, index) => {
                               const isMeetingCompleted = action.label === 'Toplantı Ayarla' && completedMeetings.has(email.id);
                               const isLeadRemoved = action.label === 'Lead Listesinden Çıkar' && completedMeetings.has(email.id);
-                              const isCrmTransferred = action.label === 'CRM\'e Aktar' && crmTransfers.has(email.id);
+                              const isCrmTransferred = action.label === 'CRM\'e Aktar' && isCrmTransferred(email.id);
                               const isCrmLoading = action.label === 'CRM\'e Aktar' && crmTransferLoading.has(email.id);
                               const isCompleted = isMeetingCompleted || isLeadRemoved || isCrmTransferred;
                               
@@ -720,6 +751,7 @@ export function Responses() {
                                   } relative ${
                                     !isCompleted && !isCrmLoading ? 'hover:shadow-md' : ''
                                   }`}
+                                  title={isCrmTransferred ? 'Lead zaten CRM\'e aktarıldı' : ''}
                                 >
                                   {isCrmLoading ? (
                                     <>
