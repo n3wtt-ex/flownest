@@ -18,7 +18,8 @@ export function Leads() {
   const [searchResults, setSearchResults] = useState<LeadType[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<'apollo' | 'google_maps' | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'New' | 'Verified' | 'Skipped'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'New' | 'Verified' | 'Skipped' | 'apollo_lead'>('all');
+  const [sectorFilter, setSectorFilter] = useState<'all' | string>('all');
   const [isSearching, setIsSearching] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showResults, setShowResults] = useState(false);
@@ -1181,8 +1182,27 @@ export function Leads() {
   };
 
   const filteredResults = leads.filter(lead => {
-    if (statusFilter === 'all') return true;
-    return lead.status === statusFilter;
+    // Status filter
+    if (statusFilter !== 'all' && lead.status !== statusFilter) return false;
+    
+    // Sector filter
+    if (sectorFilter !== 'all' && lead.sector !== sectorFilter) return false;
+    
+    // Search query filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        (lead.name && lead.name.toLowerCase().includes(query)) ||
+        (lead.email && lead.email.toLowerCase().includes(query)) ||
+        (lead.companyName && lead.companyName.toLowerCase().includes(query)) ||
+        (lead.jobTitle && lead.jobTitle.toLowerCase().includes(query)) ||
+        (lead.location && lead.location.toLowerCase().includes(query)) ||
+        (lead.country && lead.country.toLowerCase().includes(query)) ||
+        (lead.sector && lead.sector.toLowerCase().includes(query))
+      );
+    }
+    
+    return true;
   });
 
   if (loading) {
@@ -1546,13 +1566,57 @@ export function Leads() {
         </div>
 
         {/* Added Leads Summary */}
-        {leads.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
-          >
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Leads</h2>
+          {leads.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
+            >
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4 md:mb-0">Leads</h2>
+                
+                {/* Search and Filter Section */}
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                  {/* Search Input */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search leads..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64"
+                    />
+                  </div>
+                  
+                  {/* Status Filter */}
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value as any)}
+                    className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px]"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="New">New</option>
+                    <option value="Verified">Verified</option>
+                    <option value="Skipped">Skipped</option>
+                    <option value="apollo_lead">Apollo Lead</option>
+                  </select>
+                  
+                  {/* Sector Filter */}
+                  <select
+                    value={sectorFilter}
+                    onChange={(e) => setSectorFilter(e.target.value as any)}
+                    className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px]"
+                  >
+                    <option value="all">All Sectors</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="E-commerce">E-commerce</option>
+                  </select>
+                </div>
+              </div>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 sticky top-0">
@@ -1561,7 +1625,9 @@ export function Leads() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sector</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
@@ -1613,8 +1679,24 @@ export function Leads() {
                           <td className="px-4 py-4 whitespace-nowrap">
                             <input
                               type="text"
+                              value={editForm.phone || ''}
+                              onChange={(e) => handleEditChange('phone', e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                            />
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <input
+                              type="text"
                               value={editForm.location || ''}
                               onChange={(e) => handleEditChange('location', e.target.value)}
+                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                            />
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap">
+                            <input
+                              type="text"
+                              value={editForm.sector || ''}
+                              onChange={(e) => handleEditChange('sector', e.target.value)}
                               className="w-full px-2 py-1 border border-gray-300 rounded"
                             />
                           </td>
@@ -1627,6 +1709,7 @@ export function Leads() {
                               <option value="New">New</option>
                               <option value="Verified">Verified</option>
                               <option value="Skipped">Skipped</option>
+                              <option value="apollo_lead">Apollo Lead</option>
                             </select>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -1677,12 +1760,19 @@ export function Leads() {
                             {lead.email || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {lead.phone || 'N/A'}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                             {lead.location || 'N/A'}{lead.country ? `, ${lead.country}` : ''}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {lead.sector || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                               lead.status === 'New' ? 'bg-blue-100 text-blue-800' :
                               lead.status === 'Verified' ? 'bg-green-100 text-green-800' :
+                              lead.status === 'apollo_lead' ? 'bg-purple-100 text-purple-800' :
                               'bg-gray-100 text-gray-800'
                             }`}>
                               {lead.status}
@@ -1700,18 +1790,22 @@ export function Leads() {
                               <button 
                                 onClick={() => updateLeadStatus(lead.id, 
                                   lead.status === 'New' ? 'Verified' : 
-                                  lead.status === 'Verified' ? 'Skipped' : 'New')}
+                                  lead.status === 'Verified' ? 'Skipped' : 
+                                  lead.status === 'Skipped' ? 'New' : 'New')}
                                 className={`p-1 rounded ${
                                   lead.status === 'New' ? 'text-green-600 hover:bg-green-100' :
                                   lead.status === 'Verified' ? 'text-gray-600 hover:bg-gray-100' :
+                                  lead.status === 'Skipped' ? 'text-blue-600 hover:bg-blue-100' :
                                   'text-blue-600 hover:bg-blue-100'
                                 }`}
-                                title={lead.status === 'New' ? 'Verify' : lead.status === 'Verified' ? 'Skip' : 'Mark as New'}
+                                title={lead.status === 'New' ? 'Verify' : lead.status === 'Verified' ? 'Skip' : lead.status === 'Skipped' ? 'Mark as New' : 'Mark as New'}
                               >
                                 {lead.status === 'New' ? (
                                   <Check className="w-4 h-4" />
                                 ) : lead.status === 'Verified' ? (
                                   <X className="w-4 h-4" />
+                                ) : lead.status === 'Skipped' ? (
+                                  <Plus className="w-4 h-4" />
                                 ) : (
                                   <Plus className="w-4 h-4" />
                                 )}
