@@ -99,21 +99,36 @@ export function Email() {
     setIsIntroModified(false);
   };
 
-  const fetchEmailAccounts = async () => {
+    const fetchEmailAccounts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook/c2a80579-f1eb-43dc-a996-068affa17420');
-      const data = await response.json();
+      const response = await fetch('https://n8n.flownests.org/webhook-test/c2a80579-f1eb-43dc-a996-068affa17420');
+      const rawData = await response.json();
       
-      console.log('Webhook data:', data); // Gelen verileri console'a yazdır
+      console.log('Raw webhook data:', rawData); // Gelen ham verileri console'a yazdır
+      
+      // n8n'den gelen veriler doğru formatta değil, doğru formata getirmemiz gerekiyor
+      // Verinin "items" array'inde olduğunu varsayalım
+      let data = [];
+      if (rawData && Array.isArray(rawData) && rawData.length > 0) {
+        // Eğer rawData doğrudan array ise ve içinde items varsa
+        if (rawData[0].items) {
+          data = rawData[0].items;
+        } else {
+          // Eğer rawData doğrudan items array'ini içeriyorsa
+          data = rawData;
+        }
+      }
+      
+      console.log('Processed data:', data); // İşlenmiş verileri console'a yazdır
       
       // Gelen verileri filtrele ve EmailAccount formatına dönüştür
       let fetchedDailyLimit = dailyLimit; // Varsayılan değer
       
       // Tüm data array'inde daily_limit değerini ara
       for (const item of data) {
-        if (item.daily_limit) {
-          fetchedDailyLimit = item.daily_limit;
+        if (item.warmup && item.warmup.limit) {
+          fetchedDailyLimit = item.warmup.limit;
           setDailyLimit(fetchedDailyLimit); // Global state'i güncelle
           break; // İlk bulunan değeri kullan
         }
@@ -124,9 +139,9 @@ export function Email() {
         email: item.email,
         emailsSent: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
         warmupEmails: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
-        healthScore: parseInt(item.start_warmup_score) || 0, // Sayıya çevir
+        healthScore: parseInt(item.stat_warmup_score) || 0, // Sayıya çevir
         status: item.warmup_status === 1 ? 'active' : 'paused',
-        dailyLimit: parseInt(item.daily_limit) || fetchedDailyLimit // Sayıya çevir veya global değeri kullan
+        dailyLimit: parseInt(item.warmup && item.warmup.limit ? item.warmup.limit : fetchedDailyLimit) // Sayıya çevir veya global değeri kullan
       }));
       
       console.log('Processed accounts:', accounts); // İşlenmiş hesapları console'a yazdır
