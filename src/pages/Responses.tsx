@@ -135,10 +135,6 @@ export function Responses() {
     }, 3000);
   };
 
-  const isCrmTransferred = (emailId: string) => {
-    return crmTransfers.has(emailId);
-  };
-
   const addEmail = async (email: Omit<EmailCard, 'id' | 'timestamp'>) => {
     try {
       const { data, error } = await supabase
@@ -325,12 +321,7 @@ export function Responses() {
     }
     // Special handling for "CRM'e Aktar" action
     else if (action === 'CRM\'e Aktar') {
-      try {
-        // Önce lead zaten CRM'e aktarılmış mı diye kontrol et
-        if (isCrmTransferred(emailId)) {
-          showNotification('Bu lead zaten CRM\'e aktarılmış!', 'error');
-          return;
-        }
+      try {\n        // \u00d6nce lead zaten CRM'e aktar\u0131lm\u0131\u015f m\u0131 diye kontrol et\n        if (isCrmTransferred(emailId)) {\n          showNotification('Bu lead zaten CRM\\'e aktar\u0131lm\u0131\u015f!', 'error');\n          return;\n        }
 
         // Yükleme durumunu başlat
         setCrmTransferLoading(prev => new Set(prev).add(emailId));
@@ -531,6 +522,10 @@ ${email.content}`
     setSelectedEmail(null);
   };
 
+  const isCrmTransferred = (emailId: string) => {
+    return crmTransfers.has(emailId);
+  };
+
   const getActionButtons = (tag: string, emailId: string) => {
     switch (tag) {
       case 'İlgili':
@@ -729,9 +724,9 @@ ${email.content}`
                             {getActionButtons(email.tag, email.id).map((action, index) => {
                               const isMeetingCompleted = action.label === 'Toplantı Ayarla' && completedMeetings.has(email.id);
                               const isLeadRemoved = action.label === 'Lead Listesinden Çıkar' && completedMeetings.has(email.id);
-                              const isCrmTransferred = action.label === 'CRM\'e Aktar' && isCrmTransferred(email.id);
+                              const isCrmTransferredCheck = action.label === 'CRM\'e Aktar' && isCrmTransferred(email.id);
                               const isCrmLoading = action.label === 'CRM\'e Aktar' && crmTransferLoading.has(email.id);
-                              const isCompleted = isMeetingCompleted || isLeadRemoved || isCrmTransferred;
+                              const isCompleted = isMeetingCompleted || isLeadRemoved || isCrmTransferredCheck;
                               
                               return (
                                 <motion.button
@@ -751,7 +746,7 @@ ${email.content}`
                                   } relative ${
                                     !isCompleted && !isCrmLoading ? 'hover:shadow-md' : ''
                                   }`}
-                                  title={isCrmTransferred ? 'Lead zaten CRM\'e aktarıldı' : ''}
+                                  title={isCrmTransferredCheck ? 'Lead zaten CRM\'e aktarıldı' : ''}
                                 >
                                   {isCrmLoading ? (
                                     <>
