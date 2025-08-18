@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Search, MapPin, Globe, Plus, Filter, Eye, MoreHorizontal, FileText, Trash2, Edit3, Check, X } from 'lucide-react';
+import { Search, MapPin, Globe, Plus, Filter, Eye, MoreHorizontal, FileText, Trash2, Edit3, Check, X, ChevronDown } from 'lucide-react';
 import { Lead as LeadType } from '../types';
 import { supabase } from '../lib/supabase';
+import { useCampaigns } from './CampaignsContext';
 
 // Refresh icon component
 const RefreshIcon = () => (
@@ -25,6 +26,76 @@ export function Leads() {
   const [showResults, setShowResults] = useState(false);
   const [editingLeadId, setEditingLeadId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<LeadType>>({});
+  const [campaignDropdownOpen, setCampaignDropdownOpen] = useState<{ [key: string]: boolean }>({});
+  
+  const { campaigns, loading: campaignsLoading, error: campaignsError } = useCampaigns();
+  const dropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      Object.keys(dropdownRefs.current).forEach(leadId => {
+        if (dropdownRefs.current[leadId] && !dropdownRefs.current[leadId]!.contains(event.target as Node)) {
+          setCampaignDropdownOpen(prev => ({ ...prev, [leadId]: false }));
+        }
+      });
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleAddToCampaign = async (leadId: string, campaignId: string) => {
+    try {
+      // Close the dropdown
+      setCampaignDropdownOpen(prev => ({ ...prev, [leadId]: false }));
+      
+      // Send webhook request
+      const response = await fetch('https://n8n.flownests.org/webhook-test/f0117984-5614-470c-8e23-a0428357e83c', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          campaign_id: campaignId,
+          lead_id: leadId
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Webhook request failed with status ${response.status}`);
+      }
+      
+      const webhookResponse = await response.json();
+      const returnedLeadId = webhookResponse.lead_id;
+      
+      // Update the lead in Supabase
+      const { error: updateError } = await supabase
+        .from('leads')
+        .update({ 
+          campaign_id: campaignId,
+          lead_id: returnedLeadId
+        })
+        .eq('id', leadId);
+        
+      if (updateError) {
+        throw updateError;
+      }
+      
+      // Update local state
+      const updatedLeads = leads.map(lead => 
+        lead.id === leadId ? { ...lead, campaign_id: campaignId, lead_id: returnedLeadId } : lead
+      );
+      setLeads(updatedLeads);
+      
+      console.log('Lead successfully added to campaign');
+    } catch (err) {
+      console.error('Error adding lead to campaign:', err);
+      setError('Failed to add lead to campaign');
+    }
+  };
 
   useEffect(() => {
     fetchLeads();
@@ -1629,6 +1700,7 @@ export function Leads() {
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sector</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campaign</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -1777,6 +1849,54 @@ export function Leads() {
                             }`}>
                               {lead.status}
                             </span>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div className="relative">
+                              {campaignsLoading ? (
+                                <div className="px-2 py-1 text-xs text-gray-500">
+                                  Loading campaigns...
+                                </div>
+                              ) : campaignsError ? (
+                                <div className="px-2 py-1 text-xs text-red-500">
+                                  Error loading campaigns
+                                </div>
+                              ) : lead.campaign_id ? (
+                                <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                                  {campaigns.find(c => c.id === lead.campaign_id)?.name || 'Unknown Campaign'}
+                                </span>
+                              ) : (
+                                <div className="relative" ref={el => dropdownRefs.current[lead.id] = el}>
+                                  <button
+                                    onClick={() => setCampaignDropdownOpen(prev => ({ ...prev, [lead.id]: !prev[lead.id] }))}
+                                    className="flex items-center px-3 py-1 bg-green-500 text-white rounded-lg text-xs hover:bg-green-600 transition-colors"
+                                  >
+                                    Add to Campaign
+                                    <ChevronDown className="w-3 h-3 ml-1" />
+                                  </button>
+                                  {campaignDropdownOpen[lead.id] && (
+                                    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                                      <div className="py-1">
+                                        {campaigns.length === 0 ? (
+                                          <div className="px-4 py-2 text-sm text-gray-500">
+                                            No campaigns available
+                                          </div>
+                                        ) : (
+                                          campaigns.map(campaign => (
+                                            <button
+                                              key={campaign.id}
+                                              onClick={() => handleAddToCampaign(lead.id, campaign.id)}
+                                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            >
+                                              {campaign.name}
+                                            </button>
+                                          ))
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div className="flex items-center space-x-2">
