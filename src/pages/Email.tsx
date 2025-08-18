@@ -102,25 +102,34 @@ export function Email() {
   const fetchEmailAccounts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/c2a80579-f1eb-43dc-a996-068affa17420');
+      const response = await fetch('https://n8n.flownests.org/webhook/c2a80579-f1eb-43dc-a996-068affa17420');
       const data = await response.json();
       
+      console.log('Webhook data:', data); // Gelen verileri console'a yazdır
+      
       // Gelen verileri filtrele ve EmailAccount formatına dönüştür
+      let fetchedDailyLimit = dailyLimit; // Varsayılan değer
+      
+      // Tüm data array'inde daily_limit değerini ara
+      for (const item of data) {
+        if (item.daily_limit) {
+          fetchedDailyLimit = item.daily_limit;
+          setDailyLimit(fetchedDailyLimit); // Global state'i güncelle
+          break; // İlk bulunan değeri kullan
+        }
+      }
+      
       const accounts: EmailAccount[] = data.map((item: any, index: number) => ({
         id: `${index + 1}`, // Basit bir ID oluşturma
         email: item.email,
         emailsSent: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
         warmupEmails: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
-        healthScore: item.start_warmup_score || 0,
+        healthScore: parseInt(item.start_warmup_score) || 0, // Sayıya çevir
         status: item.warmup_status === 1 ? 'active' : 'paused',
-        dailyLimit: item.daily_limit || dailyLimit // daily_limit sadece bir kere geliyor, önceki değerleri koru
+        dailyLimit: parseInt(item.daily_limit) || fetchedDailyLimit // Sayıya çevir veya global değeri kullan
       }));
       
-      // daily_limit sadece bir kere geliyorsa, tüm hesaplar için aynı değeri kullan
-      if (data.length > 0 && data[0].daily_limit) {
-        setDailyLimit(data[0].daily_limit);
-      }
-      
+      console.log('Processed accounts:', accounts); // İşlenmiş hesapları console'a yazdır
       setEmailAccounts(accounts);
     } catch (error) {
       console.error('Error fetching email accounts:', error);
