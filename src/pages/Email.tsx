@@ -160,11 +160,11 @@ export function Email() {
             <div className="w-1/2 border-r border-gray-200">
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="w-full p-6 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                className="w-full py-3 flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center space-x-3">
-                  <Settings className="w-6 h-6 text-blue-600" />
-                  <h2 className="text-xl font-semibold text-gray-900">Customer Meeting Settings</h2>
+                  <Settings className="w-5 h-5 text-blue-600" />
+                  <h2 className="text-lg font-semibold text-gray-900">Customer Meeting Settings</h2>
                 </div>
                 <motion.div
                   animate={{ rotate: isSettingsOpen ? 180 : 0 }}
