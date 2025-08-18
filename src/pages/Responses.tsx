@@ -62,6 +62,7 @@ export function Responses() {
   const [draggedEmail, setDraggedEmail] = useState<EmailCard | null>(null);
   const [completedMeetings, setCompletedMeetings] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
   // Fetch emails from Supabase on component mount
   useEffect(() => {
@@ -89,6 +90,7 @@ export function Responses() {
       }
     } catch (error) {
       console.error('Error fetching emails:', error);
+      showNotification('Veriler yüklenirken bir hata oluştu. Mock veriler kullanılıyor.', 'error');
       // Use mock data as fallback
       setEmails(mockEmails);
     } finally {
@@ -110,9 +112,18 @@ export function Responses() {
         email.id === emailId ? { ...email, tag: newTag as EmailCard['tag'] } : email
       );
       setEmails(updatedEmails);
+      showNotification(`E-posta "${newTag}" olarak işaretlendi!`, 'success');
     } catch (error) {
       console.error('Error updating email tag:', error);
+      showNotification('Etiket güncellenirken bir hata oluştu!', 'error');
     }
+  };
+
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => {
+      setNotification(null);
+    }, 3000);
   };
 
   const addEmail = async (email: Omit<EmailCard, 'id' | 'timestamp'>) => {
@@ -140,9 +151,11 @@ export function Responses() {
           timestamp: data[0].created_at
         };
         setEmails(prev => [newEmail, ...prev]);
+        showNotification('E-posta başarıyla eklendi!', 'success');
       }
     } catch (error) {
       console.error('Error adding email:', error);
+      showNotification('E-posta eklenirken bir hata oluştu!', 'error');
     }
   };
 
@@ -180,7 +193,7 @@ export function Responses() {
     setDraggedEmail(null);
   };
 
-  const handleAction = async (emailId: string, action: string) => {
+  const handleAction = async (emailId: string, action: string, senderEmail?: string) => {
     console.log(`Action: ${action} for email: ${emailId}`);
     
     // Special handling for "Toplantı Ayarla" action
@@ -194,6 +207,7 @@ export function Responses() {
           body: JSON.stringify({
             emailId,
             action,
+            senderEmail,
             timestamp: new Date().toISOString()
           })
         });
@@ -201,23 +215,54 @@ export function Responses() {
         if (response.ok) {
           // Mark meeting as completed
           setCompletedMeetings(prev => new Set(prev).add(emailId));
+          showNotification('Toplantı daveti gönderildi!', 'success');
         } else {
           throw new Error('Webhook call failed');
         }
       } catch (error) {
         console.error('Error calling webhook:', error);
-        alert('Toplantı ayarlanırken bir hata oluştu!');
+        showNotification('Toplantı ayarlanırken bir hata oluştu!', 'error');
       }
+    } 
+    // Special handling for "Lead Listesinden Çıkar" action
+    else if (action === 'Lead Listesinden Çıkar') {
+      try {
+        const response = await fetch('https://n8n.flownests.org/webhook-test/47106e41-34f6-4518-8273-556b7e10b471', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            emailId,
+            action,
+            senderEmail,
+            timestamp: new Date().toISOString()
+          })
+        });
+        
+        if (response.ok) {
+          // Mark lead as removed
+          setCompletedMeetings(prev => new Set(prev).add(emailId));
+          showNotification('Lead listesinden çıkarıldı!', 'success');
+        } else {
+          throw new Error('Webhook call failed');
+        }
+      } catch (error) {
+        console.error('Error calling webhook:', error);
+        showNotification('Lead çıkarılırken bir hata oluştu!', 'error');
+      }
+    }
+    // Handle tag change actions
+    else if (action === 'İlgili Olarak İşaretle') {
+      await updateEmailTag(emailId, 'İlgili');
+    } else if (action === 'İlgisiz Olarak İşaretle') {
+      await updateEmailTag(emailId, 'İlgisiz');
     } else {
       // Here you would integrate with n8n or your backend for other actions
+      showNotification(`${action} işlemi başlatıldı!`, 'success');
     }
     
     setSelectedEmail(null);
-    
-    // Show success message for other actions
-    if (action !== 'Toplantı Ayarla') {
-      alert(`${action} işlemi başlatıldı!`);
-    }
   };
 
   const getActionButtons = (tag: string, emailId: string) => {
@@ -254,6 +299,23 @@ export function Responses() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
       <div className="max-w-7xl mx-auto">
+        {/* Notification */}
+        {notification && (
+          <div className={`fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transition-all duration-300 ${
+            notification.type === 'success' 
+              ? 'bg-green-500 text-white' 
+              : 'bg-red-500 text-white'
+          }`}>
+            <div className="flex items-center space-x-2">
+              {notification.type === 'success' ? (
+                <CheckCircle className="w-5 h-5" />
+              ) : (
+                <AlertCircle className="w-5 h-5" />
+              )}
+              <span>{notification.message}</span>
+            </div>
+          </div>
+        )}
         {/* Header */}
         <div className="text-center mb-8">
           <motion.div
@@ -328,8 +390,17 @@ export function Responses() {
               {/* Category Header */}
               <div 
                 className="p-6 border-b border-gray-200"
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(tag)}
+                onDragOver={(e) => {
+                  handleDragOver(e);
+                  e.currentTarget.classList.add('bg-gray-100');
+                }}
+                onDragLeave={(e) => {
+                  e.currentTarget.classList.remove('bg-gray-100');
+                }}
+                onDrop={(e) => {
+                  e.currentTarget.classList.remove('bg-gray-100');
+                  handleDrop(tag);
+                }}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -351,9 +422,20 @@ export function Responses() {
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       whileHover={{ scale: 1.02 }}
-                      className="relative bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-all duration-200 cursor-pointer"
+                      className={`relative bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-all duration-200 cursor-pointer ${
+                        draggedEmail?.id === email.id ? 'opacity-50' : ''
+                      }`}
                       draggable
                       onDragStart={() => handleDragStart(email)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        if (draggedEmail && draggedEmail.id !== email.id) {
+                          e.currentTarget.classList.add('border-2', 'border-dashed', 'border-blue-500');
+                        }
+                      }}
+                      onDragLeave={(e) => {
+                        e.currentTarget.classList.remove('border-2', 'border-dashed', 'border-blue-500');
+                      }}
                       onClick={() => setSelectedEmail(selectedEmail === email.id ? null : email.id)}
                     >
                       {/* Email Header */}
@@ -382,6 +464,9 @@ export function Responses() {
                           >
                             {getActionButtons(email.tag, email.id).map((action, index) => {
                               const isMeetingCompleted = action.label === 'Toplantı Ayarla' && completedMeetings.has(email.id);
+                              const isLeadRemoved = action.label === 'Lead Listesinden Çıkar' && completedMeetings.has(email.id);
+                              const isCompleted = isMeetingCompleted || isLeadRemoved;
+                              
                               return (
                                 <motion.button
                                   key={action.label}
@@ -390,25 +475,21 @@ export function Responses() {
                                   transition={{ delay: index * 0.1 }}
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    handleAction(email.id, action.label);
+                                    handleAction(email.id, action.label, email.sender);
                                   }}
-                                  disabled={isMeetingCompleted}
-                                  className={`w-full flex items-center justify-center space-x-2 px-3 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 ${
-                                    isMeetingCompleted 
-                                      ? 'bg-gray-400 cursor-not-allowed' 
+                                  disabled={isCompleted}
+                                  className={`w-full flex items-center justify-center space-x-2 px-3 py-2 text-white text-sm font-medium rounded-lg transition-all duration-200 ${
+                                    isCompleted 
+                                      ? 'bg-gray-300 cursor-not-allowed' 
                                       : action.color
-                                  } relative`}
+                                  } relative ${
+                                    !isCompleted ? 'hover:shadow-md' : ''
+                                  }`}
                                 >
                                   {action.icon}
                                   <span>{action.label}</span>
-                                  {isMeetingCompleted && (
-                                    <>
-                                      <div className="absolute inset-0 bg-gray-200 bg-opacity-50 rounded-lg"></div>
-                                      <CheckCircle className="absolute right-3 w-5 h-5 text-green-500" />
-                                      <span className="absolute inset-0 flex items-center justify-center text-green-700 font-medium">
-                                        Toplantı Daveti Gönderildi
-                                      </span>
-                                    </>
+                                  {isCompleted && (
+                                    <CheckCircle className="absolute right-3 w-5 h-5 text-green-600" />
                                   )}
                                 </motion.button>
                               );
