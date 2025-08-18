@@ -85,6 +85,7 @@ export function Settings() {
     const newTheme = !darkMode;
     setDarkMode(newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    console.log('Tema değiştirildi:', newTheme ? 'dark' : 'light');
     
     // Tema değişikliğini tüm uygulamaya uygula
     if (newTheme) {
@@ -99,6 +100,7 @@ export function Settings() {
     const newLanguage = language === 'tr' ? 'en' : 'tr';
     setLanguage(newLanguage);
     localStorage.setItem('language', newLanguage);
+    console.log('Dil değiştirildi:', newLanguage);
   };
 
   // Avatar yükleme fonksiyonu
