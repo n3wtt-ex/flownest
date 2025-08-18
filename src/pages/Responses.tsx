@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Mail, Calendar, Database, X, CheckCircle, AlertCircle, HelpCircle } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface EmailCard {
   id: string;
@@ -58,6 +59,92 @@ const mockEmails: EmailCard[] = [
 export function Responses() {
   const [emails, setEmails] = useState<EmailCard[]>(mockEmails);
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
+  const [draggedEmail, setDraggedEmail] = useState<EmailCard | null>(null);
+  const [completedMeetings, setCompletedMeetings] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+
+  // Fetch emails from Supabase on component mount
+  useEffect(() => {
+    fetchEmails();
+  }, []);
+
+  const fetchEmails = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('emails')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      if (data) {
+        setEmails(data.map((email: any) => ({
+          id: email.id,
+          sender: email.sender,
+          content: email.content,
+          tag: email.tag,
+          timestamp: email.created_at
+        })));
+      }
+    } catch (error) {
+      console.error('Error fetching emails:', error);
+      // Use mock data as fallback
+      setEmails(mockEmails);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateEmailTag = async (emailId: string, newTag: string) => {
+    try {
+      const { error } = await supabase
+        .from('emails')
+        .update({ tag: newTag })
+        .eq('id', emailId);
+      
+      if (error) throw error;
+      
+      // Update local state
+      const updatedEmails = emails.map(email => 
+        email.id === emailId ? { ...email, tag: newTag as EmailCard['tag'] } : email
+      );
+      setEmails(updatedEmails);
+    } catch (error) {
+      console.error('Error updating email tag:', error);
+    }
+  };
+
+  const addEmail = async (email: Omit<EmailCard, 'id' | 'timestamp'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('emails')
+        .insert([
+          {
+            sender: email.sender,
+            content: email.content,
+            tag: email.tag
+          }
+        ])
+        .select();
+      
+      if (error) throw error;
+      
+      if (data) {
+        // Add new email to local state
+        const newEmail: EmailCard = {
+          id: data[0].id,
+          sender: data[0].sender,
+          content: data[0].content,
+          tag: data[0].tag,
+          timestamp: data[0].created_at
+        };
+        setEmails(prev => [newEmail, ...prev]);
+      }
+    } catch (error) {
+      console.error('Error adding email:', error);
+    }
+  };
 
   const getTagColor = (tag: string) => {
     switch (tag) {
@@ -77,13 +164,60 @@ export function Responses() {
     }
   };
 
-  const handleAction = (emailId: string, action: string) => {
+  const handleDragStart = (email: EmailCard) => {
+    setDraggedEmail(email);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = async (targetTag: string) => {
+    if (draggedEmail && draggedEmail.tag !== targetTag) {
+      // Update email tag in Supabase
+      await updateEmailTag(draggedEmail.id, targetTag);
+    }
+    setDraggedEmail(null);
+  };
+
+  const handleAction = async (emailId: string, action: string) => {
     console.log(`Action: ${action} for email: ${emailId}`);
-    // Here you would integrate with n8n or your backend
+    
+    // Special handling for "Toplantı Ayarla" action
+    if (action === 'Toplantı Ayarla') {
+      try {
+        const response = await fetch('https://n8n.flownests.org/webhook-test/47106e41-34f6-4518-8273-556b7e10b471', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            emailId,
+            action,
+            timestamp: new Date().toISOString()
+          })
+        });
+        
+        if (response.ok) {
+          // Mark meeting as completed
+          setCompletedMeetings(prev => new Set(prev).add(emailId));
+        } else {
+          throw new Error('Webhook call failed');
+        }
+      } catch (error) {
+        console.error('Error calling webhook:', error);
+        alert('Toplantı ayarlanırken bir hata oluştu!');
+      }
+    } else {
+      // Here you would integrate with n8n or your backend for other actions
+    }
+    
     setSelectedEmail(null);
     
-    // Show success message
-    alert(`${action} işlemi başlatıldı!`);
+    // Show success message for other actions
+    if (action !== 'Toplantı Ayarla') {
+      alert(`${action} işlemi başlatıldı!`);
+    }
   };
 
   const getActionButtons = (tag: string, emailId: string) => {
@@ -178,7 +312,12 @@ export function Responses() {
         </motion.div>
 
         {/* Email Cards by Category */}
-        <div className="space-y-8">
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          </div>
+        ) : (
+          <div className="space-y-8">
           {Object.entries(groupedEmails).map(([tag, tagEmails]) => (
             <motion.div
               key={tag}
@@ -187,7 +326,11 @@ export function Responses() {
               className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
             >
               {/* Category Header */}
-              <div className="p-6 border-b border-gray-200">
+              <div 
+                className="p-6 border-b border-gray-200"
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(tag)}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     {getTagIcon(tag)}
@@ -209,6 +352,8 @@ export function Responses() {
                       animate={{ opacity: 1, scale: 1 }}
                       whileHover={{ scale: 1.02 }}
                       className="relative bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-all duration-200 cursor-pointer"
+                      draggable
+                      onDragStart={() => handleDragStart(email)}
                       onClick={() => setSelectedEmail(selectedEmail === email.id ? null : email.id)}
                     >
                       {/* Email Header */}
@@ -235,22 +380,39 @@ export function Responses() {
                             exit={{ opacity: 0, height: 0 }}
                             className="space-y-2 border-t border-gray-200 pt-3"
                           >
-                            {getActionButtons(email.tag, email.id).map((action, index) => (
-                              <motion.button
-                                key={action.label}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleAction(email.id, action.label);
-                                }}
-                                className={`w-full flex items-center justify-center space-x-2 px-3 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 ${action.color}`}
-                              >
-                                {action.icon}
-                                <span>{action.label}</span>
-                              </motion.button>
-                            ))}
+                            {getActionButtons(email.tag, email.id).map((action, index) => {
+                              const isMeetingCompleted = action.label === 'Toplantı Ayarla' && completedMeetings.has(email.id);
+                              return (
+                                <motion.button
+                                  key={action.label}
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: index * 0.1 }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleAction(email.id, action.label);
+                                  }}
+                                  disabled={isMeetingCompleted}
+                                  className={`w-full flex items-center justify-center space-x-2 px-3 py-2 text-white text-sm font-medium rounded-lg transition-colors duration-200 ${
+                                    isMeetingCompleted 
+                                      ? 'bg-gray-400 cursor-not-allowed' 
+                                      : action.color
+                                  } relative`}
+                                >
+                                  {action.icon}
+                                  <span>{action.label}</span>
+                                  {isMeetingCompleted && (
+                                    <>
+                                      <div className="absolute inset-0 bg-gray-200 bg-opacity-50 rounded-lg"></div>
+                                      <CheckCircle className="absolute right-3 w-5 h-5 text-green-500" />
+                                      <span className="absolute inset-0 flex items-center justify-center text-green-700 font-medium">
+                                        Toplantı Daveti Gönderildi
+                                      </span>
+                                    </>
+                                  )}
+                                </motion.button>
+                              );
+                            })}
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -261,6 +423,7 @@ export function Responses() {
             </motion.div>
           ))}
         </div>
+      )}
       </div>
     </div>
   );
