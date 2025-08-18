@@ -53,6 +53,12 @@ export function Email() {
   const [selectedEvent, setSelectedEvent] = useState('demo');
   const [editContent, setEditContent] = useState(eventContents[selectedEvent]);
   const [isContentModified, setIsContentModified] = useState(false);
+  
+  // Kendini Tanıt form states
+  const [isIntroductionMode, setIsIntroductionMode] = useState(false);
+  const [introName, setIntroName] = useState('');
+  const [introCompany, setIntroCompany] = useState('');
+  const [isIntroModified, setIsIntroModified] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -85,6 +91,32 @@ export function Email() {
     console.log('Saving content for', selectedEvent, ':', editContent);
     setIsContentModified(false);
     // You could also update the eventContents object if needed
+  };
+
+  const handleIntroductionClick = () => {
+    setIsIntroductionMode(true);
+    setSelectedEvent('introduction');
+  };
+
+  const handleEventModeClick = () => {
+    setIsIntroductionMode(false);
+    setSelectedEvent('demo');
+    setEditContent(eventContents['demo']);
+  };
+
+  const handleIntroNameChange = (value: string) => {
+    setIntroName(value);
+    setIsIntroModified(true);
+  };
+
+  const handleIntroCompanyChange = (value: string) => {
+    setIntroCompany(value);
+    setIsIntroModified(true);
+  };
+
+  const handleSaveIntroduction = () => {
+    console.log('Saving introduction:', { name: introName, company: introCompany });
+    setIsIntroModified(false);
   };
 
   return (
@@ -125,10 +157,10 @@ export function Email() {
         >
           <div className="flex">
             {/* Left Side - Settings Panel (Half Width) */}
-            <div className="w-1/2">
+            <div className="w-1/2 border-r border-gray-200">
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors border-r border-gray-200"
+                className="w-full p-6 flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <Settings className="w-6 h-6 text-blue-600" />
@@ -137,6 +169,7 @@ export function Email() {
                 <motion.div
                   animate={{ rotate: isSettingsOpen ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
+                  className="ml-4"
                 >
                   <ChevronDown className="w-5 h-5 text-gray-500" />
                 </motion.div>
@@ -149,51 +182,87 @@ export function Email() {
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="border-t border-gray-200 border-r border-gray-200"
+                    className="border-t border-gray-200"
                   >
                     <div className="p-6 space-y-6">
-                      {/* Event Dropdown */}
+                      {/* Event Type Section */}
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Event Type
+                          Content Type
                         </label>
-                        <select
-                          value={selectedEvent}
-                          onChange={(e) => handleEventChange(e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                        >
-                          <option value="e-book">E-book</option>
-                          <option value="demo">Demo</option>
-                          <option value="loom">Loom</option>
-                          <option value="proposal">Proposal</option>
-                          <option value="report">Report</option>
-                        </select>
-                      </div>
-
-                      {/* Import Section */}
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-3">
-                          Import Options
-                        </label>
-                        <div className="flex space-x-3">
-                          <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="flex-1 flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        <div className="space-y-3">
+                          <button
+                            onClick={handleEventModeClick}
+                            className={`w-full p-3 text-left rounded-lg border-2 transition-all ${
+                              !isIntroductionMode 
+                                ? 'border-blue-500 bg-blue-50 text-blue-900' 
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
                           >
-                            <Upload className="w-4 h-4 mr-2" />
-                            Import
-                          </motion.button>
-                          <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-shadow"
+                            <div className="font-medium">Event Content</div>
+                            <div className="text-sm text-gray-600">Demo, E-book, Loom, etc.</div>
+                          </button>
+                          
+                          <button
+                            onClick={handleIntroductionClick}
+                            className={`w-full p-3 text-left rounded-lg border-2 transition-all ${
+                              isIntroductionMode 
+                                ? 'border-blue-500 bg-blue-50 text-blue-900' 
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
                           >
-                            <Sparkles className="w-4 h-4 mr-2" />
-                            Create with AI
-                          </motion.button>
+                            <div className="font-medium">Kendini Tanıt</div>
+                            <div className="text-sm text-gray-600">Kişisel ve şirket bilgileri</div>
+                          </button>
                         </div>
                       </div>
+
+                      {/* Event Dropdown - Only show when not in introduction mode */}
+                      {!isIntroductionMode && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Event Type
+                          </label>
+                          <select
+                            value={selectedEvent}
+                            onChange={(e) => handleEventChange(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                          >
+                            <option value="e-book">E-book</option>
+                            <option value="demo">Demo</option>
+                            <option value="loom">Loom</option>
+                            <option value="proposal">Proposal</option>
+                            <option value="report">Report</option>
+                          </select>
+                        </div>
+                      )}
+
+                      {/* Import Section - Only show when not in introduction mode */}
+                      {!isIntroductionMode && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-3">
+                            Import Options
+                          </label>
+                          <div className="flex space-x-3">
+                            <motion.button
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="flex-1 flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                              <Upload className="w-4 h-4 mr-2" />
+                              Import
+                            </motion.button>
+                            <motion.button
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              className="flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-shadow"
+                            >
+                              <Sparkles className="w-4 h-4 mr-2" />
+                              Create with AI
+                            </motion.button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}
@@ -220,14 +289,14 @@ export function Email() {
                           </div>
                           <div>
                             <h3 className="text-lg font-semibold text-gray-900">
-                              Content Editor
+                              {isIntroductionMode ? 'Introduction Editor' : 'Content Editor'}
                             </h3>
                             <p className="text-sm text-gray-600 capitalize">
-                              Editing: {selectedEvent}
+                              Editing: {isIntroductionMode ? 'Kendini Tanıt' : selectedEvent}
                             </p>
                           </div>
                         </div>
-                        {isContentModified && (
+                        {((isIntroductionMode && isIntroModified) || (!isIntroductionMode && isContentModified)) && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
@@ -239,48 +308,121 @@ export function Email() {
 
                     {/* Content Editor Body */}
                     <div className="p-6 space-y-4">
-                      <div className="relative">
-                        <textarea
-                          value={editContent}
-                          onChange={(e) => handleContentChange(e.target.value)}
-                          className="w-full h-48 p-4 border-2 border-dashed border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none bg-gray-50 hover:bg-white"
-                          placeholder="Enter your content here..."
-                        />
-                        <div className="absolute top-3 right-3">
-                          <FileText className="w-5 h-5 text-gray-400" />
-                        </div>
-                      </div>
+                      {isIntroductionMode ? (
+                        // Introduction Form
+                        <>
+                          <div className="space-y-4">
+                            <div>
+                              <label 
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                                title="Emailler kimin adına gönderilsin"
+                              >
+                                İsim
+                              </label>
+                              <input
+                                type="text"
+                                value={introName}
+                                onChange={(e) => handleIntroNameChange(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                placeholder="Adınızı girin..."
+                              />
+                            </div>
+                            
+                            <div>
+                              <label 
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                                title="Şirketiniz ve sunduğunuz hizmet hakkında bilgi verin"
+                              >
+                                İşletmeni Tanıt
+                              </label>
+                              <textarea
+                                value={introCompany}
+                                onChange={(e) => handleIntroCompanyChange(e.target.value)}
+                                className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                                placeholder="Şirketiniz ve hizmetleriniz hakkında bilgi girin..."
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm text-gray-500">
+                              {introName.length + introCompany.length} characters
+                            </div>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={handleSaveIntroduction}
+                              disabled={!isIntroModified}
+                              className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
+                                isIntroModified
+                                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg'
+                                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                              }`}
+                            >
+                              <Save className="w-4 h-4 mr-2" />
+                              Save Changes
+                            </motion.button>
+                          </div>
 
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm text-gray-500">
-                          {editContent.length} characters
-                        </div>
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={handleSaveContent}
-                          disabled={!isContentModified}
-                          className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
-                            isContentModified
-                              ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg'
-                              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                          }`}
-                        >
-                          <Save className="w-4 h-4 mr-2" />
-                          Save Changes
-                        </motion.button>
-                      </div>
+                          {isIntroModified && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="bg-orange-50 border border-orange-200 rounded-lg p-3"
+                            >
+                              <p className="text-sm text-orange-800">
+                                You have unsaved changes. Don't forget to save!
+                              </p>
+                            </motion.div>
+                          )}
+                        </>
+                      ) : (
+                        // Regular Content Editor
+                        <>
+                          <div className="relative">
+                            <textarea
+                              value={editContent}
+                              onChange={(e) => handleContentChange(e.target.value)}
+                              className="w-full h-48 p-4 border-2 border-dashed border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none bg-gray-50 hover:bg-white"
+                              placeholder="Enter your content here..."
+                            />
+                            <div className="absolute top-3 right-3">
+                              <FileText className="w-5 h-5 text-gray-400" />
+                            </div>
+                          </div>
 
-                      {isContentModified && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="bg-orange-50 border border-orange-200 rounded-lg p-3"
-                        >
-                          <p className="text-sm text-orange-800">
-                            You have unsaved changes. Don't forget to save!
-                          </p>
-                        </motion.div>
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm text-gray-500">
+                              {editContent.length} characters
+                            </div>
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={handleSaveContent}
+                              disabled={!isContentModified}
+                              className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
+                                isContentModified
+                                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg'
+                                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                              }`}
+                            >
+                              <Save className="w-4 h-4 mr-2" />
+                              Save Changes
+                            </motion.button>
+                          </div>
+
+                          {isContentModified && (
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="bg-orange-50 border border-orange-200 rounded-lg p-3"
+                            >
+                              <p className="text-sm text-orange-800">
+                                You have unsaved changes. Don't forget to save!
+                              </p>
+                            </motion.div>
+                          )}
+                        </>
                       )}
                     </div>
                   </motion.div>
