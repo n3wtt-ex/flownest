@@ -579,48 +579,54 @@ export function Leads() {
 
   const addToLeads = async (lead: LeadType) => {
     try {
-      // Supabase'e lead ekle
+      // Sadece kesinlikle var olan temel alanları gönder
+      const insertData = {
+        name: lead.name || null,
+        email: lead.email || null,
+        company_name: lead.companyName || null,
+        status: lead.status || 'New',
+        created_at: new Date().toISOString()
+      };
+  
+      // Opsiyonel alanları kontrol ederek ekle
+      if (lead.linkedinURL) insertData.linkedin_url = lead.linkedinURL;
+      if (lead.jobTitle) insertData.job_title = lead.jobTitle;
+      if (lead.location) insertData.location = lead.location;
+      if (lead.country) insertData.country = lead.country;
+      if (lead.website) insertData.website = lead.website;
+      if (lead.sector) insertData.sector = lead.sector;
+      if (lead.campaign_id) insertData.campaign_id = lead.campaign_id;
+      if (lead.lead_id) insertData.lead_id = lead.lead_id;
+  
       const { data, error } = await supabase
         .from('leads')
-        .insert({
-          name: lead.name,
-          email: lead.email,
-          linkedin: lead.linkedin,
-          linkedin_url: lead.linkedinURL,
-          job_title: lead.jobTitle,
-          company_name: lead.companyName,
-          location: lead.location,
-          country: lead.country,
-          website: lead.website,
-          sector: lead.sector,
-          status: lead.status,
-          campaign_id: lead.campaign_id,
-          lead_id: lead.lead_id,
-          created_at: lead.created_at
-        })
+        .insert(insertData)
         .select();
-
+  
       if (error) {
         throw error;
       }
-
-      // localStorage'ı güncelle
+  
+      // Local state'i güncelle
       setLeads(prev => [...prev, lead]);
       
       // Search sonuçlarından kaldır
       const updatedResults = searchResults.filter(l => l.id !== lead.id);
       setSearchResults(updatedResults);
+      
+      console.log('Lead successfully added:', data);
     } catch (err) {
-      console.error('Error adding lead to Supabase:', err);
-      // localStorage'ı yine de güncelle
-      setLeads(prev => [...prev, lead]);
+      console.error('Error adding lead:', err);
       
-      // Search sonuçlarından kaldır
+      // Fallback: sadece local state'i güncelle
+      setLeads(prev => [...prev, lead]);
       const updatedResults = searchResults.filter(l => l.id !== lead.id);
       setSearchResults(updatedResults);
+      
+      // Hata mesajını ayarla
+      setError(`Failed to save lead: ${err.message}`);
     }
   };
-
   const updateLeadStatus = async (leadId: string, status: 'New' | 'Verified' | 'Skipped') => {
     try {
       const { error } = await supabase
