@@ -135,6 +135,10 @@ export function Responses() {
     }, 3000);
   };
 
+  const isCrmTransferred = (emailId: string) => {
+    return crmTransfers.has(emailId);
+  };
+
   const addEmail = async (email: Omit<EmailCard, 'id' | 'timestamp'>) => {
     try {
       const { data, error } = await supabase
@@ -321,7 +325,12 @@ export function Responses() {
     }
     // Special handling for "CRM'e Aktar" action
     else if (action === 'CRM\'e Aktar') {
-      try {\n        // \u00d6nce lead zaten CRM'e aktar\u0131lm\u0131\u015f m\u0131 diye kontrol et\n        if (isCrmTransferred(emailId)) {\n          showNotification('Bu lead zaten CRM\\'e aktar\u0131lm\u0131\u015f!', 'error');\n          return;\n        }
+      try {
+        // Önce lead zaten CRM'e aktarılmış mı diye kontrol et
+        if (isCrmTransferred(emailId)) {
+          showNotification('Bu lead zaten CRM\'e aktarılmış!', 'error');
+          return;
+        }
 
         // Yükleme durumunu başlat
         setCrmTransferLoading(prev => new Set(prev).add(emailId));
@@ -522,10 +531,6 @@ ${email.content}`
     setSelectedEmail(null);
   };
 
-  const isCrmTransferred = (emailId: string) => {
-    return crmTransfers.has(emailId);
-  };
-
   const getActionButtons = (tag: string, emailId: string) => {
     switch (tag) {
       case 'İlgili':
@@ -577,6 +582,7 @@ ${email.content}`
             </div>
           </div>
         )}
+
         {/* Header */}
         <div className="text-center mb-8">
           <motion.div
