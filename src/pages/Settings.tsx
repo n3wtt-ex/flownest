@@ -53,7 +53,6 @@ export function Settings() {
           });
         }
         
-        // Avatar URL'sini de güncelle
         if (user.user_metadata?.avatar_url) {
           setAvatarUrl(user.user_metadata.avatar_url);
         }
@@ -85,12 +84,10 @@ export function Settings() {
         throw uploadError;
       }
       
-      // Avatar URL'sini al
       const { data } = supabase.storage
         .from('user_avatars')
         .getPublicUrl(filePath);
       
-      // Kullanıcı meta verilerini güncelle
       const { error: updateError } = await supabase.auth.updateUser({
         data: {
           avatar_url: data.publicUrl
@@ -116,7 +113,6 @@ export function Settings() {
     try {
       if (!avatarUrl || !user) return;
       
-      // Dosya yolunu çıkar
       const urlParts = avatarUrl.split('/');
       const fileName = urlParts[urlParts.length - 1];
       const filePath = `user_avatars/${user.id}/avatar.${fileName.split('.').pop()}`;
@@ -129,7 +125,6 @@ export function Settings() {
         throw error;
       }
       
-      // Kullanıcı meta verilerini güncelle
       const { error: updateError } = await supabase.auth.updateUser({
         data: {
           avatar_url: null
@@ -155,7 +150,6 @@ export function Settings() {
     setMessage(null);
 
     try {
-      // Supabase'de kullanıcı meta verilerini güncelle
       const { error } = await supabase.auth.updateUser({
         data: {
           full_name: fullName,
@@ -165,7 +159,6 @@ export function Settings() {
 
       if (error) throw error;
 
-      // İletişim bilgilerini özel tabloya kaydet (users_contact_info)
       const { error: contactError } = await supabase
         .from('users_contact_info')
         .upsert({
@@ -189,326 +182,528 @@ export function Settings() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Hesap Ayarları</h1>
-        <p className="text-gray-600 mt-2">Profil bilgilerinizi ve iletişim ayarlarınızı yönetin</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/40 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-indigo-400/20 to-cyan-600/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-violet-400/10 to-pink-400/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
       </div>
 
-      {message && (
-        <div className={`mb-6 p-4 rounded-lg ${message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-          {message.text}
+      <div className="relative z-10 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="mb-8 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg shadow-blue-500/25">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-3">
+            Hesap Ayarları
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Profil bilgilerinizi ve iletişim ayarlarınızı modernize edin
+          </p>
         </div>
-      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sol Panel - Profil Bilgileri */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex flex-col items-center">
-              <div className="relative">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4 overflow-hidden">
-                  {avatarUrl ? (
-                    <img 
-                      src={avatarUrl} 
-                      alt="Profil" 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    fullName ? fullName.charAt(0) : user?.email?.charAt(0) || 'U'
-                  )}
+        {/* Success/Error Message */}
+        {message && (
+          <div className={`mb-8 p-4 rounded-2xl backdrop-blur-sm border ${
+            message.type === 'success' 
+              ? 'bg-emerald-50/80 border-emerald-200 text-emerald-800' 
+              : 'bg-red-50/80 border-red-200 text-red-800'
+          } transform transition-all duration-300 animate-pulse`}>
+            <div className="flex items-center">
+              <div className={`flex-shrink-0 w-5 h-5 rounded-full ${
+                message.type === 'success' ? 'bg-emerald-500' : 'bg-red-500'
+              } mr-3`}></div>
+              {message.text}
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+          {/* Profile Card - Sol Panel */}
+          <div className="xl:col-span-4">
+            <div className="sticky top-8">
+              <div className="group relative">
+                {/* Glassmorphism Effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
+                
+                {/* Content */}
+                <div className="relative p-8">
+                  <div className="text-center">
+                    {/* Avatar Section */}
+                    <div className="relative inline-block mb-6">
+                      <div className="relative w-32 h-32 mx-auto">
+                        {/* Animated Ring */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-full animate-spin-slow opacity-20"></div>
+                        <div className="absolute inset-1 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full overflow-hidden shadow-2xl">
+                          {avatarUrl ? (
+                            <img 
+                              src={avatarUrl} 
+                              alt="Profil" 
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-white text-4xl font-bold bg-gradient-to-br from-blue-600 to-purple-600">
+                              {fullName ? fullName.charAt(0) : user?.email?.charAt(0) || 'Y'}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Edit Buttons */}
+                        {isEditing && (
+                          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                            <button
+                              onClick={() => fileInputRef.current?.click()}
+                              className="group p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/20"
+                              disabled={uploading}
+                            >
+                              {uploading ? (
+                                <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                              ) : (
+                                <svg className="w-5 h-5 text-blue-600 group-hover:text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                              )}
+                            </button>
+                            
+                            {avatarUrl && (
+                              <button
+                                onClick={deleteAvatar}
+                                className="group p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/20"
+                              >
+                                <svg className="w-5 h-5 text-red-600 group-hover:text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={uploadAvatar}
+                        className="hidden"
+                        disabled={uploading}
+                      />
+                    </div>
+
+                    {/* User Info */}
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                      {fullName || 'Kullanıcı'}
+                    </h2>
+                    <p className="text-gray-600 mb-4 font-medium">{user?.email}</p>
+                    
+                    {/* Status Badge */}
+                    <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-sm font-semibold shadow-lg shadow-blue-500/25 mb-6">
+                      <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
+                      {user?.role || 'authenticated'}
+                    </div>
+                  </div>
                 </div>
-                {isEditing && (
-                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="p-1 bg-white rounded-full shadow text-blue-600 hover:bg-gray-50"
-                      disabled={uploading}
-                    >
-                      {uploading ? (
-                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                      ) : (
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                      )}
-                    </button>
-                    {avatarUrl && (
+              </div>
+
+              {/* Account Details Card */}
+              <div className="mt-6 group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
+                <div className="relative p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-3"></div>
+                    Hesap Detayları
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="group p-4 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 border border-blue-200/30 hover:shadow-lg transition-all duration-300">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Üyelik Tarihi</p>
+                      <p className="text-gray-900 font-semibold">10.08.2025</p>
+                    </div>
+                    
+                    <div className="group p-4 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg transition-all duration-300">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Kullanıcı ID</p>
+                      <p className="text-gray-900 font-mono text-sm">e07218f6...</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content - Sağ Panel */}
+          <div className="xl:col-span-8">
+            {/* Profile Information Card */}
+            <div className="group relative mb-8">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
+              
+              <div className="relative p-8">
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                  <div className="flex items-center mb-4 sm:mb-0">
+                    <div className="w-3 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-4"></div>
+                    <h2 className="text-2xl font-bold text-gray-900">Profil Bilgileri</h2>
+                  </div>
+                  
+                  <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-2xl hover:from-gray-800 hover:to-gray-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    <svg className="w-5 h-5 mr-2 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    {isEditing ? 'İptal' : 'Düzenle'}
+                  </button>
+                </div>
+
+                {/* Form or Display Content */}
+                {isEditing ? (
+                  <form onSubmit={updateProfile} className="space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Ad Soyad */}
+                      <div className="group">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Ad Soyad</label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            placeholder="Adınızı ve soyadınızı girin"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                      </div>
+                      
+                      {/* E-posta */}
+                      <div className="group">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">E-posta</label>
+                        <div className="relative">
+                          <input
+                            type="email"
+                            value={user?.email || ''}
+                            disabled
+                            className="w-full px-4 py-3 bg-gray-100/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl text-gray-500 cursor-not-allowed"
+                          />
+                          <div className="absolute right-3 top-3">
+                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Telefon */}
+                      <div className="group">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Telefon</label>
+                        <div className="relative">
+                          <input
+                            type="tel"
+                            value={contactInfo.phone || ''}
+                            onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            placeholder="Telefon numaranız"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Şirket */}
+                      <div className="group">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Şirket</label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={contactInfo.company || ''}
+                            onChange={(e) => setContactInfo({...contactInfo, company: e.target.value})}
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            placeholder="Şirket adı"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Web Sitesi */}
+                      <div className="group">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Web Sitesi</label>
+                        <div className="relative">
+                          <input
+                            type="url"
+                            value={contactInfo.website || ''}
+                            onChange={(e) => setContactInfo({...contactInfo, website: e.target.value})}
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            placeholder="https://example.com"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Ülke */}
+                      <div className="group">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Ülke</label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={contactInfo.country || ''}
+                            onChange={(e) => setContactInfo({...contactInfo, country: e.target.value})}
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            placeholder="Ülke"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Şehir */}
+                      <div className="group">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Şehir</label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={contactInfo.city || ''}
+                            onChange={(e) => setContactInfo({...contactInfo, city: e.target.value})}
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            placeholder="Şehir"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                      </div>
+                      
+                      {/* Posta Kodu */}
+                      <div className="group">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Posta Kodu</label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={contactInfo.postal_code || ''}
+                            onChange={(e) => setContactInfo({...contactInfo, postal_code: e.target.value})}
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            placeholder="Posta kodu"
+                          />
+                          <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Adres */}
+                    <div className="group">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Adres</label>
+                      <div className="relative">
+                        <textarea
+                          value={contactInfo.address || ''}
+                          onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
+                          rows={4}
+                          className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 resize-none"
+                          placeholder="Tam adresiniz"
+                        />
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                      </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200/50">
                       <button
-                        onClick={deleteAvatar}
-                        className="p-1 bg-white rounded-full shadow text-red-600 hover:bg-gray-50"
+                        type="button"
+                        onClick={() => setIsEditing(false)}
+                        className="px-6 py-3 text-gray-700 hover:text-gray-900 font-semibold rounded-xl hover:bg-gray-100/50 transition-all duration-300"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
+                        İptal
                       </button>
-                    )}
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="group relative px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                      >
+                        <span className="relative z-10 flex items-center">
+                          {loading ? (
+                            <>
+                              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                              Kaydediliyor...
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              Değişiklikleri Kaydet
+                            </>
+                          )}
+                        </span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      {/* Display Mode Fields */}
+                      {[
+                        { label: 'Ad Soyad', value: fullName || 'Belirtilmemiş', icon: '👤' },
+                        { label: 'E-posta', value: user?.email, icon: '📧' },
+                        { label: 'Telefon', value: contactInfo.phone || 'Belirtilmemiş', icon: '📞' },
+                        { label: 'Şirket', value: contactInfo.company || 'Belirtilmemiş', icon: '🏢' },
+                        { label: 'Web Sitesi', value: contactInfo.website || 'Belirtilmemiş', icon: '🌐', isLink: true },
+                        { label: 'Ülke', value: contactInfo.country || 'Belirtilmemiş', icon: '🌍' },
+                        { label: 'Şehir', value: contactInfo.city || 'Belirtilmemiş', icon: '🏙️' },
+                        { label: 'Posta Kodu', value: contactInfo.postal_code || 'Belirtilmemiş', icon: '📮' }
+                      ].map((field, index) => (
+                        <div key={field.label} className="group p-5 rounded-2xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm border border-white/30 hover:shadow-lg hover:border-white/50 transition-all duration-300 hover:scale-105" style={{animationDelay: `${index * 0.1}s`}}>
+                          <div className="flex items-center mb-2">
+                            <span className="text-lg mr-2">{field.icon}</span>
+                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{field.label}</p>
+                          </div>
+                          {field.isLink && field.value !== 'Belirtilmemiş' ? (
+                            <a 
+                              href={field.value} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="text-blue-600 hover:text-blue-800 font-semibold hover:underline transition-colors duration-300"
+                            >
+                              {field.value}
+                            </a>
+                          ) : (
+                            <p className="text-gray-900 font-semibold">{field.value}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Adres - Full Width */}
+                    <div className="group p-5 rounded-2xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm border border-white/30 hover:shadow-lg hover:border-white/50 transition-all duration-300 hover:scale-105">
+                      <div className="flex items-center mb-2">
+                        <span className="text-lg mr-2">📍</span>
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Adres</p>
+                      </div>
+                      <p className="text-gray-900 font-semibold">{contactInfo.address || 'Belirtilmemiş'}</p>
+                    </div>
                   </div>
                 )}
               </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={uploadAvatar}
-                className="hidden"
-                disabled={uploading}
-              />
-              <h2 className="text-xl font-bold text-gray-900">{fullName || 'Kullanıcı'}</h2>
-              <p className="text-gray-600 mt-1">{user?.email}</p>
-              <div className="mt-4 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                {user?.role || 'Kullanıcı'}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 mt-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Hesap Detayları</h3>
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs text-gray-500 uppercase">Üyelik Tarihi</p>
-                <p className="text-gray-900">{user?.created_at ? new Date(user.created_at).toLocaleDateString('tr-TR') : '-'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500 uppercase">Kullanıcı ID</p>
-                <p className="text-gray-900 font-mono text-sm">{user?.id?.substring(0, 8)}...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Sağ Panel - Formlar */}
-        <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Profil Bilgileri</h2>
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="px-4 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 transition-colors"
-              >
-                {isEditing ? 'İptal' : 'Düzenle'}
-              </button>
             </div>
 
-            {isEditing ? (
-              <form onSubmit={updateProfile} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Ad Soyad</label>
-                    <input
-                      type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Adınızı ve soyadınızı girin"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">E-posta</label>
-                    <input
-                      type="email"
-                      value={user?.email || ''}
-                      disabled
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
-                      placeholder="E-posta adresiniz"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Telefon</label>
-                    <input
-                      type="tel"
-                      value={contactInfo.phone || ''}
-                      onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Telefon numaranız"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Şirket</label>
-                    <input
-                      type="text"
-                      value={contactInfo.company || ''}
-                      onChange={(e) => setContactInfo({...contactInfo, company: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Şirket adı"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Web Sitesi</label>
-                    <input
-                      type="url"
-                      value={contactInfo.website || ''}
-                      onChange={(e) => setContactInfo({...contactInfo, website: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="https://example.com"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Ülke</label>
-                    <input
-                      type="text"
-                      value={contactInfo.country || ''}
-                      onChange={(e) => setContactInfo({...contactInfo, country: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Ülke"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Şehir</label>
-                    <input
-                      type="text"
-                      value={contactInfo.city || ''}
-                      onChange={(e) => setContactInfo({...contactInfo, city: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Şehir"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Posta Kodu</label>
-                    <input
-                      type="text"
-                      value={contactInfo.postal_code || ''}
-                      onChange={(e) => setContactInfo({...contactInfo, postal_code: e.target.value})}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Posta kodu"
-                    />
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Adres</label>
-                    <textarea
-                      value={contactInfo.address || ''}
-                      onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Tam adresiniz"
-                    />
-                  </div>
+            {/* Account Settings Card */}
+            <div className="group relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
+              
+              <div className="relative p-8">
+                <div className="flex items-center mb-8">
+                  <div className="w-3 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full mr-4"></div>
+                  <h2 className="text-2xl font-bold text-gray-900">Hesap Ayarları</h2>
                 </div>
                 
-                <div className="flex justify-end space-x-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setIsEditing(false)}
-                    className="px-4 py-2 text-gray-700 hover:text-gray-900"
-                  >
-                    İptal
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-                  >
-                    {loading ? 'Kaydediliyor...' : 'Değişiklikleri Kaydet'}
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase">Ad Soyad</p>
-                    <p className="text-gray-900">{fullName || 'Belirtilmemiş'}</p>
+                <div className="space-y-4">
+                  {/* Şifre Değiştir */}
+                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 border border-blue-200/30 hover:shadow-lg hover:border-blue-300/50 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900 text-lg">Şifre Değiştir</h3>
+                          <p className="text-gray-600">Şifrenizi güvenli tutun</p>
+                        </div>
+                      </div>
+                      <button className="group px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center">
+                        <span className="mr-2">Düzenle</span>
+                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase">E-posta</p>
-                    <p className="text-gray-900">{user?.email}</p>
+                  {/* Bildirimler */}
+                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg hover:border-purple-300/50 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM7 6h5l5 5v5H7V6z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900 text-lg">Bildirimler</h3>
+                          <p className="text-gray-600">E-posta ve bildirim tercihlerinizi yönetin</p>
+                        </div>
+                      </div>
+                      <button className="group px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center">
+                        <span className="mr-2">Yapılandır</span>
+                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase">Telefon</p>
-                    <p className="text-gray-900">{contactInfo.phone || 'Belirtilmemiş'}</p>
+                  {/* İki Faktörlü Kimlik Doğrulama */}
+                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-emerald-50/50 to-teal-50/50 border border-emerald-200/30 hover:shadow-lg hover:border-emerald-300/50 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900 text-lg">İki Faktörlü Kimlik Doğrulama</h3>
+                          <p className="text-gray-600">Hesabınız için ek güvenlik katmanı</p>
+                        </div>
+                      </div>
+                      
+                      {/* Advanced Toggle Switch */}
+                      <div className="relative">
+                        <input type="checkbox" id="2fa-toggle" className="sr-only" />
+                        <label htmlFor="2fa-toggle" className="relative inline-flex items-center cursor-pointer">
+                          <div className="w-16 h-8 bg-gray-300 rounded-full shadow-inner transition-all duration-300 hover:bg-gray-400">
+                            <div className="w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-1 mt-1"></div>
+                          </div>
+                          <div className="absolute inset-0 w-16 h-8 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full opacity-0 transition-opacity duration-300 peer-checked:opacity-100">
+                            <div className="w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-9 mt-1"></div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase">Şirket</p>
-                    <p className="text-gray-900">{contactInfo.company || 'Belirtilmemiş'}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase">Web Sitesi</p>
-                    <p className="text-gray-900">
-                      {contactInfo.website ? (
-                        <a href={contactInfo.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                          {contactInfo.website}
-                        </a>
-                      ) : 'Belirtilmemiş'}
-                    </p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase">Ülke</p>
-                    <p className="text-gray-900">{contactInfo.country || 'Belirtilmemiş'}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase">Şehir</p>
-                    <p className="text-gray-900">{contactInfo.city || 'Belirtilmemiş'}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase">Posta Kodu</p>
-                    <p className="text-gray-900">{contactInfo.postal_code || 'Belirtilmemiş'}</p>
-                  </div>
-                  
-                  <div className="md:col-span-2">
-                    <p className="text-xs text-gray-500 uppercase">Adres</p>
-                    <p className="text-gray-900">{contactInfo.address || 'Belirtilmemiş'}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Hesap Ayarları</h2>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <div>
-                  <h3 className="font-medium text-gray-900">Şifre Değiştir</h3>
-                  <p className="text-sm text-gray-600">Şifrenizi düzenleyin</p>
-                </div>
-                <button className="px-4 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 transition-colors">
-                  Düzenle
-                </button>
-              </div>
-              
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <div>
-                  <h3 className="font-medium text-gray-900">Bildirimler</h3>
-                  <p className="text-sm text-gray-600">E-posta ve bildirim tercihlerinizi yönetin</p>
-                </div>
-                <button className="px-4 py-2 text-sm rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-800 transition-colors">
-                  Yapılandır
-                </button>
-              </div>
-              
-              <div className="flex justify-between items-center py-3">
-                <div>
-                  <h3 className="font-medium text-gray-900">İki Faktörlü Kimlik Doğrulama</h3>
-                  <p className="text-sm text-gray-600">Hesabınız için ek güvenlik katmanı</p>
-                </div>
-                <div className="relative inline-block w-10 mr-2 align-middle select-none">
-                  <input type="checkbox" name="toggle" id="toggle" className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" />
-                  <label htmlFor="toggle" className="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Custom Styles */}
+      <style jsx>{`
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 3s linear infinite;
+        }
+        
+        .toggle-checkbox:checked {
+          right: 0;
+          border-color: #10b981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+          background-color: #10b981;
+        }
+        
+        /* Hover effects for form inputs */
+        input:focus, textarea:focus {
+          transform: translateY(-1px);
+        }
+        
+        /* Glassmorphism hover effects */
+        .group:hover .absolute {
+          background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 100%);
+        }
+      `}</style>
     </div>
   );
 }
