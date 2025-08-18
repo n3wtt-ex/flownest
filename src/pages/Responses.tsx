@@ -63,6 +63,8 @@ export function Responses() {
   const [completedMeetings, setCompletedMeetings] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+  const [crmTransfers, setCrmTransfers] = useState<Set<string>>(new Set()); // CRM aktarılanlar
+  const [crmTransferLoading, setCrmTransferLoading] = useState<Set<string>>(new Set()); // CRM aktarım yüklemeleri
 
   // Debug: Log dragged email changes
   useEffect(() => {
@@ -317,6 +319,174 @@ export function Responses() {
         showNotification('Yanıt maili gönderilirken bir hata oluştu!', 'error');
       }
     }
+    // Special handling for "CRM'e Aktar" action
+    else if (action === 'CRM\'e Aktar') {
+      try {
+        // Yükleme durumunu başlat
+        setCrmTransferLoading(prev => new Set(prev).add(emailId));
+        
+        // Önce lead bilgilerini al
+        const email = emails.find(e => e.id === emailId);
+        if (!email) {
+          throw new Error('Email not found');
+        }
+
+        // 1. Şirket ekle veya varsa bul
+        let companyId = null;
+        let companyName = '';
+        
+        // Email adresinden şirket adı çıkar
+        const emailParts = email.sender.split('@');
+        if (emailParts.length === 2) {
+          const domain = emailParts[1];
+          // Domain'den şirket adını çıkar (örn: company.com -> Company)
+          companyName = domain.split('.')[0];
+          companyName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
+        } else {
+          companyName = 'Bilinmeyen Şirket';
+        }
+
+        // Önce aynı domain'e sahip bir şirket var mı diye bak
+        const { data: existingCompanies, error: companySearchError } = await supabase
+          .from('companies')
+          .select('id')
+          .ilike('domain', email.sender.split('@')[1])
+          .limit(1);
+
+        if (companySearchError) {
+          console.error('Error searching company:', companySearchError);
+        } else if (existingCompanies && existingCompanies.length > 0) {
+          // Şirket zaten var
+          companyId = existingCompanies[0].id;
+        } else {
+          // Yeni şirket ekle
+          const { data: newCompany, error: companyError } = await supabase
+            .from('companies')
+            .insert([
+              {
+                name: companyName,
+                domain: email.sender.split('@')[1],
+                industry: 'Bilinmeyen',
+                location: 'Bilinmeyen'
+              }
+            ])
+            .select()
+            .single();
+
+          if (companyError) throw companyError;
+          companyId = newCompany.id;
+        }
+
+        // 2. Kişi ekle veya varsa bul
+        let contactId = null;
+        
+        // Önce aynı email adresine sahip bir kişi var mı diye bak
+        const { data: existingContacts, error: contactSearchError } = await supabase
+          .from('contacts')
+          .select('id')
+          .eq('email', email.sender)
+          .limit(1);
+
+        if (contactSearchError) {
+          console.error('Error searching contact:', contactSearchError);
+        } else if (existingContacts && existingContacts.length > 0) {
+          // Kişi zaten var
+          contactId = existingContacts[0].id;
+        } else {
+          // Yeni kişi ekle
+          // Email adresinden kişi adını çıkar
+          let contactName = email.sender.split('@')[0];
+          // Adı daha düzgün hale getir (nokta, tire gibi karakterleri boşlukla değiştir)
+          contactName = contactName.replace(/[\.\-_]/g, ' ');
+          // Kelimelerin ilk harflerini büyük yap
+          contactName = contactName.split(' ').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+          ).join(' ');
+
+          const { data: newContact, error: contactError } = await supabase
+            .from('contacts')
+            .insert([
+              {
+                full_name: contactName,
+                email: email.sender,
+                company_id: companyId,
+                lifecycle_stage: 'lead',
+                notes: `Otomatik olarak ${email.tag} kategorisinden CRM'e aktarıldı.`
+              }
+            ])
+            .select()
+            .single();
+
+          if (contactError) throw contactError;
+          contactId = newContact.id;
+        }
+
+        // 3. Fırsat ekle
+        // Önce varsayılan pipeline ID'sini al
+        const { data: pipelineData, error: pipelineError } = await supabase
+          .from('pipelines')
+          .select('id')
+          .eq('is_default', true)
+          .single();
+
+        if (pipelineError) {
+          console.error('Error fetching default pipeline:', pipelineError);
+          throw new Error('Default pipeline not found');
+        }
+
+        // Pipeline stage ID'sini al (ilk stage)
+        const { data: stageData, error: stageError } = await supabase
+          .from('pipeline_stages')
+          .select('id')
+          .eq('pipeline_id', pipelineData?.id)
+          .order('order_index', { ascending: true })
+          .limit(1)
+          .single();
+
+        if (stageError) {
+          console.error('Error fetching pipeline stage:', stageError);
+          throw new Error('Pipeline stage not found');
+        }
+
+        // Fırsat başlığını daha anlamlı hale getir
+        const dealTitle = `${email.sender.split('@')[0]} ile görüşme fırsatı`;
+
+        const { data: newDeal, error: dealError } = await supabase
+          .from('deals')
+          .insert([
+            {
+              title: dealTitle,
+              amount: 0,
+              currency: 'USD',
+              contact_id: contactId,
+              company_id: companyId,
+              pipeline_id: pipelineData.id,
+              stage_id: stageData.id,
+              status: 'open',
+              source: 'Email Yanıt Takibi',
+              notes: `Otomatik olarak ${email.tag} kategorisinden oluşturuldu.\n\nEmail içeriği:\n${email.content}`
+            }
+          ])
+          .select()
+          .single();
+
+        if (dealError) throw dealError;
+
+        showNotification('Lead başarıyla CRM\'e aktarıldı!', 'success');
+        // CRM aktarımını state'e ekle
+        setCrmTransfers(prev => new Set(prev).add(emailId));
+      } catch (error) {
+        console.error('Error transferring to CRM:', error);
+        showNotification('CRM\'e aktarılırken bir hata oluştu: ' + (error as Error).message, 'error');
+      } finally {
+        // Yükleme durumunu kaldır
+        setCrmTransferLoading(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(emailId);
+          return newSet;
+        });
+      }
+    }
     // Handle tag change actions
     else if (action === 'İlgili Olarak İşaretle') {
       await updateEmailTag(emailId, 'İlgili');
@@ -528,7 +698,9 @@ export function Responses() {
                             {getActionButtons(email.tag, email.id).map((action, index) => {
                               const isMeetingCompleted = action.label === 'Toplantı Ayarla' && completedMeetings.has(email.id);
                               const isLeadRemoved = action.label === 'Lead Listesinden Çıkar' && completedMeetings.has(email.id);
-                              const isCompleted = isMeetingCompleted || isLeadRemoved;
+                              const isCrmTransferred = action.label === 'CRM\'e Aktar' && crmTransfers.has(email.id);
+                              const isCrmLoading = action.label === 'CRM\'e Aktar' && crmTransferLoading.has(email.id);
+                              const isCompleted = isMeetingCompleted || isLeadRemoved || isCrmTransferred;
                               
                               return (
                                 <motion.button
@@ -540,19 +712,28 @@ export function Responses() {
                                     e.stopPropagation();
                                     handleAction(email.id, action.label, email.sender);
                                   }}
-                                  disabled={isCompleted}
+                                  disabled={isCompleted || isCrmLoading}
                                   className={`w-full flex items-center justify-center space-x-2 px-3 py-2 text-white text-sm font-medium rounded-lg transition-all duration-200 ${
-                                    isCompleted 
+                                    isCompleted || isCrmLoading
                                       ? 'bg-gray-300 cursor-not-allowed' 
                                       : action.color
                                   } relative ${
-                                    !isCompleted ? 'hover:shadow-md' : ''
+                                    !isCompleted && !isCrmLoading ? 'hover:shadow-md' : ''
                                   }`}
                                 >
-                                  {action.icon}
-                                  <span>{action.label}</span>
-                                  {isCompleted && (
-                                    <CheckCircle className="absolute right-3 w-5 h-5 text-green-600" />
+                                  {isCrmLoading ? (
+                                    <>
+                                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                      <span>Aktarılıyor...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      {action.icon}
+                                      <span>{action.label}</span>
+                                      {isCompleted && (
+                                        <CheckCircle className="absolute right-3 w-5 h-5 text-green-600" />
+                                      )}
+                                    </>
                                   )}
                                 </motion.button>
                               );
