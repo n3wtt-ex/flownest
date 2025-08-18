@@ -33,8 +33,13 @@ export function Email() {
   // Kendini Tanıt form states
   const [isIntroductionMode, setIsIntroductionMode] = useState(false);
   const [introName, setIntroName] = useState('');
+  const [introCompanyName, setIntroCompanyName] = useState(''); // Yeni state için şirket adı
   const [introCompany, setIntroCompany] = useState('');
   const [isIntroModified, setIsIntroModified] = useState(false);
+
+  // Event Content states
+  const [eventContent, setEventContent] = useState('');
+  const [isEventModified, setIsEventModified] = useState(false);
 
   // Webhook state
   const [dailyLimit, setDailyLimit] = useState<number>(0);
@@ -84,8 +89,18 @@ export function Email() {
     setEditContent(eventContents['demo']);
   };
 
+    const handleSaveIntroduction = () => {
+    console.log('Saving introduction:', { name: introName, companyName: introCompanyName, company: introCompany });
+    setIsIntroModified(false);
+  };
+
   const handleIntroNameChange = (value: string) => {
     setIntroName(value);
+    setIsIntroModified(true);
+  };
+
+  const handleIntroCompanyNameChange = (value: string) => {
+    setIntroCompanyName(value);
     setIsIntroModified(true);
   };
 
@@ -94,15 +109,89 @@ export function Email() {
     setIsIntroModified(true);
   };
 
-  const handleSaveIntroduction = () => {
-    console.log('Saving introduction:', { name: introName, company: introCompany });
-    setIsIntroModified(false);
+  // Yeni eklenen fonksiyonlar
+  const fetchIntroductionData = async () => {
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/c9deff5f-039f-4fb0-8a84-1868063e9e65');
+      const data = await response.json();
+      
+      // Gelen verileri state'lere ata
+      if (data.name) setIntroName(data.name);
+      if (data.companyName) setIntroCompanyName(data.companyName);
+      if (data.company) setIntroCompany(data.company);
+    } catch (error) {
+      console.error('Error fetching introduction data:', error);
+    }
+  };
+
+  const fetchEventContentData = async () => {
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8');
+      const data = await response.json();
+      
+      // Gelen verileri state'e ata
+      if (data.content) {
+        setEventContent(data.content);
+        setEditContent(data.content); // Event content'ini de editContent state'ine ata
+      }
+    } catch (error) {
+      console.error('Error fetching event content data:', error);
+    }
+  };
+
+  const saveIntroductionToWebhook = async () => {
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/c9deff5f-039f-4fb0-8a84-1868063e9e65', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: introName,
+          companyName: introCompanyName,
+          company: introCompany
+        }),
+      });
+      
+      if (response.ok) {
+        console.log('Introduction data saved successfully');
+        setIsIntroModified(false);
+      } else {
+        console.error('Failed to save introduction data');
+      }
+    } catch (error) {
+      console.error('Error saving introduction data:', error);
+    }
+  };
+
+  const saveEventContentToWebhook = async () => {
+    try {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: editContent,
+          eventType: selectedEvent
+        }),
+      });
+      
+      if (response.ok) {
+        console.log('Event content data saved successfully');
+        setIsContentModified(false);
+      } else {
+        console.error('Failed to save event content data');
+      }
+    } catch (error) {
+      console.error('Error saving event content data:', error);
+    }
   };
 
     const fetchEmailAccounts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/c2a80579-f1eb-43dc-a996-068affa17420');
+      const response = await fetch('https://n8n.flownests.org/webhook/c2a80579-f1eb-43dc-a996-068affa17420');
       const rawData = await response.json();
       
       console.log('Raw webhook data:', rawData); // Gelen ham verileri console'a yazdır
@@ -156,6 +245,8 @@ export function Email() {
   // Bileşen yüklendiğinde verileri al
   useEffect(() => {
     fetchEmailAccounts();
+    fetchIntroductionData();
+    fetchEventContentData();
   }, []);
 
   return (
@@ -370,6 +461,22 @@ export function Email() {
                             <div>
                               <label 
                                 className="block text-sm font-medium text-gray-700 mb-2"
+                                title="Şirketinizin adı"
+                              >
+                                Şirket Adı
+                              </label>
+                              <input
+                                type="text"
+                                value={introCompanyName}
+                                onChange={(e) => handleIntroCompanyNameChange(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                placeholder="Şirket adınızı girin..."
+                              />
+                            </div>
+                            
+                            <div>
+                              <label 
+                                className="block text-sm font-medium text-gray-700 mb-2"
                                 title="Şirketiniz ve sunduğunuz hizmet hakkında bilgi verin"
                               >
                                 İşletmeni Tanıt
@@ -385,12 +492,12 @@ export function Email() {
                           
                           <div className="flex items-center justify-between">
                             <div className="text-sm text-gray-500">
-                              {introName.length + introCompany.length} characters
+                              {introName.length + introCompanyName.length + introCompany.length} characters
                             </div>
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              onClick={handleSaveIntroduction}
+                              onClick={saveIntroductionToWebhook}
                               disabled={!isIntroModified}
                               className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
                                 isIntroModified
@@ -437,7 +544,7 @@ export function Email() {
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              onClick={handleSaveContent}
+                              onClick={saveEventContentToWebhook}
                               disabled={!isContentModified}
                               className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
                                 isContentModified
