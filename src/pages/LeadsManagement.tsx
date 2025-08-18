@@ -98,7 +98,7 @@ export function Leads() {
     }
   };
 
-  const handleRefreshWebhook = async () => {
+    const handleRefreshWebhook = async () => {
     setIsRefreshing(true);
     
     try {
@@ -109,8 +109,8 @@ export function Leads() {
         // Google Maps için aynı URL'yi kullanabiliriz veya farklı bir URL verebilirsiniz
         webhookUrl = 'https://n8n.flownests.org/webhook-test/e51a1c60-517e-4473-a70b-ef289cda37b5';
       } else if (selectedProvider === 'apollo') {
-        // Apollo için farklı bir URL verebilirsiniz
-        // webhookUrl = 'https://n8n.flownests.org/webhook/apollo-refresh';
+        // Apollo için yeni webhook URL
+        webhookUrl = 'https://n8n.flownests.org/webhook-test/f784a0cc-681e-48d4-a08d-268ee71a8546';
       }
       
       const response = await fetch(webhookUrl, {
@@ -121,7 +121,7 @@ export function Leads() {
         const rawData = await response.json();
         console.log('Webhook response data:', rawData);
         
-        // Google Maps verilerini parse et
+        // Provider'a göre veri parse etme
         let parsedLeads = [];
         
         if (selectedProvider === 'google_maps' && Array.isArray(rawData) && rawData.length > 0) {
@@ -161,44 +161,136 @@ export function Leads() {
               reviews: reviews
             };
           });
+        } else if (selectedProvider === 'apollo' && Array.isArray(rawData) && rawData.length > 0) {
+          // Apollo verilerini parse et
+          parsedLeads = rawData.map((item, index) => {
+            // Apollo veri yapısına göre alanları çıkar
+            const data = item.payload || item;
+            
+            const firstName = data.firstName || '';
+            const lastName = data.lastName || '';
+            const fullName = firstName && lastName ? `${firstName} ${lastName}` : (firstName || lastName || 'N/A');
+            const emailAddress = data.emailAddress || null;
+            const linkedInURL = data.linkedInURL || null;
+            const jobTitle = data.jobTitle || null;
+            const companyName = data.companyName || 'N/A';
+            const location = data.location || null;
+            const country = data.country || null;
+            const websiteURL = data.websiteURL || null;
+            const businessIndustry = data.businessIndustry || null; // Sector olarak kullan
+            const seniority = data.seniority || null;
+            const number = data.number || null;
+            const status = data.status || 'apollo_lead'; // Sabit olarak apollo_lead
+            
+            return {
+              id: Date.now().toString() + Math.random().toString(36).substr(2, 9) + index,
+              name: fullName, // firstName + lastName
+              email: emailAddress,
+              linkedin: null,
+              linkedinURL: linkedInURL,
+              jobTitle: jobTitle,
+              companyName: companyName,
+              location: location,
+              country: country,
+              website: websiteURL,
+              sector: businessIndustry, // businessIndustry -> sector
+              status: status, // Sabit apollo_lead
+              campaign_id: null,
+              lead_id: null,
+              created_at: new Date().toISOString(),
+              // Ekstra alanlar
+              seniority: seniority,
+              phone: number
+            };
+          });
         } else {
-          // Diğer provider'lar için veya veri formatı farklıysa mock data kullan
-          parsedLeads = [
-            {
-              id: '1',
-              name: 'John Smith',
-              email: 'john@techcorp.com',
-              linkedin: 'John Smith',
-              linkedinURL: 'https://linkedin.com/in/johnsmith',
-              jobTitle: 'VP of Sales',
-              companyName: 'TechCorp Inc.',
-              location: 'San Francisco',
-              country: 'USA',
-              website: 'https://techcorp.com',
-              sector: 'Technology',
-              status: 'New',
-              campaign_id: 'campaign-1',
-              lead_id: 'lead-1',
-              created_at: '2024-01-15T10:30:00Z'
-            },
-            {
-              id: '2',
-              name: 'Sarah Johnson',
-              email: 'sarah@innovate.io',
-              linkedin: 'Sarah Johnson',
-              linkedinURL: 'https://linkedin.com/in/sarahjohnson',
-              jobTitle: 'Marketing Director',
-              companyName: 'Innovate Solutions',
-              location: 'New York',
-              country: 'USA',
-              website: 'https://innovate.io',
-              sector: 'Marketing',
-              status: 'Verified',
-              campaign_id: 'campaign-2',
-              lead_id: 'lead-2',
-              created_at: '2024-01-15T11:45:00Z'
-            }
-          ];
+          // Diğer durumlar için mock data kullan
+          if (selectedProvider === 'apollo') {
+            parsedLeads = [
+              {
+                id: '1',
+                name: 'John Smith',
+                email: 'john@techcorp.com',
+                linkedin: null,
+                linkedinURL: 'https://linkedin.com/in/johnsmith',
+                jobTitle: 'VP of Sales',
+                companyName: 'TechCorp Inc.',
+                location: 'San Francisco, CA',
+                country: 'USA',
+                website: 'https://techcorp.com',
+                sector: 'Technology',
+                status: 'apollo_lead',
+                campaign_id: 'campaign-1',
+                lead_id: 'lead-1',
+                created_at: '2024-01-15T10:30:00Z',
+                seniority: 'Executive',
+                phone: '(555) 123-4567'
+              },
+              {
+                id: '2',
+                name: 'Sarah Johnson',
+                email: 'sarah@innovate.io',
+                linkedin: null,
+                linkedinURL: 'https://linkedin.com/in/sarahjohnson',
+                jobTitle: 'Marketing Director',
+                companyName: 'Innovate Solutions',
+                location: 'New York, NY',
+                country: 'USA',
+                website: 'https://innovate.io',
+                sector: 'Marketing',
+                status: 'apollo_lead',
+                campaign_id: 'campaign-2',
+                lead_id: 'lead-2',
+                created_at: '2024-01-15T11:45:00Z',
+                seniority: 'Director',
+                phone: '(555) 987-6543'
+              }
+            ];
+          } else {
+            // Google Maps mock data
+            parsedLeads = [
+              {
+                id: '1',
+                name: null,
+                email: 'john@techcorp.com',
+                linkedin: null,
+                linkedinURL: null,
+                jobTitle: null,
+                companyName: 'TechCorp Inc.',
+                location: 'San Francisco, CA',
+                country: 'USA',
+                website: 'https://techcorp.com',
+                sector: null,
+                status: 'New',
+                campaign_id: 'campaign-1',
+                lead_id: 'lead-1',
+                created_at: '2024-01-15T10:30:00Z',
+                phone: '(555) 123-4567',
+                rating: 4.5,
+                reviews: 128
+              },
+              {
+                id: '2',
+                name: null,
+                email: 'sarah@innovate.io',
+                linkedin: null,
+                linkedinURL: null,
+                jobTitle: null,
+                companyName: 'Innovate Solutions',
+                location: 'New York, NY',
+                country: 'USA',
+                website: 'https://innovate.io',
+                sector: null,
+                status: 'Verified',
+                campaign_id: 'campaign-2',
+                lead_id: 'lead-2',
+                created_at: '2024-01-15T11:45:00Z',
+                phone: '(555) 987-6543',
+                rating: 4.8,
+                reviews: 97
+              }
+            ];
+          }
         }
         
         setSearchResults(parsedLeads);
@@ -206,47 +298,99 @@ export function Leads() {
       } else {
         // Use mock data even if webhook fails
         console.warn('Refresh webhook failed, using mock data:', response.status);
-        const mockLeads = [
-          {
-            id: '1',
-            name: 'John Smith',
-            email: 'john@techcorp.com',
-            linkedin: 'John Smith',
-            linkedinURL: 'https://linkedin.com/in/johnsmith',
-            jobTitle: 'VP of Sales',
-            companyName: 'TechCorp Inc.',
-            location: 'San Francisco',
-            country: 'USA',
-            website: 'https://techcorp.com',
-            sector: 'Technology',
-            status: 'New',
-            campaign_id: 'campaign-1',
-            lead_id: 'lead-1',
-            created_at: '2024-01-15T10:30:00Z'
-          },
-          {
-            id: '2',
-            name: 'Sarah Johnson',
-            email: 'sarah@innovate.io',
-            linkedin: 'Sarah Johnson',
-            linkedinURL: 'https://linkedin.com/in/sarahjohnson',
-            jobTitle: 'Marketing Director',
-            companyName: 'Innovate Solutions',
-            location: 'New York',
-            country: 'USA',
-            website: 'https://innovate.io',
-            sector: 'Marketing',
-            status: 'Verified',
-            campaign_id: 'campaign-2',
-            lead_id: 'lead-2',
-            created_at: '2024-01-15T11:45:00Z'
-          }
-        ];
+        let mockLeads = [];
+        
+        if (selectedProvider === 'apollo') {
+          mockLeads = [
+            {
+              id: '1',
+              name: 'John Smith',
+              email: 'john@techcorp.com',
+              linkedin: null,
+              linkedinURL: 'https://linkedin.com/in/johnsmith',
+              jobTitle: 'VP of Sales',
+              companyName: 'TechCorp Inc.',
+              location: 'San Francisco, CA',
+              country: 'USA',
+              website: 'https://techcorp.com',
+              sector: 'Technology',
+              status: 'apollo_lead',
+              campaign_id: 'campaign-1',
+              lead_id: 'lead-1',
+              created_at: '2024-01-15T10:30:00Z',
+              seniority: 'Executive',
+              phone: '(555) 123-4567'
+            },
+            {
+              id: '2',
+              name: 'Sarah Johnson',
+              email: 'sarah@innovate.io',
+              linkedin: null,
+              linkedinURL: 'https://linkedin.com/in/sarahjohnson',
+              jobTitle: 'Marketing Director',
+              companyName: 'Innovate Solutions',
+              location: 'New York, NY',
+              country: 'USA',
+              website: 'https://innovate.io',
+              sector: 'Marketing',
+              status: 'apollo_lead',
+              campaign_id: 'campaign-2',
+              lead_id: 'lead-2',
+              created_at: '2024-01-15T11:45:00Z',
+              seniority: 'Director',
+              phone: '(555) 987-6543'
+            }
+          ];
+        } else {
+          // Google Maps mock data
+          mockLeads = [
+            {
+              id: '1',
+              name: null,
+              email: 'john@techcorp.com',
+              linkedin: null,
+              linkedinURL: null,
+              jobTitle: null,
+              companyName: 'TechCorp Inc.',
+              location: 'San Francisco, CA',
+              country: 'USA',
+              website: 'https://techcorp.com',
+              sector: null,
+              status: 'New',
+              campaign_id: 'campaign-1',
+              lead_id: 'lead-1',
+              created_at: '2024-01-15T10:30:00Z',
+              phone: '(555) 123-4567',
+              rating: 4.5,
+              reviews: 128
+            },
+            {
+              id: '2',
+              name: null,
+              email: 'sarah@innovate.io',
+              linkedin: null,
+              linkedinURL: null,
+              jobTitle: null,
+              companyName: 'Innovate Solutions',
+              location: 'New York, NY',
+              country: 'USA',
+              website: 'https://innovate.io',
+              sector: null,
+              status: 'Verified',
+              campaign_id: 'campaign-2',
+              lead_id: 'lead-2',
+              created_at: '2024-01-15T11:45:00Z',
+              phone: '(555) 987-6543',
+              rating: 4.8,
+              reviews: 97
+            }
+          ];
+        }
         
         const newResults = mockLeads.map(lead => ({
           ...lead,
           id: Date.now().toString() + Math.random(),
-          status: 'New' as const,
+          status: selectedProvider === 'apollo' ? 'apollo_lead' : 'New',
           created_at: new Date().toISOString()
         }));
         
@@ -255,47 +399,99 @@ export function Leads() {
     } catch (error) {
       // Use mock data even if webhook fails
       console.warn('Refresh webhook error, using mock data:', error);
-      const mockLeads = [
-        {
-          id: '1',
-          name: 'John Smith',
-          email: 'john@techcorp.com',
-          linkedin: 'John Smith',
-          linkedinURL: 'https://linkedin.com/in/johnsmith',
-          jobTitle: 'VP of Sales',
-          companyName: 'TechCorp Inc.',
-          location: 'San Francisco',
-          country: 'USA',
-          website: 'https://techcorp.com',
-          sector: 'Technology',
-          status: 'New',
-          campaign_id: 'campaign-1',
-          lead_id: 'lead-1',
-          created_at: '2024-01-15T10:30:00Z'
-        },
-        {
-          id: '2',
-          name: 'Sarah Johnson',
-          email: 'sarah@innovate.io',
-          linkedin: 'Sarah Johnson',
-          linkedinURL: 'https://linkedin.com/in/sarahjohnson',
-          jobTitle: 'Marketing Director',
-          companyName: 'Innovate Solutions',
-          location: 'New York',
-          country: 'USA',
-          website: 'https://innovate.io',
-          sector: 'Marketing',
-          status: 'Verified',
-          campaign_id: 'campaign-2',
-          lead_id: 'lead-2',
-          created_at: '2024-01-15T11:45:00Z'
-        }
-      ];
+      let mockLeads = [];
+      
+      if (selectedProvider === 'apollo') {
+        mockLeads = [
+          {
+            id: '1',
+            name: 'John Smith',
+            email: 'john@techcorp.com',
+            linkedin: null,
+            linkedinURL: 'https://linkedin.com/in/johnsmith',
+            jobTitle: 'VP of Sales',
+            companyName: 'TechCorp Inc.',
+            location: 'San Francisco, CA',
+            country: 'USA',
+            website: 'https://techcorp.com',
+            sector: 'Technology',
+            status: 'apollo_lead',
+            campaign_id: 'campaign-1',
+            lead_id: 'lead-1',
+            created_at: '2024-01-15T10:30:00Z',
+            seniority: 'Executive',
+            phone: '(555) 123-4567'
+          },
+          {
+            id: '2',
+            name: 'Sarah Johnson',
+            email: 'sarah@innovate.io',
+            linkedin: null,
+            linkedinURL: 'https://linkedin.com/in/sarahjohnson',
+            jobTitle: 'Marketing Director',
+            companyName: 'Innovate Solutions',
+            location: 'New York, NY',
+            country: 'USA',
+            website: 'https://innovate.io',
+            sector: 'Marketing',
+            status: 'apollo_lead',
+            campaign_id: 'campaign-2',
+            lead_id: 'lead-2',
+            created_at: '2024-01-15T11:45:00Z',
+            seniority: 'Director',
+            phone: '(555) 987-6543'
+          }
+        ];
+      } else {
+        // Google Maps mock data
+        mockLeads = [
+          {
+            id: '1',
+            name: null,
+            email: 'john@techcorp.com',
+            linkedin: null,
+            linkedinURL: null,
+            jobTitle: null,
+            companyName: 'TechCorp Inc.',
+            location: 'San Francisco, CA',
+            country: 'USA',
+            website: 'https://techcorp.com',
+            sector: null,
+            status: 'New',
+            campaign_id: 'campaign-1',
+            lead_id: 'lead-1',
+            created_at: '2024-01-15T10:30:00Z',
+            phone: '(555) 123-4567',
+            rating: 4.5,
+            reviews: 128
+          },
+          {
+            id: '2',
+            name: null,
+            email: 'sarah@innovate.io',
+            linkedin: null,
+            linkedinURL: null,
+            jobTitle: null,
+            companyName: 'Innovate Solutions',
+            location: 'New York, NY',
+            country: 'USA',
+            website: 'https://innovate.io',
+            sector: null,
+            status: 'Verified',
+            campaign_id: 'campaign-2',
+            lead_id: 'lead-2',
+            created_at: '2024-01-15T11:45:00Z',
+            phone: '(555) 987-6543',
+            rating: 4.8,
+            reviews: 97
+          }
+        ];
+      }
       
       const newResults = mockLeads.map(lead => ({
         ...lead,
         id: Date.now().toString() + Math.random(),
-        status: 'New' as const,
+        status: selectedProvider === 'apollo' ? 'apollo_lead' : 'New',
         created_at: new Date().toISOString()
       }));
       
@@ -304,9 +500,9 @@ export function Leads() {
       setIsRefreshing(false);
       setShowResults(true);
     }
-  };
+  };;
 
-  const handleSearch = async () => {
+    const handleSearch = async () => {
     if (!searchQuery.trim() || !selectedProvider) return;
 
     setIsSearching(true);
@@ -384,7 +580,7 @@ export function Leads() {
                 location: 'San Francisco, CA',
                 country: 'USA',
                 website: 'https://techcorp.com',
-                sector: 'Technology',
+                sector: null,
                 status: 'New',
                 campaign_id: 'campaign-1',
                 lead_id: 'lead-1',
@@ -404,7 +600,7 @@ export function Leads() {
                 location: 'New York, NY',
                 country: 'USA',
                 website: 'https://innovate.io',
-                sector: 'Marketing',
+                sector: null,
                 status: 'Verified',
                 campaign_id: 'campaign-2',
                 lead_id: 'lead-2',
@@ -424,37 +620,43 @@ export function Leads() {
           const mockLeads = [
             {
               id: '1',
-              name: 'John Smith',
+              name: null,
               email: 'john@techcorp.com',
-              linkedin: 'John Smith',
-              linkedinURL: 'https://linkedin.com/in/johnsmith',
-              jobTitle: 'VP of Sales',
+              linkedin: null,
+              linkedinURL: null,
+              jobTitle: null,
               companyName: 'TechCorp Inc.',
-              location: 'San Francisco',
+              location: 'San Francisco, CA',
               country: 'USA',
               website: 'https://techcorp.com',
-              sector: 'Technology',
+              sector: null,
               status: 'New',
               campaign_id: 'campaign-1',
               lead_id: 'lead-1',
-              created_at: '2024-01-15T10:30:00Z'
+              created_at: '2024-01-15T10:30:00Z',
+              phone: '(555) 123-4567',
+              rating: 4.5,
+              reviews: 128
             },
             {
               id: '2',
-              name: 'Sarah Johnson',
+              name: null,
               email: 'sarah@innovate.io',
-              linkedin: 'Sarah Johnson',
-              linkedinURL: 'https://linkedin.com/in/sarahjohnson',
-              jobTitle: 'Marketing Director',
+              linkedin: null,
+              linkedinURL: null,
+              jobTitle: null,
               companyName: 'Innovate Solutions',
-              location: 'New York',
+              location: 'New York, NY',
               country: 'USA',
               website: 'https://innovate.io',
-              sector: 'Marketing',
+              sector: null,
               status: 'Verified',
               campaign_id: 'campaign-2',
               lead_id: 'lead-2',
-              created_at: '2024-01-15T11:45:00Z'
+              created_at: '2024-01-15T11:45:00Z',
+              phone: '(555) 987-6543',
+              rating: 4.8,
+              reviews: 97
             }
           ];
           
@@ -473,37 +675,43 @@ export function Leads() {
         const mockLeads = [
           {
             id: '1',
-            name: 'John Smith',
+            name: null,
             email: 'john@techcorp.com',
-            linkedin: 'John Smith',
-            linkedinURL: 'https://linkedin.com/in/johnsmith',
-            jobTitle: 'VP of Sales',
+            linkedin: null,
+            linkedinURL: null,
+            jobTitle: null,
             companyName: 'TechCorp Inc.',
-            location: 'San Francisco',
+            location: 'San Francisco, CA',
             country: 'USA',
             website: 'https://techcorp.com',
-            sector: 'Technology',
+            sector: null,
             status: 'New',
             campaign_id: 'campaign-1',
             lead_id: 'lead-1',
-            created_at: '2024-01-15T10:30:00Z'
+            created_at: '2024-01-15T10:30:00Z',
+            phone: '(555) 123-4567',
+            rating: 4.5,
+            reviews: 128
           },
           {
             id: '2',
-            name: 'Sarah Johnson',
+            name: null,
             email: 'sarah@innovate.io',
-            linkedin: 'Sarah Johnson',
-            linkedinURL: 'https://linkedin.com/in/sarahjohnson',
-            jobTitle: 'Marketing Director',
+            linkedin: null,
+            linkedinURL: null,
+            jobTitle: null,
             companyName: 'Innovate Solutions',
-            location: 'New York',
+            location: 'New York, NY',
             country: 'USA',
             website: 'https://innovate.io',
-            sector: 'Marketing',
+            sector: null,
             status: 'Verified',
             campaign_id: 'campaign-2',
             lead_id: 'lead-2',
-            created_at: '2024-01-15T11:45:00Z'
+            created_at: '2024-01-15T11:45:00Z',
+            phone: '(555) 987-6543',
+            rating: 4.8,
+            reviews: 97
           }
         ];
         
@@ -517,10 +725,228 @@ export function Leads() {
         setSearchResults(newResults);
       }
     }
+    // Apollo için webhook integration
+    else if (selectedProvider === 'apollo') {
+      try {
+        // Apollo için webhook çağrısı
+        const response = await fetch('https://n8n.flownests.org/webhook-test/f784a0cc-681e-48d4-a08d-268ee71a8546', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: searchQuery,
+            source: 'apollo',
+            timestamp: new Date().toISOString()
+          }),
+        });
+        
+        if (response.ok) {
+          const rawData = await response.json();
+          console.log('Apollo search webhook response data:', rawData);
+          
+          // Apollo verilerini parse et
+          let parsedLeads = [];
+          
+          if (Array.isArray(rawData) && rawData.length > 0) {
+            // Apollo verilerini parse et
+            parsedLeads = rawData.map((item, index) => {
+              // Apollo veri yapısına göre alanları çıkar
+              const data = item.payload || item;
+              
+              const firstName = data.firstName || '';
+              const lastName = data.lastName || '';
+              const fullName = firstName && lastName ? `${firstName} ${lastName}` : (firstName || lastName || 'N/A');
+              const emailAddress = data.emailAddress || null;
+              const linkedInURL = data.linkedInURL || null;
+              const jobTitle = data.jobTitle || null;
+              const companyName = data.companyName || 'N/A';
+              const location = data.location || null;
+              const country = data.country || null;
+              const websiteURL = data.websiteURL || null;
+              const businessIndustry = data.businessIndustry || null; // Sector olarak kullan
+              const seniority = data.seniority || null;
+              const number = data.number || null;
+              const status = data.status || 'apollo_lead'; // Sabit olarak apollo_lead
+              
+              return {
+                id: Date.now().toString() + Math.random().toString(36).substr(2, 9) + index,
+                name: fullName, // firstName + lastName
+                email: emailAddress,
+                linkedin: null,
+                linkedinURL: linkedInURL,
+                jobTitle: jobTitle,
+                companyName: companyName,
+                location: location,
+                country: country,
+                website: websiteURL,
+                sector: businessIndustry, // businessIndustry -> sector
+                status: status, // Sabit apollo_lead
+                campaign_id: null,
+                lead_id: null,
+                created_at: new Date().toISOString(),
+                // Ekstra alanlar
+                seniority: seniority,
+                phone: number
+              };
+            });
+          } else {
+            // Veri formatı farklıysa mock data kullan
+            parsedLeads = [
+              {
+                id: '1',
+                name: 'John Smith',
+                email: 'john@techcorp.com',
+                linkedin: null,
+                linkedinURL: 'https://linkedin.com/in/johnsmith',
+                jobTitle: 'VP of Sales',
+                companyName: 'TechCorp Inc.',
+                location: 'San Francisco, CA',
+                country: 'USA',
+                website: 'https://techcorp.com',
+                sector: 'Technology',
+                status: 'apollo_lead',
+                campaign_id: 'campaign-1',
+                lead_id: 'lead-1',
+                created_at: '2024-01-15T10:30:00Z',
+                seniority: 'Executive',
+                phone: '(555) 123-4567'
+              },
+              {
+                id: '2',
+                name: 'Sarah Johnson',
+                email: 'sarah@innovate.io',
+                linkedin: null,
+                linkedinURL: 'https://linkedin.com/in/sarahjohnson',
+                jobTitle: 'Marketing Director',
+                companyName: 'Innovate Solutions',
+                location: 'New York, NY',
+                country: 'USA',
+                website: 'https://innovate.io',
+                sector: 'Marketing',
+                status: 'apollo_lead',
+                campaign_id: 'campaign-2',
+                lead_id: 'lead-2',
+                created_at: '2024-01-15T11:45:00Z',
+                seniority: 'Director',
+                phone: '(555) 987-6543'
+              }
+            ];
+          }
+          
+          setSearchResults(parsedLeads);
+          console.log('Apollo webhook sent successfully');
+        } else {
+          console.error('Apollo webhook failed:', response.status);
+          // Mock data kullan
+          const mockLeads = [
+            {
+              id: '1',
+              name: 'John Smith',
+              email: 'john@techcorp.com',
+              linkedin: null,
+              linkedinURL: 'https://linkedin.com/in/johnsmith',
+              jobTitle: 'VP of Sales',
+              companyName: 'TechCorp Inc.',
+              location: 'San Francisco, CA',
+              country: 'USA',
+              website: 'https://techcorp.com',
+              sector: 'Technology',
+              status: 'apollo_lead',
+              campaign_id: 'campaign-1',
+              lead_id: 'lead-1',
+              created_at: '2024-01-15T10:30:00Z',
+              seniority: 'Executive',
+              phone: '(555) 123-4567'
+            },
+            {
+              id: '2',
+              name: 'Sarah Johnson',
+              email: 'sarah@innovate.io',
+              linkedin: null,
+              linkedinURL: 'https://linkedin.com/in/sarahjohnson',
+              jobTitle: 'Marketing Director',
+              companyName: 'Innovate Solutions',
+              location: 'New York, NY',
+              country: 'USA',
+              website: 'https://innovate.io',
+              sector: 'Marketing',
+              status: 'apollo_lead',
+              campaign_id: 'campaign-2',
+              lead_id: 'lead-2',
+              created_at: '2024-01-15T11:45:00Z',
+              seniority: 'Director',
+              phone: '(555) 987-6543'
+            }
+          ];
+          
+          const newResults = mockLeads.map(lead => ({
+            ...lead,
+            id: Date.now().toString() + Math.random(),
+            status: 'apollo_lead',
+            created_at: new Date().toISOString()
+          }));
+          
+          setSearchResults(newResults);
+        }
+      } catch (error) {
+        console.error('Apollo webhook error:', error);
+        // Mock data kullan
+        const mockLeads = [
+          {
+            id: '1',
+            name: 'John Smith',
+            email: 'john@techcorp.com',
+            linkedin: null,
+            linkedinURL: 'https://linkedin.com/in/johnsmith',
+            jobTitle: 'VP of Sales',
+            companyName: 'TechCorp Inc.',
+            location: 'San Francisco, CA',
+            country: 'USA',
+            website: 'https://techcorp.com',
+            sector: 'Technology',
+            status: 'apollo_lead',
+            campaign_id: 'campaign-1',
+            lead_id: 'lead-1',
+            created_at: '2024-01-15T10:30:00Z',
+            seniority: 'Executive',
+            phone: '(555) 123-4567'
+          },
+          {
+            id: '2',
+            name: 'Sarah Johnson',
+            email: 'sarah@innovate.io',
+            linkedin: null,
+            linkedinURL: 'https://linkedin.com/in/sarahjohnson',
+            jobTitle: 'Marketing Director',
+            companyName: 'Innovate Solutions',
+            location: 'New York, NY',
+            country: 'USA',
+            website: 'https://innovate.io',
+            sector: 'Marketing',
+            status: 'apollo_lead',
+            campaign_id: 'campaign-2',
+            lead_id: 'lead-2',
+            created_at: '2024-01-15T11:45:00Z',
+            seniority: 'Director',
+            phone: '(555) 987-6543'
+          }
+        ];
+        
+        const newResults = mockLeads.map(lead => ({
+          ...lead,
+          id: Date.now().toString() + Math.random(),
+          status: 'apollo_lead',
+          created_at: new Date().toISOString()
+        }));
+        
+        setSearchResults(newResults);
+      }
+    }
     
-    // Apollo için simülasyon
+    // Diğer provider'lar için simülasyon
     setTimeout(() => {
-      if (selectedProvider !== 'google_maps') {
+      if (selectedProvider !== 'google_maps' && selectedProvider !== 'apollo') {
         const mockLeads = [
           {
             id: '1',
@@ -1042,10 +1468,11 @@ export function Leads() {
                   <table className="w-full">
                     <thead className="bg-gray-50 sticky top-0">
                       <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -1062,20 +1489,19 @@ export function Leads() {
                           className="hover:bg-gray-50"
                         >
                           <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {lead.name || 'N/A'}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                             {lead.companyName || 'N/A'}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {lead.jobTitle || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                             {lead.email || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                             {lead.phone || 'N/A'}
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {lead.website ? (
-                              <a href={lead.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
-                                Website
-                              </a>
-                            ) : 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                             {lead.location || 'N/A'}
