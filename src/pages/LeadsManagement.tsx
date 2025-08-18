@@ -128,22 +128,25 @@ export function Leads() {
           // Google Maps verilerini parse et
           parsedLeads = rawData.map((item, index) => {
             // Google Maps veri yapısına göre alanları çıkar
-            const name = item.name || item.title || 'N/A';
-            const website = item.website || item.web || null;
-            const email = item.email || null;
-            const phone = item.phone || item.telephone || null;
-            const address = item.address || null;
-            const rating = item.rating || null;
-            const reviews = item.reviews || null;
+            // Önce item içindeki payload veya direkt alanlara bak
+            const data = item.payload || item;
+            
+            const companyName = data.name || data.title || data.company || 'N/A';
+            const website = data.website || data.web || null;
+            const email = data.email || null;
+            const phone = data.phone || data.telephone || data.phoneNumber || null;
+            const address = data.address || data.location || null;
+            const rating = data.rating || null;
+            const reviews = data.reviews || null;
             
             return {
               id: Date.now().toString() + Math.random().toString(36).substr(2, 9) + index,
-              name: name,
+              name: null, // Kişi ismi mevcut değil
               email: email,
               linkedin: null,
               linkedinURL: null,
               jobTitle: null,
-              companyName: name,
+              companyName: companyName, // Name yerine company name
               location: address, // Address'i location olarak kullan
               country: null,
               website: website,
@@ -334,22 +337,25 @@ export function Leads() {
             // Google Maps verilerini parse et
             parsedLeads = rawData.map((item, index) => {
               // Google Maps veri yapısına göre alanları çıkar
-              const name = item.name || item.title || 'N/A';
-              const website = item.website || item.web || null;
-              const email = item.email || null;
-              const phone = item.phone || item.telephone || null;
-              const address = item.address || null;
-              const rating = item.rating || null;
-              const reviews = item.reviews || null;
+              // Önce item içindeki payload veya direkt alanlara bak
+              const data = item.payload || item;
+              
+              const companyName = data.name || data.title || data.company || 'N/A';
+              const website = data.website || data.web || null;
+              const email = data.email || null;
+              const phone = data.phone || data.telephone || data.phoneNumber || null;
+              const address = data.address || data.location || null;
+              const rating = data.rating || null;
+              const reviews = data.reviews || null;
               
               return {
                 id: Date.now().toString() + Math.random().toString(36).substr(2, 9) + index,
-                name: name,
+                name: null, // Kişi ismi mevcut değil
                 email: email,
                 linkedin: null,
                 linkedinURL: null,
                 jobTitle: null,
-                companyName: name,
+                companyName: companyName, // Name yerine company name
                 location: address, // Address'i location olarak kullan
                 country: null,
                 website: website,
@@ -369,37 +375,43 @@ export function Leads() {
             parsedLeads = [
               {
                 id: '1',
-                name: 'John Smith',
+                name: null,
                 email: 'john@techcorp.com',
-                linkedin: 'John Smith',
-                linkedinURL: 'https://linkedin.com/in/johnsmith',
-                jobTitle: 'VP of Sales',
+                linkedin: null,
+                linkedinURL: null,
+                jobTitle: null,
                 companyName: 'TechCorp Inc.',
-                location: 'San Francisco',
+                location: 'San Francisco, CA',
                 country: 'USA',
                 website: 'https://techcorp.com',
                 sector: 'Technology',
                 status: 'New',
                 campaign_id: 'campaign-1',
                 lead_id: 'lead-1',
-                created_at: '2024-01-15T10:30:00Z'
+                created_at: '2024-01-15T10:30:00Z',
+                phone: '(555) 123-4567',
+                rating: 4.5,
+                reviews: 128
               },
               {
                 id: '2',
-                name: 'Sarah Johnson',
+                name: null,
                 email: 'sarah@innovate.io',
-                linkedin: 'Sarah Johnson',
-                linkedinURL: 'https://linkedin.com/in/sarahjohnson',
-                jobTitle: 'Marketing Director',
+                linkedin: null,
+                linkedinURL: null,
+                jobTitle: null,
                 companyName: 'Innovate Solutions',
-                location: 'New York',
+                location: 'New York, NY',
                 country: 'USA',
                 website: 'https://innovate.io',
                 sector: 'Marketing',
                 status: 'Verified',
                 campaign_id: 'campaign-2',
                 lead_id: 'lead-2',
-                created_at: '2024-01-15T11:45:00Z'
+                created_at: '2024-01-15T11:45:00Z',
+                phone: '(555) 987-6543',
+                rating: 4.8,
+                reviews: 97
               }
             ];
           }
@@ -1024,10 +1036,11 @@ export function Leads() {
                   <table className="w-full">
                     <thead className="bg-gray-50 sticky top-0">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone/Title</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company Name</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -1043,16 +1056,23 @@ export function Leads() {
                           className="hover:bg-gray-50"
                         >
                           <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {lead.name || 'N/A'}
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                             {lead.companyName || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {lead.jobTitle || lead.phone || 'N/A'}
+                            {lead.location || 'N/A'}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {lead.phone || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                             {lead.email || 'N/A'}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {lead.website ? (
+                              <a href={lead.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                                Website
+                              </a>
+                            ) : 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <span className={`inline-flex items-center px-2 py-1 text-xs font-medium rounded-full ${getSourceColor(selectedProvider || 'apollo')}`}>
