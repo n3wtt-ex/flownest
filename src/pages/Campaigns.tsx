@@ -484,11 +484,51 @@ export function Campaigns() {
       if (response.ok) {
         const data = await response.json();
         console.log('Webhook response data:', data); // Log the actual response
+        
+        let allLeads: Lead[] = [];
+        
         // Check if data is an array and has the expected structure
-        if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0].items)) {
-          // Extract leads from the items array
-          const items = data[0].items;
-          const newLeads: Lead[] = items.map((item: any) => {
+        if (Array.isArray(data) && data.length > 0) {
+          // Process each item in the array
+          data.forEach((item: any) => {
+            // Check if the item has an items array
+            if (Array.isArray(item.items)) {
+              // Extract leads from the items array
+              const newLeads: Lead[] = item.items.map((leadItem: any) => {
+                // Use payload data
+                const payload = leadItem.payload || {};
+                return {
+                  id: leadItem.id || Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID if not provided
+                  email: payload.email || leadItem.email || '',
+                  provider: (payload.email || leadItem.email || '').includes('@gmail.com') ? 'Gmail' : 'Outlook',
+                  status: 'pending', // Default status
+                  contact: `${payload.firstName || ''} ${payload.lastName || ''}`.trim() || (payload.email || leadItem.email || ''),
+                  company: payload.companyName || ''
+                };
+              });
+              allLeads = [...allLeads, ...newLeads];
+            }
+            // Check if item is a simple object with Email adress and Contact name
+            else if (item && typeof item === 'object' && item['Email adress']) {
+              // Handle the new format
+              const newLead: Lead = {
+                id: item.id || Date.now().toString() + Math.random().toString(36).substr(2, 9), // Generate ID
+                email: item['Email adress'] || '',
+                provider: (item['Email adress'] || '').includes('@gmail.com') ? 'Gmail' : 'Outlook',
+                status: 'pending', // Default status
+                contact: item['Contact name'] || item['Email adress'] || '',
+                company: item['Company name'] || '' // If available
+              };
+              allLeads.push(newLead);
+            }
+          });
+          
+          setLeads(allLeads);
+          console.log('Leads refreshed successfully:', allLeads);
+        }
+        // Handle case where data is a single object with items array
+        else if (data && typeof data === 'object' && Array.isArray(data.items)) {
+          const newLeads: Lead[] = data.items.map((item: any) => {
             // Use payload data
             const payload = item.payload || {};
             return {
@@ -503,7 +543,7 @@ export function Campaigns() {
           setLeads(newLeads);
           console.log('Leads refreshed successfully:', newLeads);
         }
-        // Check if data is a simple object with Email adress and Contact name
+        // Handle case where data is a simple object with Email adress and Contact name
         else if (data && typeof data === 'object' && data['Email adress']) {
           // Handle the new format
           const newLeads: Lead[] = [{
