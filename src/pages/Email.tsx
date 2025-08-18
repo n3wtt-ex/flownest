@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Settings, Shield, Zap, Plus, ChevronDown, Upload, Sparkles, Edit3, Save, FileText, RefreshCw } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface EmailAccount {
   id: string;
@@ -10,6 +11,16 @@ interface EmailAccount {
   healthScore: number;
   status: 'active' | 'warming' | 'paused';
   dailyLimit: number;
+}
+
+// Supabase company_info tablosu için interface
+interface CompanyInfo {
+  id: number;
+  company: string;
+  name: string;
+  info: string;
+  event: string;
+  created_at: string;
 }
 
 const mockEmailAccounts: EmailAccount[] = [];
@@ -72,7 +83,28 @@ export function Email() {
   const handleEventChange = async (event: string) => {
     setSelectedEvent(event);
     
-    // Webhook'tan bu event için kaydedilmiş içeriği çek
+    // Önce Supabase'ten bu event için kaydedilmiş içeriği çekmeyi dene
+    try {
+      const { data, error } = await supabase
+        .from('company_info')
+        .select('event')
+        .limit(1);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Eğer Supabase'te veri varsa ve bu event için içerik kaydedilmişse, onu kullan
+      if (data && data.length > 0 && data[0].event === event) {
+        setEditContent(data[0].event || '');
+        setIsContentModified(false);
+        return;
+      }
+    } catch (error) {
+      console.error('Error fetching event content from Supabase:', error);
+    }
+    
+    // Supabase'te veri yoksa veya hata oluştuysa, webhook'tan veri çek
     try {
       const response = await fetch(`https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8?eventType=${event}`);
       const data = await response.json();
@@ -140,15 +172,33 @@ export function Email() {
   // Yeni eklenen fonksiyonlar
   const fetchIntroductionData = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/c9deff5f-039f-4fb0-8a84-1868063e9e65');
-      const data = await response.json();
+      // Önce Supabase'ten veri çekmeyi dene
+      const { data, error } = await supabase
+        .from('company_info')
+        .select('*')
+        .limit(1);
       
-      console.log('Introduction data:', data); // Gelen verileri console'a yazdır
+      if (error) {
+        throw error;
+      }
+      
+      // Eğer Supabase'te veri varsa, onu kullan
+      if (data && data.length > 0) {
+        const companyInfo = data[0];
+        setIntroName(companyInfo.name || '');
+        setIntroCompanyName(companyInfo.company || '');
+        setIntroCompany(companyInfo.info || '');
+        return;
+      }
+      
+      // Supabase'te veri yoksa, webhook'tan veri çek
+      const response = await fetch('https://n8n.flownests.org/webhook-test/c9deff5f-039f-4fb0-8a84-1868063e9e65');
+      const webhookData = await response.json();
       
       // Gelen verileri state'lere ata
-      if (data.name) setIntroName(data.name);
-      if (data.companyName) setIntroCompanyName(data.companyName);
-      if (data.company) setIntroCompany(data.company);
+      if (webhookData.name) setIntroName(webhookData.name);
+      if (webhookData.companyName) setIntroCompanyName(webhookData.companyName);
+      if (webhookData.company) setIntroCompany(webhookData.company);
     } catch (error) {
       console.error('Error fetching introduction data:', error);
     }
@@ -156,29 +206,148 @@ export function Email() {
 
   const fetchEventContentData = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8');
-      const data = await response.json();
+      // Önce Supabase'ten veri çekmeyi dene
+      const { data, error } = await supabase
+        .from('company_info')
+        .select('*')
+        .limit(1);
       
-      console.log('Event content data:', data); // Gelen verileri console'a yazdır
+      if (error) {
+        throw error;
+      }
+      
+      // Eğer Supabase'te veri varsa, onu kullan
+      if (data && data.length > 0) {
+        const companyInfo = data[0];
+        setEventContent(companyInfo.event || '');
+        setEditContent(companyInfo.event || '');
+        // Event tipini de ayarla (eğer varsa)
+        if (companyInfo.event) {
+          setSelectedEvent(companyInfo.event);
+        }
+        return;
+      }
+      
+      // Supabase'te veri yoksa, webhook'tan veri çek
+      const response = await fetch('https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8');
+      const webhookData = await response.json();
       
       // Gelen verileri state'e ata
-      if (data.content) {
-        setEventContent(data.content);
-        setEditContent(data.content); // Event content'ini de editContent state'ine ata
+      if (webhookData.content) {
+        setEventContent(webhookData.content);
+        setEditContent(webhookData.content); // Event content'ini de editContent state'ine ata
       }
       
       // Event tipini de ayarla
-      if (data.eventType) {
-        setSelectedEvent(data.eventType);
+      if (webhookData.eventType) {
+        setSelectedEvent(webhookData.eventType);
       }
     } catch (error) {
       console.error('Error fetching event content data:', error);
     }
   };
 
+  const saveIntroductionToSupabase = async () => {
+    try {
+      // Önce mevcut veri olup olmadığını kontrol et
+      const { data: existingData, error: fetchError } = await supabase
+        .from('company_info')
+        .select('*')
+        .limit(1);
+      
+      if (fetchError) {
+        throw fetchError;
+      }
+      
+      const companyInfo = {
+        name: introName,
+        company: introCompanyName,
+        info: introCompany,
+        // Event content'ini de kaydet
+        event: editContent
+      };
+      
+      let result;
+      if (existingData && existingData.length > 0) {
+        // Veri varsa güncelle
+        const id = existingData[0].id;
+        result = await supabase
+          .from('company_info')
+          .update(companyInfo)
+          .eq('id', id);
+      } else {
+        // Veri yoksa yeni oluştur
+        result = await supabase
+          .from('company_info')
+          .insert([companyInfo]);
+      }
+      
+      if (result.error) {
+        throw result.error;
+      }
+      
+      console.log('Introduction data saved successfully to Supabase');
+      setIsIntroModified(false);
+    } catch (error) {
+      console.error('Error saving introduction data to Supabase:', error);
+      // Fallback olarak webhook'a gönder
+      saveIntroductionToWebhook();
+    }
+  };
+
+  const saveEventContentToSupabase = async () => {
+    try {
+      // Önce mevcut veri olup olmadığını kontrol et
+      const { data: existingData, error: fetchError } = await supabase
+        .from('company_info')
+        .select('*')
+        .limit(1);
+      
+      if (fetchError) {
+        throw fetchError;
+      }
+      
+      const companyInfo = {
+        // Mevcut verileri koru
+        name: existingData && existingData.length > 0 ? existingData[0].name : '',
+        company: existingData && existingData.length > 0 ? existingData[0].company : '',
+        info: existingData && existingData.length > 0 ? existingData[0].info : '',
+        // Event content'ini güncelle
+        event: editContent
+      };
+      
+      let result;
+      if (existingData && existingData.length > 0) {
+        // Veri varsa güncelle
+        const id = existingData[0].id;
+        result = await supabase
+          .from('company_info')
+          .update(companyInfo)
+          .eq('id', id);
+      } else {
+        // Veri yoksa yeni oluştur
+        result = await supabase
+          .from('company_info')
+          .insert([companyInfo]);
+      }
+      
+      if (result.error) {
+        throw result.error;
+      }
+      
+      console.log('Event content data saved successfully to Supabase');
+      setIsContentModified(false);
+    } catch (error) {
+      console.error('Error saving event content data to Supabase:', error);
+      // Fallback olarak webhook'a gönder
+      saveEventContentToWebhook();
+    }
+  };
+
+  // Fallback webhook fonksiyonları
   const saveIntroductionToWebhook = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook/c9deff5f-039f-4fb0-8a84-1868063e9e65', {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/c9deff5f-039f-4fb0-8a84-1868063e9e65', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -191,19 +360,19 @@ export function Email() {
       });
       
       if (response.ok) {
-        console.log('Introduction data saved successfully');
+        console.log('Introduction data saved successfully to webhook');
         setIsIntroModified(false);
       } else {
-        console.error('Failed to save introduction data');
+        console.error('Failed to save introduction data to webhook');
       }
     } catch (error) {
-      console.error('Error saving introduction data:', error);
+      console.error('Error saving introduction data to webhook:', error);
     }
   };
 
   const saveEventContentToWebhook = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8', {
+      const response = await fetch('https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -215,13 +384,13 @@ export function Email() {
       });
       
       if (response.ok) {
-        console.log('Event content data saved successfully');
+        console.log('Event content data saved successfully to webhook');
         setIsContentModified(false);
       } else {
-        console.error('Failed to save event content data');
+        console.error('Failed to save event content data to webhook');
       }
     } catch (error) {
-      console.error('Error saving event content data:', error);
+      console.error('Error saving event content data to webhook:', error);
     }
   };
 
@@ -540,7 +709,7 @@ export function Email() {
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              onClick={saveIntroductionToWebhook}
+                              onClick={saveIntroductionToSupabase}
                               disabled={!isIntroModified}
                               className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
                                 isIntroModified
@@ -587,7 +756,7 @@ export function Email() {
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              onClick={saveEventContentToWebhook}
+                              onClick={saveEventContentToSupabase}
                               disabled={!isContentModified}
                               className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
                                 isContentModified
