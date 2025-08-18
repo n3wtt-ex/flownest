@@ -52,7 +52,13 @@ export function Leads() {
       // Close the dropdown
       setCampaignDropdownOpen(prev => ({ ...prev, [leadId]: false }));
       
-      // Send webhook request
+      // Find the lead object
+      const lead = leads.find(l => l.id === leadId);
+      if (!lead) {
+        throw new Error('Lead not found');
+      }
+      
+      // Send webhook request with all lead information
       const response = await fetch('https://n8n.flownests.org/webhook-test/f0117984-5614-470c-8e23-a0428357e83c', {
         method: 'POST',
         headers: {
@@ -60,7 +66,8 @@ export function Leads() {
         },
         body: JSON.stringify({
           campaign_id: campaignId,
-          lead_id: leadId
+          lead_id: leadId,
+          lead_data: lead
         }),
       });
       
@@ -85,8 +92,8 @@ export function Leads() {
       }
       
       // Update local state
-      const updatedLeads = leads.map(lead => 
-        lead.id === leadId ? { ...lead, campaign_id: campaignId, lead_id: returnedLeadId } : lead
+      const updatedLeads = leads.map(l => 
+        l.id === leadId ? { ...l, campaign_id: campaignId, lead_id: returnedLeadId } : l
       );
       setLeads(updatedLeads);
       
