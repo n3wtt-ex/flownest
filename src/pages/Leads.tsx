@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, MapPin, Globe, Plus, Filter, Eye, MoreHorizontal, FileText } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
+import { Lead } from '../types';
 
-interface Lead {
+interface LeadSearchResult {
   id: string;
   name: string | null;
   company: string | null;
@@ -14,7 +15,7 @@ interface Lead {
   created_at: string;
 }
 
-const mockLeads: Lead[] = [
+const mockLeads: LeadSearchResult[] = [
   {
     id: '1',
     name: 'John Smith',
@@ -56,7 +57,7 @@ const RefreshIcon = () => (
 
 export function Leads() {
   const [leads, setLeads] = useLocalStorage<Lead[]>('leads', []);
-  const [searchResults, setSearchResults] = useState<Lead[]>(mockLeads);
+  const [searchResults, setSearchResults] = useState<LeadSearchResult[]>(mockLeads);
   const [selectedProvider, setSelectedProvider] = useState<'apollo' | 'google_maps' | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'new' | 'verified' | 'skipped'>('all');
@@ -106,7 +107,7 @@ export function Leads() {
         const newResults = mockLeads.map(lead => ({
           ...lead,
           id: Date.now().toString() + Math.random(),
-          source: 'webhook',
+          source: 'webhook' as const,
           status: 'new' as const,
           created_at: new Date().toISOString()
         }));
@@ -119,7 +120,7 @@ export function Leads() {
         const newResults = mockLeads.map(lead => ({
           ...lead,
           id: Date.now().toString() + Math.random(),
-          source: 'webhook',
+          source: 'webhook' as const,
           status: 'new' as const,
           created_at: new Date().toISOString()
         }));
@@ -132,7 +133,7 @@ export function Leads() {
       const newResults = mockLeads.map(lead => ({
         ...lead,
         id: Date.now().toString() + Math.random(),
-        source: 'webhook',
+        source: 'webhook' as const,
         status: 'new' as const,
         created_at: new Date().toISOString()
       }));
@@ -194,11 +195,27 @@ export function Leads() {
     }, 2000);
   };
 
-  const addToLeads = (lead: Lead) => {
-    const updatedLead = { ...lead, status: 'verified' as const };
-    setLeads(prev => [...prev, updatedLead]);
+  const addToLeads = (lead: LeadSearchResult) => {
+    // Convert LeadSearchResult to Lead
+    const newLead: Lead = {
+      id: lead.id,
+      name: lead.name,
+      email: lead.email,
+      linkedin: null,
+      linkedinURL: null,
+      jobTitle: lead.title,
+      companyName: lead.company,
+      location: null,
+      country: null,
+      website: null,
+      sector: null,
+      status: 'Verified', // Default to Verified when added
+      created_at: lead.created_at
+    };
+    
+    setLeads(prev => [...prev, newLead]);
     setSearchResults(prev => 
-      prev.map(l => l.id === lead.id ? updatedLead : l)
+      prev.map(l => l.id === lead.id ? {...lead, status: 'verified' as const} : l)
     );
   };
 

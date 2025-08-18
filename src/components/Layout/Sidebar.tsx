@@ -24,6 +24,7 @@ const mainNavItems = [
   { name: 'AI Workspace', href: '/ui-bot', icon: Bot },
   { name: 'Email Hesabı', href: '/email', icon: Mail },
   { name: 'Lead Bulma', href: '/leads', icon: Search },
+  { name: 'Lead Yönetimi', href: '/leads-management', icon: Users },
   { name: 'Kampanya', href: '/campaigns', icon: Megaphone },
   { name: 'Yanıt Takibi', href: '/responses', icon: MessageSquare },
   { name: 'CRM', href: '/crm', icon: Users },

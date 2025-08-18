@@ -10,6 +10,7 @@ import { Deals } from './components/CRM/Deals';
 import { UIBot } from './pages/UIBot';
 import { Email } from './pages/Email';
 import { Leads } from './pages/Leads';
+import { Leads as LeadsManagement } from './pages/LeadsManagement';
 import { Campaigns } from './pages/Campaigns';
 import { Responses } from './pages/Responses';
 import { Settings } from './pages/Settings';
@@ -69,6 +70,7 @@ function App() {
           <Route path="ui-bot" element={<UIBot />} />
           <Route path="email" element={<Email />} />
           <Route path="leads" element={<Leads />} />
+          <Route path="leads-management" element={<LeadsManagement />} />
           <Route path="campaigns" element={<Campaigns />} />
           <Route path="responses" element={<Responses />} />
           <Route path="crm" element={<DashboardWrapper />} />
