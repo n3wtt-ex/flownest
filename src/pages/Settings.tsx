@@ -29,6 +29,8 @@ export function Settings() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [darkMode, setDarkMode] = useState(false);
+  const [language, setLanguage] = useState<'tr' | 'en'>('tr');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Kullanıcı iletişim bilgilerini veritabanından çek
@@ -60,10 +62,40 @@ export function Settings() {
     };
 
     fetchContactInfo();
+    
+    // Tema ve dil ayarlarını localStorage'dan yükle
+    const savedTheme = localStorage.getItem('theme');
+    const savedLanguage = localStorage.getItem('language');
+    
+    if (savedTheme === 'dark') {
+      setDarkMode(true);
+    }
+    
+    if (savedLanguage === 'en') {
+      setLanguage('en');
+    }
   }, [user]);
 
-  // Avatar yükleme fonksiyonu
-  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Tema değiştirme işlevi
+  const toggleTheme = () => {
+    const newTheme = !darkMode;
+    setDarkMode(newTheme);
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    
+    // Tema değişikliğini tüm uygulamaya uygula
+    if (newTheme) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  // Dil değiştirme işlevi
+  const toggleLanguage = () => {
+    const newLanguage = language === 'tr' ? 'en' : 'tr';
+    setLanguage(newLanguage);
+    localStorage.setItem('language', newLanguage);
+  };
     try {
       setUploading(true);
       
@@ -108,8 +140,8 @@ export function Settings() {
     }
   };
 
-  // Avatar silme fonksiyonu
-  const deleteAvatar = async () => {
+  // Avatar yükleme fonksiyonu
+  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (!avatarUrl || !user) return;
       
@@ -591,6 +623,77 @@ export function Settings() {
                 <div className="flex items-center mb-8">
                   <div className="w-3 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full mr-4"></div>
                   <h2 className="text-2xl font-bold text-gray-900">Hesap Ayarları</h2>
+                </div>
+                
+                {/* Tema ve Dil Ayarları */}
+                <div className="space-y-6 mb-8">
+                  {/* Tema Ayarı */}
+                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 border border-blue-200/30 hover:shadow-lg hover:border-blue-300/50 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900 text-lg">Tema Ayarı</h3>
+                          <p className="text-gray-600">Açık veya koyu tema arasında geçiş yapın</p>
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <button 
+                          onClick={toggleTheme}
+                          className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ${
+                            darkMode ? 'bg-blue-600' : 'bg-gray-300'
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                              darkMode ? 'translate-x-7' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                        <span className="ml-3 text-sm font-medium text-gray-900">
+                          {darkMode ? 'Koyu' : 'Açık'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Dil Ayarı */}
+                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg hover:border-purple-300/50 transition-all duration-300 hover:scale-105">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-gray-900 text-lg">Dil Ayarı</h3>
+                          <p className="text-gray-600">Uygulama dilini değiştirin</p>
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <button 
+                          onClick={toggleLanguage}
+                          className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ${
+                            language === 'en' ? 'bg-purple-600' : 'bg-gray-300'
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                              language === 'en' ? 'translate-x-7' : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                        <span className="ml-3 text-sm font-medium text-gray-900">
+                          {language === 'tr' ? 'Türkçe' : 'English'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="space-y-4">
