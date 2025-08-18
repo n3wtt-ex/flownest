@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Settings, Shield, Zap, Plus, ChevronDown, Upload, Sparkles } from 'lucide-react';
+import { Mail, Settings, Shield, Zap, Plus, ChevronDown, Upload, Sparkles, Edit3, Save, FileText } from 'lucide-react';
 
 interface EmailAccount {
   id: string;
@@ -38,10 +38,21 @@ const mockEmailAccounts: EmailAccount[] = [
   }
 ];
 
+// Mock content for different event types
+const eventContents = {
+  'demo': 'Join us for an exclusive product demonstration where we\'ll showcase the latest features and capabilities of our platform. This interactive session will give you hands-on experience with our tools.',
+  'e-book': 'Download our comprehensive guide that covers industry best practices, expert insights, and actionable strategies to help you succeed in your business endeavors.',
+  'loom': 'Watch our detailed video walkthrough that explains step-by-step processes and provides visual demonstrations of key concepts and workflows.',
+  'proposal': 'Our tailored business proposal outlines strategic solutions designed specifically for your organization\'s needs and objectives.',
+  'report': 'Access our latest industry report featuring market analysis, trends, and data-driven insights that will inform your business decisions.'
+};
+
 export function Email() {
   const [emailAccounts, setEmailAccounts] = useState<EmailAccount[]>(mockEmailAccounts);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState('demo');
+  const [editContent, setEditContent] = useState(eventContents[selectedEvent]);
+  const [isContentModified, setIsContentModified] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -56,6 +67,24 @@ export function Email() {
     if (score >= 90) return 'text-green-600';
     if (score >= 70) return 'text-yellow-600';
     return 'text-red-600';
+  };
+
+  const handleEventChange = (event: string) => {
+    setSelectedEvent(event);
+    setEditContent(eventContents[event]);
+    setIsContentModified(false);
+  };
+
+  const handleContentChange = (content: string) => {
+    setEditContent(content);
+    setIsContentModified(content !== eventContents[selectedEvent]);
+  };
+
+  const handleSaveContent = () => {
+    // Here you would typically save to a backend
+    console.log('Saving content for', selectedEvent, ':', editContent);
+    setIsContentModified(false);
+    // You could also update the eventContents object if needed
   };
 
   return (
@@ -88,84 +117,187 @@ export function Email() {
           </motion.p>
         </div>
 
-        {/* Customer Meeting Settings Panel */}
+        {/* Customer Meeting Settings Panel - Improved Layout */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6 overflow-hidden"
         >
-          <button
-            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
-          >
-            <div className="flex items-center space-x-3">
-              <Settings className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-semibold text-gray-900">Customer Meeting Settings</h2>
-            </div>
-            <motion.div
-              animate={{ rotate: isSettingsOpen ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ChevronDown className="w-5 h-5 text-gray-500" />
-            </motion.div>
-          </button>
-
-          <AnimatePresence>
-            {isSettingsOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="border-t border-gray-200"
+          <div className="flex">
+            {/* Left Side - Settings Panel (Half Width) */}
+            <div className="w-1/2">
+              <button
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors border-r border-gray-200"
               >
-                <div className="p-6 space-y-6">
-                  {/* Event Dropdown */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Event Type
-                    </label>
-                    <select
-                      value={selectedEvent}
-                      onChange={(e) => setSelectedEvent(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="e-book">E-book</option>
-                      <option value="demo">Demo</option>
-                      <option value="loom">Loom</option>
-                      <option value="proposal">Proposal</option>
-                      <option value="report">Report</option>
-                    </select>
-                  </div>
+                <div className="flex items-center space-x-3">
+                  <Settings className="w-6 h-6 text-blue-600" />
+                  <h2 className="text-xl font-semibold text-gray-900">Customer Meeting Settings</h2>
+                </div>
+                <motion.div
+                  animate={{ rotate: isSettingsOpen ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronDown className="w-5 h-5 text-gray-500" />
+                </motion.div>
+              </button>
 
-                  {/* Import Section */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                      Import Options
-                    </label>
-                    <div className="flex space-x-3">
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="flex-1 flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        <Upload className="w-4 h-4 mr-2" />
-                        Import
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-shadow"
-                      >
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        Create with AI
-                      </motion.button>
+              <AnimatePresence>
+                {isSettingsOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="border-t border-gray-200 border-r border-gray-200"
+                  >
+                    <div className="p-6 space-y-6">
+                      {/* Event Dropdown */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Event Type
+                        </label>
+                        <select
+                          value={selectedEvent}
+                          onChange={(e) => handleEventChange(e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        >
+                          <option value="e-book">E-book</option>
+                          <option value="demo">Demo</option>
+                          <option value="loom">Loom</option>
+                          <option value="proposal">Proposal</option>
+                          <option value="report">Report</option>
+                        </select>
+                      </div>
+
+                      {/* Import Section */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                          Import Options
+                        </label>
+                        <div className="flex space-x-3">
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="flex-1 flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          >
+                            <Upload className="w-4 h-4 mr-2" />
+                            Import
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-shadow"
+                          >
+                            <Sparkles className="w-4 h-4 mr-2" />
+                            Create with AI
+                          </motion.button>
+                        </div>
+                      </div>
                     </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Right Side - Content Editor (Half Width) */}
+            <div className="w-1/2">
+              <AnimatePresence>
+                {isSettingsOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.3 }}
+                    className="h-full"
+                  >
+                    {/* Content Editor Header */}
+                    <div className="p-6 border-b border-gray-200">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <Edit3 className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              Content Editor
+                            </h3>
+                            <p className="text-sm text-gray-600 capitalize">
+                              Editing: {selectedEvent}
+                            </p>
+                          </div>
+                        </div>
+                        {isContentModified && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="w-2 h-2 bg-orange-500 rounded-full"
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Content Editor Body */}
+                    <div className="p-6 space-y-4">
+                      <div className="relative">
+                        <textarea
+                          value={editContent}
+                          onChange={(e) => handleContentChange(e.target.value)}
+                          className="w-full h-48 p-4 border-2 border-dashed border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none bg-gray-50 hover:bg-white"
+                          placeholder="Enter your content here..."
+                        />
+                        <div className="absolute top-3 right-3">
+                          <FileText className="w-5 h-5 text-gray-400" />
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-gray-500">
+                          {editContent.length} characters
+                        </div>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={handleSaveContent}
+                          disabled={!isContentModified}
+                          className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
+                            isContentModified
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg'
+                              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          }`}
+                        >
+                          <Save className="w-4 h-4 mr-2" />
+                          Save Changes
+                        </motion.button>
+                      </div>
+
+                      {isContentModified && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="bg-orange-50 border border-orange-200 rounded-lg p-3"
+                        >
+                          <p className="text-sm text-orange-800">
+                            You have unsaved changes. Don't forget to save!
+                          </p>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Placeholder when settings are closed */}
+              {!isSettingsOpen && (
+                <div className="h-full flex items-center justify-center p-6 text-gray-400">
+                  <div className="text-center">
+                    <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-sm">Open settings to edit content</p>
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              )}
+            </div>
+          </div>
         </motion.div>
 
         {/* Email Accounts Table */}
