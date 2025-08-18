@@ -62,6 +62,7 @@ export function Leads() {
   const [statusFilter, setStatusFilter] = useState<'all' | 'new' | 'verified' | 'skipped'>('all');
   const [isSearching, setIsSearching] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   const handleFormIconClick = () => {
     if (!selectedProvider) return;
@@ -139,6 +140,7 @@ export function Leads() {
       setSearchResults(newResults);
     } finally {
       setIsRefreshing(false);
+      setShowResults(true);
     }
   };
 
@@ -184,6 +186,11 @@ export function Leads() {
       
       setSearchResults(newResults);
       setIsSearching(false);
+      
+      // Show results for Google Maps after search
+      if (selectedProvider === 'google_maps') {
+        setShowResults(true);
+      }
     }, 2000);
   };
 
@@ -457,7 +464,12 @@ export function Leads() {
                     {selectedProvider === 'google_maps' ? 'Sending message...' : 'Searching for leads...'}
                   </div>
                 </div>
-              ) : selectedProvider === 'google_maps' ? (
+              ) : isRefreshing && selectedProvider === 'google_maps' ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                  <div className="text-gray-600">Refreshing leads...</div>
+                </div>
+              ) : selectedProvider === 'google_maps' && !showResults && filteredResults.length > 0 && filteredResults[0].source !== 'webhook' ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
