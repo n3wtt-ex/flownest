@@ -64,6 +64,13 @@ export function Responses() {
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
+  // Debug: Log dragged email changes
+  useEffect(() => {
+    if (draggedEmail) {
+      console.log('Dragging email:', draggedEmail);
+    }
+  }, [draggedEmail]);
+
   // Fetch emails from Supabase on component mount
   useEffect(() => {
     fetchEmails();
@@ -177,20 +184,26 @@ export function Responses() {
     }
   };
 
-  const handleDragStart = (email: EmailCard) => {
+  const handleDragStart = (e: React.DragEvent, email: EmailCard) => {
     setDraggedEmail(email);
+    e.dataTransfer.setData('text/plain', email.id);
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
   };
 
-  const handleDrop = async (targetTag: string) => {
+  const handleDrop = async (e: React.DragEvent, targetTag: string) => {
+    e.preventDefault();
     if (draggedEmail && draggedEmail.tag !== targetTag) {
+      console.log('Dropping email:', draggedEmail.id, 'to', targetTag);
       // Update email tag in Supabase
       await updateEmailTag(draggedEmail.id, targetTag);
     }
     setDraggedEmail(null);
+    e.currentTarget.classList.remove('bg-gray-100');
   };
 
   const handleAction = async (emailId: string, action: string, senderEmail?: string) => {
@@ -227,7 +240,7 @@ export function Responses() {
     // Special handling for "Lead Listesinden Çıkar" action
     else if (action === 'Lead Listesinden Çıkar') {
       try {
-        const response = await fetch('https://n8n.flownests.org/webhook-test/47106e41-34f6-4518-8273-556b7e10b471', {
+        const response = await fetch('https://n8n.flownests.org/webhook-test/260f85a2-a478-443d-a8a5-2a5412e138e4', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -250,6 +263,58 @@ export function Responses() {
       } catch (error) {
         console.error('Error calling webhook:', error);
         showNotification('Lead çıkarılırken bir hata oluştu!', 'error');
+      }
+    }
+    // Special handling for "Teklif Maili Gönder" action
+    else if (action === 'Teklif Maili Gönder') {
+      try {
+        const response = await fetch('https://n8n.flownests.org/webhook-test/e41fc640-be71-470b-8848-2b9b03cd8f68', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            emailId,
+            action,
+            senderEmail,
+            timestamp: new Date().toISOString()
+          })
+        });
+        
+        if (response.ok) {
+          showNotification('Teklif maili gönderildi!', 'success');
+        } else {
+          throw new Error('Webhook call failed');
+        }
+      } catch (error) {
+        console.error('Error calling webhook:', error);
+        showNotification('Teklif maili gönderilirken bir hata oluştu!', 'error');
+      }
+    }
+    // Special handling for "Yanıt Maili Gönder" action
+    else if (action === 'Yanıt Maili Gönder') {
+      try {
+        const response = await fetch('https://n8n.flownests.org/webhook-test/aea5a37f-4c2f-46c0-a8e5-647b707827dc', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            emailId,
+            action,
+            senderEmail,
+            timestamp: new Date().toISOString()
+          })
+        });
+        
+        if (response.ok) {
+          showNotification('Yanıt maili gönderildi!', 'success');
+        } else {
+          throw new Error('Webhook call failed');
+        }
+      } catch (error) {
+        console.error('Error calling webhook:', error);
+        showNotification('Yanıt maili gönderilirken bir hata oluştu!', 'error');
       }
     }
     // Handle tag change actions
@@ -390,17 +455,15 @@ export function Responses() {
               {/* Category Header */}
               <div 
                 className="p-6 border-b border-gray-200"
-                onDragOver={(e) => {
-                  handleDragOver(e);
+                onDragOver={handleDragOver}
+                onDragEnter={(e) => {
+                  e.preventDefault();
                   e.currentTarget.classList.add('bg-gray-100');
                 }}
                 onDragLeave={(e) => {
                   e.currentTarget.classList.remove('bg-gray-100');
                 }}
-                onDrop={(e) => {
-                  e.currentTarget.classList.remove('bg-gray-100');
-                  handleDrop(tag);
-                }}
+                onDrop={(e) => handleDrop(e, tag)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -426,7 +489,7 @@ export function Responses() {
                         draggedEmail?.id === email.id ? 'opacity-50' : ''
                       }`}
                       draggable
-                      onDragStart={() => handleDragStart(email)}
+                      onDragStart={(e) => handleDragStart(e, email)}
                       onDragOver={(e) => {
                         e.preventDefault();
                         if (draggedEmail && draggedEmail.id !== email.id) {
