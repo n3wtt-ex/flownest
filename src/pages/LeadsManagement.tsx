@@ -102,8 +102,19 @@ export function Leads() {
     setIsRefreshing(true);
     
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/e51a1c60-517e-4473-a70b-ef289cda37b5', {
-        method: 'GET',
+      // Provider'a göre farklı webhook URL'leri kullan
+      let webhookUrl = 'https://n8n.flownests.org/webhook-test/e51a1c60-517e-4473-a70b-ef289cda37b5';
+      
+      if (selectedProvider === 'google_maps') {
+        // Google Maps için aynı URL'yi kullanabiliriz veya farklı bir URL verebilirsiniz
+        webhookUrl = 'https://n8n.flownests.org/webhook-test/e51a1c60-517e-4473-a70b-ef289cda37b5';
+      } else if (selectedProvider === 'apollo') {
+        // Apollo için farklı bir URL verebilirsiniz
+        // webhookUrl = 'https://n8n.flownests.org/webhook/apollo-refresh';
+      }
+      
+      const response = await fetch(webhookUrl, {
+        method: 'GET', // POST yerine GET methodu
       });
       
       if (response.ok) {
