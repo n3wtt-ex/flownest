@@ -37,26 +37,30 @@ export function Settings() {
   useEffect(() => {
     const fetchContactInfo = async () => {
       if (user) {
-        const { data, error } = await supabase
-          .from('users_contact_info')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
+        try {
+          const { data, error } = await supabase
+            .from('users_contact_info')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
 
-        if (data) {
-          setContactInfo({
-            phone: data.phone || '',
-            address: data.address || '',
-            city: data.city || '',
-            country: data.country || '',
-            postal_code: data.postal_code || '',
-            company: data.company || '',
-            website: data.website || ''
-          });
-        }
-        
-        if (user.user_metadata?.avatar_url) {
-          setAvatarUrl(user.user_metadata.avatar_url);
+          if (data) {
+            setContactInfo({
+              phone: data.phone || '',
+              address: data.address || '',
+              city: data.city || '',
+              country: data.country || '',
+              postal_code: data.postal_code || '',
+              company: data.company || '',
+              website: data.website || ''
+            });
+          }
+          
+          if (user.user_metadata?.avatar_url) {
+            setAvatarUrl(user.user_metadata.avatar_url);
+          }
+        } catch (error) {
+          console.error('Error fetching contact info:', error);
         }
       }
     };
@@ -96,6 +100,9 @@ export function Settings() {
     setLanguage(newLanguage);
     localStorage.setItem('language', newLanguage);
   };
+
+  // Avatar yükleme fonksiyonu
+  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
       
@@ -140,8 +147,8 @@ export function Settings() {
     }
   };
 
-  // Avatar yükleme fonksiyonu
-  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Avatar silme fonksiyonu
+  const deleteAvatar = async () => {
     try {
       if (!avatarUrl || !user) return;
       
