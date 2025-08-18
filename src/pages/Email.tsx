@@ -112,7 +112,7 @@ export function Email() {
   // Yeni eklenen fonksiyonlar
   const fetchIntroductionData = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/c9deff5f-039f-4fb0-8a84-1868063e9e65');
+      const response = await fetch('https://n8n.flownests.org/webhook/c9deff5f-039f-4fb0-8a84-1868063e9e65');
       const data = await response.json();
       
       // Gelen verileri state'lere ata
@@ -126,7 +126,7 @@ export function Email() {
 
   const fetchEventContentData = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8');
+      const response = await fetch('https://n8n.flownests.org/webhook/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8');
       const data = await response.json();
       
       // Gelen verileri state'e ata
@@ -141,7 +141,7 @@ export function Email() {
 
   const saveIntroductionToWebhook = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/c9deff5f-039f-4fb0-8a84-1868063e9e65', {
+      const response = await fetch('https://n8n.flownests.org/webhook/c9deff5f-039f-4fb0-8a84-1868063e9e65', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +166,7 @@ export function Email() {
 
   const saveEventContentToWebhook = async () => {
     try {
-      const response = await fetch('https://n8n.flownests.org/webhook-test/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8', {
+      const response = await fetch('https://n8n.flownests.org/webhook/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
