@@ -1510,12 +1510,12 @@ export function Leads() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="px-3 py-1 pr-8 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px]"
+                    className="px-3 py-1 pr-8 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px] dark:bg-slate-800 dark:border-slate-600 dark:text-white"
                   >
-                    <option value="all">All Status</option>
-                    <option value="New">New</option>
-                    <option value="Verified">Verified</option>
-                    <option value="Skipped">Skipped</option>
+                    <option value="all" className="dark:bg-slate-800 dark:text-white">{language === 'tr' ? 'Tüm Durumlar' : 'All Status'}</option>
+                    <option value="New" className="dark:bg-slate-800 dark:text-white">{language === 'tr' ? 'Yeni' : 'New'}</option>
+                    <option value="Verified" className="dark:bg-slate-800 dark:text-white">{language === 'tr' ? 'Doğrulanmış' : 'Verified'}</option>
+                    <option value="Skipped" className="dark:bg-slate-800 dark:text-white">{language === 'tr' ? 'Atlanmış' : 'Skipped'}</option>
                   </select>
                   <button className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg">
                     <Filter className="w-4 h-4" />

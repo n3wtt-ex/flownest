@@ -1193,49 +1193,49 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 
               {/* KPI Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-slate-800 dark:border-slate-700">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Performance Metrics</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Performance Metrics</h3>
                   </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Emails Sent</span>
-                      <span className="font-semibold">{selectedCampaign.sent}</span>
+                      <span className="text-gray-600 dark:text-gray-300">Emails Sent</span>
+                      <span className="font-semibold dark:text-white">{selectedCampaign.sent}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Total Opens</span>
-                      <span className="font-semibold">{Math.round(selectedCampaign.sent * selectedCampaign.open_rate / 100)}</span>
+                      <span className="text-gray-600 dark:text-gray-300">Total Opens</span>
+                      <span className="font-semibold dark:text-white">{Math.round(selectedCampaign.sent * selectedCampaign.open_rate / 100)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Total Clicks</span>
-                      <span className="font-semibold">{selectedCampaign.clicks}</span>
+                      <span className="text-gray-600 dark:text-gray-300">Total Clicks</span>
+                      <span className="font-semibold dark:text-white">{selectedCampaign.clicks}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Total Replies</span>
-                      <span className="font-semibold">{selectedCampaign.replied}</span>
+                      <span className="text-gray-600 dark:text-gray-300">Total Replies</span>
+                      <span className="font-semibold dark:text-white">{selectedCampaign.replied}</span>
                     </div>
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-slate-800 dark:border-slate-700">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Conversion Funnel</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Conversion Funnel</h3>
                   </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Opportunities</span>
-                      <span className="font-semibold text-blue-600">{selectedCampaign.opportunities}</span>
+                      <span className="text-gray-600 dark:text-gray-300">Opportunities</span>
+                      <span className="font-semibold text-blue-600 dark:text-blue-400">{selectedCampaign.opportunities}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Conversions</span>
-                      <span className="font-semibold text-green-600">{selectedCampaign.conversions}</span>
+                      <span className="text-gray-600 dark:text-gray-300">Conversions</span>
+                      <span className="font-semibold text-green-600 dark:text-green-400">{selectedCampaign.conversions}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Revenue Generated</span>
-                      <span className="font-semibold text-purple-600">${selectedCampaign.revenue.toLocaleString()}</span>
+                      <span className="text-gray-600 dark:text-gray-300">Revenue Generated</span>
+                      <span className="font-semibold text-purple-600 dark:text-purple-400">${selectedCampaign.revenue.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600">Conversion Rate</span>
-                      <span className="font-semibold">{((selectedCampaign.conversions / selectedCampaign.sent) * 100).toFixed(1)}%</span>
+                      <span className="text-gray-600 dark:text-gray-300">Conversion Rate</span>
+                      <span className="font-semibold dark:text-white">{((selectedCampaign.conversions / selectedCampaign.sent) * 100).toFixed(1)}%</span>
                     </div>
                   </div>
                 </div>
