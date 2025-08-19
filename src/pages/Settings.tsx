@@ -33,6 +33,29 @@ export function Settings() {
   const [language, setLanguage] = useState<'tr' | 'en'>('tr');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Tema değişikliğini uygulamak için useEffect
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
+  // Tema ve dil ayarlarını localStorage'dan yükle
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    const savedLanguage = localStorage.getItem('language');
+    
+    if (savedTheme === 'dark') {
+      setDarkMode(true);
+    }
+    
+    if (savedLanguage === 'en') {
+      setLanguage('en');
+    }
+  }, []);
+
   // Kullanıcı iletişim bilgilerini veritabanından çek
   useEffect(() => {
     const fetchContactInfo = async () => {
@@ -54,6 +77,26 @@ export function Settings() {
               company: data.company || '',
               website: data.website || ''
             });
+          } else if (error) {
+            // Tablo bulunamazsa veya kayıt yoksa varsayılan değerleri kullan
+            console.warn('Contact info not found or table does not exist:', error.message);
+            // Yeni bir kayıt oluşturmayı deneyebiliriz
+            const { error: insertError } = await supabase
+              .from('users_contact_info')
+              .insert({
+                user_id: user.id,
+                phone: '',
+                address: '',
+                city: '',
+                country: '',
+                postal_code: '',
+                company: '',
+                website: ''
+              });
+            
+            if (insertError) {
+              console.error('Error creating contact info record:', insertError.message);
+            }
           }
           
           if (user.user_metadata?.avatar_url) {
@@ -73,6 +116,8 @@ export function Settings() {
     
     if (savedTheme === 'dark') {
       setDarkMode(true);
+      // Tema değişikliğini tüm uygulamaya uygula
+      document.documentElement.classList.add('dark');
     }
     
     if (savedLanguage === 'en') {
@@ -86,13 +131,6 @@ export function Settings() {
     setDarkMode(newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
     console.log('Tema değiştirildi:', newTheme ? 'dark' : 'light');
-    
-    // Tema değişikliğini tüm uygulamaya uygula
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
   };
 
   // Dil değiştirme işlevi
