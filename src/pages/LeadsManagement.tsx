@@ -1394,7 +1394,13 @@ export function Leads() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={\n                    selectedProvider === 'apollo' \n                      ? (language === 'tr' ? 'örn., Istanbul\\'daki SaaS şirketleri' : 'e.g., SaaS companies in Istanbul') \n                      : selectedProvider === 'google_maps'\n                        ? (language === 'tr' ? 'örn., lokasyon: Istanbul anahtar kelimeler: kafe' : 'e.g., location: Istanbul keywords: cafe')\n                        : (language === 'tr' ? 'Arama sorgusunu girin' : 'Enter search query')\n                  }
+                  placeholder={
+                    selectedProvider === 'apollo' 
+                      ? (language === 'tr' ? 'örn., Istanbul\'daki SaaS şirketleri' : 'e.g., SaaS companies in Istanbul') 
+                      : selectedProvider === 'google_maps'
+                        ? (language === 'tr' ? 'örn., lokasyon: Istanbul anahtar kelimeler: kafe' : 'e.g., location: Istanbul keywords: cafe')
+                        : (language === 'tr' ? 'Arama sorgusunu girin' : 'Enter search query')
+                  }
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
