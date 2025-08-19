@@ -129,6 +129,13 @@ export function Settings() {
     setDarkMode(newTheme);
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
     console.log('Tema değiştirildi:', newTheme ? 'dark' : 'light');
+    
+    // Tema değişikliğini tüm uygulamaya uygula
+    if (newTheme) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   };
 
   // Dil değiştirme işlevi
