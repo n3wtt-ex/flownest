@@ -16,12 +16,9 @@ export function Layout() {
     }
   }, []);
 
-  // CRM sayfaları için farklı arka plan rengi
-  const isCrmPage = location.pathname.startsWith('/crm');
-
   return (
     <SidebarProvider>
-      <div className={`flex h-screen ${isCrmPage ? 'bg-slate-50' : 'bg-white'} text-slate-800 dark:text-slate-100 ${!isCrmPage ? 'dark-bg-outside-crm' : ''}`}>
+      <div className="flex h-screen bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100">
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />
