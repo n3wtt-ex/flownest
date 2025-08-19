@@ -294,3 +294,8 @@
   scrollbar-width: thin;
   scrollbar-color: #334155 #0f172a;
 }
+
+/* Dark mode background color for all pages */
+.dark .bg-slate-900 {
+  background-color: #0f172a !important;
+}

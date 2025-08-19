@@ -2023,7 +2023,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
   }
 
   return (
-    <div className="p-6 min-h-screen bg-slate-900">
+    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

@@ -563,7 +563,7 @@ ${email.content}`
   }, {} as Record<string, EmailCard[]>);
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto">
         {/* Notification */}
         {notification && (
