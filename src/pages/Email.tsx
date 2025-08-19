@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Settings, Shield, Zap, Plus, ChevronDown, Upload, Sparkles, Edit3, Save, FileText, RefreshCw } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface EmailAccount {
   id: string;
@@ -44,6 +45,7 @@ const eventLabels = {
 };
 
 export function Email() {
+  const { language } = useLanguage();
   const [emailAccounts, setEmailAccounts] = useState<EmailAccount[]>(mockEmailAccounts);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState('demo');
@@ -500,7 +502,7 @@ export function Email() {
               >
                 <div className="flex items-center space-x-3">
                   <Settings className="w-6 h-6 text-blue-600" />
-                  <h2 className="text-xl font-semibold text-gray-900">Customer Meeting Settings</h2>
+                  <h2 className="text-xl font-semibold text-gray-900">{language === 'tr' ? 'Müşteri Toplantısı Ayarları' : 'Customer Meeting Settings'}</h2>
                 </div>
                 <motion.div
                   animate={{ rotate: isSettingsOpen ? 180 : 0 }}
@@ -557,7 +559,7 @@ export function Email() {
                       {!isIntroductionMode && (
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Event Type
+                            {language === 'tr' ? 'Etkinlik Türü' : 'Event Type'}
                           </label>
                           <select
                             value={selectedEvent}
@@ -600,7 +602,7 @@ export function Email() {
                               className="flex-1 flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg transition-shadow"
                             >
                               <Sparkles className="w-4 h-4 mr-2" />
-                              Create with AI
+                              {language === 'tr' ? 'AI ile Oluştur' : 'Create with AI'}
                             </motion.button>
                           </div>
                         </div>
@@ -657,32 +659,32 @@ export function Email() {
                             <div>
                               <label 
                                 className="block text-sm font-medium text-gray-700 mb-2"
-                                title="Emailler kimin adına gönderilsin"
+                                title={language === 'tr' ? 'Emailler kimin adına gönderilsin' : 'Who should emails be sent from'}
                               >
-                                İsim
+                                {language === 'tr' ? 'İsim' : 'Name'}
                               </label>
                               <input
                                 type="text"
                                 value={introName}
                                 onChange={(e) => handleIntroNameChange(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                placeholder="Adınızı girin..."
+                                placeholder={language === 'tr' ? 'Adınızı girin...' : 'Enter your name...'}
                               />
                             </div>
                             
                             <div>
                               <label 
                                 className="block text-sm font-medium text-gray-700 mb-2"
-                                title="Şirketinizin adı"
+                                title={language === 'tr' ? 'Şirketinizin adı' : 'Your company name'}
                               >
-                                Şirket Adı
+                                {language === 'tr' ? 'Şirket Adı' : 'Company Name'}
                               </label>
                               <input
                                 type="text"
                                 value={introCompanyName}
                                 onChange={(e) => handleIntroCompanyNameChange(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                placeholder="Şirket adınızı girin..."
+                                placeholder={language === 'tr' ? 'Şirket adınızı girin...' : 'Enter your company name...'}
                               />
                             </div>
                             
@@ -697,14 +699,14 @@ export function Email() {
                                 value={introCompany}
                                 onChange={(e) => handleIntroCompanyChange(e.target.value)}
                                 className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                                placeholder="Şirketiniz ve hizmetleriniz hakkında bilgi girin..."
+                                placeholder={language === 'tr' ? 'Şirketiniz ve hizmetleriniz hakkında bilgi girin...' : 'Enter information about your company and services...'}
                               />
                             </div>
                           </div>
                           
                           <div className="flex items-center justify-between">
                             <div className="text-sm text-gray-500">
-                              {introName.length + introCompanyName.length + introCompany.length} characters
+                              {introName.length + introCompanyName.length + introCompany.length} {language === 'tr' ? 'karakter' : 'characters'}
                             </div>
                             <motion.button
                               whileHover={{ scale: 1.05 }}
@@ -751,7 +753,7 @@ export function Email() {
 
                           <div className="flex items-center justify-between">
                             <div className="text-sm text-gray-500">
-                              {editContent.length} characters
+                              {editContent.length} {language === 'tr' ? 'karakter' : 'characters'}
                             </div>
                             <motion.button
                               whileHover={{ scale: 1.05 }}

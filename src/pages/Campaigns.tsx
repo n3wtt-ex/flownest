@@ -5,8 +5,8 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Switch } from '../components/ui/switch';
-
 import { supabase } from '../lib/supabase';
+import { useLanguage } from '../contexts/LanguageContext';
 
 
 interface Campaign {
@@ -73,6 +73,7 @@ const mockSequence: SequenceStep[] = [
 const initialPersonalizationData: Record<string, LeadPersonalization> = {};
 
 export function Campaigns() {
+  const { language } = useLanguage();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
   const [errorCampaigns, setErrorCampaigns] = useState<string | null>(null);
@@ -2009,7 +2010,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         onClick={saveAsDraft}
                         className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                       >
-                        Save as Draft
+                        {language === 'tr' ? 'Taslak Olarak Kaydet' : 'Save as Draft'}
                       </button>
                     </div>
                   </div>

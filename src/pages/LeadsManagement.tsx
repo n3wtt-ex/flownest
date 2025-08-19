@@ -4,6 +4,7 @@ import { Search, MapPin, Globe, Plus, Filter, Eye, MoreHorizontal, FileText, Tra
 import { Lead as LeadType } from '../types';
 import { supabase } from '../lib/supabase';
 import { useCampaigns } from './CampaignsContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 // Refresh icon component
 const RefreshIcon = () => (
@@ -13,6 +14,7 @@ const RefreshIcon = () => (
 );
 
 export function Leads() {
+  const { language } = useLanguage();
   const [leads, setLeads] = useState<LeadType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -1322,14 +1324,11 @@ export function Leads() {
           >
             <Search className="w-8 h-8 text-white" />
           </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+          <h1
             className="text-4xl font-bold text-gray-900 mb-2"
           >
-            Lead Management
-          </motion.h1>
+            {language === 'tr' ? 'Lead Yönetimi' : 'Lead Management'}
+          </h1>
           <motion.p
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1343,11 +1342,11 @@ export function Leads() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Search Area */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">Search for Leads</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{language === 'tr' ? 'Lead Arama' : 'Search for Leads'}</h2>
             
             {/* Provider Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Choose Search Provider</label>
+              <label className="block text-sm font-medium text-gray-700 mb-3">{language === 'tr' ? 'Arama Sağlayıcısını Seçin' : 'Choose Search Provider'}</label>
               <div className="flex space-x-4">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -1363,7 +1362,7 @@ export function Leads() {
                     <Search className="w-6 h-6 text-blue-600" />
                   </div>
                   <div className="font-semibold">Apollo</div>
-                  <div className="text-sm text-gray-600">B2B Database</div>
+                  <div className="text-sm text-gray-600">{language === 'tr' ? 'B2B Veritabanı' : 'B2B Database'}</div>
                 </motion.button>
 
                 <motion.button
@@ -1388,7 +1387,7 @@ export function Leads() {
             {/* Search Input */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {selectedProvider === 'google_maps' ? 'Message for Webhook' : 'Search Query'}
+                {selectedProvider === 'google_maps' ? (language === 'tr' ? 'Webhook için Mesaj' : 'Message for Webhook') : (language === 'tr' ? 'Arama Sorgusu' : 'Search Query')}
               </label>
               <div className="flex space-x-2">
                 <input
@@ -1397,10 +1396,10 @@ export function Leads() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={
                     selectedProvider === 'apollo' 
-                      ? 'e.g., SaaS companies in San Francisco' 
+                      ? (language === 'tr' ? 'örn., İstanbul'daki SaaS şirketleri' : 'e.g., SaaS companies in Istanbul') 
                       : selectedProvider === 'google_maps'
-                        ? 'Enter message to send via webhook'
-                        : 'Enter search query'
+                        ? (language === 'tr' ? 'örn., lokasyon: İstanbul anahtar kelimeler: kafe' : 'e.g., location: Istanbul keywords: cafe')
+                        : (language === 'tr' ? 'Arama sorgusunu girin' : 'Enter search query')
                   }
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -1447,31 +1446,31 @@ export function Leads() {
                         Marketing Agencies
                       </button>
                       <button
-                        onClick={() => setSearchQuery('E-commerce startups')}
+                        onClick={() => setSearchQuery(language === 'tr' ? 'İstanbuldaki e-ticaret şirketleri' : 'e-commerce companies in Istanbul')}
                         className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
                       >
-                        E-commerce
+                        {language === 'tr' ? 'E-ticaret' : 'E-commerce'}
                       </button>
                     </>
                   ) : (
                     <>
                       <button
-                        onClick={() => setSearchQuery('restaurants in Manhattan')}
+                        onClick={() => setSearchQuery(language === 'tr' ? 'Manhattan\'daki restoranlar' : 'restaurants in Manhattan')}
                         className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
                       >
-                        Restaurants
+                        {language === 'tr' ? 'Restoranlar' : 'Restaurants'}
                       </button>
                       <button
-                        onClick={() => setSearchQuery('gyms in Los Angeles')}
+                        onClick={() => setSearchQuery(language === 'tr' ? 'Los Angeles\'taki spor salonları' : 'gyms in Los Angeles')}
                         className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
                       >
-                        Gyms
+                        {language === 'tr' ? 'Spor Salonları' : 'Gyms'}
                       </button>
                       <button
-                        onClick={() => setSearchQuery('coffee shops in Seattle')}
+                        onClick={() => setSearchQuery(language === 'tr' ? 'Seattle\'taki kahve dükkanları' : 'coffee shops in Seattle')}
                         className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
                       >
-                        Coffee Shops
+                        {language === 'tr' ? 'Kahve Dükkanları' : 'Coffee Shops'}
                       </button>
                     </>
                   )}
@@ -1552,29 +1551,29 @@ export function Leads() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Message Sent Successfully</h3>
-                  <p className="text-gray-600">Your message has been sent via webhook to n8n.</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{language === 'tr' ? 'Mesaj Başarıyla Gönderildi' : 'Message Sent Successfully'}</h3>
+                  <p className="text-gray-600">{language === 'tr' ? 'Mesajınız n8n aracılığıyla webhook ile gönderildi.' : 'Your message has been sent via webhook to n8n.'}</p>
                 </div>
               ) : searchResults.length === 0 ? (
                 <div className="text-center py-12">
                   <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No results yet</h3>
-                  <p className="text-gray-600">Run a search to find potential leads.</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{language === 'tr' ? 'Henüz sonuç yok' : 'No results yet'}</h3>
+                  <p className="text-gray-600">{language === 'tr' ? 'Potansiyel lead bulmak için bir arama yapın.' : 'Run a search to find potential leads.'}</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50 sticky top-0">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Source</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'İsim' : 'Name'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Şirket' : 'Company'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Pozisyon' : 'Title'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'E-posta' : 'Email'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Telefon' : 'Phone'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Lokasyon' : 'Location'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Kaynak' : 'Source'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Durum' : 'Status'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'İşlemler' : 'Actions'}</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">

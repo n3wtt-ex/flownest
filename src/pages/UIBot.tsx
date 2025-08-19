@@ -5,6 +5,7 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 import { WorkspaceBoard } from '../components/AIWorkspace/WorkspaceBoard';
 import { WorkspaceGrid } from '../components/AIWorkspace/WorkspaceGrid';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface WorkspaceData {
   id: string;
@@ -15,6 +16,7 @@ interface WorkspaceData {
 }
 
 export function UIBot() {
+  const { language } = useLanguage();
   const [workspaces, setWorkspaces] = useLocalStorage<WorkspaceData[]>('ai-workspaces', []);
   const [currentWorkspace, setCurrentWorkspace] = useState<WorkspaceData | null>(null);
   const [newWorkspaceName, setNewWorkspaceName] = useState('');
@@ -105,14 +107,14 @@ export function UIBot() {
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">{currentWorkspace.name}</h2>
                   <p className="text-sm text-gray-600">
-                    Created {new Date(currentWorkspace.createdAt).toLocaleDateString()}
+                    {language === 'tr' ? 'Oluşturuldu' : 'Created'} {new Date(currentWorkspace.createdAt).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}
                   </p>
                 </div>
                 <button
                   onClick={() => setCurrentWorkspace(null)}
                   className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  Back to Workspaces
+                  {language === 'tr' ? 'Çalışma Alanlarına Geri Dön' : 'Back to Workspaces'}
                 </button>
               </div>
               
@@ -129,14 +131,14 @@ export function UIBot() {
       <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create New Workspace</DialogTitle>
+            <DialogTitle>{language === 'tr' ? 'Yeni Çalışma Alanı Oluştur' : 'Create New Workspace'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <input
               type="text"
               value={newWorkspaceName}
               onChange={(e) => setNewWorkspaceName(e.target.value)}
-              placeholder="Enter workspace name..."
+              placeholder={language === 'tr' ? 'Çalışma alanı adı girin...' : 'Enter workspace name...'}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               onKeyPress={(e) => e.key === 'Enter' && createWorkspace()}
             />
@@ -145,13 +147,13 @@ export function UIBot() {
                 onClick={() => setIsCreateModalOpen(false)}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800"
               >
-                Cancel
+                {language === 'tr' ? 'İptal' : 'Cancel'}
               </button>
               <button
                 onClick={createWorkspace}
                 className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-shadow"
               >
-                Create
+                {language === 'tr' ? 'Oluştur' : 'Create'}
               </button>
             </div>
           </div>

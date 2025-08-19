@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, Mail, Calendar, Database, X, CheckCircle, AlertCircle, HelpCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface EmailCard {
   id: string;
@@ -57,7 +58,8 @@ const mockEmails: EmailCard[] = [
 ];
 
 export function Responses() {
-  const [emails, setEmails] = useState<EmailCard[]>(mockEmails);
+  const { language } = useLanguage();
+  const [emailCards, setEmailCards] = useState<EmailCard[]>(mockEmails);
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
   const [draggedEmail, setDraggedEmail] = useState<EmailCard | null>(null);
   const [completedMeetings, setCompletedMeetings] = useState<Set<string>>(new Set());
@@ -592,21 +594,20 @@ ${email.content}`
           >
             <MessageSquare className="w-8 h-8 text-white" />
           </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl font-bold text-gray-900 mb-2"
-          >
-            Yanıt Takibi
-          </motion.h1>
+                      <h1
+              className="text-4xl font-bold text-gray-900 mb-2"
+            >
+              {language === 'tr' ? 'Yanıt Takibi' : 'Response Tracking'}
+            </h1>
           <motion.p
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="text-gray-600 text-lg"
           >
-            E-posta yanıtlarını kategorize edin ve uygun aksiyonları alın
+                        <p className="text-gray-600 text-lg">
+              {language === 'tr' ? 'E-posta yanıtlarını kategorize edin ve uygun aksiyonları alın' : 'Categorize email responses and take appropriate actions'}
+            </p>
           </motion.p>
         </div>
 
@@ -672,7 +673,7 @@ ${email.content}`
                     {getTagIcon(tag)}
                     <h2 className="text-xl font-semibold text-gray-900">{tag}</h2>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium border ${getTagColor(tag)}`}>
-                      {tagEmails.length} e-posta
+                      {tagEmails.length} {language === 'tr' ? 'e-posta' : 'emails'}
                     </span>
                   </div>
                 </div>
@@ -709,7 +710,7 @@ ${email.content}`
                           {email.sender}
                         </div>
                         <div className="text-xs text-gray-500">
-                          {new Date(email.timestamp).toLocaleDateString('tr-TR')}
+                          {new Date(email.timestamp).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}
                         </div>
                       </div>
 
@@ -757,7 +758,7 @@ ${email.content}`
                                   {isCrmLoading ? (
                                     <>
                                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                      <span>Aktarılıyor...</span>
+                                      <span>{language === 'tr' ? 'Aktarılıyor...' : 'Transferring...'}</span>
                                     </>
                                   ) : (
                                     <>
