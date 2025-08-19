@@ -136,13 +136,20 @@ export function Settings() {
     } else {
       document.documentElement.classList.remove('dark');
     }
+    
+    // Sayfayı yeniden yükleyerek tüm bileşenlerin temayı almasını sağla
+    window.location.reload();
   };
 
   // Dil değiştirme işlevi
   const toggleLanguage = () => {
     const newLanguage = language === 'tr' ? 'en' : 'tr';
     setLanguage(newLanguage);
+    localStorage.setItem('language', newLanguage);
     console.log('Dil değiştirildi:', newLanguage);
+    
+    // Sayfayı yeniden yükleyerek tüm bileşenin dili almasını sağla
+    window.location.reload();
   };
 
   // Avatar yükleme fonksiyonu
