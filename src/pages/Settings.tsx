@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface ContactInfo {
   phone?: string;
@@ -14,6 +15,7 @@ interface ContactInfo {
 
 export function Settings() {
   const { user } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [fullName, setFullName] = useState(user?.user_metadata?.full_name || '');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.user_metadata?.avatar_url || null);
@@ -30,7 +32,6 @@ export function Settings() {
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [darkMode, setDarkMode] = useState(false);
-  const [language, setLanguage] = useState<'tr' | 'en'>('tr');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Tema değişikliğini uygulamak için useEffect
@@ -42,19 +43,16 @@ export function Settings() {
     }
   }, [darkMode]);
 
-  // Tema ve dil ayarlarını localStorage'dan yükle
+  // Tema ayarlarını localStorage'dan yükle
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
-    const savedLanguage = localStorage.getItem('language');
     
     if (savedTheme === 'dark') {
       setDarkMode(true);
+      // Tema değişikliğini tüm uygulamaya uygula
+      document.documentElement.classList.add('dark');
     }
-    
-    if (savedLanguage === 'en') {
-      setLanguage('en');
-    }
-  }, []);
+  }, [user]);
 
   // Kullanıcı iletişim bilgilerini veritabanından çek
   useEffect(() => {
@@ -137,7 +135,6 @@ export function Settings() {
   const toggleLanguage = () => {
     const newLanguage = language === 'tr' ? 'en' : 'tr';
     setLanguage(newLanguage);
-    localStorage.setItem('language', newLanguage);
     console.log('Dil değiştirildi:', newLanguage);
   };
 

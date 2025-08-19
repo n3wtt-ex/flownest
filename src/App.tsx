@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { Layout } from './components/Layout/Layout';
@@ -40,6 +40,14 @@ function DashboardWrapper() {
 
 function App() {
   const { user, loading } = useAuth();
+
+  // Tema değişikliğini uygulamak için useEffect
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
 
   if (loading) {
     return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
@@ -7,6 +7,14 @@ import { SidebarProvider } from '../../contexts/SidebarContext';
 
 export function Layout() {
   const location = useLocation();
+
+  // Tema değişikliğini uygulamak için useEffect
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
 
   return (
     <SidebarProvider>
