@@ -24,6 +24,25 @@
     background-color: var(--bg-primary);
     color: var(--text-primary);
   }
+  
+  /* CRM dışındaki sayfalar için daha koyu arka plan */
+  .dark .min-h-screen.bg-white {
+    background-color: #020617 !important; /* Daha koyu mavi-siyah */
+  }
+  
+  /* CRM sayfaları için daha açık arka plan */
+  .dark .min-h-screen.bg-slate-50 {
+    background-color: #0f172a !important;
+  }
+  
+  /* Card'lar için daha açık bir arka plan */
+  .dark .rounded-2xl, 
+  .dark .rounded-3xl, 
+  .dark .rounded-xl,
+  .dark .bg-white,
+  .dark .bg-gray-50 {
+    background-color: #1e293b !important;
+  }
 }
 
 /* Özel animasyonlar */
@@ -217,4 +236,61 @@
   
   /* Search results */
   .border-b { border-color: #475569 !important; }
+  
+  /* CRM dışı sayfalar için daha koyu arka plan */
+  .bg-white.dark-bg-outside-crm { 
+    background-color: #020617 !important; 
+  }
+  
+  /* Input ve textarea border renkleri */
+  .border-gray-300 { border-color: #475569 !important; }
+  .border-slate-300 { border-color: #475569 !important; }
+  
+  /* Tablo hücreleri için border */
+  td, th { border-color: #475569 !important; }
+  
+  /* Divider lar için border */
+  .border-t, .border-b, .border-l, .border-r { border-color: #475569 !important; }
+  
+  /* Modal arka planı */
+  .fixed.inset-0.bg-black.bg-opacity-50 { background-color: rgba(0, 0, 0, 0.7) !important; }
+  
+  /* Checkbox ve radio butonlar */
+  input[type="checkbox"], input[type="radio"] {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+  }
+  
+  input[type="checkbox"]:checked, input[type="radio"]:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+  }
+  
+  /* Select dropdown arrow */
+  select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+  }
+  
+  /* Scrollbar stilleri */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #0f172a;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+  
+  /* Firefox scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #0f172a;
 }
