@@ -18,27 +18,29 @@ import {
 import { useAuth } from '../../hooks/useAuth';
 import clsx from 'clsx';
 import { useSidebar } from '../../contexts/SidebarContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 // DO NOT MODIFY CRM/ACCOUNT PAGES - These are production components
 const mainNavItems = [
-  { name: 'AI Workspace', href: '/ui-bot', icon: Bot },
-  { name: 'Email Hesabı', href: '/email', icon: Mail },
-  { name: 'Lead Yönetimi', href: '/leads', icon: Search },
-  { name: 'Kampanya', href: '/campaigns', icon: Megaphone },
-  { name: 'Yanıt Takibi', href: '/responses', icon: MessageSquare },
-  { name: 'CRM', href: '/crm', icon: Users },
+  { name: { tr: 'AI Workspace', en: 'AI Workspace' }, href: '/ui-bot', icon: Bot },
+  { name: { tr: 'Email Hesabı', en: 'Email Account' }, href: '/email', icon: Mail },
+  { name: { tr: 'Lead Yönetimi', en: 'Lead Management' }, href: '/leads', icon: Search },
+  { name: { tr: 'Kampanya', en: 'Campaign' }, href: '/campaigns', icon: Megaphone },
+  { name: { tr: 'Yanıt Takibi', en: 'Response Tracking' }, href: '/responses', icon: MessageSquare },
+  { name: { tr: 'CRM', en: 'CRM' }, href: '/crm', icon: Users },
 ];
 
 const crmNavItems = [
-  { name: 'Dashboard', href: '/crm', icon: BarChart3 },
-  { name: 'Contacts', href: '/crm/contacts', icon: Users },
-  { name: 'Companies', href: '/crm/companies', icon: Building2 },
-  { name: 'Deals', href: '/crm/deals', icon: Handshake },
+  { name: { tr: 'Dashboard', en: 'Dashboard' }, href: '/crm', icon: BarChart3 },
+  { name: { tr: 'Contacts', en: 'Contacts' }, href: '/crm/contacts', icon: Users },
+  { name: { tr: 'Companies', en: 'Companies' }, href: '/crm/companies', icon: Building2 },
+  { name: { tr: 'Deals', en: 'Deals' }, href: '/crm/deals', icon: Handshake },
 ];
 
 export function Sidebar() {
   const { signOut } = useAuth();
   const { isCollapsed, toggleSidebar } = useSidebar();
+  const { language } = useLanguage();
   const [tooltip, setTooltip] = useState<{name: string, x: number, y: number} | null>(null);
   const collapseButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -94,15 +96,15 @@ export function Sidebar() {
           <div>
             {!isCollapsed && (
               <h3 className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                Ana Modüller
+                {language === 'tr' ? 'Ana Modüller' : 'Main Modules'}
               </h3>
             )}
             <div className="space-y-1">
               {mainNavItems.map((item) => (
                 <NavLink
-                  key={item.name}
+                  key={item.name.tr}
                   to={item.href}
-                  onMouseEnter={(e) => handleMouseEnter(e, item.name)}
+                  onMouseEnter={(e) => handleMouseEnter(e, item.name[language])}
                   onMouseLeave={handleMouseLeave}
                   className={({ isActive }) =>
                     clsx(
@@ -123,7 +125,7 @@ export function Sidebar() {
                       )} />
                       {!isCollapsed && (
                         <div className="flex-1">
-                          <div>{item.name}</div>
+                          <div>{item.name[language]}</div>
                         </div>
                       )}
                     </>
@@ -137,16 +139,16 @@ export function Sidebar() {
           <div>
             {!isCollapsed && (
               <h3 className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
-                CRM Modülleri
+                {language === 'tr' ? 'CRM Modülleri' : 'CRM Modules'}
               </h3>
             )}
             <div className="space-y-1">
               {crmNavItems.map((item) => (
                 <NavLink
-                  key={item.name}
+                  key={item.name.tr}
                   to={item.href}
                   end={item.href === '/crm'}
-                  onMouseEnter={(e) => handleMouseEnter(e, item.name)}
+                  onMouseEnter={(e) => handleMouseEnter(e, item.name[language])}
                   onMouseLeave={handleMouseLeave}
                   className={({ isActive }) =>
                     clsx(
@@ -163,7 +165,7 @@ export function Sidebar() {
                     isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4",
                     "text-slate-400 group-hover:text-slate-600"
                   )} />
-                  {!isCollapsed && item.name}
+                  {!isCollapsed && item.name[language]}
                 </NavLink>
               ))}
             </div>
@@ -174,7 +176,7 @@ export function Sidebar() {
         <div className="border-t border-slate-200 p-4 space-y-2">
           <NavLink
             to="/settings"
-            onMouseEnter={(e) => handleMouseEnter(e, "Ayarlar")}
+            onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Ayarlar" : "Settings")}
             onMouseLeave={handleMouseLeave}
             className="flex items-center px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors"
           >
@@ -182,11 +184,11 @@ export function Sidebar() {
               "flex-shrink-0",
               isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4"
             )} />
-            {!isCollapsed && "Ayarlar"}
+            {!isCollapsed && (language === 'tr' ? "Ayarlar" : "Settings")}
           </NavLink>
           <button
             onClick={handleSignOut}
-            onMouseEnter={(e) => handleMouseEnter(e, "Çıkış Yap")}
+            onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Çıkış Yap" : "Sign Out")}
             onMouseLeave={handleMouseLeave}
             className="w-full flex items-center px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors"
           >
@@ -194,7 +196,7 @@ export function Sidebar() {
               "flex-shrink-0",
               isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4"
             )} />
-            {!isCollapsed && "Çıkış Yap"}
+            {!isCollapsed && (language === 'tr' ? "Çıkış Yap" : "Sign Out")}
           </button>
         </div>
       </div>
