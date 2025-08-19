@@ -36,23 +36,43 @@ export function Settings() {
 
   // Tema değişikliğini uygulamak için useEffect
   useEffect(() => {
+    console.log('Settings - Dark mode state changed:', darkMode);
+    
+    // State değiştiğinde DOM'u güncelle
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
+    
+    // Tema değişikliğinin uygulandığını kontrol et
+    setTimeout(() => {
+      console.log('Settings - After useEffect - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    }, 0);
   }, [darkMode]);
 
   // Tema ayarlarını localStorage'dan yükle
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
+    console.log('Settings - Saved theme from localStorage:', savedTheme);
     
     if (savedTheme === 'dark') {
-      setDarkMode(true);
-      // Tema değişikliğini tüm uygulamaya uygula
+      // Önce DOM'u güncelle
       document.documentElement.classList.add('dark');
+      
+      // State'i güncelle ama döngüyü önlemek için koşullu yap
+      requestAnimationFrame(() => {
+        if (!darkMode) {
+          setDarkMode(true);
+        }
+      });
+      
+      // Tema değişikliğinin uygulandığını kontrol et
+      setTimeout(() => {
+        console.log('Settings - After loading from localStorage - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      }, 0);
     }
-  }, [user]);
+  }, []);
 
   // Kullanıcı iletişim bilgilerini veritabanından çek
   useEffect(() => {
@@ -126,19 +146,27 @@ export function Settings() {
   // Tema değiştirme işlevi
   const toggleTheme = () => {
     const newTheme = !darkMode;
-    setDarkMode(newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-    console.log('Tema değiştirildi:', newTheme ? 'dark' : 'light');
+    console.log('Toggling theme to:', newTheme ? 'dark' : 'light');
     
-    // Tema değişikliğini tüm uygulamaya uygula
+    // Önce localStorage'ı güncelle
+    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    
+    // Önce DOM'u güncelle
     if (newTheme) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
     
-    // Sayfayı yeniden yükleyerek tüm bileşenlerin temayı almasını sağla
-    window.location.reload();
+    // State'i güncelle (bu useEffect'i tetikleyecek)
+    setDarkMode(newTheme);
+    
+    console.log('Tema değiştirildi:', newTheme ? 'dark' : 'light');
+    
+    // Tema değişikliğinin uygulandığını kontrol et
+    requestAnimationFrame(() => {
+      console.log('Settings - After toggle - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    });
   };
 
   // Dil değiştirme işlevi

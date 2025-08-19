@@ -11,8 +11,14 @@
     <script>
       // Tema değişikliğini uygulamak için script
       const savedTheme = localStorage.getItem('theme');
+      console.log('Index.html - Saved theme from localStorage:', savedTheme);
       if (savedTheme === 'dark') {
         document.documentElement.classList.add('dark');
+        
+        // Tema değişikliğinin uygulandığını kontrol et
+        setTimeout(() => {
+          console.log('Index.html - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }, 0);
       }
     </script>
   </head>

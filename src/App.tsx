@@ -44,8 +44,14 @@ function App() {
   // Tema değişikliğini uygulamak için useEffect
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
+    console.log('App - Saved theme from localStorage:', savedTheme);
     if (savedTheme === 'dark') {
       document.documentElement.classList.add('dark');
+      
+      // Tema değişikliğinin uygulandığını kontrol et
+      setTimeout(() => {
+        console.log('App - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      }, 0);
     }
   }, []);
 
