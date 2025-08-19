@@ -1394,13 +1394,7 @@ export function Leads() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder={
-                    selectedProvider === 'apollo' 
-                      ? (language === 'tr' ? 'örn., İstanbul'daki SaaS şirketleri' : 'e.g., SaaS companies in Istanbul') 
-                      : selectedProvider === 'google_maps'
-                        ? (language === 'tr' ? 'örn., lokasyon: İstanbul anahtar kelimeler: kafe' : 'e.g., location: Istanbul keywords: cafe')
-                        : (language === 'tr' ? 'Arama sorgusunu girin' : 'Enter search query')
-                  }
+                  placeholder={\n                    selectedProvider === 'apollo' \n                      ? (language === 'tr' ? 'örn., Istanbul\\'daki SaaS şirketleri' : 'e.g., SaaS companies in Istanbul') \n                      : selectedProvider === 'google_maps'\n                        ? (language === 'tr' ? 'örn., lokasyon: Istanbul anahtar kelimeler: kafe' : 'e.g., location: Istanbul keywords: cafe')\n                        : (language === 'tr' ? 'Arama sorgusunu girin' : 'Enter search query')\n                  }
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
@@ -1446,7 +1440,7 @@ export function Leads() {
                         Marketing Agencies
                       </button>
                       <button
-                        onClick={() => setSearchQuery(language === 'tr' ? 'İstanbuldaki e-ticaret şirketleri' : 'e-commerce companies in Istanbul')}
+                        onClick={() => setSearchQuery(language === 'tr' ? 'Istanbul\'daki e-ticaret şirketleri' : 'e-commerce companies in Istanbul')}
                         className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
                       >
                         {language === 'tr' ? 'E-ticaret' : 'E-commerce'}
@@ -1461,16 +1455,16 @@ export function Leads() {
                         {language === 'tr' ? 'Restoranlar' : 'Restaurants'}
                       </button>
                       <button
-                        onClick={() => setSearchQuery(language === 'tr' ? 'Los Angeles\'taki spor salonları' : 'gyms in Los Angeles')}
+                        onClick={() => setSearchQuery(language === 'tr' ? 'Los Angeles\'taki spor salonlari' : 'gyms in Los Angeles')}
                         className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
                       >
-                        {language === 'tr' ? 'Spor Salonları' : 'Gyms'}
+                        {language === 'tr' ? 'Spor Salonlari' : 'Gyms'}
                       </button>
                       <button
-                        onClick={() => setSearchQuery(language === 'tr' ? 'Seattle\'taki kahve dükkanları' : 'coffee shops in Seattle')}
+                        onClick={() => setSearchQuery(language === 'tr' ? 'Seattle\'taki kahve dukkanlari' : 'coffee shops in Seattle')}
                         className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
                       >
-                        {language === 'tr' ? 'Kahve Dükkanları' : 'Coffee Shops'}
+                        {language === 'tr' ? 'Kahve Dukkanlari' : 'Coffee Shops'}
                       </button>
                     </>
                   )}

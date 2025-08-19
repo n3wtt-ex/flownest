@@ -659,32 +659,32 @@ export function Email() {
                             <div>
                               <label 
                                 className="block text-sm font-medium text-gray-700 mb-2"
-                                title={language === 'tr' ? 'Emailler kimin adına gönderilsin' : 'Who should emails be sent from'}
+                                title={language === 'tr' ? 'Emailler kimin adina gonderilsin' : 'Who should emails be sent from'}
                               >
-                                {language === 'tr' ? 'İsim' : 'Name'}
+                                {language === 'tr' ? 'Isim' : 'Name'}
                               </label>
                               <input
                                 type="text"
                                 value={introName}
                                 onChange={(e) => handleIntroNameChange(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                placeholder={language === 'tr' ? 'Adınızı girin...' : 'Enter your name...'}
+                                placeholder={language === 'tr' ? 'Adinizi girin...' : 'Enter your name...'}
                               />
                             </div>
                             
                             <div>
                               <label 
                                 className="block text-sm font-medium text-gray-700 mb-2"
-                                title={language === 'tr' ? 'Şirketinizin adı' : 'Your company name'}
+                                title={language === 'tr' ? 'Sirketinizin adi' : 'Your company name'}
                               >
-                                {language === 'tr' ? 'Şirket Adı' : 'Company Name'}
+                                {language === 'tr' ? 'Sirket Adi' : 'Company Name'}
                               </label>
                               <input
                                 type="text"
                                 value={introCompanyName}
                                 onChange={(e) => handleIntroCompanyNameChange(e.target.value)}
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                placeholder={language === 'tr' ? 'Şirket adınızı girin...' : 'Enter your company name...'}
+                                placeholder={language === 'tr' ? 'Sirket adinizi girin...' : 'Enter your company name...'}
                               />
                             </div>
                             
@@ -699,7 +699,7 @@ export function Email() {
                                 value={introCompany}
                                 onChange={(e) => handleIntroCompanyChange(e.target.value)}
                                 className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                                placeholder={language === 'tr' ? 'Şirketiniz ve hizmetleriniz hakkında bilgi girin...' : 'Enter information about your company and services...'}
+                                placeholder={language === 'tr' ? 'Sirketiniz ve hizmetleriniz hakkinda bilgi girin...' : 'Enter information about your company and services...'}
                               />
                             </div>
                           </div>
