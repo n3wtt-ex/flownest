@@ -60,6 +60,7 @@ const mockEmails: EmailCard[] = [
 export function Responses() {
   const { language } = useLanguage();
   const [emailCards, setEmailCards] = useState<EmailCard[]>(mockEmails);
+  const [emails, setEmails] = useState<EmailCard[]>(mockEmails);
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
   const [draggedEmail, setDraggedEmail] = useState<EmailCard | null>(null);
   const [completedMeetings, setCompletedMeetings] = useState<Set<string>>(new Set());
