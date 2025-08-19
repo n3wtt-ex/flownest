@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Filter, Mail, Phone, Building2, Edit, Trash2, Users, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Contact, Company } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export function Contacts() {
+  const { t, language } = useLanguage();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
@@ -81,7 +83,7 @@ export function Contacts() {
       loadContacts();
     } catch (error) {
       console.error('Error adding contact:', error);
-      alert('Kişi eklenirken hata oluştu!');
+      alert(language === 'tr' ? 'Kişi eklenirken hata oluştu!' : 'Error adding contact!');
     }
   };
 
@@ -110,12 +112,16 @@ export function Contacts() {
       loadContacts();
     } catch (error) {
       console.error('Error updating contact:', error);
-      alert('Kişi güncellenirken hata oluştu!');
+      alert(language === 'tr' ? 'Kişi güncellenirken hata oluştu!' : 'Error updating contact!');
     }
   };
 
   const handleDeleteContact = async (contact: Contact) => {
-    if (!confirm(`${contact.full_name} kişisini silmek istediğinizden emin misiniz?`)) {
+    const confirmMessage = language === 'tr' 
+      ? `${contact.full_name} kişisini silmek istediğinizden emin misiniz?`
+      : `Are you sure you want to delete ${contact.full_name}?`;
+      
+    if (!confirm(confirmMessage)) {
       return;
     }
 
@@ -130,7 +136,7 @@ export function Contacts() {
       loadContacts();
     } catch (error) {
       console.error('Error deleting contact:', error);
-      alert('Kişi silinirken hata oluştu!');
+      alert(language === 'tr' ? 'Kişi silinirken hata oluştu!' : 'Error deleting contact!');
     }
   };
 
@@ -183,10 +189,10 @@ export function Contacts() {
 
   const getStageLabel = (stage: string) => {
     switch (stage) {
-      case 'lead': return 'Lead';
-      case 'MQL': return 'MQL';
-      case 'SQL': return 'SQL';
-      case 'customer': return 'Müşteri';
+      case 'lead': return t('crm.contacts.lead');
+      case 'MQL': return t('crm.contacts.mql');
+      case 'SQL': return t('crm.contacts.sql');
+      case 'customer': return t('crm.contacts.customer');
       default: return stage;
     }
   };
@@ -211,116 +217,116 @@ export function Contacts() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Kişiler</h1>
-          <p className="text-gray-600">{contacts.length} toplam kişi</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('crm.contacts.title')}</h1>
+          <p className="text-gray-600 dark:text-gray-300">{contacts.length} {t('crm.contacts.total')}</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Yeni Kişi
+          {t('crm.contacts.addNew')}
         </button>
       </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-300" />
           <input
             type="text"
-            placeholder="Kişi, e-posta veya şirket ara..."
+            placeholder={t('crm.contacts.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
           />
         </div>
         <select
           value={selectedStage}
           onChange={(e) => setSelectedStage(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
         >
-          <option value="all">Tüm Aşamalar</option>
-          <option value="lead">Lead</option>
-          <option value="MQL">MQL</option>
-          <option value="SQL">SQL</option>
-          <option value="customer">Müşteri</option>
+          <option value="all">{t('crm.contacts.allStages')}</option>
+          <option value="lead">{t('crm.contacts.lead')}</option>
+          <option value="MQL">{t('crm.contacts.mql')}</option>
+          <option value="SQL">{t('crm.contacts.sql')}</option>
+          <option value="customer">{t('crm.contacts.customer')}</option>
         </select>
       </div>
 
       {/* Contacts Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Kişi
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.contacts.table.contact')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Şirket
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.contacts.table.company')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Aşama
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.contacts.table.stage')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  İletişim
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.contacts.table.contactInfo')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Oluşturulma
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.contacts.table.created')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  İşlemler
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.contacts.table.actions')}
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
               {filteredContacts.map((contact) => (
-                <tr key={contact.id} className="hover:bg-gray-50">
+                <tr key={contact.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {contact.full_name || 'İsimsiz'}
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {contact.full_name || t('general.name')}
                       </div>
-                      <div className="text-sm text-gray-500">{contact.email}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-300">{contact.email}</div>
                       {contact.title && (
-                        <div className="text-xs text-gray-400">{contact.title}</div>
+                        <div className="text-xs text-gray-400 dark:text-gray-400">{contact.title}</div>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <Building2 className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-sm text-gray-900">
+                      <Building2 className="w-4 h-4 text-gray-400 mr-2 dark:text-gray-300" />
+                      <span className="text-sm text-gray-900 dark:text-white">
                         {contact.companies?.name || 'Belirtilmemiş'}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStageColor(contact.lifecycle_stage)}`}>
+                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStageColor(contact.lifecycle_stage)} dark:bg-gray-600 dark:text-white`}>
                       {getStageLabel(contact.lifecycle_stage)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-2">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                      {contact.phone && <Phone className="w-4 h-4 text-gray-400" />}
+                      <Mail className="w-4 h-4 text-gray-400 dark:text-gray-300" />
+                      {contact.phone && <Phone className="w-4 h-4 text-gray-400 dark:text-gray-300" />}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(contact.created_at).toLocaleDateString('tr-TR')}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                    {new Date(contact.created_at).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
                       <button 
                         onClick={() => openEditModal(contact)}
-                        className="text-blue-600 hover:text-blue-900"
+                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDeleteContact(contact)}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -335,19 +341,19 @@ export function Contacts() {
 
       {filteredContacts.length === 0 && (
         <div className="text-center py-12">
-          <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Kişi bulunamadı</h3>
-          <p className="text-gray-600 mb-4">
+          <Users className="w-12 h-12 text-gray-400 mx-auto mb-4 dark:text-gray-300" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2 dark:text-white">{t('crm.contacts.noContacts')}</h3>
+          <p className="text-gray-600 mb-4 dark:text-gray-300">
             {searchTerm || selectedStage !== 'all' 
-              ? 'Arama kriterlerinize uygun kişi bulunamadı.'
-              : 'Henüz hiç kişi eklenmemiş.'}
+              ? t('crm.contacts.noContactsSearch')
+              : t('crm.contacts.noContactsYet')}
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
           >
             <Plus className="w-4 h-4 mr-2" />
-            İlk Kişiyi Ekle
+            {t('crm.contacts.addFirst')}
           </button>
         </div>
       )}
@@ -355,12 +361,12 @@ export function Contacts() {
       {/* Add Contact Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Yeni Kişi Ekle</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('crm.contacts.addContact')}</h2>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -368,65 +374,65 @@ export function Contacts() {
 
             <form onSubmit={(e) => { e.preventDefault(); handleAddContact(); }} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ad Soyad *
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.fullName')} *
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.full_name}
                   onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  E-posta *
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.email')} *
                 </label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefon
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.phone')}
                 </label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pozisyon
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.titleField')}
                 </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Şirket
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.company')}
                 </label>
                 <select
                   value={formData.company_id}
                   onChange={(e) => setFormData({...formData, company_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="">Şirket Seçin</option>
+                  <option value="">{t('crm.contacts.company')} {t('general.select')}</option>
                   {companies.map(company => (
                     <option key={company.id} value={company.id}>
                       {company.name}
@@ -436,30 +442,30 @@ export function Contacts() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Aşama
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.stage')}
                 </label>
                 <select
                   value={formData.lifecycle_stage}
                   onChange={(e) => setFormData({...formData, lifecycle_stage: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="lead">Lead</option>
-                  <option value="MQL">MQL</option>
-                  <option value="SQL">SQL</option>
-                  <option value="customer">Müşteri</option>
+                  <option value="lead">{t('crm.contacts.lead')}</option>
+                  <option value="MQL">{t('crm.contacts.mql')}</option>
+                  <option value="SQL">{t('crm.contacts.sql')}</option>
+                  <option value="customer">{t('crm.contacts.customer')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Notlar
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.notes')}
                 </label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({...formData, notes: e.target.value})}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
@@ -467,15 +473,15 @@ export function Contacts() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
                 >
-                  İptal
+                  {t('crm.contacts.cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
                 >
-                  Kaydet
+                  {t('crm.contacts.save')}
                 </button>
               </div>
             </form>
@@ -486,12 +492,12 @@ export function Contacts() {
       {/* Edit Contact Modal */}
       {showEditModal && editingContact && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Kişiyi Düzenle</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('crm.contacts.editContact')}</h2>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -499,65 +505,65 @@ export function Contacts() {
 
             <form onSubmit={(e) => { e.preventDefault(); handleEditContact(); }} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Ad Soyad *
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.fullName')} *
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.full_name}
                   onChange={(e) => setFormData({...formData, full_name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  E-posta *
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.email')} *
                 </label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefon
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.phone')}
                 </label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pozisyon
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.titleField')}
                 </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Şirket
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.company')}
                 </label>
                 <select
                   value={formData.company_id}
                   onChange={(e) => setFormData({...formData, company_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="">Şirket Seçin</option>
+                  <option value="">{t('crm.contacts.company')} {t('general.select')}</option>
                   {companies.map(company => (
                     <option key={company.id} value={company.id}>
                       {company.name}
@@ -567,30 +573,30 @@ export function Contacts() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Aşama
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.stage')}
                 </label>
                 <select
                   value={formData.lifecycle_stage}
                   onChange={(e) => setFormData({...formData, lifecycle_stage: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="lead">Lead</option>
-                  <option value="MQL">MQL</option>
-                  <option value="SQL">SQL</option>
-                  <option value="customer">Müşteri</option>
+                  <option value="lead">{t('crm.contacts.lead')}</option>
+                  <option value="MQL">{t('crm.contacts.mql')}</option>
+                  <option value="SQL">{t('crm.contacts.sql')}</option>
+                  <option value="customer">{t('crm.contacts.customer')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Notlar
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.contacts.notes')}
                 </label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({...formData, notes: e.target.value})}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
@@ -598,15 +604,15 @@ export function Contacts() {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
                 >
-                  İptal
+                  {t('crm.contacts.cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
                 >
-                  Güncelle
+                  {t('crm.contacts.update')}
                 </button>
               </div>
             </form>

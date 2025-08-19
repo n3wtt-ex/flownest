@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, DollarSign, Calendar, User, Building2, Edit, Trash2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Deal, PipelineStage, Contact, Company } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export function Deals() {
+  const { t, language } = useLanguage();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [stages, setStages] = useState<PipelineStage[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -129,7 +131,7 @@ export function Deals() {
       loadDeals();
     } catch (error) {
       console.error('Error adding deal:', error);
-      alert('Fırsat eklenirken hata oluştu!');
+      alert(language === 'tr' ? 'Fırsat eklenirken hata oluştu!' : 'Error adding deal!');
     }
   };
 
@@ -161,12 +163,16 @@ export function Deals() {
       loadDeals();
     } catch (error) {
       console.error('Error updating deal:', error);
-      alert('Fırsat güncellenirken hata oluştu!');
+      alert(language === 'tr' ? 'Fırsat güncellenirken hata oluştu!' : 'Error updating deal!');
     }
   };
 
   const handleDeleteDeal = async (deal: Deal) => {
-    if (!confirm(`${deal.title} fırsatını silmek istediğinizden emin misiniz?`)) {
+    const confirmMessage = language === 'tr' 
+      ? `${deal.title} fırsatını silmek istediğinizden emin misiniz?`
+      : `Are you sure you want to delete ${deal.title}?`;
+      
+    if (!confirm(confirmMessage)) {
       return;
     }
 
@@ -181,7 +187,7 @@ export function Deals() {
       loadDeals();
     } catch (error) {
       console.error('Error deleting deal:', error);
-      alert('Fırsat silinirken hata oluştu!');
+      alert(language === 'tr' ? 'Fırsat silinirken hata oluştu!' : 'Error deleting deal!');
     }
   };
 
@@ -239,9 +245,9 @@ export function Deals() {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'open': return 'Aktif';
-      case 'won': return 'Kazanıldı';
-      case 'lost': return 'Kaybedildi';
+      case 'open': return t('crm.deals.status.open');
+      case 'won': return t('crm.deals.status.won');
+      case 'lost': return t('crm.deals.status.lost');
       default: return status;
     }
   };
@@ -270,50 +276,50 @@ export function Deals() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Fırsatlar</h1>
-          <p className="text-gray-600">{deals.length} toplam fırsat</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('crm.deals.title')}</h1>
+          <p className="text-gray-600 dark:text-gray-300">{deals.length} {t('crm.deals.total')}</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Yeni Fırsat
+          {t('crm.deals.addNew')}
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-blue-600" />
+            <div className="p-2 bg-blue-100 rounded-lg dark:bg-blue-900/30">
+              <DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Toplam Değer</p>
-              <p className="text-2xl font-bold text-gray-900">${totalValue.toLocaleString()}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('crm.deals.stats.totalValue')}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">${totalValue.toLocaleString()}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-green-600" />
+            <div className="p-2 bg-green-100 rounded-lg dark:bg-green-900/30">
+              <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Aktif Fırsatlar</p>
-              <p className="text-2xl font-bold text-gray-900">{openDeals.length}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('crm.deals.stats.active')}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{openDeals.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-purple-600" />
+            <div className="p-2 bg-purple-100 rounded-lg dark:bg-purple-900/30">
+              <DollarSign className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Kazanılan</p>
-              <p className="text-2xl font-bold text-gray-900">{wonDeals.length}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('crm.deals.stats.won')}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{wonDeals.length}</p>
             </div>
           </div>
         </div>
@@ -322,78 +328,80 @@ export function Deals() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-300" />
           <input
             type="text"
-            placeholder="Fırsat, kişi veya şirket ara..."
+            placeholder={t('crm.deals.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
           />
         </div>
         <select
           value={selectedStatus}
           onChange={(e) => setSelectedStatus(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
         >
-          <option value="all">Tüm Durumlar</option>
-          <option value="open">Aktif</option>
-          <option value="won">Kazanıldı</option>
-          <option value="lost">Kaybedildi</option>
+          <option value="all">{t('crm.deals.allStatuses')}</option>
+          <option value="open">{t('crm.deals.status.open')}</option>
+          <option value="won">{t('crm.deals.status.won')}</option>
+          <option value="lost">{t('crm.deals.status.lost')}</option>
         </select>
       </div>
 
       {/* Deals Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fırsat
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.deals.table.deal')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Kişi/Şirket
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.deals.table.contactCompany')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Aşama
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.deals.table.stage')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Değer
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.deals.table.value')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Durum
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.deals.table.status')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Kapanış Tarihi
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.deals.table.closeDate')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  İşlemler
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  {t('crm.deals.table.actions')}
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
               {filteredDeals.map((deal) => (
-                <tr key={deal.id} className="hover:bg-gray-50">
+                <tr key={deal.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm font-medium text-gray-900">{deal.title}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">{deal.title}</div>
                       {deal.source && (
-                        <div className="text-xs text-gray-500">Kaynak: {deal.source}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-300">
+                          {t('crm.deals.source')}: {deal.source}
+                        </div>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       {deal.contacts && (
-                        <div className="flex items-center text-sm text-gray-900">
-                          <User className="w-4 h-4 text-gray-400 mr-2" />
+                        <div className="flex items-center text-sm text-gray-900 dark:text-white">
+                          <User className="w-4 h-4 text-gray-400 mr-2 dark:text-gray-300" />
                           {deal.contacts.full_name}
                         </div>
                       )}
                       {deal.companies && (
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Building2 className="w-4 h-4 text-gray-400 mr-2" />
+                        <div className="flex items-center text-sm text-gray-500 dark:text-gray-300">
+                          <Building2 className="w-4 h-4 text-gray-400 mr-2 dark:text-gray-300" />
                           {deal.companies.name}
                         </div>
                       )}
@@ -401,46 +409,48 @@ export function Deals() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <div className="text-sm text-gray-900">{deal.pipeline_stages?.name || 'Belirtilmemiş'}</div>
+                      <div className="text-sm text-gray-900 dark:text-white">
+                        {deal.pipeline_stages?.name || t('crm.deals.stage.notSpecified')}
+                      </div>
                       {deal.pipeline_stages?.probability && (
-                        <div className="text-xs text-gray-500">
-                          {deal.pipeline_stages.probability}% olasılık
+                        <div className="text-xs text-gray-500 dark:text-gray-300">
+                          {deal.pipeline_stages.probability}% {t('crm.deals.stage.probability')}
                         </div>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white">
                       ${deal.amount?.toLocaleString() || '0'}
                     </div>
-                    <div className="text-xs text-gray-500">{deal.currency}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-300">{deal.currency}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(deal.status)}`}>
+                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(deal.status)} dark:bg-gray-600 dark:text-white`}>
                       {getStatusLabel(deal.status)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                     {deal.close_date ? (
                       <div className="flex items-center">
-                        <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                        {new Date(deal.close_date).toLocaleDateString('tr-TR')}
+                        <Calendar className="w-4 h-4 mr-2 text-gray-400 dark:text-gray-300" />
+                        {new Date(deal.close_date).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}
                       </div>
                     ) : (
-                      'Belirtilmemiş'
+                      t('crm.deals.closeDate.notSpecified')
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
                       <button 
                         onClick={() => openEditModal(deal)}
-                        className="text-blue-600 hover:text-blue-900"
+                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDeleteDeal(deal)}
-                        className="text-red-600 hover:text-red-900"
+                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -455,19 +465,19 @@ export function Deals() {
 
       {filteredDeals.length === 0 && (
         <div className="text-center py-12">
-          <DollarSign className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Fırsat bulunamadı</h3>
-          <p className="text-gray-600 mb-4">
+          <DollarSign className="w-12 h-12 text-gray-400 mx-auto mb-4 dark:text-gray-300" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2 dark:text-white">{t('crm.deals.noDeals')}</h3>
+          <p className="text-gray-600 mb-4 dark:text-gray-300">
             {searchTerm || selectedStatus !== 'all' 
-              ? 'Arama kriterlerinize uygun fırsat bulunamadı.'
-              : 'Henüz hiç fırsat eklenmemiş.'}
+              ? t('crm.deals.noDealsSearch')
+              : t('crm.deals.noDealsYet')}
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
           >
             <Plus className="w-4 h-4 mr-2" />
-            İlk Fırsatı Ekle
+            {t('crm.deals.addFirst')}
           </button>
         </div>
       )}
@@ -475,12 +485,12 @@ export function Deals() {
       {/* Add Deal Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto dark:bg-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Yeni Fırsat Ekle</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('crm.deals.addDeal')}</h2>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -488,39 +498,39 @@ export function Deals() {
 
             <form onSubmit={(e) => { e.preventDefault(); handleAddDeal(); }} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Fırsat Başlığı *
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.title')} *
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Değer
+                  <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                    {t('crm.deals.value')}
                   </label>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.amount}
                     onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Para Birimi
+                  <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                    {t('crm.deals.currency')}
                   </label>
                   <select
                     value={formData.currency}
                     onChange={(e) => setFormData({...formData, currency: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   >
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
@@ -530,15 +540,15 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kişi
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.contact')}
                 </label>
                 <select
                   value={formData.contact_id}
                   onChange={(e) => setFormData({...formData, contact_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="">Kişi Seçin</option>
+                  <option value="">{t('crm.deals.contact.select')}</option>
                   {contacts.map(contact => (
                     <option key={contact.id} value={contact.id}>
                       {contact.full_name} ({contact.email})
@@ -548,15 +558,15 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Şirket
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.company')}
                 </label>
                 <select
                   value={formData.company_id}
                   onChange={(e) => setFormData({...formData, company_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="">Şirket Seçin</option>
+                  <option value="">{t('crm.deals.company.select')}</option>
                   {companies.map(company => (
                     <option key={company.id} value={company.id}>
                       {company.name}
@@ -566,15 +576,15 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pipeline Aşaması
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.stage')}
                 </label>
                 <select
                   value={formData.pipeline_stage_id}
                   onChange={(e) => setFormData({...formData, pipeline_stage_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="">Aşama Seçin</option>
+                  <option value="">{t('crm.deals.stage.select')}</option>
                   {stages.map(stage => (
                     <option key={stage.id} value={stage.id}>
                       {stage.name} ({stage.probability}%)
@@ -584,54 +594,54 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kapanış Tarihi
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.closeDate')}
                 </label>
                 <input
                   type="date"
                   value={formData.close_date}
                   onChange={(e) => setFormData({...formData, close_date: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Durum
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.status.label')}
                 </label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="open">Aktif</option>
-                  <option value="won">Kazanıldı</option>
-                  <option value="lost">Kaybedildi</option>
+                  <option value="open">{t('crm.deals.status.open')}</option>
+                  <option value="won">{t('crm.deals.status.won')}</option>
+                  <option value="lost">{t('crm.deals.status.lost')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kaynak
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.source')}
                 </label>
                 <input
                   type="text"
                   value={formData.source}
                   onChange={(e) => setFormData({...formData, source: e.target.value})}
-                  placeholder="Website, Referans, vb."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('crm.deals.source.placeholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Açıklama
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
@@ -639,15 +649,15 @@ export function Deals() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
                 >
-                  İptal
+                  {t('crm.deals.cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
                 >
-                  Kaydet
+                  {t('crm.deals.save')}
                 </button>
               </div>
             </form>
@@ -658,12 +668,12 @@ export function Deals() {
       {/* Edit Deal Modal */}
       {showEditModal && editingDeal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto dark:bg-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Fırsatı Düzenle</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('crm.deals.editDeal')}</h2>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -671,39 +681,39 @@ export function Deals() {
 
             <form onSubmit={(e) => { e.preventDefault(); handleEditDeal(); }} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Fırsat Başlığı *
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.title')} *
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Değer
+                  <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                    {t('crm.deals.value')}
                   </label>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.amount}
                     onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Para Birimi
+                  <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                    {t('crm.deals.currency')}
                   </label>
                   <select
                     value={formData.currency}
                     onChange={(e) => setFormData({...formData, currency: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   >
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
@@ -713,15 +723,15 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kişi
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.contact')}
                 </label>
                 <select
                   value={formData.contact_id}
                   onChange={(e) => setFormData({...formData, contact_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="">Kişi Seçin</option>
+                  <option value="">{t('crm.deals.contact.select')}</option>
                   {contacts.map(contact => (
                     <option key={contact.id} value={contact.id}>
                       {contact.full_name} ({contact.email})
@@ -731,15 +741,15 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Şirket
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.company')}
                 </label>
                 <select
                   value={formData.company_id}
                   onChange={(e) => setFormData({...formData, company_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="">Şirket Seçin</option>
+                  <option value="">{t('crm.deals.company.select')}</option>
                   {companies.map(company => (
                     <option key={company.id} value={company.id}>
                       {company.name}
@@ -749,15 +759,15 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Pipeline Aşaması
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.stage')}
                 </label>
                 <select
                   value={formData.pipeline_stage_id}
                   onChange={(e) => setFormData({...formData, pipeline_stage_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="">Aşama Seçin</option>
+                  <option value="">{t('crm.deals.stage.select')}</option>
                   {stages.map(stage => (
                     <option key={stage.id} value={stage.id}>
                       {stage.name} ({stage.probability}%)
@@ -767,54 +777,54 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kapanış Tarihi
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.closeDate')}
                 </label>
                 <input
                   type="date"
                   value={formData.close_date}
                   onChange={(e) => setFormData({...formData, close_date: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Durum
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.status.label')}
                 </label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
-                  <option value="open">Aktif</option>
-                  <option value="won">Kazanıldı</option>
-                  <option value="lost">Kaybedildi</option>
+                  <option value="open">{t('crm.deals.status.open')}</option>
+                  <option value="won">{t('crm.deals.status.won')}</option>
+                  <option value="lost">{t('crm.deals.status.lost')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kaynak
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.source')}
                 </label>
                 <input
                   type="text"
                   value={formData.source}
                   onChange={(e) => setFormData({...formData, source: e.target.value})}
-                  placeholder="Website, Referans, vb."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('crm.deals.source.placeholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Açıklama
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.deals.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
@@ -822,15 +832,15 @@ export function Deals() {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
                 >
-                  İptal
+                  {t('crm.deals.cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
                 >
-                  Güncelle
+                  {t('crm.deals.update')}
                 </button>
               </div>
             </form>

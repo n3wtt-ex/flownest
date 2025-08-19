@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Search, Building2, Globe, MapPin, Users, Edit, Trash2, X } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { Company } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 export function Companies() {
+  const { t, language } = useLanguage();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -63,7 +65,7 @@ export function Companies() {
       loadCompanies();
     } catch (error) {
       console.error('Error adding company:', error);
-      alert('Şirket eklenirken hata oluştu!');
+      alert(language === 'tr' ? 'Şirket eklenirken hata oluştu!' : 'Error adding company!');
     }
   };
 
@@ -93,12 +95,16 @@ export function Companies() {
       loadCompanies();
     } catch (error) {
       console.error('Error updating company:', error);
-      alert('Şirket güncellenirken hata oluştu!');
+      alert(language === 'tr' ? 'Şirket güncellenirken hata oluştu!' : 'Error updating company!');
     }
   };
 
   const handleDeleteCompany = async (company: Company) => {
-    if (!confirm(`${company.name} şirketini silmek istediğinizden emin misiniz?`)) {
+    const confirmMessage = language === 'tr' 
+      ? `${company.name} şirketini silmek istediğinizden emin misiniz?`
+      : `Are you sure you want to delete ${company.name}?`;
+      
+    if (!confirm(confirmMessage)) {
       return;
     }
 
@@ -113,7 +119,7 @@ export function Companies() {
       loadCompanies();
     } catch (error) {
       console.error('Error deleting company:', error);
-      alert('Şirket silinirken hata oluştu!');
+      alert(language === 'tr' ? 'Şirket silinirken hata oluştu!' : 'Error deleting company!');
     }
   };
 
@@ -171,28 +177,28 @@ export function Companies() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Şirketler</h1>
-          <p className="text-gray-600">{companies.length} toplam şirket</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('crm.companies.title')}</h1>
+          <p className="text-gray-600 dark:text-gray-300">{companies.length} {t('crm.companies.total')}</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Yeni Şirket
+          {t('crm.companies.addNew')}
         </button>
       </div>
 
       {/* Search */}
       <div className="mb-6">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-300" />
           <input
             type="text"
-            placeholder="Şirket adı, domain veya sektör ara..."
+            placeholder={t('crm.companies.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
           />
         </div>
       </div>
@@ -200,29 +206,29 @@ export function Companies() {
       {/* Companies Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredCompanies.map((company) => (
-          <div key={company.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div key={company.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <Building2 className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center dark:bg-blue-900/30">
+                  <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-lg font-semibold text-gray-900">{company.name}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{company.name}</h3>
                   {company.domain && (
-                    <p className="text-sm text-gray-500">{company.domain}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-300">{company.domain}</p>
                   )}
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <button 
                   onClick={() => openEditModal(company)}
-                  className="text-gray-400 hover:text-blue-600"
+                  className="text-gray-400 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
                 >
                   <Edit className="w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => handleDeleteCompany(company)}
-                  className="text-gray-400 hover:text-red-600"
+                  className="text-gray-400 hover:text-red-600 dark:text-gray-300 dark:hover:text-red-400"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -232,34 +238,34 @@ export function Companies() {
             <div className="space-y-3">
               {company.industry && (
                 <div className="flex items-center text-sm text-gray-600">
-                  <span className="inline-flex px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full">
+                  <span className="inline-flex px-2 py-1 bg-gray-100 text-gray-800 text-xs font-medium rounded-full dark:bg-gray-700 dark:text-gray-300">
                     {company.industry}
                   </span>
                 </div>
               )}
 
               {company.location && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                  <MapPin className="w-4 h-4 mr-2 text-gray-400 dark:text-gray-300" />
                   {company.location}
                 </div>
               )}
 
               {company.size && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <Users className="w-4 h-4 mr-2 text-gray-400" />
-                  {company.size} çalışan
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                  <Users className="w-4 h-4 mr-2 text-gray-400 dark:text-gray-300" />
+                  {company.size} {t('crm.companies.employees')}
                 </div>
               )}
 
               {company.website && (
                 <div className="flex items-center text-sm text-gray-600">
-                  <Globe className="w-4 h-4 mr-2 text-gray-400" />
+                  <Globe className="w-4 h-4 mr-2 text-gray-400 dark:text-gray-300" />
                   <a 
                     href={company.website} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 truncate"
+                    className="text-blue-600 hover:text-blue-800 truncate dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     {company.website.replace(/^https?:\/\//, '')}
                   </a>
@@ -267,9 +273,9 @@ export function Companies() {
               )}
             </div>
 
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-xs text-gray-500">
-                Oluşturulma: {new Date(company.created_at).toLocaleDateString('tr-TR')}
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {t('crm.companies.created')}: {new Date(company.created_at).toLocaleDateString(language === 'tr' ? 'tr-TR' : 'en-US')}
               </p>
             </div>
           </div>
@@ -278,19 +284,19 @@ export function Companies() {
 
       {filteredCompanies.length === 0 && (
         <div className="text-center py-12">
-          <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Şirket bulunamadı</h3>
-          <p className="text-gray-600 mb-4">
+          <Building2 className="w-12 h-12 text-gray-400 mx-auto mb-4 dark:text-gray-300" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2 dark:text-white">{t('crm.companies.noCompanies')}</h3>
+          <p className="text-gray-600 mb-4 dark:text-gray-300">
             {searchTerm 
-              ? 'Arama kriterlerinize uygun şirket bulunamadı.'
-              : 'Henüz hiç şirket eklenmemiş.'}
+              ? t('crm.companies.noCompaniesSearch')
+              : t('crm.companies.noCompaniesYet')}
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
           >
             <Plus className="w-4 h-4 mr-2" />
-            İlk Şirketi Ekle
+            {t('crm.companies.addFirst')}
           </button>
         </div>
       )}
@@ -298,12 +304,12 @@ export function Companies() {
       {/* Add Company Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto dark:bg-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Yeni Şirket Ekle</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('crm.companies.addCompany')}</h2>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -311,102 +317,102 @@ export function Companies() {
 
             <form onSubmit={(e) => { e.preventDefault(); handleAddCompany(); }} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Şirket Adı *
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.name')} *
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Domain
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.domain')}
                 </label>
                 <input
                   type="text"
                   value={formData.domain}
                   onChange={(e) => setFormData({...formData, domain: e.target.value})}
-                  placeholder="örn: company.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('crm.companies.domainPlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sektör
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.industry')}
                 </label>
                 <input
                   type="text"
                   value={formData.industry}
                   onChange={(e) => setFormData({...formData, industry: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Konum
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.location')}
                 </label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Çalışan Sayısı
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.size')}
                 </label>
                 <input
                   type="text"
                   value={formData.size}
                   onChange={(e) => setFormData({...formData, size: e.target.value})}
-                  placeholder="örn: 50, 1-10, 100+"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('crm.companies.sizePlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Website
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.website')}
                 </label>
                 <input
                   type="url"
                   value={formData.website}
                   onChange={(e) => setFormData({...formData, website: e.target.value})}
-                  placeholder="https://www.company.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('crm.companies.websitePlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefon
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.phone')}
                 </label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Açıklama
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
@@ -414,15 +420,15 @@ export function Companies() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
                 >
-                  İptal
+                  {t('crm.companies.cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
                 >
-                  Kaydet
+                  {t('crm.companies.save')}
                 </button>
               </div>
             </form>
@@ -433,12 +439,12 @@ export function Companies() {
       {/* Edit Company Modal */}
       {showEditModal && editingCompany && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto dark:bg-gray-800">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Şirketi Düzenle</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('crm.companies.editCompany')}</h2>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -446,102 +452,102 @@ export function Companies() {
 
             <form onSubmit={(e) => { e.preventDefault(); handleEditCompany(); }} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Şirket Adı *
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.name')} *
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Domain
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.domain')}
                 </label>
                 <input
                   type="text"
                   value={formData.domain}
                   onChange={(e) => setFormData({...formData, domain: e.target.value})}
-                  placeholder="örn: company.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('crm.companies.domainPlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sektör
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.industry')}
                 </label>
                 <input
                   type="text"
                   value={formData.industry}
                   onChange={(e) => setFormData({...formData, industry: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Konum
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.location')}
                 </label>
                 <input
                   type="text"
                   value={formData.location}
                   onChange={(e) => setFormData({...formData, location: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Çalışan Sayısı
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.size')}
                 </label>
                 <input
                   type="text"
                   value={formData.size}
                   onChange={(e) => setFormData({...formData, size: e.target.value})}
-                  placeholder="örn: 50, 1-10, 100+"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('crm.companies.sizePlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Website
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.website')}
                 </label>
                 <input
                   type="url"
                   value={formData.website}
                   onChange={(e) => setFormData({...formData, website: e.target.value})}
-                  placeholder="https://www.company.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t('crm.companies.websitePlaceholder')}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefon
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.phone')}
                 </label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Açıklama
+                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                  {t('crm.companies.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
@@ -549,15 +555,15 @@ export function Companies() {
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
                 >
-                  İptal
+                  {t('crm.companies.cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
                 >
-                  Güncelle
+                  {t('crm.companies.update')}
                 </button>
               </div>
             </form>
