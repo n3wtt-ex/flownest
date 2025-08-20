@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 
 interface SelectedTool {
@@ -8,9 +8,10 @@ interface SelectedTool {
 
 interface ConnectionLinesProps {
   selectedTools: { [key: string]: SelectedTool };
+  containerDimensions?: { width: number; height: number };
 }
 
-export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
+export function ConnectionLines({ selectedTools, containerDimensions = { width: 800, height: 480 } }: ConnectionLinesProps) {
   const toolEntries = Object.entries(selectedTools);
   if (toolEntries.length < 2) return null;
 
@@ -20,47 +21,14 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
     .map(agent => toolEntries.find(([key]) => key === agent))
     .filter(Boolean) as [string, SelectedTool][];
 
-  const BOARD_WIDTH = 800;
-  const BOARD_HEIGHT = 480; // %20 küçültüldü
   const ICON_SIZE = 80; // HexIcon large size
   const ICON_CENTER_OFFSET = ICON_SIZE / 2; // İkonun merkez noktası için offset
-  
-  // Container boyutunu dinamik olarak almak için state
-  const [containerBounds, setContainerBounds] = useState({ width: BOARD_WIDTH, height: BOARD_HEIGHT });
-
-  // Container boyutunu izlemek için effect
-  useEffect(() => {
-    const updateContainerBounds = () => {
-      // SVG container'ını bul (workspace main area)
-      const workspaceMain = document.querySelector('.w-4\\/5.relative.overflow-hidden');
-      if (workspaceMain) {
-        const rect = workspaceMain.getBoundingClientRect();
-        setContainerBounds({ 
-          width: Math.max(rect.width, BOARD_WIDTH), 
-          height: Math.max(rect.height, BOARD_HEIGHT) 
-        });
-      }
-    };
-
-    // İlk yükleme ve resize durumlarında güncelle
-    updateContainerBounds();
-    window.addEventListener('resize', updateContainerBounds);
-    
-    // MutationObserver ile DOM değişikliklerini izle (sidebar toggle için)
-    const observer = new MutationObserver(updateContainerBounds);
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-    
-    return () => {
-      window.removeEventListener('resize', updateContainerBounds);
-      observer.disconnect();
-    };
-  }, []);
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
       <svg 
         className="w-full h-full" 
-        viewBox={`0 0 ${containerBounds.width} ${containerBounds.height}`} 
+        viewBox={`0 0 ${containerDimensions.width} ${containerDimensions.height}`} 
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
@@ -71,7 +39,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
             <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.8" />
           </linearGradient>
           
-          {/* Enhanced glow effect for zigzag */}
+          {/* Enhanced glow effect */}
           <filter id="connectionGlow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="4" result="coloredBlur" />
             <feMerge>
@@ -103,19 +71,16 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Container boyutuna göre scale faktörü hesapla
-          const scaleX = containerBounds.width / BOARD_WIDTH;
-          const scaleY = containerBounds.height / BOARD_HEIGHT;
-          
-          // İkonların merkez noktalarını hesapla (scaled koordinat sistemi)
-          const startX = (toolData.position.x + ICON_CENTER_OFFSET) * scaleX;
-          const startY = (toolData.position.y + ICON_CENTER_OFFSET) * scaleY;
-          const endX = (nextToolData.position.x + ICON_CENTER_OFFSET) * scaleX;
-          const endY = (nextToolData.position.y + ICON_CENTER_OFFSET) * scaleY;
+          // İkonların merkez noktalarını hesapla (doğrudan pozisyon + center offset)
+          const startX = toolData.position.x + ICON_CENTER_OFFSET;
+          const startY = toolData.position.y + ICON_CENTER_OFFSET;
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
+          const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           
+          // Curve control points
           const controlOffset = Math.abs(deltaY) * 0.6; 
           const control1X = startX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
@@ -152,15 +117,11 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Container boyutuna göre scale faktörü hesapla
-          const scaleX = containerBounds.width / BOARD_WIDTH;
-          const scaleY = containerBounds.height / BOARD_HEIGHT;
-          
-          // İkonların merkez noktalarını hesapla (scaled koordinat sistemi)
-          const startX = (toolData.position.x + ICON_CENTER_OFFSET) * scaleX;
-          const startY = (toolData.position.y + ICON_CENTER_OFFSET) * scaleY;
-          const endX = (nextToolData.position.x + ICON_CENTER_OFFSET) * scaleX;
-          const endY = (nextToolData.position.y + ICON_CENTER_OFFSET) * scaleY;
+          // İkonların merkez noktalarını hesapla
+          const startX = toolData.position.x + ICON_CENTER_OFFSET;
+          const startY = toolData.position.y + ICON_CENTER_OFFSET;
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
+          const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -198,15 +159,11 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Container boyutuna göre scale faktörü hesapla
-          const scaleX = containerBounds.width / BOARD_WIDTH;
-          const scaleY = containerBounds.height / BOARD_HEIGHT;
-          
-          // İkonların merkez noktalarını hesapla (scaled koordinat sistemi)
-          const startX = (toolData.position.x + ICON_CENTER_OFFSET) * scaleX;
-          const startY = (toolData.position.y + ICON_CENTER_OFFSET) * scaleY;
-          const endX = (nextToolData.position.x + ICON_CENTER_OFFSET) * scaleX;
-          const endY = (nextToolData.position.y + ICON_CENTER_OFFSET) * scaleY;
+          // İkonların merkez noktalarını hesapla
+          const startX = toolData.position.x + ICON_CENTER_OFFSET;
+          const startY = toolData.position.y + ICON_CENTER_OFFSET;
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
+          const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -224,7 +181,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
                 r="3"
                 fill="#06b6d4"
                 opacity="0.8"
-                >
+              >
                 <animateMotion
                   dur="3s"
                   begin={`${index * 0.6 + 3}s`}
@@ -233,7 +190,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
                   keyTimes="0;1"
                   calcMode="spline"
                   keySplines="0.42 0 0.58 1"
-                  >
+                >
                   <mpath href={`#particle-path-${index}`} />
                 </animateMotion>
               </motion.circle>
@@ -241,23 +198,33 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           );
         })}
 
-        {/* Development mode: Debug points */}
+        {/* Development mode: Debug points - İkon merkezlerini göster */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
-          const scaleX = containerBounds.width / BOARD_WIDTH;
-          const scaleY = containerBounds.height / BOARD_HEIGHT;
-          
-          const adjustedX = (toolData.position.x + ICON_CENTER_OFFSET) * scaleX;
-          const adjustedY = (toolData.position.y + ICON_CENTER_OFFSET) * scaleY;
+          const centerX = toolData.position.x + ICON_CENTER_OFFSET;
+          const centerY = toolData.position.y + ICON_CENTER_OFFSET;
           
           return (
-            <circle
-              key={`debug-${agentKey}`}
-              cx={adjustedX} 
-              cy={adjustedY}
-              r="3"
-              fill="red"
-              opacity="0.8"
-            />
+            <g key={`debug-${agentKey}`}>
+              {/* İkon merkezi */}
+              <circle
+                cx={centerX} 
+                cy={centerY}
+                r="4"
+                fill="red"
+                opacity="0.8"
+              />
+              {/* İkon sınırları */}
+              <rect
+                x={toolData.position.x}
+                y={toolData.position.y}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+                fill="none"
+                stroke="orange"
+                strokeWidth="1"
+                opacity="0.5"
+              />
+            </g>
           );
         })}
       </svg>
