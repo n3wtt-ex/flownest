@@ -22,9 +22,9 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 480; // %20 küçültüldü
-  // HexIcon large size için gerçek merkez offset'leri
-  const ICON_X_OFFSET = 40; // hexSize (80) / 2
-  const ICON_Y_OFFSET = 40; // hexSize (80) / 2
+  // HexIcon large size için gerçek merkez offset'leri (SVG viewBox'e göre)
+  const ICON_X_OFFSET = 50; // SVG viewBox (0 0 100 100) merkezi
+  const ICON_Y_OFFSET = 50; // SVG viewBox (0 0 100 100) merkezi
   
   // Sidebar genişliğini dinamik olarak hesaplamak için state
   const [sidebarWidth, setSidebarWidth] = useState(0);
@@ -107,14 +107,15 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = toolData.position.x + (sidebarWidth / 2);
-          const adjustedEndX = nextToolData.position.x + (sidebarWidth / 2);
+          // İkonların merkez noktalarını hesapla
+          const startX = toolData.position.x + ICON_X_OFFSET;
+          const startY = toolData.position.y + ICON_Y_OFFSET;
+          const endX = nextToolData.position.x + ICON_X_OFFSET;
+          const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
-          const startX = adjustedStartX;
-          const startY = toolData.position.y;
-          const endX = adjustedEndX;
-          const endY = nextToolData.position.y;
+          // Sidebar genişliğine göre X koordinatlarını ayarla
+          const adjustedStartX = startX + sidebarWidth;
+          const adjustedEndX = endX + sidebarWidth;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
