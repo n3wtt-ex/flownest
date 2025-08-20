@@ -23,7 +23,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 480; // %20 küçültüldü
   // DÜZELTME: İkon merkezi offset değerlerini 16 olarak ayarla (32x32px ikonlar için)
-  const ICON_X_OFFSET = -40; // İkonun yatay merkezi (32px genişliğinde)
+  const ICON_X_OFFSET = -60; // İkonun yatay merkezi (32px genişliğinde)
   const ICON_Y_OFFSET = 16; // İkonun dikey merkezi (32px yüksekliğinde)
   
   // DÜZELTME: Sidebar genişliği ayarını kaldır - ikon koordinatları zaten viewport'a göre tanımlı
