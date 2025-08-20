@@ -1959,25 +1959,25 @@ export function Leads() {
         <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Lead Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="text-sm text-blue-800">Total Leads</div>
-              <div className="text-2xl font-bold text-blue-600">{leads.length}</div>
+            <div className="bg-blue-50 p-4 rounded-lg dark:bg-blue-900/30">
+              <div className="text-sm text-blue-800 dark:text-blue-200">Total Leads</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{leads.length}</div>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="text-sm text-green-800">Verified</div>
-              <div className="text-2xl font-bold text-green-600">
+            <div className="bg-green-50 p-4 rounded-lg dark:bg-green-900/30">
+              <div className="text-sm text-green-800 dark:text-green-200">Verified</div>
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {leads.filter(l => l.status === 'Verified').length}
               </div>
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="text-sm text-gray-800">New</div>
-              <div className="text-2xl font-bold text-gray-600">
+            <div className="bg-gray-50 p-4 rounded-lg dark:bg-gray-800">
+              <div className="text-sm text-gray-800 dark:text-gray-200">New</div>
+              <div className="text-2xl font-bold text-gray-600 dark:text-gray-400">
                 {leads.filter(l => l.status === 'New').length}
               </div>
             </div>
-            <div className="bg-red-50 p-4 rounded-lg">
-              <div className="text-sm text-red-800">Skipped</div>
-              <div className="text-2xl font-bold text-red-600">
+            <div className="bg-red-50 p-4 rounded-lg dark:bg-red-900/30">
+              <div className="text-sm text-red-800 dark:text-red-200">Skipped</div>
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {leads.filter(l => l.status === 'Skipped').length}
               </div>
             </div>

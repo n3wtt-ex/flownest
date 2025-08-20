@@ -31,10 +31,10 @@ const mainNavItems = [
 ];
 
 const crmNavItems = [
-  { name: { tr: 'Dashboard', en: 'Dashboard' }, href: '/crm', icon: BarChart3 },
-  { name: { tr: 'Contacts', en: 'Contacts' }, href: '/crm/contacts', icon: Users },
-  { name: { tr: 'Companies', en: 'Companies' }, href: '/crm/companies', icon: Building2 },
-  { name: { tr: 'Deals', en: 'Deals' }, href: '/crm/deals', icon: Handshake },
+  { name: { tr: 'Panel', en: 'Dashboard' }, href: '/crm', icon: BarChart3 },
+  { name: { tr: 'Kişiler', en: 'Contacts' }, href: '/crm/contacts', icon: Users },
+  { name: { tr: 'Şirketler', en: 'Companies' }, href: '/crm/companies', icon: Building2 },
+  { name: { tr: 'Fırsatlar', en: 'Deals' }, href: '/crm/deals', icon: Handshake },
 ];
 
 export function Sidebar() {
