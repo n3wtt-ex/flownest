@@ -33,10 +33,11 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
     const updateSidebarWidth = () => {
       const rightSidebar = document.querySelector('.fixed.top-0.right-0');
       if (rightSidebar) {
-        // Sidebar'ın görünür olup olmadığını kontrol et
+        // Sidebar'ın gerçek genişliğini ölç
         const rect = rightSidebar.getBoundingClientRect();
-        const isVisible = rect.x < window.innerWidth;
-        setSidebarWidth(isVisible ? 320 : 0); // 320 = w-80 (80 * 4px = 320px)
+        // Eğer sidebar viewport içindeyse genişliğini al, değilse 0
+        const isVisible = rect.x < window.innerWidth && rect.width > 0;
+        setSidebarWidth(isVisible ? rect.width : 0);
       } else {
         setSidebarWidth(0);
       }
