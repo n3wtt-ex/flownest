@@ -107,9 +107,9 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Sidebar durumuna göre offset değerlerini ayarla
+          // Sidebar durumuna göre sadece X ekseninde offset değerini ayarla
           const adjustedIconXOffset = ICON_X_OFFSET + (sidebarWidth > 0 ? ICON_X_OFFSET * 0.2 : 0);
-          const adjustedIconYOffset = ICON_Y_OFFSET + (sidebarWidth > 0 ? ICON_Y_OFFSET * 0.2 : 0);
+          const adjustedIconYOffset = ICON_Y_OFFSET; // Y ekseninde offset sabit
           
           // İkonların merkez noktalarını hesapla
           const startX = toolData.position.x + adjustedIconXOffset;
@@ -160,9 +160,9 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Sidebar durumuna göre offset değerlerini ayarla
+          // Sidebar durumuna göre sadece X ekseninde offset değerini ayarla
           const adjustedIconXOffset = ICON_X_OFFSET + (sidebarWidth > 0 ? ICON_X_OFFSET * 0.2 : 0);
-          const adjustedIconYOffset = ICON_Y_OFFSET + (sidebarWidth > 0 ? ICON_Y_OFFSET * 0.2 : 0);
+          const adjustedIconYOffset = ICON_Y_OFFSET; // Y ekseninde offset sabit
           
           // İkonların merkez noktalarını hesapla
           const startX = toolData.position.x + adjustedIconXOffset;
@@ -206,9 +206,9 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Sidebar durumuna göre offset değerlerini ayarla
+          // Sidebar durumuna göre sadece X ekseninde offset değerini ayarla
           const adjustedIconXOffset = ICON_X_OFFSET + (sidebarWidth > 0 ? ICON_X_OFFSET * 0.2 : 0);
-          const adjustedIconYOffset = ICON_Y_OFFSET + (sidebarWidth > 0 ? ICON_Y_OFFSET * 0.2 : 0);
+          const adjustedIconYOffset = ICON_Y_OFFSET; // Y ekseninde offset sabit
           
           // İkonların merkez noktalarını hesapla
           const startX = toolData.position.x + adjustedIconXOffset;
@@ -251,9 +251,9 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
         {/* Development mode: Debug points */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
-          // Sidebar durumuna göre offset değerlerini ayarla
+          // Sidebar durumuna göre sadece X ekseninde offset değerini ayarla
           const adjustedIconXOffset = ICON_X_OFFSET + (sidebarWidth > 0 ? ICON_X_OFFSET * 0.2 : 0);
-          const adjustedIconYOffset = ICON_Y_OFFSET + (sidebarWidth > 0 ? ICON_Y_OFFSET * 0.2 : 0);
+          const adjustedIconYOffset = ICON_Y_OFFSET; // Y ekseninde offset sabit
           
           // İkonların merkez noktalarını hesapla
           const adjustedX = toolData.position.x + adjustedIconXOffset;
