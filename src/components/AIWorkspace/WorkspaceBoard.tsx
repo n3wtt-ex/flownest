@@ -257,14 +257,14 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               {Object.entries(selectedTools).map(([agent, data]) => (
                 <motion.div
                   key={`${agent}-${data.tool}`}
-                  initial={{ scale: 0, opacity: 0, left: CENTER_X - 40, top: CENTER_Y - 32 }} // %20 küçültüldü
+                  initial={{ scale: 0, opacity: 0, left: CENTER_X - 40, top: CENTER_Y - 32 }}
                   animate={{ 
                     scale: 1, 
                     opacity: 1, 
-                    left: data.position.x - 40, // %20 küçültüldü
-                    top: data.position.y - 32  // %20 küçültüldü
+                    left: data.position.x - 40,
+                    top: data.position.y - 32
                   }}
-                  exit={{ scale: 0, opacity: 0, left: CENTER_X - 40, top: CENTER_Y - 32 }} // %20 küçültüldü
+                  exit={{ scale: 0, opacity: 0, left: CENTER_X - 40, top: CENTER_Y - 32 }}
                   transition={{ 
                     type: 'spring', 
                     stiffness: 300, 
@@ -294,7 +294,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
                   { scale: 1, x: 0, y: 0 } // Merkez pozisyon
                 }
                 transition={{ duration: 1.2, ease: 'easeInOut' }}
-                className="absolute"
+                className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 style={{ zIndex: 25 }}
               >
                 <motion.button

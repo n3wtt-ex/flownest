@@ -22,17 +22,45 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 480; // %20 küçültüldü
-  // DÜZELTME: İkon merkezi offset değerlerini 16 olarak ayarla (32x32px ikonlar için)
-  const ICON_X_OFFSET = -85; // İkonun yatay merkezi (32px genişliğinde)
-  const ICON_Y_OFFSET = 0; // İkonun dikey merkezi (32px yüksekliğinde)
+  const ICON_SIZE = 80; // HexIcon large size
+  const ICON_CENTER_OFFSET = ICON_SIZE / 2; // İkonun merkez noktası için offset
   
-  // DÜZELTME: Sidebar genişliği ayarını kaldır - ikon koordinatları zaten viewport'a göre tanımlı
+  // Container boyutunu dinamik olarak almak için state
+  const [containerBounds, setContainerBounds] = useState({ width: BOARD_WIDTH, height: BOARD_HEIGHT });
+
+  // Container boyutunu izlemek için effect
+  useEffect(() => {
+    const updateContainerBounds = () => {
+      // SVG container'ını bul (workspace main area)
+      const workspaceMain = document.querySelector('.w-4\\/5.relative.overflow-hidden');
+      if (workspaceMain) {
+        const rect = workspaceMain.getBoundingClientRect();
+        setContainerBounds({ 
+          width: Math.max(rect.width, BOARD_WIDTH), 
+          height: Math.max(rect.height, BOARD_HEIGHT) 
+        });
+      }
+    };
+
+    // İlk yükleme ve resize durumlarında güncelle
+    updateContainerBounds();
+    window.addEventListener('resize', updateContainerBounds);
+    
+    // MutationObserver ile DOM değişikliklerini izle (sidebar toggle için)
+    const observer = new MutationObserver(updateContainerBounds);
+    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    
+    return () => {
+      window.removeEventListener('resize', updateContainerBounds);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
       <svg 
         className="w-full h-full" 
-        viewBox={`0 0 ${BOARD_WIDTH} ${BOARD_HEIGHT}`} 
+        viewBox={`0 0 ${containerBounds.width} ${containerBounds.height}`} 
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
@@ -69,32 +97,31 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
               opacity="0.8"
             />
           </marker>
-
-          {/* DÜZELTME: Ok başı tanımı kaldırıldı */}
         </defs>
 
         {/* Draw connections between consecutive tools with smooth curves */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // İkonların merkez noktalarını hesapla
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
-          const startX = toolData.position.x + ICON_X_OFFSET;
-          const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = nextToolData.position.x + ICON_X_OFFSET;
-          const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          // Container boyutuna göre scale faktörü hesapla
+          const scaleX = containerBounds.width / BOARD_WIDTH;
+          const scaleY = containerBounds.height / BOARD_HEIGHT;
+          
+          // İkonların merkez noktalarını hesapla (scaled koordinat sistemi)
+          const startX = (toolData.position.x + ICON_CENTER_OFFSET) * scaleX;
+          const startY = (toolData.position.y + ICON_CENTER_OFFSET) * scaleY;
+          const endX = (nextToolData.position.x + ICON_CENTER_OFFSET) * scaleX;
+          const endY = (nextToolData.position.y + ICON_CENTER_OFFSET) * scaleY;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           
           const controlOffset = Math.abs(deltaY) * 0.6; 
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const control1X = startX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
           const control2X = endX - deltaX * 0.3;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
           
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
           
           return (
@@ -105,7 +132,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
               strokeWidth="3"
               fill="none"
               filter="url(#connectionGlow)"
-              markerStart="url(#connectionDot)" // DÜZELTME: markerEnd kaldırıldı
+              markerStart="url(#connectionDot)"
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 0.9 }}
               transition={{ 
@@ -125,23 +152,24 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // İkonların merkez noktalarını hesapla
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
-          const startX = toolData.position.x + ICON_X_OFFSET;
-          const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = nextToolData.position.x + ICON_X_OFFSET ;
-          const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          // Container boyutuna göre scale faktörü hesapla
+          const scaleX = containerBounds.width / BOARD_WIDTH;
+          const scaleY = containerBounds.height / BOARD_HEIGHT;
+          
+          // İkonların merkez noktalarını hesapla (scaled koordinat sistemi)
+          const startX = (toolData.position.x + ICON_CENTER_OFFSET) * scaleX;
+          const startY = (toolData.position.y + ICON_CENTER_OFFSET) * scaleY;
+          const endX = (nextToolData.position.x + ICON_CENTER_OFFSET) * scaleX;
+          const endY = (nextToolData.position.y + ICON_CENTER_OFFSET) * scaleY;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const control1X = startX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
           const control2X = endX - deltaX * 0.3;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
           
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
           
           return (
@@ -170,23 +198,23 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // İkonların merkez noktalarını hesapla
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
-          const startX = toolData.position.x + ICON_X_OFFSET;
-          const startY = toolData.position.y + ICON_Y_OFFSET;
+          // Container boyutuna göre scale faktörü hesapla
+          const scaleX = containerBounds.width / BOARD_WIDTH;
+          const scaleY = containerBounds.height / BOARD_HEIGHT;
           
-          const endX = nextToolData.position.x + ICON_X_OFFSET;
-          const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          // İkonların merkez noktalarını hesapla (scaled koordinat sistemi)
+          const startX = (toolData.position.x + ICON_CENTER_OFFSET) * scaleX;
+          const startY = (toolData.position.y + ICON_CENTER_OFFSET) * scaleY;
+          const endX = (nextToolData.position.x + ICON_CENTER_OFFSET) * scaleX;
+          const endY = (nextToolData.position.y + ICON_CENTER_OFFSET) * scaleY;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const control1X = startX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
           const control2X = endX - deltaX * 0.3;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
 
           return (
@@ -215,10 +243,11 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
         {/* Development mode: Debug points */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
-          // İkonların merkez noktalarını hesapla
-          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
-          const adjustedX = toolData.position.x + ICON_X_OFFSET;
-          const adjustedY = toolData.position.y + ICON_Y_OFFSET;
+          const scaleX = containerBounds.width / BOARD_WIDTH;
+          const scaleY = containerBounds.height / BOARD_HEIGHT;
+          
+          const adjustedX = (toolData.position.x + ICON_CENTER_OFFSET) * scaleX;
+          const adjustedY = (toolData.position.y + ICON_CENTER_OFFSET) * scaleY;
           
           return (
             <circle
