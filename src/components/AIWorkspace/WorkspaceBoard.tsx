@@ -164,10 +164,18 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   const handleManualToolSelect = (sectionId: string, toolName: string) => {
     const agentPosition = toolPositions[sectionId as keyof typeof toolPositions];
     if (agentPosition) {
-      setSelectedTools(prev => ({
-        ...prev,
-        [sectionId]: { tool: toolName, position: { x: agentPosition.x, y: agentPosition.y } }
-      }));
+      setSelectedTools(prev => {
+        // Eğer bu agent için zaten bir araç seçilmişse, mevcut pozisyonu koru
+        const existingTool = prev[sectionId];
+        const position = existingTool 
+          ? existingTool.position 
+          : { x: agentPosition.x, y: agentPosition.y };
+        
+        return {
+          ...prev,
+          [sectionId]: { tool: toolName, position }
+        };
+      });
       onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [sectionId]: toolName } });
     }
   };
@@ -183,10 +191,18 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
     if (agentPosition && agentPosition.tools.some(t => t.toLowerCase() === tool.toLowerCase())) {
       const exactTool = agentPosition.tools.find(t => t.toLowerCase() === tool.toLowerCase()) || tool;
-      setSelectedTools(prev => ({
-        ...prev,
-        [agentKey]: { tool: exactTool, position: { x: agentPosition.x, y: agentPosition.y } }
-      }));
+      setSelectedTools(prev => {
+        // Eğer bu agent için zaten bir araç seçilmişse, mevcut pozisyonu koru
+        const existingTool = prev[agentKey];
+        const position = existingTool 
+          ? existingTool.position 
+          : { x: agentPosition.x, y: agentPosition.y };
+        
+        return {
+          ...prev,
+          [agentKey]: { tool: exactTool, position }
+        };
+      });
       onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [agentKey]: exactTool } });
     }
   };
