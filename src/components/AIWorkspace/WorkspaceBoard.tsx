@@ -245,7 +245,9 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
           <div className="relative h-full flex items-center justify-center">
             {/* Connection Lines - Z-INDEX: 5 (Altında) */}
             <div style={{ zIndex: 5 }}>
-              <ConnectionLines selectedTools={selectedTools} sidebarWidth={sidebarWidth} />
+                      <ConnectionLines 
+          selectedTools={selectedTools} 
+        />
             </div>
 
             {/* Selected Tools - Z-INDEX: 20 (Üstte) */}

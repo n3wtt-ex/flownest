@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface SelectedTool {
@@ -8,10 +8,9 @@ interface SelectedTool {
 
 interface ConnectionLinesProps {
   selectedTools: { [key: string]: SelectedTool };
-  sidebarWidth?: number;
 }
 
-export function ConnectionLines({ selectedTools, sidebarWidth = 0 }: ConnectionLinesProps) {
+export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
   const toolEntries = Object.entries(selectedTools);
   if (toolEntries.length < 2) return null;
 
@@ -25,6 +24,37 @@ export function ConnectionLines({ selectedTools, sidebarWidth = 0 }: ConnectionL
   const BOARD_HEIGHT = 480; // %20 küçültüldü
   const ICON_X_OFFSET = 40; // İkonun yatay merkezini bulmak için (genişlik/2)
   const ICON_Y_OFFSET = 32; // İkonun dikey merkezini bulmak için (%20 küçültüldü)
+  
+  // Sidebar genişliğini dinamik olarak hesaplamak için state
+  const [sidebarWidth, setSidebarWidth] = useState(0);
+
+  // Sidebar genişliğini izlemek için effect
+  useEffect(() => {
+    const updateSidebarWidth = () => {
+      const rightSidebar = document.querySelector('.fixed.top-0.right-0');
+      if (rightSidebar) {
+        // Sidebar'ın görünür olup olmadığını kontrol et
+        const rect = rightSidebar.getBoundingClientRect();
+        const isVisible = rect.x < window.innerWidth;
+        setSidebarWidth(isVisible ? 320 : 0); // 320 = w-80 (80 * 4px = 320px)
+      } else {
+        setSidebarWidth(0);
+      }
+    };
+
+    // İlk yükleme ve resize durumlarında güncelle
+    updateSidebarWidth();
+    window.addEventListener('resize', updateSidebarWidth);
+    
+    // MutationObserver ile DOM değişikliklerini izle
+    const observer = new MutationObserver(updateSidebarWidth);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    return () => {
+      window.removeEventListener('resize', updateSidebarWidth);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
