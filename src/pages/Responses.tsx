@@ -654,7 +654,7 @@ ${email.content}`
               key={tag}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
+              className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden dark:bg-crm-dark dark:border-slate-700"
             >
               {/* Category Header */}
               <div 
@@ -689,7 +689,7 @@ ${email.content}`
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
                       whileHover={{ scale: 1.02 }}
-                      className={`relative bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-all duration-200 cursor-pointer ${
+                      className={`relative bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-all duration-200 cursor-pointer dark:bg-slate-800 dark:border-slate-700 ${
                         draggedEmail?.id === email.id ? 'opacity-50' : ''
                       }`}
                       draggable

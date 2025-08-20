@@ -807,7 +807,7 @@ export function Email() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
+          className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden dark:bg-crm-dark dark:border-slate-700"
         >
           {/* Table Header */}
           <div className="p-6 border-b border-gray-200 flex items-center justify-between">
@@ -856,15 +856,15 @@ export function Email() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-white divide-y divide-gray-200 dark:bg-crm-dark dark:divide-slate-700">
                 {emailAccounts.map((account, index) => (
                   <motion.tr
-                    key={account.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
+                      key={account.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="hover:bg-gray-50 transition-colors dark:hover:bg-slate-800"
+                    >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">

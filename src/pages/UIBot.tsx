@@ -103,7 +103,7 @@ export function UIBot() {
           ) : (
             /* Active Workspace */
             <div className="h-[800px]">
-              <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+              <div className="p-4 border-b border-gray-200 flex items-center justify-between dark:border-slate-700">
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">{currentWorkspace.name}</h2>
                   <p className="text-sm text-gray-600">
@@ -112,7 +112,7 @@ export function UIBot() {
                 </div>
                 <button
                   onClick={() => setCurrentWorkspace(null)}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-300 dark:hover:text-white dark:hover:bg-slate-700"
                 >
                   {language === 'tr' ? 'Çalışma Alanlarına Geri Dön' : 'Back to Workspaces'}
                 </button>

@@ -300,7 +300,7 @@ export function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/40 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/40 relative overflow-hidden dark:bg-crm-dark">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
@@ -349,7 +349,7 @@ export function Settings() {
                 <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
                 
                 {/* Content */}
-                <div className="relative p-8">
+                <div className="relative p-8 dark:bg-crm-dark">
                   <div className="text-center">
                     {/* Avatar Section */}
                     <div className="relative inline-block mb-6">
@@ -413,7 +413,7 @@ export function Settings() {
                     </div>
 
                     {/* User Info */}
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2 dark:text-white">
                       {fullName || 'Kullanıcı'}
                     </h2>
                     <p className="text-gray-600 mb-4 font-medium">{user?.email}</p>
@@ -455,15 +455,15 @@ export function Settings() {
           {/* Main Content - Sağ Panel */}
           <div className="xl:col-span-8">
             {/* Profile Information Card */}
-            <div className="group relative mb-8">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
+            <div className="group relative mb-8 dark:bg-crm-dark">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10 dark:from-slate-800/60 dark:to-slate-800/30 dark:border-slate-700/20"></div>
               
               <div className="relative p-8">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
                   <div className="flex items-center mb-4 sm:mb-0">
                     <div className="w-3 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-4"></div>
-                    <h2 className="text-2xl font-bold text-gray-900">{language === 'tr' ? 'Profil Bilgileri' : 'Profile Information'}</h2>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{language === 'tr' ? 'Profil Bilgileri' : 'Profile Information'}</h2>
                   </div>
                   
                   <button
@@ -660,7 +660,7 @@ export function Settings() {
                         { label: 'Şehir', value: contactInfo.city || 'Belirtilmemiş', icon: '🏙️' },
                         { label: 'Posta Kodu', value: contactInfo.postal_code || 'Belirtilmemiş', icon: '📮' }
                       ].map((field, index) => (
-                        <div key={field.label} className="group p-5 rounded-2xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm border border-white/30 hover:shadow-lg hover:border-white/50 transition-all duration-300 hover:scale-105" style={{animationDelay: `${index * 0.1}s`}}>
+                        <div key={field.label} className="group p-5 rounded-2xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm border border-white/30 hover:shadow-lg hover:border-white/50 transition-all duration-300 hover:scale-105 dark:from-slate-800/40 dark:to-slate-800/20 dark:border-slate-700/30" style={{animationDelay: `${index * 0.1}s`}}>
                           <div className="flex items-center mb-2">
                             <span className="text-lg mr-2">{field.icon}</span>
                             <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{field.label}</p>
@@ -800,7 +800,7 @@ export function Settings() {
                   </div>
                   
                   {/* Bildirimler */}
-                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg hover:border-purple-300/50 transition-all duration-300 hover:scale-105">
+                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg hover:border-purple-300/50 transition-all duration-300 hover:scale-105 dark:from-slate-800/50 dark:to-slate-800/50 dark:border-slate-700/30">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
