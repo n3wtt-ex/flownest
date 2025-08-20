@@ -22,8 +22,8 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 480; // %20 küçültüldü
-  const ICON_X_OFFSET = 48; // İkonun yatay merkezini bulmak için (%20 artırıldı)
-  const ICON_Y_OFFSET = 32; // İkonun dikey merkezini bulmak için (%20 küçültüldü)
+  const ICON_X_OFFSET = 60; // İkonun yatay merkezini bulmak için (%20 artırıldı)
+  const ICON_Y_OFFSET = 50; // İkonun dikey merkezini bulmak için (SVG viewBox merkezi)
   
   // Sidebar genişliğini dinamik olarak hesaplamak için state
   const [sidebarWidth, setSidebarWidth] = useState(0);
@@ -106,14 +106,19 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
-          const adjustedEndX = nextToolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          // Sidebar durumuna göre sadece X ekseninde offset değerini ayarla
+          const adjustedIconXOffset = ICON_X_OFFSET + (sidebarWidth > 0 ? ICON_X_OFFSET * 0.2 : 0);
+          const adjustedIconYOffset = ICON_Y_OFFSET; // Y ekseninde offset sabit
           
-          const startX = adjustedStartX;
-          const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = adjustedEndX;
-          const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          // İkonların merkez noktalarını hesapla
+          const startX = toolData.position.x + adjustedIconXOffset;
+          const startY = toolData.position.y + adjustedIconYOffset;
+          const endX = nextToolData.position.x + adjustedIconXOffset;
+          const endY = nextToolData.position.y + adjustedIconYOffset;
+          
+          // Sidebar genişliğine göre X koordinatlarını ayarla
+          const adjustedStartX = startX + sidebarWidth;
+          const adjustedEndX = endX + sidebarWidth;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -154,14 +159,15 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
-          const adjustedEndX = nextToolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          // Sidebar durumuna göre sadece X ekseninde offset değerini ayarla
+          const adjustedIconXOffset = ICON_X_OFFSET + (sidebarWidth > 0 ? ICON_X_OFFSET * 0.2 : 0);
+          const adjustedIconYOffset = ICON_Y_OFFSET; // Y ekseninde offset sabit
           
-          const startX = adjustedStartX;
-          const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = adjustedEndX;
-          const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          // İkonların merkez noktalarını hesapla
+          const startX = toolData.position.x + adjustedIconXOffset;
+          const startY = toolData.position.y + adjustedIconYOffset;
+          const endX = nextToolData.position.x + adjustedIconXOffset;
+          const endY = nextToolData.position.y + adjustedIconYOffset;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -199,15 +205,16 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
-          const adjustedEndX = nextToolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          // Sidebar durumuna göre sadece X ekseninde offset değerini ayarla
+          const adjustedIconXOffset = ICON_X_OFFSET + (sidebarWidth > 0 ? ICON_X_OFFSET * 0.2 : 0);
+          const adjustedIconYOffset = ICON_Y_OFFSET; // Y ekseninde offset sabit
           
-          const startX = adjustedStartX;
-          const startY = toolData.position.y + ICON_Y_OFFSET;
+          // İkonların merkez noktalarını hesapla
+          const startX = toolData.position.x + adjustedIconXOffset;
+          const startY = toolData.position.y + adjustedIconYOffset;
           
-          const endX = adjustedEndX;
-          const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          const endX = nextToolData.position.x + adjustedIconXOffset;
+          const endY = nextToolData.position.y + adjustedIconYOffset;
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
@@ -243,14 +250,22 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
         {/* Development mode: Debug points */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
+          // Sidebar durumuna göre sadece X ekseninde offset değerini ayarla
+          const adjustedIconXOffset = ICON_X_OFFSET + (sidebarWidth > 0 ? ICON_X_OFFSET * 0.2 : 0);
+          const adjustedIconYOffset = ICON_Y_OFFSET; // Y ekseninde offset sabit
+          
+          // İkonların merkez noktalarını hesapla
+          const adjustedX = toolData.position.x + adjustedIconXOffset;
+          const adjustedY = toolData.position.y + adjustedIconYOffset;
+          
           // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          const finalX = adjustedX + sidebarWidth;
           
           return (
             <circle
               key={`debug-${agentKey}`}
-              cx={adjustedX} 
-              cy={toolData.position.y + ICON_Y_OFFSET}
+              cx={finalX} 
+              cy={adjustedY}
               r="3"
               fill="red"
               opacity="0.8"
