@@ -291,6 +291,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               <ConnectionLines 
                 selectedTools={selectedTools}
                 containerDimensions={containerDimensions}
+                isRightSidebarOpen={isRightSidebarOpen}
               />
             </div>
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface SelectedTool {
@@ -9,11 +9,42 @@ interface SelectedTool {
 interface ConnectionLinesProps {
   selectedTools: { [key: string]: SelectedTool };
   containerDimensions?: { width: number; height: number };
+  isRightSidebarOpen?: boolean; // Sidebar durumunu prop olarak al
 }
 
-export function ConnectionLines({ selectedTools, containerDimensions = { width: 800, height: 480 } }: ConnectionLinesProps) {
+export function ConnectionLines({ 
+  selectedTools, 
+  containerDimensions = { width: 800, height: 480 },
+  isRightSidebarOpen = false 
+}: ConnectionLinesProps) {
   const toolEntries = Object.entries(selectedTools);
   if (toolEntries.length < 2) return null;
+
+  // Sidebar genişliğini hesaplama - sadece açık olduğunda
+  const [sidebarWidth, setSidebarWidth] = useState(0);
+
+  // Sidebar durumu değiştiğinde genişliği hesapla
+  useEffect(() => {
+    if (isRightSidebarOpen) {
+      // Sidebar açıkken genişliğini hesapla
+      const updateSidebarWidth = () => {
+        const rightSidebar = document.querySelector('.fixed.top-0.right-0');
+        if (rightSidebar) {
+          const rect = rightSidebar.getBoundingClientRect();
+          const isVisible = rect.x < window.innerWidth && rect.width > 0;
+          setSidebarWidth(isVisible ? rect.width : 0);
+        }
+      };
+
+      // Küçük bir gecikme ile sidebar'ın render olmasını bekle
+      const timer = setTimeout(updateSidebarWidth, 50);
+      
+      return () => clearTimeout(timer);
+    } else {
+      // Sidebar kapalıyken genişlik sıfır
+      setSidebarWidth(0);
+    }
+  }, [isRightSidebarOpen]); // Sadece sidebar durumu değiştiğinde çalışır
 
   // Zigzag sıralama için agent sırası (soldan sağa)
   const agentOrder = ['leo', 'mike', 'sophie', 'ash', 'clara'];
@@ -23,6 +54,9 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
 
   const ICON_SIZE = 80; // HexIcon large size
   const ICON_CENTER_OFFSET = ICON_SIZE / 2; // İkonun merkez noktası için offset
+
+  // Sidebar durumuna göre viewport genişliğini ayarla
+  const adjustedViewportWidth = containerDimensions.width - sidebarWidth;
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
@@ -71,10 +105,11 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // İkonların merkez noktalarını hesapla (doğrudan pozisyon + center offset)
-          const startX = toolData.position.x + ICON_CENTER_OFFSET;
+          // İkonların merkez noktalarını hesapla
+          // Sidebar genişliği kadar sola kaydır (sidebar sağda olduğu için negatif)
+          const startX = toolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
           const startY = toolData.position.y + ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
           const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
           
           const deltaX = endX - startX;
@@ -91,7 +126,7 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
           
           return (
             <motion.path
-              key={`connection-${agentKey}-${nextAgentKey}`}
+              key={`connection-${agentKey}-${nextAgentKey}-${isRightSidebarOpen}`} // Key'e sidebar durumu ekle
               d={pathData}
               stroke="url(#connectionGradient)"
               strokeWidth="3"
@@ -118,9 +153,9 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // İkonların merkez noktalarını hesapla
-          const startX = toolData.position.x + ICON_CENTER_OFFSET;
+          const startX = toolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
           const startY = toolData.position.y + ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
           const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
           
           const deltaX = endX - startX;
@@ -135,7 +170,7 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
           
           return (
             <motion.path
-              key={`pulse-${agentKey}-${nextAgentKey}`}
+              key={`pulse-${agentKey}-${nextAgentKey}-${isRightSidebarOpen}`}
               d={pathData}
               stroke="#06b6d4"
               strokeWidth="1.5"
@@ -160,9 +195,9 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // İkonların merkez noktalarını hesapla
-          const startX = toolData.position.x + ICON_CENTER_OFFSET;
+          const startX = toolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
           const startY = toolData.position.y + ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
           const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
           
           const deltaX = endX - startX;
@@ -175,8 +210,8 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
           const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
 
           return (
-            <motion.g key={`particle-group-${agentKey}-${nextAgentKey}`}>
-              <path id={`particle-path-${index}`} d={pathData} fill="none" />
+            <motion.g key={`particle-group-${agentKey}-${nextAgentKey}-${isRightSidebarOpen}`}>
+              <path id={`particle-path-${index}-${isRightSidebarOpen ? 'open' : 'closed'}`} d={pathData} fill="none" />
               <motion.circle
                 r="3"
                 fill="#06b6d4"
@@ -191,7 +226,7 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
                   calcMode="spline"
                   keySplines="0.42 0 0.58 1"
                 >
-                  <mpath href={`#particle-path-${index}`} />
+                  <mpath href={`#particle-path-${index}-${isRightSidebarOpen ? 'open' : 'closed'}`} />
                 </animateMotion>
               </motion.circle>
             </motion.g>
@@ -200,11 +235,11 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
 
         {/* Development mode: Debug points - İkon merkezlerini göster */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
-          const centerX = toolData.position.x + ICON_CENTER_OFFSET;
+          const centerX = toolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
           const centerY = toolData.position.y + ICON_CENTER_OFFSET;
           
           return (
-            <g key={`debug-${agentKey}`}>
+            <g key={`debug-${agentKey}-${isRightSidebarOpen}`}>
               {/* İkon merkezi */}
               <circle
                 cx={centerX} 
@@ -215,7 +250,7 @@ export function ConnectionLines({ selectedTools, containerDimensions = { width: 
               />
               {/* İkon sınırları */}
               <rect
-                x={toolData.position.x}
+                x={toolData.position.x - (sidebarWidth * 0.2)}
                 y={toolData.position.y}
                 width={ICON_SIZE}
                 height={ICON_SIZE}
