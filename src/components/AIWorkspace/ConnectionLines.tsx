@@ -106,10 +106,10 @@ export function ConnectionLines({
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // İkonların merkez noktalarını hesapla
-          // Sidebar genişliği kadar sola kaydır (sidebar sağda olduğu için negatif)
-          const startX = toolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
+          // Sidebar açıkken ikonlar da kaydırılmadığı için çizgileri de kaydırma
+          const startX = toolData.position.x + ICON_CENTER_OFFSET;
           const startY = toolData.position.y + ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
           const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
           
           const deltaX = endX - startX;
@@ -153,9 +153,9 @@ export function ConnectionLines({
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // İkonların merkez noktalarını hesapla
-          const startX = toolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
+          const startX = toolData.position.x + ICON_CENTER_OFFSET;
           const startY = toolData.position.y + ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
           const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
           
           const deltaX = endX - startX;
@@ -195,9 +195,9 @@ export function ConnectionLines({
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // İkonların merkez noktalarını hesapla
-          const startX = toolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
+          const startX = toolData.position.x + ICON_CENTER_OFFSET;
           const startY = toolData.position.y + ICON_CENTER_OFFSET;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET;
           const endY = nextToolData.position.y + ICON_CENTER_OFFSET;
           
           const deltaX = endX - startX;
@@ -235,7 +235,7 @@ export function ConnectionLines({
 
         {/* Development mode: Debug points - İkon merkezlerini göster */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
-          const centerX = toolData.position.x + ICON_CENTER_OFFSET - (sidebarWidth * 0.2);
+          const centerX = toolData.position.x + ICON_CENTER_OFFSET;
           const centerY = toolData.position.y + ICON_CENTER_OFFSET;
           
           return (
@@ -250,7 +250,7 @@ export function ConnectionLines({
               />
               {/* İkon sınırları */}
               <rect
-                x={toolData.position.x - (sidebarWidth * 0.2)}
+                x={toolData.position.x}
                 y={toolData.position.y}
                 width={ICON_SIZE}
                 height={ICON_SIZE}
