@@ -81,7 +81,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const startX = toolData.position.x + ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = nextToolData.position.x + ICON_X_OFFSET;
+          const endX = nextToolData.position.x + ICON_X_OFFSET - 40;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
           const deltaX = endX - startX;
@@ -129,7 +129,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const startX = toolData.position.x + ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = nextToolData.position.x + ICON_X_OFFSET;
+          const endX = nextToolData.position.x + ICON_X_OFFSET - 40;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
           const deltaX = endX - startX;
@@ -175,7 +175,7 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           const startX = toolData.position.x + ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
           
-          const endX = nextToolData.position.x + ICON_X_OFFSET;
+          const endX = nextToolData.position.x + ICON_X_OFFSET - 40;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
           const deltaX = endX - startX;
