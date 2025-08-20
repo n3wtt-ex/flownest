@@ -21,7 +21,7 @@ export function Layout() {
 
   return (
     <SidebarProvider>
-      <div className={`flex h-screen ${isCrmPage ? 'bg-slate-50' : 'bg-white'} text-slate-800 dark:text-slate-100`} style={{ backgroundColor: isCrmPage ? '#f8fafc' : '#0f172a' }}>
+      <div className={`flex h-screen ${isCrmPage ? 'bg-slate-50' : 'bg-white'} text-slate-800 dark:text-slate-100 dark:bg-slate-900`}>
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />

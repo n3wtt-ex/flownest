@@ -2024,7 +2024,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
   }
 
   return (
-    <div className="p-6 min-h-screen" style={{ backgroundColor: '#0f172a' }}>
+    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:bg-slate-900">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -2106,9 +2106,9 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
         </div>
 
         {/* Campaign List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
           {/* Table Header */}
-          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200" style={{ backgroundColor: '#1e293b', borderColor: '#334155' }}>
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 dark:bg-slate-800 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
