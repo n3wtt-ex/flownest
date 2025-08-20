@@ -6,6 +6,7 @@ export default {
     extend: {
       colors: {
         'hex-yellow': '#FFD44D',
+        'crm-dark': '#0f172a',
       },
       borderRadius: {
         '2xl': '1rem',
