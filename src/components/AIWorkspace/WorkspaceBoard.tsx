@@ -100,16 +100,31 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     };
   };
 
-  // Container boyutlarını izleme
+  // Container boyutlarını izleme - Optimize edilmiş versiyon
   useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
+    
     const updateDimensions = () => {
-      if (workspaceRef.current) {
-        const rect = workspaceRef.current.getBoundingClientRect();
-        setContainerDimensions({ 
-          width: rect.width, 
-          height: rect.height 
-        });
-      }
+      // Debounce ile gereksiz güncellemeleri engelle
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        if (workspaceRef.current) {
+          const rect = workspaceRef.current.getBoundingClientRect();
+          const newDimensions = { 
+            width: rect.width, 
+            height: rect.height 
+          };
+          
+          // Sadece gerçek değişiklik varsa güncelle
+          setContainerDimensions(prev => {
+            if (Math.abs(prev.width - newDimensions.width) < 5 && 
+                Math.abs(prev.height - newDimensions.height) < 5) {
+              return prev; // Küçük değişiklikleri yok say
+            }
+            return newDimensions;
+          });
+        }
+      }, 100); // 100ms debounce
     };
 
     // İlk yükleme
@@ -118,21 +133,30 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     // Resize event listener
     window.addEventListener('resize', updateDimensions);
     
-    // MutationObserver for sidebar toggle
-    const observer = new MutationObserver(updateDimensions);
-    if (workspaceRef.current) {
-      observer.observe(workspaceRef.current, { 
-        attributes: true, 
-        childList: true, 
-        subtree: true 
-      });
-    }
+    // Sidebar toggle için sadece body'yi izle (daha spesifik)
+    const observer = new MutationObserver((mutations) => {
+      // Sadece sınıf değişikliklerini izle
+      const hasClassChange = mutations.some(mutation => 
+        mutation.type === 'attributes' && 
+        mutation.attributeName === 'class'
+      );
+      
+      if (hasClassChange) {
+        updateDimensions();
+      }
+    });
+    
+    observer.observe(document.body, { 
+      attributes: true, 
+      attributeFilter: ['class'] // Sadece class değişikliklerini izle
+    });
 
     return () => {
+      clearTimeout(resizeTimeout);
       window.removeEventListener('resize', updateDimensions);
       observer.disconnect();
     };
-  }, []);
+  }, []); // Dependency array boş - sadece mount/unmount'da çalışır
 
   // Pozisyonları güncelleme
   const toolPositions = calculateToolPositions(containerDimensions.width, containerDimensions.height);
