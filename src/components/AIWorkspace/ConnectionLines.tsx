@@ -22,8 +22,9 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 480; // %20 küçültüldü
-  const ICON_X_OFFSET = 40; // İkonun yatay merkezini bulmak için (genişlik/2)
-  const ICON_Y_OFFSET = 32; // İkonun dikey merkezini bulmak için (%20 küçültüldü)
+  // İkonun merkezi zaten verildiği için offset'e gerek yok
+  const ICON_X_OFFSET = 0;
+  const ICON_Y_OFFSET = 0;
   
   // Sidebar genişliğini dinamik olarak hesaplamak için state
   const [sidebarWidth, setSidebarWidth] = useState(0);
@@ -107,13 +108,13 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
-          const adjustedEndX = nextToolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          const adjustedStartX = toolData.position.x + (sidebarWidth / 2);
+          const adjustedEndX = nextToolData.position.x + (sidebarWidth / 2);
           
           const startX = adjustedStartX;
-          const startY = toolData.position.y + ICON_Y_OFFSET;
+          const startY = toolData.position.y;
           const endX = adjustedEndX;
-          const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          const endY = nextToolData.position.y;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -155,13 +156,13 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
-          const adjustedEndX = nextToolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          const adjustedStartX = toolData.position.x + (sidebarWidth / 2);
+          const adjustedEndX = nextToolData.position.x + (sidebarWidth / 2);
           
           const startX = adjustedStartX;
-          const startY = toolData.position.y + ICON_Y_OFFSET;
+          const startY = toolData.position.y;
           const endX = adjustedEndX;
-          const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          const endY = nextToolData.position.y;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -200,14 +201,14 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
-          const adjustedEndX = nextToolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          const adjustedStartX = toolData.position.x + (sidebarWidth / 2);
+          const adjustedEndX = nextToolData.position.x + (sidebarWidth / 2);
           
           const startX = adjustedStartX;
-          const startY = toolData.position.y + ICON_Y_OFFSET;
+          const startY = toolData.position.y;
           
           const endX = adjustedEndX;
-          const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          const endY = nextToolData.position.y;
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
@@ -244,13 +245,13 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {/* Development mode: Debug points */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
           // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          const adjustedX = toolData.position.x + (sidebarWidth / 2);
           
           return (
             <circle
               key={`debug-${agentKey}`}
               cx={adjustedX} 
-              cy={toolData.position.y + ICON_Y_OFFSET}
+              cy={toolData.position.y}
               r="3"
               fill="red"
               opacity="0.8"
