@@ -161,11 +161,6 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   // Pozisyonları güncelleme
   const toolPositions = calculateToolPositions(containerDimensions.width, containerDimensions.height);
 
-  // Container boyutlarını güncelle
-  useEffect(() => {
-    setContainerDimensions(prev => ({ ...prev, height: 286.4 }));
-  }, []);
-
   const handleManualToolSelect = (sectionId: string, toolName: string) => {
     const agentPosition = toolPositions[sectionId as keyof typeof toolPositions];
     if (agentPosition) {
@@ -281,7 +276,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         </motion.div>
       )}
 
-      <div className="flex h-[286.4px]">
+      <div className="flex h-[480px]">
         {/* Left Chat Panel */}
         <div className="w-1/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
           <div className="w-full h-full flex items-center justify-center">
