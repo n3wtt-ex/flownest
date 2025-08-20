@@ -203,9 +203,9 @@ export function ConnectionLines({
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
-          const control1X = startX + deltaX * 0.3;
+          const control1X = startX + deltaX * 0.2;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
-          const control2X = endX - deltaX * 0.3;
+          const control2X = endX - deltaX * 0.2;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
           const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
 
