@@ -23,7 +23,7 @@ export function ConnectionLines({ selectedTools, sidebarWidth = 0 }: ConnectionL
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 480; // %20 küçültüldü
-  const ICON_X_OFFSET = 40; // İkonun yatay merkezini bulmak için (genişlik/2)
+  const ICON_X_OFFSET = 50; // İkonun yatay merkezini bulmak için (sidebar kapalıyken %20 daha sola kaydır)
   const ICON_Y_OFFSET = 32; // İkonun dikey merkezini bulmak için (%20 küçültüldü)
 
   return (
