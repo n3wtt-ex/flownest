@@ -22,9 +22,9 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 480; // %20 küçültüldü
-  // İkonun merkezi zaten verildiği için offset'e gerek yok
-  const ICON_X_OFFSET = 0;
-  const ICON_Y_OFFSET = 0;
+  // HexIcon large size için gerçek merkez offset'leri
+  const ICON_X_OFFSET = 40; // hexSize (80) / 2
+  const ICON_Y_OFFSET = 40; // hexSize (80) / 2
   
   // Sidebar genişliğini dinamik olarak hesaplamak için state
   const [sidebarWidth, setSidebarWidth] = useState(0);
