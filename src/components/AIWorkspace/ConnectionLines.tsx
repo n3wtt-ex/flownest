@@ -120,12 +120,12 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           const deltaY = endY - startY;
           
           const controlOffset = Math.abs(deltaY) * 0.6; 
-          const control1X = startX + deltaX * 0.3;
+          const control1X = adjustedStartX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
-          const control2X = endX - deltaX * 0.3;
+          const control2X = adjustedEndX - deltaX * 0.3;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
           
-          const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
+          const pathData = `M ${adjustedStartX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${adjustedEndX} ${endY}`;
           
           return (
             <motion.path
@@ -161,15 +161,19 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           const endX = nextToolData.position.x + ICON_X_OFFSET;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
+          // Sidebar genişliğine göre X koordinatlarını ayarla
+          const adjustedStartX = startX + sidebarWidth;
+          const adjustedEndX = endX + sidebarWidth;
+          
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
-          const control1X = startX + deltaX * 0.3;
+          const control1X = adjustedStartX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
-          const control2X = endX - deltaX * 0.3;
+          const control2X = adjustedEndX - deltaX * 0.3;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
           
-          const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
+          const pathData = `M ${adjustedStartX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${adjustedEndX} ${endY}`;
           
           return (
             <motion.path
@@ -203,14 +207,19 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           
           const endX = nextToolData.position.x + ICON_X_OFFSET;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
+          
+          // Sidebar genişliğine göre X koordinatlarını ayarla
+          const adjustedStartX = startX + sidebarWidth;
+          const adjustedEndX = endX + sidebarWidth;
+          
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
-          const control1X = startX + deltaX * 0.3;
+          const control1X = adjustedStartX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
-          const control2X = endX - deltaX * 0.3;
+          const control2X = adjustedEndX - deltaX * 0.3;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
-          const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
+          const pathData = `M ${adjustedStartX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${adjustedEndX} ${endY}`;
 
           return (
             <motion.g key={`particle-group-${agentKey}-${nextAgentKey}`}>
@@ -239,16 +248,13 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {/* Development mode: Debug points */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
           // İkonların merkez noktalarını hesapla
-          const adjustedX = toolData.position.x + ICON_X_OFFSET;
+          const adjustedX = toolData.position.x + ICON_X_OFFSET + sidebarWidth;
           const adjustedY = toolData.position.y + ICON_Y_OFFSET;
-          
-          // Sidebar genişliğine göre X koordinatlarını ayarla
-          const finalX = adjustedX + sidebarWidth;
           
           return (
             <circle
               key={`debug-${agentKey}`}
-              cx={finalX} 
+              cx={adjustedX} 
               cy={adjustedY}
               r="3"
               fill="red"
