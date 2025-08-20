@@ -8,9 +8,10 @@ interface SelectedTool {
 
 interface ConnectionLinesProps {
   selectedTools: { [key: string]: SelectedTool };
+  sidebarWidth?: number;
 }
 
-export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
+export function ConnectionLines({ selectedTools, sidebarWidth = 0 }: ConnectionLinesProps) {
   const toolEntries = Object.entries(selectedTools);
   if (toolEntries.length < 2) return null;
 
@@ -74,9 +75,13 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x - ICON_X_OFFSET;
+          // Sidebar genişliğine göre X koordinatlarını ayarla
+          const adjustedStartX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          const adjustedEndX = nextToolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          
+          const startX = adjustedStartX;
           const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = nextToolData.position.x - ICON_X_OFFSET;
+          const endX = adjustedEndX;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
           const deltaX = endX - startX;
@@ -118,9 +123,13 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x - ICON_X_OFFSET;
+          // Sidebar genişliğine göre X koordinatlarını ayarla
+          const adjustedStartX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          const adjustedEndX = nextToolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          
+          const startX = adjustedStartX;
           const startY = toolData.position.y + ICON_Y_OFFSET;
-          const endX = nextToolData.position.x - ICON_X_OFFSET;
+          const endX = adjustedEndX;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
           const deltaX = endX - startX;
@@ -159,10 +168,14 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x - ICON_X_OFFSET;
+          // Sidebar genişliğine göre X koordinatlarını ayarla
+          const adjustedStartX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          const adjustedEndX = nextToolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          
+          const startX = adjustedStartX;
           const startY = toolData.position.y + ICON_Y_OFFSET;
           
-          const endX = nextToolData.position.x - ICON_X_OFFSET;
+          const endX = adjustedEndX;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -198,16 +211,21 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         })}
 
         {/* Development mode: Debug points */}
-        {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => (
-          <circle
-            key={`debug-${agentKey}`}
-            cx={toolData.position.x - ICON_X_OFFSET} 
-            cy={toolData.position.y + ICON_Y_OFFSET}
-            r="3"
-            fill="red"
-            opacity="0.8"
-          />
-        ))}
+        {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
+          // Sidebar genişliğine göre X koordinatlarını ayarla
+          const adjustedX = toolData.position.x - ICON_X_OFFSET + (sidebarWidth / 2);
+          
+          return (
+            <circle
+              key={`debug-${agentKey}`}
+              cx={adjustedX} 
+              cy={toolData.position.y + ICON_Y_OFFSET}
+              r="3"
+              fill="red"
+              opacity="0.8"
+            />
+          );
+        })}
       </svg>
     </div>
   );

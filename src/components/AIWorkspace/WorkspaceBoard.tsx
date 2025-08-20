@@ -89,6 +89,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   const [showToolSelection, setShowToolSelection] = useState(true);
   const [evaCommandReceived, setEvaCommandReceived] = useState(false);
   const [workflowStarted, setWorkflowStarted] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(0);
 
   const handleManualToolSelect = (sectionId: string, toolName: string) => {
     const agentPosition = toolPositions[sectionId as keyof typeof toolPositions];
@@ -160,6 +161,33 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     }, 1500);
   };
 
+  // Sidebar genişliğini hesaplamak için effect
+  useEffect(() => {
+    const updateSidebarWidth = () => {
+      const rightSidebar = document.querySelector('.fixed.top-0.right-0');
+      if (rightSidebar) {
+        const isOpen = getComputedStyle(rightSidebar).transform !== 'matrix(1, 0, 0, 1, 0, 0)' || 
+                      getComputedStyle(rightSidebar).transform === 'none';
+        setSidebarWidth(isOpen ? 320 : 0); // 320 = w-80 (80 * 4px = 320px)
+      } else {
+        setSidebarWidth(0);
+      }
+    };
+
+    // İlk yükleme ve resize durumlarında güncelle
+    updateSidebarWidth();
+    window.addEventListener('resize', updateSidebarWidth);
+    
+    // MutationObserver ile DOM değişikliklerini izle
+    const observer = new MutationObserver(updateSidebarWidth);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    return () => {
+      window.removeEventListener('resize', updateSidebarWidth);
+      observer.disconnect();
+    };
+  }, [isRightSidebarOpen]);
+
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
       
@@ -217,7 +245,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
           <div className="relative h-full flex items-center justify-center">
             {/* Connection Lines - Z-INDEX: 5 (Altında) */}
             <div style={{ zIndex: 5 }}>
-              <ConnectionLines selectedTools={selectedTools} />
+              <ConnectionLines selectedTools={selectedTools} sidebarWidth={sidebarWidth} />
             </div>
 
             {/* Selected Tools - Z-INDEX: 20 (Üstte) */}
