@@ -166,9 +166,11 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     const updateSidebarWidth = () => {
       const rightSidebar = document.querySelector('.fixed.top-0.right-0');
       if (rightSidebar) {
-        const isOpen = getComputedStyle(rightSidebar).transform !== 'matrix(1, 0, 0, 1, 0, 0)' || 
-                      getComputedStyle(rightSidebar).transform === 'none';
-        setSidebarWidth(isOpen ? 320 : 0); // 320 = w-80 (80 * 4px = 320px)
+        // Sidebar'ın gerçek genişliğini ölç
+        const rect = rightSidebar.getBoundingClientRect();
+        // Eğer sidebar viewport içindeyse genişliğini al, değilse 0
+        const isVisible = rect.x < window.innerWidth && rect.width > 0;
+        setSidebarWidth(isVisible ? rect.width : 0);
       } else {
         setSidebarWidth(0);
       }
@@ -186,7 +188,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       window.removeEventListener('resize', updateSidebarWidth);
       observer.disconnect();
     };
-  }, [isRightSidebarOpen]);
+  }, []);
 
   return (
     <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
@@ -242,10 +244,12 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
           </div>
 
           {/* Tools and Connections Container */}
-          <div className="relative h-full flex items-center justify-center">
+          <div className="relative h-full">
             {/* Connection Lines - Z-INDEX: 5 (Altında) */}
             <div style={{ zIndex: 5 }}>
-              <ConnectionLines selectedTools={selectedTools} sidebarWidth={sidebarWidth} />
+              <ConnectionLines 
+                selectedTools={selectedTools} 
+              />
             </div>
 
             {/* Selected Tools - Z-INDEX: 20 (Üstte) */}
@@ -253,14 +257,14 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               {Object.entries(selectedTools).map(([agent, data]) => (
                 <motion.div
                   key={`${agent}-${data.tool}`}
-                  initial={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
+                  initial={{ scale: 0, opacity: 0, left: CENTER_X - 40, top: CENTER_Y - 32 }} // %20 küçültüldü
                   animate={{ 
                     scale: 1, 
                     opacity: 1, 
-                    x: data.position.x, 
-                    y: data.position.y 
+                    left: data.position.x - 40, // %20 küçültüldü
+                    top: data.position.y - 32  // %20 küçültüldü
                   }}
-                  exit={{ scale: 0, opacity: 0, x: CENTER_X, y: CENTER_Y }}
+                  exit={{ scale: 0, opacity: 0, left: CENTER_X - 40, top: CENTER_Y - 32 }} // %20 küçültüldü
                   transition={{ 
                     type: 'spring', 
                     stiffness: 300, 
@@ -269,9 +273,6 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
                   }}
                   className="absolute"
                   style={{ 
-                    left: 0, 
-                    top: 0, 
-                    transform: `translate(${data.position.x - 40}px, ${data.position.y - 32}px)`, // Y offset %20 küçültüldü (40 * 0.8 = 32)
                     zIndex: 20 // Çizgilerin üstünde
                   }}
                 >
