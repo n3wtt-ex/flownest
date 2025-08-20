@@ -2024,7 +2024,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
   }
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:bg-slate-900">
+    <div className="p-6 min-h-screen" style={{ backgroundColor: '#0f172a' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -2106,9 +2106,9 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
         </div>
 
         {/* Campaign List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
           {/* Table Header */}
-          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200" style={{ backgroundColor: '#1e293b', borderColor: '#334155' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
@@ -2119,7 +2119,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     onChange={toggleAllCampaigns}
                   />
                 </div>
-                <div className="grid grid-cols-7 gap-4 flex-1 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <div className="grid grid-cols-7 gap-4 flex-1 text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                   <div>NAME</div>
                   <div>STATUS</div>
                   <div>PROGRESS</div>
@@ -2133,14 +2133,14 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
           </div>
 
           {/* Campaign Rows */}
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-gray-200 dark:divide-slate-700">
                     {campaigns.map((campaign: Campaign, index: number) => (
             <motion.div
               key={campaign.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="px-6 py-4 hover:bg-gray-50 transition-colors"
+              className="px-6 py-4 hover:bg-gray-50 transition-colors dark:hover:bg-slate-800"
             >
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
@@ -2173,13 +2173,13 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         />
                       </div>
                     ) : (
-                      <div className="font-medium text-gray-900">{campaign.name}</div>
+                      <div className="font-medium text-gray-900 dark:text-white">{campaign.name}</div>
                     )}
                   </div>
 
                   {/* Status */}
                   <div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(campaign.status)}`}>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(campaign.status)} dark:text-white`}>
                       {getStatusLabel(campaign.status)}
                     </span>
                   </div>
@@ -2187,35 +2187,35 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                   {/* Progress */}
                   <div>
                     <div className="flex items-center space-x-2">
-                      <div className="flex-1 bg-gray-200 rounded-full h-2">
+                      <div className="flex-1 bg-gray-200 rounded-full h-2 dark:bg-slate-700">
                         <div
                           className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${campaign.progress}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm text-gray-600 min-w-[40px]">{campaign.progress}%</span>
+                      <span className="text-sm text-gray-600 min-w-[40px] dark:text-gray-300">{campaign.progress}%</span>
                     </div>
                   </div>
 
                   {/* Sent */}
                   <div>
-                    <div className="font-semibold text-gray-900">{campaign.sent}</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">{campaign.sent}</div>
                   </div>
 
                   {/* Click */}
                   <div>
-                    <div className="font-semibold text-gray-900">{campaign.clicks}</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">{campaign.clicks}</div>
                   </div>
 
                   {/* Replied */}
                   <div>
-                    <div className="font-semibold text-gray-900">{campaign.replied}</div>
-                    <div className="text-sm text-gray-500">{campaign.reply_rate}%</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">{campaign.replied}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-300">{campaign.reply_rate}%</div>
                   </div>
 
                   {/* Opportunities */}
                   <div>
-                    <div className="font-semibold text-gray-900">{campaign.opportunities}</div>
+                    <div className="font-semibold text-gray-900 dark:text-white">{campaign.opportunities}</div>
                   </div>
                 </div>
 

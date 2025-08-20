@@ -1313,7 +1313,7 @@ export function Leads() {
   }
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:bg-slate-900">
+    <div className="p-6 min-h-screen" style={{ backgroundColor: '#0f172a' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -1341,7 +1341,7 @@ export function Leads() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Search Area */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6" style={{ backgroundColor: '#0f172a', borderColor: '#1e293b' }}>
             <h2 className="text-xl font-semibold text-gray-900 mb-6">{language === 'tr' ? 'Lead Arama' : 'Search for Leads'}</h2>
             
             {/* Provider Selection */}
@@ -1563,7 +1563,7 @@ export function Leads() {
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 sticky top-0">
+                    <thead className="bg-gray-50 sticky top-0 dark:bg-slate-800">
                       <tr>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'İsim' : 'Name'}</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Şirket' : 'Company'}</th>
@@ -1576,7 +1576,7 @@ export function Leads() {
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'İşlemler' : 'Actions'}</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-gray-200 dark:bg-slate-800 dark:divide-slate-700">
                       {searchResults.map((lead, index) => (
                         <motion.tr
                           key={lead.id}
@@ -1585,22 +1585,22 @@ export function Leads() {
                           transition={{ delay: index * 0.05 }}
                           className="hover:bg-gray-50"
                         >
-                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                             {lead.name || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {lead.companyName || 'N/A'}
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                            {lead.company_name || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {lead.jobTitle || 'N/A'}
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                            {lead.job_title || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                             {lead.email || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                             {lead.phone || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                             {lead.location || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
