@@ -9,7 +9,7 @@ interface SelectedTool {
 interface ConnectionLinesProps {
   selectedTools: { [key: string]: SelectedTool };
   containerDimensions?: { width: number; height: number };
-  isRightSidebarOpen?: boolean; // Sidebar durumunu prop olarak al
+  isRightSidebarOpen?: boolean; // Sidebar durumu prop olarak al
 }
 
 export function ConnectionLines({ 
@@ -23,10 +23,8 @@ export function ConnectionLines({
   // Sidebar genişliğini hesaplama - sadece açık olduğunda
   const [sidebarWidth, setSidebarWidth] = useState(0);
 
-  // Sidebar durumu değiştiğinde genişliği hesapla
   useEffect(() => {
     if (isRightSidebarOpen) {
-      // Sidebar açıkken genişliğini hesapla
       const updateSidebarWidth = () => {
         const rightSidebar = document.querySelector('.fixed.top-0.right-0');
         if (rightSidebar) {
@@ -35,32 +33,26 @@ export function ConnectionLines({
           setSidebarWidth(isVisible ? rect.width : 0);
         }
       };
-
-      // Küçük bir gecikme ile sidebar'ın render olmasını bekle
       const timer = setTimeout(updateSidebarWidth, 50);
-      
       return () => clearTimeout(timer);
     } else {
-      // Sidebar kapalıyken genişlik sıfır
       setSidebarWidth(0);
     }
-  }, [isRightSidebarOpen]); // Sadece sidebar durumu değiştiğinde çalışır
+  }, [isRightSidebarOpen]);
 
-  // Zigzag sıralama için agent sırası (soldan sağa)
   const agentOrder = ['leo', 'mike', 'sophie', 'ash', 'clara'];
   const orderedTools = agentOrder
     .map(agent => toolEntries.find(([key]) => key === agent))
     .filter(Boolean) as [string, SelectedTool][];
 
-  const ICON_SIZE = 80; // HexIcon large size
-  const ICON_CENTER_OFFSET = ICON_SIZE / 2; // İkonun merkez noktası için offset
+  const ICON_SIZE = 80;
+  const ICON_CENTER_OFFSET = ICON_SIZE / 2;
 
-  // Sidebar durumuna göre viewport genişliğini ayarla
   const adjustedViewportWidth = containerDimensions.width - sidebarWidth;
 
-  // ✅ Sidebar kapalıyken -40 px offset uygula
-  const manualOffsetX = isRightSidebarOpen ? 0 : -40;
-  const manualOffsetY = 0;
+  // ✅ Yeni offset mantığı
+  const manualOffsetX = isRightSidebarOpen ? -20 : -40;
+  const manualOffsetY = isRightSidebarOpen ? 0 : 40;
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
@@ -70,14 +62,12 @@ export function ConnectionLines({
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
-          {/* Gradient for connection lines */}
           <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.8" />
             <stop offset="50%" stopColor="#8b5cf6" stopOpacity="0.9" />
             <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.8" />
           </linearGradient>
           
-          {/* Enhanced glow effect */}
           <filter id="connectionGlow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="4" result="coloredBlur" />
             <feMerge>
@@ -86,7 +76,6 @@ export function ConnectionLines({
             </feMerge>
           </filter>
 
-          {/* Connection dots */}
           <marker 
             id="connectionDot" 
             markerWidth="8" 
@@ -95,21 +84,14 @@ export function ConnectionLines({
             refY="4"
             orient="auto"
           >
-            <circle 
-              cx="4" 
-              cy="4" 
-              r="2" 
-              fill="#06b6d4" 
-              opacity="0.8"
-            />
+            <circle cx="4" cy="4" r="2" fill="#06b6d4" opacity="0.8" />
           </marker>
         </defs>
 
-        {/* Draw connections between consecutive tools with smooth curves */}
+        {/* Normal çizgiler */}
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          // ✅ İkonların merkez noktalarını hesapla + manual offset ekle
           const startX = toolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
           const startY = toolData.position.y + ICON_CENTER_OFFSET + manualOffsetY;
           const endX = nextToolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
@@ -118,7 +100,6 @@ export function ConnectionLines({
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           
-          // Curve control points
           const controlOffset = Math.abs(deltaY) * 0.6; 
           const control1X = startX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
@@ -129,7 +110,7 @@ export function ConnectionLines({
           
           return (
             <motion.path
-              key={`connection-${agentKey}-${nextAgentKey}-${isRightSidebarOpen}`} // Key'e sidebar durumu ekle
+              key={`connection-${agentKey}-${nextAgentKey}-${isRightSidebarOpen}`}
               d={pathData}
               stroke="url(#connectionGradient)"
               strokeWidth="3"
@@ -138,15 +119,8 @@ export function ConnectionLines({
               markerStart="url(#connectionDot)"
               initial={{ pathLength: 0, opacity: 0 }}
               animate={{ pathLength: 1, opacity: 0.9 }}
-              transition={{ 
-                duration: 1.8, 
-                delay: index * 0.4, 
-                ease: 'easeInOut' 
-              }}
-              style={{
-                strokeLinecap: 'round',
-                strokeLinejoin: 'round'
-              }}
+              transition={{ duration: 1.8, delay: index * 0.4, ease: 'easeInOut' }}
+              style={{ strokeLinecap: 'round', strokeLinejoin: 'round' }}
             />
           );
         })}
@@ -180,13 +154,7 @@ export function ConnectionLines({
               opacity="0.5"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: [0, 1, 0] }}
-              transition={{ 
-                duration: 2.5, 
-                delay: index * 0.4 + 2, 
-                repeat: Infinity,
-                repeatDelay: 4,
-                ease: 'easeInOut' 
-              }}
+              transition={{ duration: 2.5, delay: index * 0.4 + 2, repeat: Infinity, repeatDelay: 4, ease: 'easeInOut' }}
               strokeDasharray="6 6"
             />
           );
@@ -213,20 +181,8 @@ export function ConnectionLines({
           return (
             <motion.g key={`particle-group-${agentKey}-${nextAgentKey}-${isRightSidebarOpen}`}>
               <path id={`particle-path-${index}-${isRightSidebarOpen ? 'open' : 'closed'}`} d={pathData} fill="none" />
-              <motion.circle
-                r="3"
-                fill="#06b6d4"
-                opacity="0.8"
-              >
-                <animateMotion
-                  dur="3s"
-                  begin={`${index * 0.6 + 3}s`}
-                  repeatCount="indefinite"
-                  keyPoints="0;1"
-                  keyTimes="0;1"
-                  calcMode="spline"
-                  keySplines="0.42 0 0.58 1"
-                >
+              <motion.circle r="3" fill="#06b6d4" opacity="0.8">
+                <animateMotion dur="3s" begin={`${index * 0.6 + 3}s`} repeatCount="indefinite" keyPoints="0;1" keyTimes="0;1" calcMode="spline" keySplines="0.42 0 0.58 1">
                   <mpath href={`#particle-path-${index}-${isRightSidebarOpen ? 'open' : 'closed'}`} />
                 </animateMotion>
               </motion.circle>
@@ -234,32 +190,15 @@ export function ConnectionLines({
           );
         })}
 
-        {/* Development mode: Debug points - İkon merkezlerini göster */}
+        {/* Debug */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
           const centerX = toolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
           const centerY = toolData.position.y + ICON_CENTER_OFFSET + manualOffsetY;
           
           return (
             <g key={`debug-${agentKey}-${isRightSidebarOpen}`}>
-              {/* İkon merkezi */}
-              <circle
-                cx={centerX} 
-                cy={centerY}
-                r="4"
-                fill="red"
-                opacity="0.8"
-              />
-              {/* İkon sınırları */}
-              <rect
-                x={toolData.position.x + manualOffsetX}
-                y={toolData.position.y + manualOffsetY}
-                width={ICON_SIZE}
-                height={ICON_SIZE}
-                fill="none"
-                stroke="orange"
-                strokeWidth="1"
-                opacity="0.5"
-              />
+              <circle cx={centerX} cy={centerY} r="4" fill="red" opacity="0.8" />
+              <rect x={toolData.position.x + manualOffsetX} y={toolData.position.y + manualOffsetY} width={ICON_SIZE} height={ICON_SIZE} fill="none" stroke="orange" strokeWidth="1" opacity="0.5" />
             </g>
           );
         })}
