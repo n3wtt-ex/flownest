@@ -22,40 +22,11 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
 
   const BOARD_WIDTH = 800;
   const BOARD_HEIGHT = 480; // %20 küçültüldü
-  const ICON_X_OFFSET = 40; // İkonun yatay merkezi (SVG viewBox merkezi)
-  const ICON_Y_OFFSET = 40; // İkonun dikey merkezi (SVG viewBox merkezi)
+  // DÜZELTME: İkon merkezi offset değerlerini 16 olarak ayarla (32x32px ikonlar için)
+  const ICON_X_OFFSET = 16; // İkonun yatay merkezi (32px genişliğinde)
+  const ICON_Y_OFFSET = 16; // İkonun dikey merkezi (32px yüksekliğinde)
   
-  // Sidebar genişliğini dinamik olarak hesaplamak için state
-  const [sidebarWidth, setSidebarWidth] = useState(0);
-
-  // Sidebar genişliğini izlemek için effect
-  useEffect(() => {
-    const updateSidebarWidth = () => {
-      const rightSidebar = document.querySelector('.fixed.top-0.right-0');
-      if (rightSidebar) {
-        // Sidebar'ın gerçek genişliğini ölç
-        const rect = rightSidebar.getBoundingClientRect();
-        // Eğer sidebar viewport içindeyse genişliğini al, değilse 0
-        const isVisible = rect.x < window.innerWidth && rect.width > 0;
-        setSidebarWidth(isVisible ? rect.width : 0);
-      } else {
-        setSidebarWidth(0);
-      }
-    };
-
-    // İlk yükleme ve resize durumlarında güncelle
-    updateSidebarWidth();
-    window.addEventListener('resize', updateSidebarWidth);
-    
-    // MutationObserver ile DOM değişikliklerini izle
-    const observer = new MutationObserver(updateSidebarWidth);
-    observer.observe(document.body, { childList: true, subtree: true });
-    
-    return () => {
-      window.removeEventListener('resize', updateSidebarWidth);
-      observer.disconnect();
-    };
-  }, []);
+  // DÜZELTME: Sidebar genişliği ayarını kaldır - ikon koordinatları zaten viewport'a göre tanımlı
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
@@ -107,25 +78,24 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // İkonların merkez noktalarını hesapla
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const startX = toolData.position.x + ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
           const endX = nextToolData.position.x + ICON_X_OFFSET;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
-          // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = startX + sidebarWidth;
-          const adjustedEndX = endX + sidebarWidth;
-          
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           
           const controlOffset = Math.abs(deltaY) * 0.6; 
-          const control1X = adjustedStartX + deltaX * 0.3;
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
+          const control1X = startX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
-          const control2X = adjustedEndX - deltaX * 0.3;
+          const control2X = endX - deltaX * 0.3;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
           
-          const pathData = `M ${adjustedStartX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${adjustedEndX} ${endY}`;
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
+          const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
           
           return (
             <motion.path
@@ -156,24 +126,23 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // İkonların merkez noktalarını hesapla
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const startX = toolData.position.x + ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
           const endX = nextToolData.position.x + ICON_X_OFFSET;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
-          // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = startX + sidebarWidth;
-          const adjustedEndX = endX + sidebarWidth;
-          
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
-          const control1X = adjustedStartX + deltaX * 0.3;
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
+          const control1X = startX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
-          const control2X = adjustedEndX - deltaX * 0.3;
+          const control2X = endX - deltaX * 0.3;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
           
-          const pathData = `M ${adjustedStartX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${adjustedEndX} ${endY}`;
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
+          const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
           
           return (
             <motion.path
@@ -202,24 +171,23 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
           // İkonların merkez noktalarını hesapla
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
           const startX = toolData.position.x + ICON_X_OFFSET;
           const startY = toolData.position.y + ICON_Y_OFFSET;
           
           const endX = nextToolData.position.x + ICON_X_OFFSET;
           const endY = nextToolData.position.y + ICON_Y_OFFSET;
           
-          // Sidebar genişliğine göre X koordinatlarını ayarla
-          const adjustedStartX = startX + sidebarWidth;
-          const adjustedEndX = endX + sidebarWidth;
-          
           const deltaX = endX - startX;
           const deltaY = endY - startY;
           const controlOffset = Math.abs(deltaY) * 0.6;
-          const control1X = adjustedStartX + deltaX * 0.3;
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
+          const control1X = startX + deltaX * 0.3;
           const control1Y = startY + (deltaY > 0 ? -controlOffset : controlOffset);
-          const control2X = adjustedEndX - deltaX * 0.3;
+          const control2X = endX - deltaX * 0.3;
           const control2Y = endY + (deltaY > 0 ? controlOffset : -controlOffset);
-          const pathData = `M ${adjustedStartX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${adjustedEndX} ${endY}`;
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
+          const pathData = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${endX} ${endY}`;
 
           return (
             <motion.g key={`particle-group-${agentKey}-${nextAgentKey}`}>
@@ -248,7 +216,8 @@ export function ConnectionLines({ selectedTools }: ConnectionLinesProps) {
         {/* Development mode: Debug points */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
           // İkonların merkez noktalarını hesapla
-          const adjustedX = toolData.position.x + ICON_X_OFFSET + sidebarWidth;
+          // DÜZELTME: Sidebar genişliği ayarı kaldırıldı
+          const adjustedX = toolData.position.x + ICON_X_OFFSET;
           const adjustedY = toolData.position.y + ICON_Y_OFFSET;
           
           return (
