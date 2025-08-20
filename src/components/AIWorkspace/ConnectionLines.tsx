@@ -51,7 +51,7 @@ export function ConnectionLines({
   const adjustedViewportWidth = containerDimensions.width - sidebarWidth;
 
   // ✅ Yeni offset mantığı
-  const manualOffsetX = isRightSidebarOpen ? -100 : -40;
+  const manualOffsetX = isRightSidebarOpen ? 0 : -40;
   const manualOffsetY = isRightSidebarOpen ? 0 : -45;
 
   return (
