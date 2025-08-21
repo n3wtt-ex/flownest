@@ -30,11 +30,11 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
       onSave={handleSave}
       isValid={isValid}
     >
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Name Input */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <label 
-            className="block text-blue-300 text-sm font-medium"
+            className="block text-blue-300 text-xs font-medium"
             title="Emailler kimin adına gönderilsin"
           >
             İsim
@@ -44,14 +44,14 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Adınızı girin"
-            className="w-full px-4 py-3 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+            className="w-full px-3 py-2 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
           />
         </div>
 
         {/* Company Name Input */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <label 
-            className="block text-blue-300 text-sm font-medium"
+            className="block text-blue-300 text-xs font-medium"
             title="Şirketinizin adı"
           >
             Şirket Adı
@@ -61,13 +61,13 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
             value={companyName}
             onChange={(e) => setCompanyName(e.target.value)}
             placeholder="Şirket adınızı girin"
-            className="w-full px-4 py-3 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
+            className="w-full px-3 py-2 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
           />
         </div>
 
         {/* Company Info Textarea */}
-        <div className="space-y-2">
-          <label className="block text-blue-300 text-sm font-medium">
+        <div className="space-y-1.5">
+          <label className="block text-blue-300 text-xs font-medium">
             Şirketinizi ve Ürününüzü Tanıtın
           </label>
           <div className="relative">
@@ -75,16 +75,16 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
               value={companyInfo}
               onChange={(e) => setCompanyInfo(e.target.value)}
               placeholder="Şirketiniz ve ürünleriniz hakkında bilgi girin..."
-              className="w-full h-32 px-4 py-3 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all resize-none"
+              className="w-full h-24 px-3 py-2 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-sm"
             />
-            <div className="absolute bottom-3 right-3 text-blue-400 text-sm">
+            <div className="absolute bottom-2 right-2 text-blue-400 text-xs">
               {companyInfo.length}/500
             </div>
           </div>
         </div>
 
         {!isValid && (
-          <p className="text-red-300 text-sm">Lütfen tüm alanları doldurun</p>
+          <p className="text-red-300 text-xs">Lütfen tüm alanları doldurun</p>
         )}
       </div>
     </OnboardingCard>
