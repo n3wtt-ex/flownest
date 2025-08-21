@@ -80,6 +80,7 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
                 value={eventContent}
                 onChange={(e) => setEventContent(e.target.value)}
                 className="w-full h-full px-3 py-2 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-sm"
+                style={{ minHeight: '120px' }}
               />
               <div className="absolute bottom-2 right-2 text-blue-400 text-xs">
                 {eventContent.length}/1000
