@@ -27,7 +27,7 @@ export function OnboardingCard({
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="relative w-full h-full bg-gradient-to-br from-blue-900/70 via-gray-900 to-blue-900/70 rounded-2xl border border-blue-700/40 shadow-2xl overflow-hidden"
-      style={{ aspectRatio: '2/3' }}
+      style={{ aspectRatio: '2/2.6' }}
     >
       {/* Modern Abstract Background */}
       <div className="absolute inset-0 opacity-20">
