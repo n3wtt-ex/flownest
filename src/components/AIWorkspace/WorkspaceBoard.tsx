@@ -7,6 +7,7 @@ import { AgentHeader } from './AgentHeader';
 import { RightSidebar } from './RightSidebar';
 import { SelectionRow } from './SelectionRow';
 import { Play } from 'lucide-react';
+import { OnboardingFlow } from './OnboardingFlow';
 
 interface WorkspaceSelection {
   [key: string]: string;
@@ -18,6 +19,14 @@ interface WorkspaceData {
   selections: WorkspaceSelection;
   messages: any[];
   createdAt: string;
+  onboardingCompleted?: boolean;
+  targetCustomers?: number;
+  targetAudience?: string;
+  name?: string;
+  companyName?: string;
+  companyInfo?: string;
+  eventType?: string;
+  eventContent?: string;
 }
 
 interface WorkspaceBoardProps {
@@ -246,6 +255,24 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       alert('İş akışı başlatıldı! n8n entegrasyonu devrede...');
     }, 1500);
   };
+
+  // Onboarding completion handler
+  const handleOnboardingComplete = (onboardingData: any) => {
+    onUpdateWorkspace({
+      ...workspace,
+      onboardingCompleted: true,
+      ...onboardingData
+    });
+  };
+
+  // If onboarding is not completed, show the onboarding flow
+  if (!workspace.onboardingCompleted) {
+    return (
+      <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+        <OnboardingFlow onComplete={handleOnboardingComplete} />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">

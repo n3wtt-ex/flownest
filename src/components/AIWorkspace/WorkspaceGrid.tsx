@@ -18,6 +18,7 @@ interface WorkspaceData {
   selections: { [key: string]: string };
   messages: any[];
   createdAt: string;
+  onboardingCompleted?: boolean;
 }
 
 interface WorkspaceGridProps {
