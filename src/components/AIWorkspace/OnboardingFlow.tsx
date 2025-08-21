@@ -55,55 +55,43 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   return (
     <div className="w-full h-[618px] flex items-center justify-center">
-      <div className="w-full max-w-3xl h-full">
+      <div className="w-full max-w-2xl h-full flex items-center justify-center">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentStep}
             custom={direction}
             variants={{
               enter: (direction: number) => ({
-                x: direction > 0 ? 200 : -200,
-                y: direction > 0 ? 50 : -50,
-                z: direction > 0 ? -300 : 300,
-                opacity: 0,
-                rotateX: direction > 0 ? -30 : 30,
-                rotateY: direction > 0 ? -10 : 10,
+                x: direction > 0 ? 50 : -50,
+                scale: 0.95,
+                opacity: 0.7,
               }),
               center: {
                 zIndex: 1,
                 x: 0,
-                y: 0,
-                z: 0,
+                scale: 1,
                 opacity: 1,
-                rotateX: 0,
-                rotateY: 0,
               },
               exit: (direction: number) => ({
                 zIndex: 0,
-                x: direction < 0 ? 200 : -200,
-                y: direction < 0 ? 50 : -50,
-                z: direction < 0 ? -300 : 300,
-                opacity: 0,
-                rotateX: direction < 0 ? -30 : 30,
-                rotateY: direction < 0 ? -10 : 10,
+                x: direction < 0 ? 50 : -50,
+                scale: 0.95,
+                opacity: 0.7,
               })
             }}
             initial="enter"
             animate="center"
             exit="exit"
             transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
-              y: { type: "spring", stiffness: 300, damping: 30 },
-              z: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.3 },
-              rotateX: { duration: 0.5, ease: "easeInOut" },
-              rotateY: { duration: 0.5, ease: "easeInOut" }
+              x: { type: "spring", stiffness: 300, damping: 35 },
+              scale: { duration: 0.25 },
+              opacity: { duration: 0.25 }
             }}
             style={{ 
               transformStyle: "preserve-3d",
               transformOrigin: "center center"
             }}
-            className="w-full h-full"
+            className="w-full h-auto"
           >
             {renderStep()}
           </motion.div>
