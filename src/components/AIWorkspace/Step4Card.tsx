@@ -46,42 +46,44 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
       onSave={handleSave}
       isValid={isValid}
     >
-      <div className="space-y-4">
-        {/* Event Selection */}
-        <div className="space-y-2">
-          <label className="block text-blue-300 text-xs font-medium">
-            Event Türü
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {Object.entries(eventLabels).map(([key, label]) => (
-              <button
-                key={key}
-                onClick={() => setSelectedEvent(key)}
-                className={`p-2 rounded-lg border-2 transition-all text-left ${
-                  selectedEvent === key
-                    ? 'border-blue-500 bg-blue-500/20 text-white'
-                    : 'border-blue-600/50 bg-blue-800/50 text-blue-200 hover:border-blue-500'
-                }`}
-              >
-                <div className="font-medium text-sm">{label}</div>
-              </button>
-            ))}
+      <div className="flex flex-col h-full">
+        <div className="space-y-3 flex-grow">
+          {/* Event Selection */}
+          <div className="space-y-2">
+            <label className="block text-blue-300 text-xs font-medium">
+              Event Türü
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries(eventLabels).map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => setSelectedEvent(key)}
+                  className={`p-2 rounded-lg border-2 transition-all text-left ${
+                    selectedEvent === key
+                      ? 'border-blue-500 bg-blue-500/20 text-white'
+                      : 'border-blue-600/50 bg-blue-800/50 text-blue-200 hover:border-blue-500'
+                  }`}
+                >
+                  <div className="font-medium text-sm">{label}</div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Event Content */}
-        <div className="space-y-2">
-          <label className="block text-blue-300 text-xs font-medium">
-            Event Bilgileri
-          </label>
-          <div className="relative">
-            <textarea
-              value={eventContent}
-              onChange={(e) => setEventContent(e.target.value)}
-              className="w-full h-32 px-3 py-2 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-sm"
-            />
-            <div className="absolute bottom-2 right-2 text-blue-400 text-xs">
-              {eventContent.length}/1000
+          {/* Event Content */}
+          <div className="space-y-2 flex-grow">
+            <label className="block text-blue-300 text-xs font-medium">
+              Event Bilgileri
+            </label>
+            <div className="relative h-full">
+              <textarea
+                value={eventContent}
+                onChange={(e) => setEventContent(e.target.value)}
+                className="w-full h-full px-3 py-2 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-sm"
+              />
+              <div className="absolute bottom-2 right-2 text-blue-400 text-xs">
+                {eventContent.length}/1000
+              </div>
             </div>
           </div>
         </div>

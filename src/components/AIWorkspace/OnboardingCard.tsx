@@ -77,12 +77,12 @@ export function OnboardingCard({
 
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col p-4">
-        <div className="flex-1">
+        <div className="flex-1 flex flex-col">
           <motion.h2 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1, duration: 0.2 }}
-            className="text-lg font-bold text-white mb-3"
+            className="text-lg font-bold text-white mb-3 flex-shrink-0"
           >
             {title}
           </motion.h2>
@@ -90,7 +90,7 @@ export function OnboardingCard({
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.15, duration: 0.2 }}
-            className="space-y-3"
+            className="flex-grow overflow-y-auto"
           >
             {children}
           </motion.div>
@@ -101,7 +101,7 @@ export function OnboardingCard({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.2 }}
-          className="mt-4 flex justify-end"
+          className="mt-4 flex-shrink-0 flex justify-end"
         >
           <motion.button
             whileHover={{ scale: 1.02 }}
