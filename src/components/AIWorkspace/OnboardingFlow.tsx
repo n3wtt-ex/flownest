@@ -64,16 +64,19 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               enter: (direction: number) => ({
                 x: direction > 0 ? 1000 : -1000,
                 opacity: 0,
+                rotateY: direction > 0 ? -120 : 120,
               }),
               center: {
                 zIndex: 1,
                 x: 0,
                 opacity: 1,
+                rotateY: 0,
               },
               exit: (direction: number) => ({
                 zIndex: 0,
                 x: direction < 0 ? 1000 : -1000,
                 opacity: 0,
+                rotateY: direction < 0 ? -120 : 120,
               })
             }}
             initial="enter"
@@ -81,8 +84,10 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             exit="exit"
             transition={{
               x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 }
+              opacity: { duration: 0.3 },
+              rotateY: { duration: 0.6, ease: "easeInOut" }
             }}
+            style={{ transformStyle: "preserve-3d" }}
           >
             {renderStep()}
           </motion.div>

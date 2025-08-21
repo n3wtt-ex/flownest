@@ -26,15 +26,22 @@ export function OnboardingCard({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -50 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
-      className="relative w-full h-full bg-gradient-to-br from-blue-900/70 via-blue-800/70 to-blue-700/70 backdrop-blur-xl rounded-xl border border-blue-500/20 shadow-2xl overflow-hidden"
+      className="relative w-full h-full bg-gradient-to-br from-blue-900/60 via-blue-800/60 to-blue-700/60 backdrop-blur-xl rounded-xl border border-blue-500/20 shadow-2xl overflow-hidden"
     >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-15">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 25% 25%, #3b82f6 0%, transparent 50%),
-                            radial-gradient(circle at 75% 75%, #60a5fa 0%, transparent 50%)`,
-          backgroundSize: '120px 120px'
-        }} />
+      {/* Soft Background Pattern */}
+      <div className="absolute inset-0 opacity-20">
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 15% 25%, rgba(59, 130, 246, 0.3) 0%, transparent 20%),
+              radial-gradient(circle at 85% 75%, rgba(96, 165, 250, 0.3) 0%, transparent 20%),
+              radial-gradient(circle at 45% 15%, rgba(125, 211, 252, 0.2) 0%, transparent 15%),
+              radial-gradient(circle at 75% 45%, rgba(56, 189, 248, 0.2) 0%, transparent 15%)
+            `,
+            backgroundSize: '200px 200px'
+          }}
+        />
       </div>
 
       {/* Progress Indicator */}
