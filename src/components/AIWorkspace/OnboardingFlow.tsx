@@ -24,12 +24,14 @@ const TOTAL_STEPS = 4;
 export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({});
+  const [direction, setDirection] = useState(0);
 
   const handleSave = (data: Partial<OnboardingData>) => {
     const updatedData = { ...onboardingData, ...data };
     setOnboardingData(updatedData);
     
     if (currentStep < TOTAL_STEPS) {
+      setDirection(1);
       setCurrentStep(prev => prev + 1);
     } else {
       onComplete(updatedData);
@@ -54,13 +56,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   return (
     <div className="w-full h-[618px] flex items-center justify-center">
       <div className="w-full max-w-3xl h-full">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentStep}
-            custom={currentStep}
+            custom={direction}
             variants={{
               enter: (direction: number) => ({
-                x: direction > 0 ? 100 : -100,
+                x: direction > 0 ? 1000 : -1000,
                 opacity: 0,
               }),
               center: {
@@ -70,7 +72,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               },
               exit: (direction: number) => ({
                 zIndex: 0,
-                x: direction < 0 ? 100 : -100,
+                x: direction < 0 ? 1000 : -1000,
                 opacity: 0,
               })
             }}

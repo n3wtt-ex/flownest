@@ -33,7 +33,7 @@ export function ConnectionLines({
           setSidebarWidth(isVisible ? rect.width : 0);
         }
       };
-      const timer = setTimeout(updateSidebarWidth, 50);
+      const timer = setTimeout(updateSidebarWidth, 100); // 100ms gecikme
       return () => clearTimeout(timer);
     } else {
       setSidebarWidth(0);
@@ -50,8 +50,8 @@ export function ConnectionLines({
 
   const adjustedViewportWidth = containerDimensions.width - sidebarWidth;
 
-  // ✅ Yeni offset mantığı
-  const manualOffsetX = isRightSidebarOpen ? 0 : -40;
+  // Offset mantığı - sidebar durumuna göre ayarla
+  const manualOffsetX = isRightSidebarOpen ? -sidebarWidth / 2 : -40;
   const manualOffsetY = isRightSidebarOpen ? 0 : -45;
 
   return (

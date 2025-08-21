@@ -151,7 +151,10 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       );
       
       if (hasClassChange) {
-        updateDimensions();
+        // Onboarding akışı tamamlandıktan sonra pozisyonları yeniden hesapla
+        if (workspace.onboardingCompleted) {
+          setTimeout(updateDimensions, 300); // Animasyon tamamlandıktan sonra güncelle
+        }
       }
     });
     
@@ -165,7 +168,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       window.removeEventListener('resize', updateDimensions);
       observer.disconnect();
     };
-  }, []); // Dependency array boş - sadece mount/unmount'da çalışır
+  }, [workspace.onboardingCompleted]); // workspace.onboardingCompleted değiştiğinde yeniden çalıştır
 
   // Pozisyonları güncelleme
   const toolPositions = calculateToolPositions(containerDimensions.width, containerDimensions.height);
@@ -263,6 +266,17 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       onboardingCompleted: true,
       ...onboardingData
     });
+    
+    // Onboarding tamamlandıktan sonra pozisyonları yeniden hesapla
+    setTimeout(() => {
+      if (workspaceRef.current) {
+        const rect = workspaceRef.current.getBoundingClientRect();
+        setContainerDimensions({ 
+          width: rect.width, 
+          height: rect.height 
+        });
+      }
+    }, 300); // Animasyon tamamlandıktan sonra güncelle
   };
 
   // If onboarding is not completed, show the onboarding flow
