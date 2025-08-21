@@ -55,16 +55,16 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   return (
     <div className="w-full h-[618px] flex items-center justify-center">
-      <div className="w-full max-w-2xl h-full flex items-center justify-center">
+      <div className="w-full max-w-lg h-full flex items-center justify-center">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={currentStep}
             custom={direction}
             variants={{
               enter: (direction: number) => ({
-                x: direction > 0 ? 50 : -50,
-                scale: 0.95,
-                opacity: 0.7,
+                x: direction > 0 ? 30 : -30,
+                scale: 0.97,
+                opacity: 0.8,
               }),
               center: {
                 zIndex: 1,
@@ -74,9 +74,9 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               },
               exit: (direction: number) => ({
                 zIndex: 0,
-                x: direction < 0 ? 50 : -50,
-                scale: 0.95,
-                opacity: 0.7,
+                x: direction < 0 ? 30 : -30,
+                scale: 0.97,
+                opacity: 0.8,
               })
             }}
             initial="enter"
