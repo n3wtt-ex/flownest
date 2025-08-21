@@ -62,21 +62,30 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             custom={direction}
             variants={{
               enter: (direction: number) => ({
-                x: direction > 0 ? 300 : -300,
+                x: direction > 0 ? 200 : -200,
+                y: direction > 0 ? 50 : -50,
+                z: direction > 0 ? -300 : 300,
                 opacity: 0,
-                rotateX: direction > 0 ? -45 : 45,
+                rotateX: direction > 0 ? -30 : 30,
+                rotateY: direction > 0 ? -10 : 10,
               }),
               center: {
                 zIndex: 1,
                 x: 0,
+                y: 0,
+                z: 0,
                 opacity: 1,
                 rotateX: 0,
+                rotateY: 0,
               },
               exit: (direction: number) => ({
                 zIndex: 0,
-                x: direction < 0 ? 300 : -300,
+                x: direction < 0 ? 200 : -200,
+                y: direction < 0 ? 50 : -50,
+                z: direction < 0 ? -300 : 300,
                 opacity: 0,
-                rotateX: direction < 0 ? -45 : 45,
+                rotateX: direction < 0 ? -30 : 30,
+                rotateY: direction < 0 ? -10 : 10,
               })
             }}
             initial="enter"
@@ -84,12 +93,15 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
             exit="exit"
             transition={{
               x: { type: "spring", stiffness: 300, damping: 30 },
+              y: { type: "spring", stiffness: 300, damping: 30 },
+              z: { type: "spring", stiffness: 300, damping: 30 },
               opacity: { duration: 0.3 },
-              rotateX: { duration: 0.5, ease: "easeInOut" }
+              rotateX: { duration: 0.5, ease: "easeInOut" },
+              rotateY: { duration: 0.5, ease: "easeInOut" }
             }}
             style={{ 
               transformStyle: "preserve-3d",
-              transformOrigin: "bottom center"
+              transformOrigin: "center center"
             }}
             className="w-full h-full"
           >
