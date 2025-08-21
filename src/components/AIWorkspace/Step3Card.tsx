@@ -87,7 +87,7 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
 
         {!isValid && (
           <div className="flex-shrink-0 mt-2">
-            <p className="text-red-300 text-xs">Lütfen tüm alanları doldurun</p>
+            <p className="text-red-300 text-xs text-center">Lütfen tüm alanları doldurun</p>
           </div>
         )}
       </div>

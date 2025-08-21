@@ -76,24 +76,20 @@ export function OnboardingCard({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex flex-col p-4">
-        <div className="flex-1 flex flex-col">
+      <div className="relative z-10 h-full flex flex-col p-5">
+        <div className="flex-shrink-0 pt-2">
           <motion.h2 
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1, duration: 0.2 }}
-            className="text-lg font-bold text-white mb-3 flex-shrink-0"
+            className="text-lg font-bold text-white"
           >
             {title}
           </motion.h2>
-          <motion.div 
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.15, duration: 0.2 }}
-            className="flex-grow overflow-y-auto"
-          >
-            {children}
-          </motion.div>
+        </div>
+        
+        <div className="flex-grow my-4 overflow-hidden">
+          {children}
         </div>
 
         {/* Save Button */}
@@ -101,14 +97,14 @@ export function OnboardingCard({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.2 }}
-          className="mt-4 flex-shrink-0 flex justify-end"
+          className="flex-shrink-0 pb-2 flex justify-end"
         >
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onSave}
             disabled={!isValid}
-            className={`px-3.5 py-1.5 rounded-md font-semibold transition-all text-xs ${
+            className={`px-4 py-2 rounded-md font-semibold transition-all text-sm ${
               isValid
                 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md hover:shadow-lg'
                 : 'bg-gray-700 text-gray-400 cursor-not-allowed'

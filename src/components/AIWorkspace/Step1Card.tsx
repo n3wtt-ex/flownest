@@ -30,20 +30,18 @@ export function Step1Card({ onSave, initialData }: Step1CardProps) {
       onSave={handleSave}
       isValid={isValid}
     >
-      <div className="flex flex-col h-full">
-        <div className="flex-grow flex items-center justify-center">
-          <div className="w-full">
-            <input
-              type="number"
-              value={targetCustomers}
-              onChange={(e) => setTargetCustomers(e.target.value)}
-              placeholder="Müşteri sayısını girin"
-              className="w-full px-3 py-2 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-            />
-            {!isValid && targetCustomers !== '' && (
-              <p className="text-red-300 text-xs mt-2">Lütfen geçerli bir sayı girin</p>
-            )}
-          </div>
+      <div className="flex items-center justify-center h-full">
+        <div className="w-full">
+          <input
+            type="number"
+            value={targetCustomers}
+            onChange={(e) => setTargetCustomers(e.target.value)}
+            placeholder="Müşteri sayısını girin"
+            className="w-full px-3 py-2 bg-blue-800/50 border border-blue-600/50 rounded-lg text-white placeholder-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+          />
+          {!isValid && targetCustomers !== '' && (
+            <p className="text-red-300 text-xs mt-2 text-center">Lütfen geçerli bir sayı girin</p>
+          )}
         </div>
       </div>
     </OnboardingCard>

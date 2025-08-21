@@ -44,7 +44,7 @@ export function Step2Card({ onSave, initialData }: Step2CardProps) {
         </div>
         {!isValid && (
           <div className="flex-shrink-0 mt-2">
-            <p className="text-red-300 text-xs">Lütfen hedef kitle tanımınızı girin</p>
+            <p className="text-red-300 text-xs text-center">Lütfen hedef kitle tanımınızı girin</p>
           </div>
         )}
       </div>
