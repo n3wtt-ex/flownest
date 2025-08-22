@@ -57,7 +57,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   const [connectionsValidated, setConnectionsValidated] = useState(false);
   const [validationMessage, setValidationMessage] = useState('');
   const [isValidating, setIsValidating] = useState(false);
-  const [showToolSelection, setShowToolSelection] = useState(true);
+  const [showToolSelection, setShowToolSelection] = useState(false);
   const [evaCommandReceived, setEvaCommandReceived] = useState(false);
   const [workflowStarted, setWorkflowStarted] = useState(false);
   const [containerDimensions, setContainerDimensions] = useState({ width: 800, height: 480 });
@@ -189,6 +189,9 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         };
       });
       onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [sectionId]: toolName } });
+      
+      // Araç seçildiğinde hemen showToolSelection'ı false yap
+      setShowToolSelection(false);
     }
   };
 
@@ -216,6 +219,9 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         };
       });
       onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [agentKey]: exactTool } });
+      
+      // Araç seçildiğinde hemen showToolSelection'ı false yap
+      setShowToolSelection(false);
     }
   };
 
@@ -244,8 +250,9 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   const retryValidation = () => validateConnections();
 
   useEffect(() => {
-    if (Object.keys(selectedTools).length === 5 && !connectionsValidated && !isValidating) {
-      validateConnections();
+    if (Object.keys(selectedTools).length === 5) {
+      // Araç seçimi tamamlandığında hemen UI'yı gizle
+      setShowToolSelection(false);
     }
   }, [selectedTools]);
 

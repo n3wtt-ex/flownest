@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { HexIcon } from './HexIcon';
 
 interface Section {
@@ -22,21 +21,15 @@ export function SelectionRow({ section, selectedIcon, onIconSelect }: SelectionR
       </div>
       
       <div className="flex space-x-2" role="list">
-        {section.icons.map((iconName, index) => (
-          <motion.div
-            key={iconName}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.05 }}
-            role="listitem"
-          >
+        {section.icons.map((iconName) => (
+          <div key={iconName} role="listitem">
             <HexIcon
               name={iconName}
               isSelected={selectedIcon === iconName}
               size="small"
               onClick={() => onIconSelect(iconName)}
             />
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
