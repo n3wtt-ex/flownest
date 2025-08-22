@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OnboardingCard } from './OnboardingCard';
-import { supabase } from '../../lib/supabase';
+import { supabase, supabaseService } from '../../lib/supabase';
 
 interface Step3CardProps {
   onSave: (data: { name: string; companyName: string; companyInfo: string }) => void;
@@ -53,32 +53,14 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
       
       try {
         // Önce mevcut veri olup olmadığını kontrol et
-        console.log('Attempting to fetch existing data from Supabase...');
-        const { data: existingData, error: fetchError } = await supabase
+        const { data: existingData, error: fetchError } = await supabaseService
           .from('company_info')
           .select('*')
           .limit(1);
         
         if (fetchError) {
-          console.error('Error fetching existing data from Supabase:', fetchError);
-          console.error('Error details:', {
-            message: fetchError.message,
-            code: fetchError.code,
-            hint: fetchError.hint
-          });
-          
-          // Supabase hatası durumunda localStorage kullan
-          console.log('Falling back to localStorage...');
-          const localStorageSuccess = saveToLocalStorage(data);
-          if (localStorageSuccess) {
-            alert('Veriler yerel olarak kaydedildi. (Supabase erişim hatası)');
-          } else {
-            alert('Veriler kaydedilemedi. Lütfen daha sonra tekrar deneyin.');
-          }
-          return;
+          throw fetchError;
         }
-        
-        console.log('Existing data fetched successfully:', existingData);
         
         const companyInfoData = {
           name: data.name,
@@ -91,55 +73,33 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
           event: existingData && existingData.length > 0 ? existingData[0].event : ''
         };
         
-        console.log('Attempting to save data to Supabase:', companyInfoData);
         let result;
         if (existingData && existingData.length > 0) {
           // Veri varsa güncelle
           const id = existingData[0].id;
-          console.log('Updating existing record with id:', id);
-          result = await supabase
+          result = await supabaseService
             .from('company_info')
             .update(companyInfoData)
             .eq('id', id);
         } else {
           // Veri yoksa yeni oluştur
-          console.log('Inserting new record');
-          result = await supabase
+          result = await supabaseService
             .from('company_info')
             .insert([companyInfoData]);
         }
         
         if (result.error) {
-          console.error('Error saving to Supabase:', result.error);
-          console.error('Error details:', {
-            message: result.error.message,
-            code: result.error.code,
-            details: result.error.details,
-            hint: result.error.hint
-          });
-          
-          // Supabase hatası durumunda localStorage kullan
-          console.log('Falling back to localStorage...');
-          const localStorageSuccess = saveToLocalStorage(data);
-          if (localStorageSuccess) {
-            alert('Veriler yerel olarak kaydedildi. (Supabase erişim hatası)');
-          } else {
-            alert('Veriler kaydedilemedi. Lütfen daha sonra tekrar deneyin.');
-          }
-          return;
+          throw result.error;
         }
         
         console.log('Company info saved successfully to Supabase');
-        console.log('Save result:', result);
-        // Başarılı durumda kullanıcıya bilgi ver
         alert('Veriler başarıyla kaydedildi!');
       } catch (error) {
         console.error('Error saving company info to Supabase:', error);
-        // Hata durumunda localStorage kullan
-        console.log('Falling back to localStorage...');
+        // Fallback olarak localStorage kullan
         const localStorageSuccess = saveToLocalStorage(data);
         if (localStorageSuccess) {
-          alert('Veriler yerel olarak kaydedildi. (Beklenmeyen hata)');
+          alert('Veriler yerel olarak kaydedildi. (Supabase erişim hatası)');
         } else {
           alert('Veriler kaydedilemedi. Lütfen daha sonra tekrar deneyin.');
         }
