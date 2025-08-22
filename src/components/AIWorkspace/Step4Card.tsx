@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OnboardingCard } from './OnboardingCard';
+import { supabase } from '../../lib/supabase';
 
 // Event type labels (from Email.tsx)
 const eventLabels = {
@@ -34,8 +35,55 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
     setEventContent(eventContents[selectedEvent as keyof typeof eventContents] || '');
   }, [selectedEvent]);
 
-  const handleSave = () => {
-    onSave({ eventType: selectedEvent, eventContent });
+  const handleSave = async () => {
+    const data = { eventType: selectedEvent, eventContent };
+    onSave(data);
+    
+    try {
+      // Önce mevcut veri olup olmadığını kontrol et
+      const { data: existingData, error: fetchError } = await supabase
+        .from('company_info')
+        .select('*')
+        .limit(1);
+      
+      if (fetchError) {
+        throw fetchError;
+      }
+      
+      const companyInfo = {
+        event_type: data.eventType,
+        event: data.eventContent,
+        // Mevcut diğer alanları koru
+        target_count: existingData && existingData.length > 0 ? existingData[0].target_count : 0,
+        target_audience: existingData && existingData.length > 0 ? existingData[0].target_audience : '',
+        name: existingData && existingData.length > 0 ? existingData[0].name : '',
+        company: existingData && existingData.length > 0 ? existingData[0].company : '',
+        info: existingData && existingData.length > 0 ? existingData[0].info : ''
+      };
+      
+      let result;
+      if (existingData && existingData.length > 0) {
+        // Veri varsa güncelle
+        const id = existingData[0].id;
+        result = await supabase
+          .from('company_info')
+          .update(companyInfo)
+          .eq('id', id);
+      } else {
+        // Veri yoksa yeni oluştur
+        result = await supabase
+          .from('company_info')
+          .insert([companyInfo]);
+      }
+      
+      if (result.error) {
+        throw result.error;
+      }
+      
+      console.log('Event info saved successfully to Supabase');
+    } catch (error) {
+      console.error('Error saving event info to Supabase:', error);
+    }
   };
 
   return (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OnboardingCard } from './OnboardingCard';
+import { supabase } from '../../lib/supabase';
 
 interface Step1CardProps {
   onSave: (data: { targetCustomers: number }) => void;
@@ -16,9 +17,56 @@ export function Step1Card({ onSave, initialData }: Step1CardProps) {
     setIsValid(targetCustomers !== '' && !isNaN(Number(targetCustomers)) && Number(targetCustomers) > 0);
   }, [targetCustomers]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (isValid) {
-      onSave({ targetCustomers: parseInt(targetCustomers, 10) });
+      const data = { targetCustomers: parseInt(targetCustomers, 10) };
+      onSave(data);
+      
+      try {
+        // Önce mevcut veri olup olmadığını kontrol et
+        const { data: existingData, error: fetchError } = await supabase
+          .from('company_info')
+          .select('*')
+          .limit(1);
+        
+        if (fetchError) {
+          throw fetchError;
+        }
+        
+        const companyInfo = {
+          target_count: data.targetCustomers,
+          // Mevcut diğer alanları koru
+          target_audience: existingData && existingData.length > 0 ? existingData[0].target_audience : '',
+          name: existingData && existingData.length > 0 ? existingData[0].name : '',
+          company: existingData && existingData.length > 0 ? existingData[0].company : '',
+          info: existingData && existingData.length > 0 ? existingData[0].info : '',
+          event_type: existingData && existingData.length > 0 ? existingData[0].event_type : '',
+          event: existingData && existingData.length > 0 ? existingData[0].event : ''
+        };
+        
+        let result;
+        if (existingData && existingData.length > 0) {
+          // Veri varsa güncelle
+          const id = existingData[0].id;
+          result = await supabase
+            .from('company_info')
+            .update(companyInfo)
+            .eq('id', id);
+        } else {
+          // Veri yoksa yeni oluştur
+          result = await supabase
+            .from('company_info')
+            .insert([companyInfo]);
+        }
+        
+        if (result.error) {
+          throw result.error;
+        }
+        
+        console.log('Target customers saved successfully to Supabase');
+      } catch (error) {
+        console.error('Error saving target customers to Supabase:', error);
+      }
     }
   };
 

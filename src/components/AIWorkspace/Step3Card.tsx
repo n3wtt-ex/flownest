@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OnboardingCard } from './OnboardingCard';
+import { supabase } from '../../lib/supabase';
 
 interface Step3CardProps {
   onSave: (data: { name: string; companyName: string; companyInfo: string }) => void;
@@ -16,9 +17,56 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
     setIsValid(name.length > 0 && companyName.length > 0 && companyInfo.length > 0);
   }, [name, companyName, companyInfo]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (isValid) {
-      onSave({ name, companyName, companyInfo });
+      const data = { name, companyName, companyInfo };
+      onSave(data);
+      
+      try {
+        // Önce mevcut veri olup olmadığını kontrol et
+        const { data: existingData, error: fetchError } = await supabase
+          .from('company_info')
+          .select('*')
+          .limit(1);
+        
+        if (fetchError) {
+          throw fetchError;
+        }
+        
+        const companyInfoData = {
+          name: data.name,
+          company: data.companyName,
+          info: data.companyInfo,
+          // Mevcut diğer alanları koru
+          target_count: existingData && existingData.length > 0 ? existingData[0].target_count : 0,
+          target_audience: existingData && existingData.length > 0 ? existingData[0].target_audience : '',
+          event_type: existingData && existingData.length > 0 ? existingData[0].event_type : '',
+          event: existingData && existingData.length > 0 ? existingData[0].event : ''
+        };
+        
+        let result;
+        if (existingData && existingData.length > 0) {
+          // Veri varsa güncelle
+          const id = existingData[0].id;
+          result = await supabase
+            .from('company_info')
+            .update(companyInfoData)
+            .eq('id', id);
+        } else {
+          // Veri yoksa yeni oluştur
+          result = await supabase
+            .from('company_info')
+            .insert([companyInfoData]);
+        }
+        
+        if (result.error) {
+          throw result.error;
+        }
+        
+        console.log('Company info saved successfully to Supabase');
+      } catch (error) {
+        console.error('Error saving company info to Supabase:', error);
+      }
     }
   };
 

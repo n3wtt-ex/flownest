@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OnboardingCard } from './OnboardingCard';
+import { supabase } from '../../lib/supabase';
 
 interface Step2CardProps {
   onSave: (data: { targetAudience: string }) => void;
@@ -14,9 +15,56 @@ export function Step2Card({ onSave, initialData }: Step2CardProps) {
     setIsValid(targetAudience.length > 0);
   }, [targetAudience]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (isValid) {
-      onSave({ targetAudience });
+      const data = { targetAudience };
+      onSave(data);
+      
+      try {
+        // Önce mevcut veri olup olmadığını kontrol et
+        const { data: existingData, error: fetchError } = await supabase
+          .from('company_info')
+          .select('*')
+          .limit(1);
+        
+        if (fetchError) {
+          throw fetchError;
+        }
+        
+        const companyInfo = {
+          target_audience: data.targetAudience,
+          // Mevcut diğer alanları koru
+          target_count: existingData && existingData.length > 0 ? existingData[0].target_count : 0,
+          name: existingData && existingData.length > 0 ? existingData[0].name : '',
+          company: existingData && existingData.length > 0 ? existingData[0].company : '',
+          info: existingData && existingData.length > 0 ? existingData[0].info : '',
+          event_type: existingData && existingData.length > 0 ? existingData[0].event_type : '',
+          event: existingData && existingData.length > 0 ? existingData[0].event : ''
+        };
+        
+        let result;
+        if (existingData && existingData.length > 0) {
+          // Veri varsa güncelle
+          const id = existingData[0].id;
+          result = await supabase
+            .from('company_info')
+            .update(companyInfo)
+            .eq('id', id);
+        } else {
+          // Veri yoksa yeni oluştur
+          result = await supabase
+            .from('company_info')
+            .insert([companyInfo]);
+        }
+        
+        if (result.error) {
+          throw result.error;
+        }
+        
+        console.log('Target audience saved successfully to Supabase');
+      } catch (error) {
+        console.error('Error saving target audience to Supabase:', error);
+      }
     }
   };
 
