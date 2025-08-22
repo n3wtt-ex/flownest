@@ -55,32 +55,34 @@ export function Step2Card({ onSave, initialData }: Step2CardProps) {
           throw fetchError;
         }
         
-        // Tabloda kayıt olmalı (sadece update yapılacak)
-        if (!existingData || existingData.length === 0) {
-          console.error('No existing record found in company_info table');
-          alert('Veritabanında kayıt bulunamadı. Lütfen önce diğer formları doldurun.');
-          return;
-        }
-        
         const companyInfo = {
-          target_audience: data.targetAudience
+          target_audience: data.targetAudience,
+          // Diğer alanlar boş bırakılıyor çünkü sadece bu alanı güncelliyoruz
         };
         
-        // Sadece update işlemi yapılacak
-        const id = existingData[0].id;
-        const { error: updateError } = await supabase
-          .from('company_info')
-          .update(companyInfo)
-          .eq('id', id);
-        
-        if (updateError) {
-          throw updateError;
+        let result;
+        if (existingData && existingData.length > 0) {
+          // Veri varsa güncelle
+          const id = existingData[0].id;
+          result = await supabase
+            .from('company_info')
+            .update(companyInfo)
+            .eq('id', id);
+        } else {
+          // Veri yoksa yeni oluştur
+          result = await supabase
+            .from('company_info')
+            .insert([companyInfo]);
         }
         
-        console.log('Target audience updated successfully in Supabase');
-        alert('Veriler başarıyla güncellendi!');
+        if (result.error) {
+          throw result.error;
+        }
+        
+        console.log('Target audience saved successfully to Supabase');
+        alert('Veriler başarıyla kaydedildi!');
       } catch (error) {
-        console.error('Error updating target audience in Supabase:', error);
+        console.error('Error saving target audience to Supabase:', error);
         // Fallback olarak localStorage kullan
         const localStorageSuccess = saveToLocalStorage(data);
         if (localStorageSuccess) {

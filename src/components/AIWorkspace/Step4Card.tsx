@@ -78,33 +78,35 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
         throw fetchError;
       }
       
-      // Tabloda kayıt olmalı (sadece update yapılacak)
-      if (!existingData || existingData.length === 0) {
-        console.error('No existing record found in company_info table');
-        alert('Veritabanında kayıt bulunamadı. Lütfen önce diğer formları doldurun.');
-        return;
-      }
-      
       const companyInfo = {
         event_type: data.eventType,
-        event: data.eventContent
+        event: data.eventContent,
+        // Diğer alanlar boş bırakılıyor çünkü sadece bu alanları güncelliyoruz
       };
       
-      // Sadece update işlemi yapılacak
-      const id = existingData[0].id;
-      const { error: updateError } = await supabase
-        .from('company_info')
-        .update(companyInfo)
-        .eq('id', id);
-      
-      if (updateError) {
-        throw updateError;
+      let result;
+      if (existingData && existingData.length > 0) {
+        // Veri varsa güncelle
+        const id = existingData[0].id;
+        result = await supabase
+          .from('company_info')
+          .update(companyInfo)
+          .eq('id', id);
+      } else {
+        // Veri yoksa yeni oluştur
+        result = await supabase
+          .from('company_info')
+          .insert([companyInfo]);
       }
       
-      console.log('Event info updated successfully in Supabase');
-      alert('Veriler başarıyla güncellendi!');
+      if (result.error) {
+        throw result.error;
+      }
+      
+      console.log('Event info saved successfully to Supabase');
+      alert('Veriler başarıyla kaydedildi!');
     } catch (error) {
-      console.error('Error updating event info in Supabase:', error);
+      console.error('Error saving event info to Supabase:', error);
       // Fallback olarak localStorage kullan
       const localStorageSuccess = saveToLocalStorage(data);
       if (localStorageSuccess) {

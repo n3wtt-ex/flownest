@@ -62,34 +62,36 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
           throw fetchError;
         }
         
-        // Tabloda kayıt olmalı (sadece update yapılacak)
-        if (!existingData || existingData.length === 0) {
-          console.error('No existing record found in company_info table');
-          alert('Veritabanında kayıt bulunamadı. Lütfen önce diğer formları doldurun.');
-          return;
-        }
-        
         const companyInfoData = {
           name: data.name,
           company: data.companyName,
-          info: data.companyInfo
+          info: data.companyInfo,
+          // Diğer alanlar boş bırakılıyor çünkü sadece bu alanları güncelliyoruz
         };
         
-        // Sadece update işlemi yapılacak
-        const id = existingData[0].id;
-        const { error: updateError } = await supabase
-          .from('company_info')
-          .update(companyInfoData)
-          .eq('id', id);
-        
-        if (updateError) {
-          throw updateError;
+        let result;
+        if (existingData && existingData.length > 0) {
+          // Veri varsa güncelle
+          const id = existingData[0].id;
+          result = await supabase
+            .from('company_info')
+            .update(companyInfoData)
+            .eq('id', id);
+        } else {
+          // Veri yoksa yeni oluştur
+          result = await supabase
+            .from('company_info')
+            .insert([companyInfoData]);
         }
         
-        console.log('Company info updated successfully in Supabase');
-        alert('Veriler başarıyla güncellendi!');
+        if (result.error) {
+          throw result.error;
+        }
+        
+        console.log('Company info saved successfully to Supabase');
+        alert('Veriler başarıyla kaydedildi!');
       } catch (error) {
-        console.error('Error updating company info in Supabase:', error);
+        console.error('Error saving company info to Supabase:', error);
         // Fallback olarak localStorage kullan
         const localStorageSuccess = saveToLocalStorage(data);
         if (localStorageSuccess) {
