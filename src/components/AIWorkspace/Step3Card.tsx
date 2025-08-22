@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { OnboardingCard } from './OnboardingCard';
-import { supabase, supabaseService } from '../../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 interface Step3CardProps {
   onSave: (data: { name: string; companyName: string; companyInfo: string }) => void;
@@ -53,7 +53,7 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
       
       try {
         // Önce mevcut veri olup olmadığını kontrol et
-        const { data: existingData, error: fetchError } = await supabaseService
+        const { data: existingData, error: fetchError } = await supabase
           .from('company_info')
           .select('*')
           .limit(1);
@@ -62,40 +62,34 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
           throw fetchError;
         }
         
+        // Tabloda kayıt olmalı (sadece update yapılacak)
+        if (!existingData || existingData.length === 0) {
+          console.error('No existing record found in company_info table');
+          alert('Veritabanında kayıt bulunamadı. Lütfen önce diğer formları doldurun.');
+          return;
+        }
+        
         const companyInfoData = {
           name: data.name,
           company: data.companyName,
-          info: data.companyInfo,
-          // Mevcut diğer alanları koru
-          target_count: existingData && existingData.length > 0 ? existingData[0].target_count : 0,
-          target_audience: existingData && existingData.length > 0 ? existingData[0].target_audience : '',
-          event_type: existingData && existingData.length > 0 ? existingData[0].event_type : '',
-          event: existingData && existingData.length > 0 ? existingData[0].event : ''
+          info: data.companyInfo
         };
         
-        let result;
-        if (existingData && existingData.length > 0) {
-          // Veri varsa güncelle
-          const id = existingData[0].id;
-          result = await supabaseService
-            .from('company_info')
-            .update(companyInfoData)
-            .eq('id', id);
-        } else {
-          // Veri yoksa yeni oluştur
-          result = await supabaseService
-            .from('company_info')
-            .insert([companyInfoData]);
+        // Sadece update işlemi yapılacak
+        const id = existingData[0].id;
+        const { error: updateError } = await supabase
+          .from('company_info')
+          .update(companyInfoData)
+          .eq('id', id);
+        
+        if (updateError) {
+          throw updateError;
         }
         
-        if (result.error) {
-          throw result.error;
-        }
-        
-        console.log('Company info saved successfully to Supabase');
-        alert('Veriler başarıyla kaydedildi!');
+        console.log('Company info updated successfully in Supabase');
+        alert('Veriler başarıyla güncellendi!');
       } catch (error) {
-        console.error('Error saving company info to Supabase:', error);
+        console.error('Error updating company info in Supabase:', error);
         // Fallback olarak localStorage kullan
         const localStorageSuccess = saveToLocalStorage(data);
         if (localStorageSuccess) {

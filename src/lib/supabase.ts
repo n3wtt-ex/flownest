@@ -12,7 +12,4 @@ if (supabaseUrl === 'YOUR_SUPABASE_URL' || supabaseAnonKey === 'YOUR_SUPABASE_AN
   console.warn('Supabase URL or Anon Key is not set. Please check your .env file.');
 }
 
-// Service role key ile ikinci bir client oluştur
-const supabaseServiceRoleKey = import.meta.env.VITE_SUPABASE_SERVICE_ROLE_KEY || supabaseAnonKey;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-export const supabaseService = createClient(supabaseUrl, supabaseServiceRoleKey);
