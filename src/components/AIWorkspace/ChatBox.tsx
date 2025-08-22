@@ -98,13 +98,14 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
       } else if (responseData.reply) {
         responseText = responseData.reply;
       } else if (responseData.output) {
-        responseText = responseData.output;
-      } else {
-        // JSON objesini string'e çevir ama sadece değeri al
-        responseText = JSON.stringify(responseData, null, 2);
-      }
+        responseText = responseData.output;\n      } else {\n        // JSON objesini string'e çevir ama sadece değeri al\n        responseText = JSON.stringify(responseData, null, 2);\n      }\n      \n      // \\n karakterlerini doğru şekilde işle\n      const processedText = responseText.replace(/\\\\n/g, '\n');
       
-      const aiResponse: Message = {\n        id: (Date.now() + 1).toString(),\n        text: responseText.replace(/\n/g, '\n'),\n        sender: 'ai',\n        timestamp: new Date().toISOString()\n      };
+      const aiResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: processedText,
+        sender: 'ai',
+        timestamp: new Date().toISOString()
+      };
       
       setMessages(prev => [...prev, aiResponse]);
     } catch (error) {
@@ -171,13 +172,14 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
                 className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] p-3 rounded-xl text-sm leading-relaxed shadow-md whitespace-pre-wrap ${
+                  className={`max-w-[85%] p-3 rounded-xl text-sm leading-relaxed shadow-md ${
                     message.sender === 'user'
                       ? message.mode === 'work'
                         ? 'bg-cyan-600 text-white'
                         : 'bg-violet-600 text-white'
                       : 'bg-slate-700/80 text-slate-200'
                   }`}
+                  style={{ whiteSpace: 'pre-wrap' }}
                 >
                   {message.text}
                 </div>
