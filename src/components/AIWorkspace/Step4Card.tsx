@@ -40,7 +40,7 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
     
     try {
       // Webhook ile veriyi gönder
-      const response = await fetch('https://n8n.flownests.org/webhook-test/156450b8-a366-4648-8fad-eef1a1a3e5b5', {
+      const response = await fetch('https://n8n.flownests.org/webhook/156450b8-a366-4648-8fad-eef1a1a3e5b5', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

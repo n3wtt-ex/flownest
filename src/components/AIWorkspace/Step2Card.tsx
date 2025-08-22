@@ -21,7 +21,7 @@ export function Step2Card({ onSave, initialData }: Step2CardProps) {
       
       try {
         // Webhook ile veriyi gönder
-        const response = await fetch('https://n8n.flownests.org/webhook-test/40bb5e2c-741f-4586-8c11-7659bd1cc874', {
+        const response = await fetch('https://n8n.flownests.org/webhook/40bb5e2c-741f-4586-8c11-7659bd1cc874', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
