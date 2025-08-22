@@ -38,7 +38,7 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
     // Mesaj gönderildiğinde otomatik scroll yapma
   }, [messages, isTyping]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
     const newMessage: Message = {
@@ -53,18 +53,58 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
     setInputValue('');
     setIsTyping(true);
 
-    setTimeout(() => {
+    try {
+      // Moda göre farklı anahtarlar kullanarak webhook'a mesaj gönder
+      const payload: any = {
+        timestamp: new Date().toISOString()
+      };
+      
+      if (currentMode === 'work') {
+        payload.work = inputValue;
+      } else {
+        payload.ask = inputValue;
+      }
+
+      // Webhook URL'sine mesajı gönder
+      const response = await fetch('https://n8n.flownests.org/webhook-test/8caf5ac6-9fb5-4e68-9741-3d452248a95e', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // n8n'den gelen yanıtı al
+      const data = await response.json();
+      
+      // n8n'den gelen yanıtı sohbet ekranına ekle
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: currentMode === 'work' 
-          ? `Elbette, bu görevi seçili araçları kullanarak yerine getireceğim.`
-          : `Sorunuzu analiz ediyorum, lütfen bekleyin.`,
+        text: data.response || 'Mesajınız alındı, teşekkürler!',
         sender: 'ai',
         timestamp: new Date().toISOString()
       };
+      
       setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Webhook error:', error);
+      
+      // Hata durumunda fallback mesajı göster
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Üzgünüm, mesajınız işlenirken bir hata oluştu. Lütfen tekrar deneyin.',
+        sender: 'ai',
+        timestamp: new Date().toISOString()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -182,7 +222,7 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleSendMessage}
+              onClick={() => handleSendMessage()}
               className="bg-gradient-to-r from-cyan-500 to-violet-500 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-shadow duration-200 flex items-center justify-center"
             >
               <Send size={16} />
