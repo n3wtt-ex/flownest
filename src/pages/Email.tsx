@@ -83,8 +83,48 @@ export function Email() {
     return 'text-red-600';
   };
 
-  const handleEventChange = (event: string) => {
+  const handleEventChange = async (event: string) => {
     setSelectedEvent(event);
+    
+    // Önce Supabase'ten bu event için kaydedilmiş içeriği çekmeyi dene
+    try {
+      const { data, error } = await supabase
+        .from('company_info')
+        .select('event, event_type')
+        .limit(1);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Eğer Supabase'te veri varsa ve bu event için içerik kaydedilmişse, onu kullan
+      if (data && data.length > 0 && data[0].event_type === event) {
+        setEditContent(data[0].event || '');
+        setIsContentModified(false);
+        return;
+      }
+    } catch (error) {
+      console.error('Error fetching event content from Supabase:', error);
+    }
+    
+    // Supabase'te veri yoksa veya hata oluştuysa, webhook'tan veri çek
+    try {
+      const response = await fetch(`https://n8n.flownests.org/webhook/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8?eventType=${event}`);
+      const data = await response.json();
+      
+      if (data.content) {
+        setEditContent(data.content);
+      } else {
+        // Eğer bu event için kaydedilmiş bir içerik yoksa, varsayılan içeriği kullan
+        setEditContent(eventContents[event] || '');
+      }
+    } catch (error) {
+      console.error('Error fetching event content:', error);
+      // Hata durumunda varsayılan içeriği kullan
+      setEditContent(eventContents[event] || '');
+    }
+    
+    setIsContentModified(false);
   };
 
   const handleContentChange = (content: string) => {
@@ -102,13 +142,14 @@ export function Email() {
   const handleIntroductionClick = () => {
     setIsIntroductionMode(true);
     setSelectedEvent('introduction');
-    // fetchIntroductionData() çağrılması gerekmiyor çünkü useEffect hook'u selectedEvent değiştiğinde çalışacak
+    fetchIntroductionData(); // Verileri tekrar çek
   };
 
   const handleEventModeClick = () => {
     setIsIntroductionMode(false);
     setSelectedEvent('demo');
-    // fetchEventContentData() çağrılması gerekmiyor çünkü useEffect hook'u selectedEvent değiştiğinde çalışacak
+    setEditContent(eventContents['demo']);
+    fetchEventContentData(); // Verileri tekrar çek
   };
 
     const handleSaveIntroduction = () => {
@@ -182,7 +223,7 @@ export function Email() {
       if (data && data.length > 0) {
         const companyInfo = data[0];
         setEventContent(companyInfo.event || '');
-        // editContent'i burada ayarlamıyoruz çünkü useEffect hook'u selectedEvent değiştiğinde çalışacak
+        setEditContent(companyInfo.event || '');
         // Event tipini de ayarla (eğer varsa)
         if (companyInfo.event_type) {
           setSelectedEvent(companyInfo.event_type);
@@ -193,8 +234,20 @@ export function Email() {
         return;
       }
       
-      // Supabase'te veri yoksa, varsayılan event tipini ayarla
-      setSelectedEvent('demo');
+      // Supabase'te veri yoksa, webhook'tan veri çek
+      const response = await fetch('https://n8n.flownests.org/webhook/e9756c48-e3b4-4c59-ad5f-5afaad1b49e8');
+      const webhookData = await response.json();
+      
+      // Gelen verileri state'e ata
+      if (webhookData.content) {
+        setEventContent(webhookData.content);
+        setEditContent(webhookData.content); // Event content'ini de editContent state'ine ata
+      }
+      
+      // Event tipini de ayarla
+      if (webhookData.eventType) {
+        setSelectedEvent(webhookData.eventType);
+      }
     } catch (error) {
       console.error('Error fetching event content data:', error);
     }
@@ -219,7 +272,7 @@ export function Email() {
         // Event content'ini de kaydet
         event: editContent,
         // Mevcut event_type değerini koru
-        event_type: existingData && existingData.length > 0 ? existingData[0].event_type : selectedEvent
+        event_type: existingData && existingData.length > 0 ? existingData[0].event_type : ''
       };
       
       let result;
@@ -405,14 +458,6 @@ export function Email() {
     }
   };
 
-  // selectedEvent değiştiğinde editContent'i güncelle
-  useEffect(() => {
-    if (!isIntroductionMode) {
-      setEditContent(eventContents[selectedEvent] || '');
-      setIsContentModified(false);
-    }
-  }, [selectedEvent, isIntroductionMode]);
-
   // Bileşen yüklendiğinde verileri al
   useEffect(() => {
     fetchEmailAccounts();
@@ -528,6 +573,10 @@ export function Email() {
                             value={selectedEvent}
                             onChange={(e) => {
                               setSelectedEvent(e.target.value);
+                              // Eğer bu event için önceden kaydedilmiş bir içerik varsa, onu yükle
+                              if (eventContents[e.target.value]) {
+                                setEditContent(eventContents[e.target.value]);
+                              }
                             }}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                           >
