@@ -98,7 +98,14 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
       } else if (responseData.reply) {
         responseText = responseData.reply;
       } else if (responseData.output) {
-        responseText = responseData.output;\n      } else {\n        // JSON objesini string'e çevir ama sadece değeri al\n        responseText = JSON.stringify(responseData, null, 2);\n      }\n      \n      // \\n karakterlerini doğru şekilde işle\n      const processedText = responseText.replace(/\\\\n/g, '\n');
+        responseText = responseData.output;
+      } else {
+        // JSON objesini string'e çevir ama sadece değeri al
+        responseText = JSON.stringify(responseData, null, 2);
+      }
+      
+      // Satır sonlarını işlemeden direkt kullan
+      const processedText = responseText;
       
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
