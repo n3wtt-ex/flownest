@@ -21,6 +21,7 @@ interface CompanyInfo {
   name: string;
   info: string;
   event: string;
+  event_type: string;
   created_at: string;
 }
 
@@ -89,7 +90,7 @@ export function Email() {
     try {
       const { data, error } = await supabase
         .from('company_info')
-        .select('event')
+        .select('event, event_type')
         .limit(1);
       
       if (error) {
@@ -97,7 +98,7 @@ export function Email() {
       }
       
       // Eğer Supabase'te veri varsa ve bu event için içerik kaydedilmişse, onu kullan
-      if (data && data.length > 0 && data[0].event === event) {
+      if (data && data.length > 0 && data[0].event_type === event) {
         setEditContent(data[0].event || '');
         setIsContentModified(false);
         return;
@@ -224,7 +225,10 @@ export function Email() {
         setEventContent(companyInfo.event || '');
         setEditContent(companyInfo.event || '');
         // Event tipini de ayarla (eğer varsa)
-        if (companyInfo.event) {
+        if (companyInfo.event_type) {
+          setSelectedEvent(companyInfo.event_type);
+        } else if (companyInfo.event) {
+          // Eski veriler için backward compatibility
           setSelectedEvent(companyInfo.event);
         }
         return;
@@ -266,7 +270,9 @@ export function Email() {
         company: introCompanyName,
         info: introCompany,
         // Event content'ini de kaydet
-        event: editContent
+        event: editContent,
+        // Mevcut event_type değerini koru
+        event_type: existingData && existingData.length > 0 ? existingData[0].event_type : ''
       };
       
       let result;
@@ -315,7 +321,9 @@ export function Email() {
         company: existingData && existingData.length > 0 ? existingData[0].company : '',
         info: existingData && existingData.length > 0 ? existingData[0].info : '',
         // Event content'ini güncelle
-        event: editContent
+        event: editContent,
+        // Event type'ı güncelle
+        event_type: selectedEvent
       };
       
       let result;
