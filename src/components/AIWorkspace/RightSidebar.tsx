@@ -127,7 +127,7 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
       {/* Toggle Button */}
       <motion.button
         onClick={onToggle}
-        className="fixed top-1/2 right-4 transform -translate-y-1/2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 z-50"
+        className="fixed top-1/2 right-80 transform -translate-y-1/2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 z-50"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
