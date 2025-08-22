@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { OnboardingCard } from './OnboardingCard';
-import { supabase } from '../../lib/supabase';
 
 interface Step3CardProps {
   onSave: (data: { name: string; companyName: string; companyInfo: string }) => void;
@@ -17,86 +16,34 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
     setIsValid(name.length > 0 && companyName.length > 0 && companyInfo.length > 0);
   }, [name, companyName, companyInfo]);
 
-  const saveToLocalStorage = (data: { name: string; companyName: string; companyInfo: string }) => {
-    try {
-      const existingData = JSON.parse(localStorage.getItem('company_info') || '{}');
-      const updatedData = { 
-        ...existingData, 
-        name: data.name,
-        company: data.companyName,
-        info: data.companyInfo
-      };
-      localStorage.setItem('company_info', JSON.stringify(updatedData));
-      console.log('Data saved to localStorage:', updatedData);
-      return true;
-    } catch (error) {
-      console.error('Error saving to localStorage:', error);
-      return false;
-    }
-  };
-
-  const loadFromLocalStorage = () => {
-    try {
-      const data = JSON.parse(localStorage.getItem('company_info') || '{}');
-      console.log('Data loaded from localStorage:', data);
-      return data;
-    } catch (error) {
-      console.error('Error loading from localStorage:', error);
-      return {};
-    }
-  };
-
   const handleSave = async () => {
     if (isValid) {
       const data = { name, companyName, companyInfo };
       onSave(data);
       
       try {
-        // Önce mevcut veri olup olmadığını kontrol et
-        const { data: existingData, error: fetchError } = await supabase
-          .from('company_info')
-          .select('*')
-          .limit(1);
+        // Webhook ile veriyi gönder
+        const response = await fetch('https://n8n.flownests.org/webhook-test/541cdb39-b379-4f91-a6d6-90435b58d0a0', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: data.name,
+            company: data.companyName,
+            info: data.companyInfo
+          }),
+        });
         
-        if (fetchError) {
-          throw fetchError;
-        }
-        
-        // Sadece UPDATE yapılacak, kayıt olmalı
-        if (!existingData || existingData.length === 0) {
-          console.error('No existing record found in company_info table');
-          alert('Veritabanında kayıt bulunamadı. Lütfen önce diğer formları doldurun.');
-          return;
-        }
-        
-        const companyInfoData = {
-          name: data.name,
-          company: data.companyName,
-          info: data.companyInfo
-        };
-        
-        // Sadece update işlemi yapılacak
-        const id = existingData[0].id;
-        const { error: updateError } = await supabase
-          .from('company_info')
-          .update(companyInfoData)
-          .eq('id', id);
-        
-        if (updateError) {
-          throw updateError;
-        }
-        
-        console.log('Company info updated successfully in Supabase');
-        alert('Veriler başarıyla güncellendi!');
-      } catch (error) {
-        console.error('Error updating company info in Supabase:', error);
-        // Fallback olarak localStorage kullan
-        const localStorageSuccess = saveToLocalStorage(data);
-        if (localStorageSuccess) {
-          alert('Veriler yerel olarak kaydedildi. (Supabase erişim hatası)');
+        if (response.ok) {
+          console.log('Company info sent to webhook successfully');
+          alert('Veriler başarıyla gönderildi!');
         } else {
-          alert('Veriler kaydedilemedi. Lütfen daha sonra tekrar deneyin.');
+          throw new Error(`Webhook error: ${response.status}`);
         }
+      } catch (error) {
+        console.error('Error sending company info to webhook:', error);
+        alert('Veriler webhook'a gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
       }
     }
   };

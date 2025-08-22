@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { OnboardingCard } from './OnboardingCard';
-import { supabase } from '../../lib/supabase';
 
 // Event type labels (from Email.tsx)
 const eventLabels = {
@@ -35,83 +34,32 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
     setEventContent(eventContents[selectedEvent as keyof typeof eventContents] || '');
   }, [selectedEvent]);
 
-  const saveToLocalStorage = (data: { eventType: string; eventContent: string }) => {
-    try {
-      const existingData = JSON.parse(localStorage.getItem('company_info') || '{}');
-      const updatedData = { 
-        ...existingData, 
-        event_type: data.eventType,
-        event: data.eventContent
-      };
-      localStorage.setItem('company_info', JSON.stringify(updatedData));
-      console.log('Data saved to localStorage:', updatedData);
-      return true;
-    } catch (error) {
-      console.error('Error saving to localStorage:', error);
-      return false;
-    }
-  };
-
-  const loadFromLocalStorage = () => {
-    try {
-      const data = JSON.parse(localStorage.getItem('company_info') || '{}');
-      console.log('Data loaded from localStorage:', data);
-      return data;
-    } catch (error) {
-      console.error('Error loading from localStorage:', error);
-      return {};
-    }
-  };
-
   const handleSave = async () => {
     const data = { eventType: selectedEvent, eventContent };
     onSave(data);
     
     try {
-      // Önce mevcut veri olup olmadığını kontrol et
-      const { data: existingData, error: fetchError } = await supabase
-        .from('company_info')
-        .select('*')
-        .limit(1);
+      // Webhook ile veriyi gönder
+      const response = await fetch('https://n8n.flownests.org/webhook-test/156450b8-a366-4648-8fad-eef1a1a3e5b5', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          event_type: data.eventType,
+          event: data.eventContent
+        }),
+      });
       
-      if (fetchError) {
-        throw fetchError;
-      }
-      
-      // Sadece UPDATE yapılacak, kayıt olmalı
-      if (!existingData || existingData.length === 0) {
-        console.error('No existing record found in company_info table');
-        alert('Veritabanında kayıt bulunamadı. Lütfen önce diğer formları doldurun.');
-        return;
-      }
-      
-      const companyInfo = {
-        event_type: data.eventType,
-        event: data.eventContent
-      };
-      
-      // Sadece update işlemi yapılacak
-      const id = existingData[0].id;
-      const { error: updateError } = await supabase
-        .from('company_info')
-        .update(companyInfo)
-        .eq('id', id);
-      
-      if (updateError) {
-        throw updateError;
-      }
-      
-      console.log('Event info updated successfully in Supabase');
-      alert('Veriler başarıyla güncellendi!');
-    } catch (error) {
-      console.error('Error updating event info in Supabase:', error);
-      // Fallback olarak localStorage kullan
-      const localStorageSuccess = saveToLocalStorage(data);
-      if (localStorageSuccess) {
-        alert('Veriler yerel olarak kaydedildi. (Supabase erişim hatası)');
+      if (response.ok) {
+        console.log('Event info sent to webhook successfully');
+        alert('Veriler başarıyla gönderildi!');
       } else {
-        alert('Veriler kaydedilemedi. Lütfen daha sonra tekrar deneyin.');
+        throw new Error(`Webhook error: ${response.status}`);
       }
+    } catch (error) {
+      console.error('Error sending event info to webhook:', error);
+      alert('Veriler webhook\'a gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
     }
   };
 
