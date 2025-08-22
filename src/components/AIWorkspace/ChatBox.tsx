@@ -90,7 +90,7 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="w-full h-[203px] bg-slate-900/60 backdrop-blur-lg rounded-2xl border border-slate-700/50 flex flex-col overflow-hidden"
+        className="w-[240px] h-[400px] bg-slate-900/60 backdrop-blur-lg rounded-2xl border border-slate-700/50 flex flex-col overflow-hidden"
       >
         {/* Header */}
         <div className="p-4 border-b border-slate-700/50 flex-shrink-0">
