@@ -43,7 +43,7 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
         }
       } catch (error) {
         console.error('Error sending company info to webhook:', error);
-        alert('Veriler webhook'a gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        alert('Veriler webhook\'a gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
       }
     }
   };
