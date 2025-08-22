@@ -319,16 +319,14 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
 
       <div className="flex h-[480px]">
         {/* Left Chat Panel */}
-        <div className="w-1/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
+        <div className="w-2/5 p-3 border-r border-slate-700/50 flex items-center justify-center">
           <div className="w-full h-full flex items-center justify-center">
-            <div className="transform scale-75 origin-center">
-              <ChatBox messages={workspace.messages} />
-            </div>
+            <ChatBox messages={workspace.messages} />
           </div>
         </div>
 
         {/* Main Workspace Area */}
-        <div className="w-4/5 relative overflow-hidden" ref={workspaceRef}>
+        <div className="w-3/5 relative overflow-hidden" ref={workspaceRef}>
           {/* Background Pattern */}
           <div className="absolute inset-0 opacity-10">
             <svg width="100%" height="100%" className="w-full h-full">
