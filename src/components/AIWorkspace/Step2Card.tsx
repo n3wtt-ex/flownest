@@ -15,6 +15,30 @@ export function Step2Card({ onSave, initialData }: Step2CardProps) {
     setIsValid(targetAudience.length > 0);
   }, [targetAudience]);
 
+  const saveToLocalStorage = (data: { targetAudience: string }) => {
+    try {
+      const existingData = JSON.parse(localStorage.getItem('company_info') || '{}');
+      const updatedData = { ...existingData, target_audience: data.targetAudience };
+      localStorage.setItem('company_info', JSON.stringify(updatedData));
+      console.log('Data saved to localStorage:', updatedData);
+      return true;
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+      return false;
+    }
+  };
+
+  const loadFromLocalStorage = () => {
+    try {
+      const data = JSON.parse(localStorage.getItem('company_info') || '{}');
+      console.log('Data loaded from localStorage:', data);
+      return data;
+    } catch (error) {
+      console.error('Error loading from localStorage:', error);
+      return {};
+    }
+  };
+
   const handleSave = async () => {
     if (isValid) {
       const data = { targetAudience };
@@ -35,7 +59,16 @@ export function Step2Card({ onSave, initialData }: Step2CardProps) {
             code: fetchError.code,
             hint: fetchError.hint
           });
-          throw fetchError;
+          
+          // Supabase hatası durumunda localStorage kullan
+          console.log('Falling back to localStorage...');
+          const localStorageSuccess = saveToLocalStorage(data);
+          if (localStorageSuccess) {
+            alert('Veriler yerel olarak kaydedildi. (Supabase erişim hatası)');
+          } else {
+            alert('Veriler kaydedilemedi. Lütfen daha sonra tekrar deneyin.');
+          }
+          return;
         }
         
         console.log('Existing data fetched successfully:', existingData);
@@ -77,15 +110,32 @@ export function Step2Card({ onSave, initialData }: Step2CardProps) {
             details: result.error.details,
             hint: result.error.hint
           });
-          throw result.error;
+          
+          // Supabase hatası durumunda localStorage kullan
+          console.log('Falling back to localStorage...');
+          const localStorageSuccess = saveToLocalStorage(data);
+          if (localStorageSuccess) {
+            alert('Veriler yerel olarak kaydedildi. (Supabase erişim hatası)');
+          } else {
+            alert('Veriler kaydedilemedi. Lütfen daha sonra tekrar deneyin.');
+          }
+          return;
         }
         
         console.log('Target audience saved successfully to Supabase');
         console.log('Save result:', result);
+        // Başarılı durumda kullanıcıya bilgi ver
+        alert('Veriler başarıyla kaydedildi!');
       } catch (error) {
         console.error('Error saving target audience to Supabase:', error);
-        // Hata durumunda kullanıcıya bilgi ver
-        alert('Veritabanına kaydedilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        // Hata durumunda localStorage kullan
+        console.log('Falling back to localStorage...');
+        const localStorageSuccess = saveToLocalStorage(data);
+        if (localStorageSuccess) {
+          alert('Veriler yerel olarak kaydedildi. (Beklenmeyen hata)');
+        } else {
+          alert('Veriler kaydedilemedi. Lütfen daha sonra tekrar deneyin.');
+        }
       }
     }
   };
