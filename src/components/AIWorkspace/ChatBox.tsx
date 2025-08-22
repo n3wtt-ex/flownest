@@ -104,12 +104,7 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
         responseText = JSON.stringify(responseData, null, 2);
       }
       
-      const aiResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: responseText,
-        sender: 'ai',
-        timestamp: new Date().toISOString()
-      };
+      const aiResponse: Message = {\n        id: (Date.now() + 1).toString(),\n        text: responseText.replace(/\\n/g, '\n'),\n        sender: 'ai',\n        timestamp: new Date().toISOString()\n      };
       
       setMessages(prev => [...prev, aiResponse]);
     } catch (error) {
@@ -184,7 +179,12 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
                       : 'bg-slate-700/80 text-slate-200'
                   }`}
                 >
-                  {message.text}
+                  {message.text.split('\n').map((line, index) => (
+                    <React.Fragment key={index}>
+                      {line}
+                      {index < message.text.split('\n').length - 1 && <br />}
+                    </React.Fragment>
+                  ))}
                 </div>
               </motion.div>
             ))}
