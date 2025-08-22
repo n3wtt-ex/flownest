@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { motion } from 'framer-motion';
 import { Bot } from 'lucide-react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -26,7 +27,7 @@ export function UIBot() {
     if (!newWorkspaceName.trim()) return;
 
     const newWorkspace: WorkspaceData = {
-      id: Date.now().toString(),
+      id: uuidv4(),
       name: newWorkspaceName,
       selections: {},
       messages: [],

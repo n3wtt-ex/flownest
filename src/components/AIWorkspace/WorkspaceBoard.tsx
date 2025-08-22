@@ -328,7 +328,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         {/* Left Chat Panel */}
         <div className="w-1/3 p-3 border-r border-slate-700/50 flex items-center justify-center">
           <div className="w-full h-full flex items-center justify-center">
-            <ChatBox messages={workspace.messages} />
+            <ChatBox messages={workspace.messages} workspaceId={workspace.id} />
           </div>
         </div>
 

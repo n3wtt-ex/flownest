@@ -142,7 +142,7 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed top-0 right-0 w-80 h-full bg-slate-900/95 backdrop-blur-sm border-l border-slate-700/50 z-40 flex flex-col"
+            className="fixed top-0 right-0 w-80 h-full bg-slate-900/95 backdrop-blur-sm border-l border-slate-700/50 z-50 flex flex-col"
           >
             {/* Header */}
             <div className="p-4 border-b border-slate-700/50">

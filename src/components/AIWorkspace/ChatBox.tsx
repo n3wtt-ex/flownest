@@ -12,9 +12,10 @@ interface Message {
 
 interface ChatBoxProps {
   messages: Message[];
+  workspaceId: string;
 }
 
-export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
+export function ChatBox({ messages: initialMessages, workspaceId }: ChatBoxProps) {
   const [messages, setMessages] = useState<Message[]>(initialMessages || [
     {
       id: '1',
@@ -60,9 +61,9 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
       };
       
       if (currentMode === 'work') {
-        payload.work = inputValue;
+        payload.work = `work:${inputValue}`;
       } else {
-        payload.ask = inputValue;
+        payload.ask = `ask:${inputValue}`;
       }
 
       // Webhook URL'sine mesajı gönder
@@ -70,6 +71,7 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Workspace-ID': workspaceId
         },
         body: JSON.stringify(payload),
       });
