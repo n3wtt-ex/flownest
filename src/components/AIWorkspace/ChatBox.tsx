@@ -79,12 +79,32 @@ export function ChatBox({ messages: initialMessages }: ChatBoxProps) {
       }
 
       // n8n'den gelen yanıtı al
-      const data = await response.json();
+      const responseData = await response.json();
       
       // n8n'den gelen yanıtı sohbet ekranına ekle
+      // Yanıt formatına göre farklı alanlardan mesajı al
+      let responseText = 'Mesajınız alındı, teşekkürler!';
+      
+      if (typeof responseData === 'string') {
+        responseText = responseData;
+      } else if (responseData.response) {
+        responseText = responseData.response;
+      } else if (responseData.message) {
+        responseText = responseData.message;
+      } else if (responseData.text) {
+        responseText = responseData.text;
+      } else if (responseData.answer) {
+        responseText = responseData.answer;
+      } else if (responseData.reply) {
+        responseText = responseData.reply;
+      } else {
+        // JSON objesini string'e çevir
+        responseText = JSON.stringify(responseData);
+      }
+      
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.response || 'Mesajınız alındı, teşekkürler!',
+        text: responseText,
         sender: 'ai',
         timestamp: new Date().toISOString()
       };
