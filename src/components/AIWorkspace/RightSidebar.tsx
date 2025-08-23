@@ -159,12 +159,12 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
                 <MessageSquare className="w-5 h-5 mr-2" />
                 Ekip Sohbeti
               </h3>
-              <p className="text-slate-400 text-sm mt-1">Araçlar otomatik seçiliyor</p>
+              <p className="text-slate-400 text-sm mt-1">Araçlar otomatik olarak AI tarafından seçilir</p>
             </div>
 
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto">
-              {/* Team Members */}
+              {/* Team Members - Manuel araç seçimi kaldırıldı */}
               <div className="p-4 border-b border-slate-700/50">
                 <h4 className="text-slate-300 text-sm font-medium mb-3">Aktif Üyeler</h4>
                 <div className="space-y-3">
@@ -175,16 +175,8 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
                         <span className="text-slate-300 text-sm font-medium">{member.name}</span>
                         <span className="text-slate-500 text-xs">• {member.role}</span>
                       </div>
-                      <div className="flex flex-wrap gap-1">
-                        {member.tools.map((tool) => (
-                          <button
-                            key={tool}
-                            onClick={() => handleToolClick(member.name, tool)}
-                            className="px-2 py-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 text-xs rounded-full border border-cyan-500/30 hover:border-cyan-400 transition-colors hover:scale-105"
-                          >
-                            {tool}
-                          </button>
-                        ))}
+                      <div className="text-slate-400 text-xs">
+                        Araçlar otomatik olarak AI tarafından seçilir
                       </div>
                     </div>
                   ))}

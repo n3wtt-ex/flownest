@@ -6,8 +6,8 @@ import { ChatBox } from './ChatBox';
 import { AgentHeader } from './AgentHeader';
 import { RightSidebar } from './RightSidebar';
 import { SelectionRow } from './SelectionRow';
-import { Play } from 'lucide-react';
 import { OnboardingFlow } from './OnboardingFlow';
+import { supabase } from '../../lib/supabaseClient';
 
 interface WorkspaceSelection {
   [key: string]: string;
@@ -54,13 +54,8 @@ const agents = [
 export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
   const [selectedTools, setSelectedTools] = useState<{ [key: string]: { tool: string; position: { x: number; y: number } } }>({});
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
-  const [connectionsValidated, setConnectionsValidated] = useState(false);
-  const [validationMessage, setValidationMessage] = useState('');
-  const [isValidating, setIsValidating] = useState(false);
-  const [showToolSelection, setShowToolSelection] = useState(false);
-  const [evaCommandReceived, setEvaCommandReceived] = useState(false);
-  const [workflowStarted, setWorkflowStarted] = useState(false);
   const [containerDimensions, setContainerDimensions] = useState({ width: 800, height: 480 });
+  const [workspaceData, setWorkspaceData] = useState<any>(null);
   
   const workspaceRef = useRef<HTMLDivElement>(null);
 
@@ -173,35 +168,8 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   // Pozisyonları güncelleme
   const toolPositions = calculateToolPositions(containerDimensions.width, containerDimensions.height);
 
-  const handleManualToolSelect = (sectionId: string, toolName: string) => {
-    const agentPosition = toolPositions[sectionId as keyof typeof toolPositions];
-    if (agentPosition) {
-      setSelectedTools(prev => {
-        // Eğer bu agent için zaten bir araç seçilmişse, mevcut pozisyonu koru
-        const existingTool = prev[sectionId];
-        const position = existingTool 
-          ? existingTool.position 
-          : { x: agentPosition.x, y: agentPosition.y };
-        
-        return {
-          ...prev,
-          [sectionId]: { tool: toolName, position }
-        };
-      });
-      onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [sectionId]: toolName } });
-      
-      // Araç seçildiğinde hemen showToolSelection'ı false yap
-      setShowToolSelection(false);
-    }
-  };
-
   const handleToolMention = (agent: string, tool: string) => {
     const agentKey = agent.toLowerCase();
-
-    if (agentKey === 'eva' && tool.toLowerCase() === 'start') {
-      setEvaCommandReceived(true);
-      return;
-    }
 
     const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
     if (agentPosition && agentPosition.tools.some(t => t.toLowerCase() === tool.toLowerCase())) {
@@ -219,52 +187,55 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         };
       });
       onUpdateWorkspace({ ...workspace, selections: { ...workspace.selections, [agentKey]: exactTool } });
+    }
+  };
+
+  // Yeni tablodan workspace verilerini çek
+  const fetchWorkspaceData = async () => {
+    const { data, error } = await supabase
+      .from('workspace')
+      .select('*')
+      .eq('workspace_id', workspace.id)
+      .single();
       
-      // Araç seçildiğinde hemen showToolSelection'ı false yap
-      setShowToolSelection(false);
+    if (error) {
+      console.error('Error fetching workspace data:', error);
+      return;
     }
-  };
-
-  const validateConnections = () => {
-    setIsValidating(true);
-    setValidationMessage('Bağlantılar kontrol ediliyor...');
-    setTimeout(() => {
-      const selectedCount = Object.keys(selectedTools).length;
-      if (selectedCount === 5) {
-        if (Math.random() > 0.3) {
-          setConnectionsValidated(true);
-          setValidationMessage("Tüm bağlantılar hazır, Eva'dan komut bekleniyor...");
-          setShowToolSelection(false);
-        } else {
-          setConnectionsValidated(false);
-          setValidationMessage('Gmail ve Cal.com bağlantıları eksik. API anahtarlarını kontrol edin.');
+    
+    setWorkspaceData(data);
+    
+    // Veri geldiğinde araçları otomatik seç
+    if (data) {
+      const newSelectedTools: { [key: string]: { tool: string; position: { x: number; y: number } } } = {};
+      
+      Object.keys(data).forEach(agent => {
+        // workspace_id harici agent sütunlarını işle
+        if (agent !== 'workspace_id' && data[agent]) {
+          const agentKey = agent.toLowerCase();
+          const toolName = data[agent];
+          const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
+          
+          if (agentPosition && agentPosition.tools.includes(toolName)) {
+            newSelectedTools[agentKey] = {
+              tool: toolName,
+              position: { x: agentPosition.x, y: agentPosition.y }
+            };
+          }
         }
-      } else {
-        setConnectionsValidated(false);
-        setValidationMessage(`${5 - selectedCount} araç daha seçilmeli`);
-      }
-      setIsValidating(false);
-    }, 2000);
-  };
-
-  const retryValidation = () => validateConnections();
-
-  useEffect(() => {
-    if (Object.keys(selectedTools).length === 5) {
-      // Araç seçimi tamamlandığında hemen UI'yı gizle
-      setShowToolSelection(false);
+      });
+      
+      setSelectedTools(newSelectedTools);
     }
-  }, [selectedTools]);
-
-  const allToolsSelected = Object.keys(selectedTools).length === 5;
-  const canShowStartButton = allToolsSelected && connectionsValidated && evaCommandReceived;
-
-  const handleStartWorkflow = () => {
-    setWorkflowStarted(true);
-    setTimeout(() => {
-      alert('İş akışı başlatıldı! n8n entegrasyonu devrede...');
-    }, 1500);
   };
+
+  // Workspace verilerini periyodik olarak güncelle
+  useEffect(() => {
+    fetchWorkspaceData();
+    
+    const interval = setInterval(fetchWorkspaceData, 3000);
+    return () => clearInterval(interval);
+  }, [workspace.id]);
 
   // Onboarding completion handler
   const handleOnboardingComplete = (onboardingData: any) => {
@@ -295,34 +266,44 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     );
   }
 
+  // Yeni workspace oluşturulduğunda tabloya satır ekle
+  useEffect(() => {
+    const insertWorkspaceData = async () => {
+      // Önce workspace_id ile kayıt olup olmadığını kontrol et
+      const { data: existingData, error: selectError } = await supabase
+        .from('workspace')
+        .select('workspace_id')
+        .eq('workspace_id', workspace.id)
+        .single();
+      
+      // Eğer kayıt yoksa yeni satır ekle
+      if (!existingData) {
+        const { error: insertError } = await supabase
+          .from('workspace')
+          .insert({
+            workspace_id: workspace.id,
+            leo: null,
+            mike: null,
+            sophie: null,
+            ash: null,
+            clara: null
+          });
+        
+        if (insertError) {
+          console.error('Error inserting workspace data:', insertError);
+        }
+      }
+    };
+    
+    insertWorkspaceData();
+  }, [workspace.id]);
+
   return (
     <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
       
       <AgentHeader agents={agents} />
       
-      {showToolSelection && (
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          exit={{ opacity: 0, y: -20 }}
-          className="p-4 bg-slate-800/50 border-b border-slate-700/50"
-        >
-          <h3 className="text-white font-semibold mb-4">Her agent için bir araç seçin:</h3>
-          <div className="space-y-4">
-            {toolSections.map(section => (
-              <SelectionRow 
-                key={section.id} 
-                section={section} 
-                selectedIcon={selectedTools[section.id]?.tool}
-                onIconSelect={toolName => handleManualToolSelect(section.id, toolName)} 
-              />
-            ))}
-          </div>
-          <div className="mt-4 text-slate-400 text-sm">
-            {Object.keys(selectedTools).length}/5 araç seçildi
-          </div>
-        </motion.div>
-      )}
+      {/* Araç seçim bölümü kaldırıldı - Otomatik seçim devrede */}
 
       <div className="flex h-[480px]">
         {/* Left Chat Panel */}
@@ -400,60 +381,12 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
               ))}
             </AnimatePresence>
 
-            {/* Start Button - Merkez pozisyonda */}
-            {canShowStartButton && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={workflowStarted ? 
-                  { 
-                    scale: 0.5, 
-                    x: -(containerDimensions.width / 2) + 100, 
-                    y: -(containerDimensions.height / 2) + 60 
-                  } : 
-                  { scale: 1, x: 0, y: 0 }
-                }
-                transition={{ duration: 1.2, ease: 'easeInOut' }}
-                className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                style={{ zIndex: 25 }}
-              >
-                <motion.button
-                  onClick={handleStartWorkflow}
-                  whileHover={{ scale: workflowStarted ? 0.5 : 1.05 }}
-                  whileTap={{ scale: workflowStarted ? 0.5 : 0.95 }}
-                  className="flex flex-col items-center p-6 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg"
-                >
-                  <Play className="w-8 h-8 mb-2" />
-                  <span className="text-sm font-medium">İş Akışını Başlat</span>
-                </motion.button>
-              </motion.div>
-            )}
+            {/* Start Button kaldırıldı - Otomasyon devrede */}
           </div>
         </div>
       </div>
 
-      {/* Validation Message */}
-      {(isValidating || validationMessage) && (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }} 
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-slate-800/90 p-4 rounded-lg border border-slate-700/50 z-30"
-        >
-          <div className="flex items-center space-x-3">
-            {isValidating && (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-cyan-400"></div>
-            )}
-            <span className="text-white text-sm">{validationMessage}</span>
-            {!connectionsValidated && !isValidating && validationMessage && (
-              <button 
-                onClick={retryValidation}
-                className="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Yeniden Dene
-              </button>
-            )}
-          </div>
-        </motion.div>
-      )}
+      {/* Validation Message kaldırıldı - Otomasyon devrede */}
 
       {/* Right Sidebar */}
       <RightSidebar 
