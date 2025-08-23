@@ -39,8 +39,8 @@ const iconMap: { [key: string]: React.ComponentType<any> } = {
 
 export function HexIcon({ name, isSelected = false, size = 'small', onClick }: HexIconProps) {
   const IconComponent = iconMap[name] || Search;
-  const iconSize = size === 'large' ? 32 : 20;
-  const hexSize = size === 'large' ? 80 : 50;
+  const iconSize = size === 'large' ? 24 : 16;
+  const hexSize = size === 'large' ? 60 : 40;
 
   return (
     <motion.div

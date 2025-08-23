@@ -23,19 +23,19 @@ export function ConnectionLines({
   // Sidebar genişliğini hesaplamıyoruz, çünkü sidebar workspace'i etkilemeyecek
   const sidebarWidth = 0;
 
-  const agentOrder = ['leo', 'mike', 'sophie', 'ash', 'clara'];
+  const agentOrder = ['leo', 'mike', 'sophie', 'clara', 'tom', 'ash'];
   const orderedTools = agentOrder
     .map(agent => toolEntries.find(([key]) => key === agent))
     .filter(Boolean) as [string, SelectedTool][];
 
-  const ICON_SIZE = 80;
+  const ICON_SIZE = 60;
   const ICON_CENTER_OFFSET = ICON_SIZE / 2;
 
   const adjustedViewportWidth = containerDimensions.width;
 
   // Offset mantığı - sidebar durumuna göre ayarlamıyoruz
-  const manualOffsetX = -40;
-  const manualOffsetY = -45;
+  const manualOffsetX = -30;
+  const manualOffsetY = -30;
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>

@@ -38,8 +38,9 @@ const toolSections = [
   { id: 'leo', name: 'Leo', icons: ['Apollo', 'GoogleMaps', 'Apify'] },
   { id: 'mike', name: 'Mike', icons: ['Instantly', 'Lemlist'] },
   { id: 'sophie', name: 'Sophie', icons: ['LinkedIn', 'PerplexityAI', 'BrightData'] },
-  { id: 'ash', name: 'Ash', icons: ['CalCom', 'CRM', 'Instagram'] },
-  { id: 'clara', name: 'Clara', icons: ['Gmail', 'BrightData'] }
+  { id: 'clara', name: 'Clara', icons: ['Gmail', 'BrightData'] },
+  { id: 'tom', name: 'Tom', icons: ['CalCom'] },
+  { id: 'ash', name: 'Ash', icons: ['CRM', 'Instagram'] }
 ];
 
 const agents = [
@@ -47,8 +48,9 @@ const agents = [
   { name: 'Leo', role: 'Lead Researcher', avatar: '👨‍🔬' },
   { name: 'Mike', role: 'Campaign Manager', avatar: '👨‍💻' },
   { name: 'Sophie', role: 'Copywriter', avatar: '👩‍✍️' },
-  { name: 'Ash', role: 'Engagement & CRM Assistant', avatar: '👨‍💼' },
-  { name: 'Clara', role: 'Feedback Analyst', avatar: '👩‍📊' }
+  { name: 'Clara', role: 'Feedback Analyst', avatar: '👩‍📊' },
+  { name: 'Tom', role: 'Data Analyst', avatar: '👨‍💻' },
+  { name: 'Ash', role: 'Engagement & CRM Assistant', avatar: '👨‍💼' }
 ];
 
 export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
@@ -61,18 +63,18 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
 
   // Dinamik pozisyon hesaplama fonksiyonu
   const calculateToolPositions = (containerWidth: number, containerHeight: number) => {
-    const ICON_SIZE = 80; // HexIcon large size
-    const PADDING = ICON_SIZE; // Container kenarlarından minimum uzaklık
+    const ICON_SIZE = 60; // HexIcon large size
+    const PADDING = ICON_SIZE + 50; // Container kenarlarından minimum uzaklık + 50px sola kaydırma
     
     // Kullanılabilir alan
     const availableWidth = containerWidth - (2 * PADDING);
     const availableHeight = containerHeight - (2 * PADDING);
     
-    // 5 ikon için zigzag düzeni
-    const horizontalSpacing = Math.min(availableWidth / 4, 150); // Max 150px spacing
-    const verticalOffset = Math.min(availableHeight / 6, 80); // Max 80px offset
+    // 6 ikon için zigzag düzeni
+    const horizontalSpacing = Math.min(availableWidth / 5, 120); // Max 120px spacing
+    const verticalOffset = Math.min(availableHeight / 6, 60); // Max 60px offset
     
-    const startX = PADDING + (availableWidth - (4 * horizontalSpacing)) / 2;
+    const startX = PADDING + (availableWidth - (5 * horizontalSpacing)) / 2;
     const centerY = containerHeight / 2;
     
     return {
@@ -91,15 +93,20 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         y: centerY + verticalOffset,
         tools: ['LinkedIn', 'PerplexityAI', 'BrightData'] 
       },
-      ash: { 
+      clara: { 
         x: startX + (3 * horizontalSpacing), 
         y: centerY - verticalOffset,
-        tools: ['CalCom', 'CRM', 'Instagram'] 
+        tools: ['Gmail', 'BrightData'] 
       },
-      clara: { 
+      tom: { 
         x: startX + (4 * horizontalSpacing), 
         y: centerY + verticalOffset,
-        tools: ['Gmail', 'BrightData'] 
+        tools: ['CalCom'] 
+      },
+      ash: { 
+        x: startX + (5 * horizontalSpacing), 
+        y: centerY - verticalOffset,
+        tools: ['CRM', 'Instagram'] 
       }
     };
   };
@@ -206,27 +213,27 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     setWorkspaceData(data);
     
     // Veri geldiğinde araçları otomatik seç
-    if (data) {
-      const newSelectedTools: { [key: string]: { tool: string; position: { x: number; y: number } } } = {};
-      
-      Object.keys(data).forEach(agent => {
-        // workspace_id harici agent sütunlarını işle
-        if (agent !== 'workspace_id' && data[agent]) {
-          const agentKey = agent.toLowerCase();
-          const toolName = data[agent];
-          const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
-          
-          if (agentPosition && agentPosition.tools.includes(toolName)) {
-            newSelectedTools[agentKey] = {
-              tool: toolName,
-              position: { x: agentPosition.x, y: agentPosition.y }
-            };
+      if (data) {
+        const newSelectedTools: { [key: string]: { tool: string; position: { x: number; y: number } } } = {};
+        
+        Object.keys(data).forEach(agent => {
+          // workspace_id harici agent sütunlarını işle
+          if (agent !== 'workspace_id' && data[agent]) {
+            const agentKey = agent.toLowerCase();
+            const toolName = data[agent];
+            const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
+            
+            if (agentPosition && agentPosition.tools.includes(toolName)) {
+              newSelectedTools[agentKey] = {
+                tool: toolName,
+                position: { x: agentPosition.x, y: agentPosition.y }
+              };
+            }
           }
-        }
-      });
-      
-      setSelectedTools(newSelectedTools);
-    }
+        });
+        
+        setSelectedTools(newSelectedTools);
+      }
   };
 
   // Workspace verilerini periyodik olarak güncelle
@@ -267,36 +274,37 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   }
 
   // Yeni workspace oluşturulduğunda tabloya satır ekle
-  useEffect(() => {
-    const insertWorkspaceData = async () => {
-      // Önce workspace_id ile kayıt olup olmadığını kontrol et
-      const { data: existingData, error: selectError } = await supabase
-        .from('workspace')
-        .select('workspace_id')
-        .eq('workspace_id', workspace.id)
-        .single();
-      
-      // Eğer kayıt yoksa yeni satır ekle
-      if (!existingData) {
-        const { error: insertError } = await supabase
+    useEffect(() => {
+      const insertWorkspaceData = async () => {
+        // Önce workspace_id ile kayıt olup olmadığını kontrol et
+        const { data: existingData, error: selectError } = await supabase
           .from('workspace')
-          .insert({
-            workspace_id: workspace.id,
-            leo: null,
-            mike: null,
-            sophie: null,
-            ash: null,
-            clara: null
-          });
+          .select('workspace_id')
+          .eq('workspace_id', workspace.id)
+          .single();
         
-        if (insertError) {
-          console.error('Error inserting workspace data:', insertError);
+        // Eğer kayıt yoksa yeni satır ekle
+        if (!existingData) {
+          const { error: insertError } = await supabase
+            .from('workspace')
+            .insert({
+              workspace_id: workspace.id,
+              leo: null,
+              mike: null,
+              sophie: null,
+              clara: null,
+              tom: null,
+              ash: null
+            });
+          
+          if (insertError) {
+            console.error('Error inserting workspace data:', insertError);
+          }
         }
-      }
-    };
-    
-    insertWorkspaceData();
-  }, [workspace.id]);
+      };
+      
+      insertWorkspaceData();
+    }, [workspace.id]);
 
   return (
     <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
@@ -346,20 +354,20 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
                   initial={{ 
                     scale: 0, 
                     opacity: 0, 
-                    left: containerDimensions.width / 2 - 40, 
-                    top: containerDimensions.height / 2 - 40 
+                    left: containerDimensions.width / 2 - 30, 
+                    top: containerDimensions.height / 2 - 30 
                   }}
                   animate={{ 
                     scale: 1, 
                     opacity: 1, 
-                    left: data.position.x - 40, // HexIcon large size / 2
-                    top: data.position.y - 40
+                    left: data.position.x - 30, // HexIcon large size / 2
+                    top: data.position.y - 30
                   }}
                   exit={{ 
                     scale: 0, 
                     opacity: 0, 
-                    left: containerDimensions.width / 2 - 40, 
-                    top: containerDimensions.height / 2 - 40 
+                    left: containerDimensions.width / 2 - 30, 
+                    top: containerDimensions.height / 2 - 30 
                   }}
                   transition={{ 
                     type: 'spring', 
