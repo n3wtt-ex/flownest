@@ -76,6 +76,8 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
   // Veritabanından mesajları çek
   useEffect(() => {
     const fetchMessages = async () => {
+      console.log('Fetching messages from database...');
+      
       const { data, error } = await supabase
         .from('agent_chat')
         .select('*')
@@ -87,6 +89,8 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
         return;
       }
       
+      console.log('Messages fetched:', data);
+      
       // Veritabanı verisini Message formatına dönüştür
       const formattedMessages: Message[] = data.map((item: AgentChat) => ({
         id: item.id,
@@ -95,6 +99,7 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
         timestamp: formatTimestamp(item.created_at)
       }));
       
+      console.log('Formatted messages:', formattedMessages);
       setMessages(formattedMessages);
     };
     
