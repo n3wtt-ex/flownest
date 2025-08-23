@@ -125,14 +125,20 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
   return (
     <>
       {/* Toggle Button */}
-      <motion.button
-        onClick={onToggle}
-        className="fixed top-1/2 right-80 transform -translate-y-1/2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-shadow duration-200 z-50"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        {isOpen ? <X className="w-5 h-5" /> : <Users className="w-5 h-5" />}
-      </motion.button>
+      {!isOpen && (
+        <motion.button
+          onClick={onToggle}
+          className="fixed top-1/2 right-0 transform -translate-y-1/2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white p-3 rounded-l-lg shadow-lg hover:shadow-xl transition-shadow duration-200 z-50"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          initial={{ x: '100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '100%' }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        >
+          <Users className="w-5 h-5" />
+        </motion.button>
+      )}
 
       {/* Sidebar */}
       <AnimatePresence>
@@ -144,6 +150,15 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed top-0 right-0 w-80 h-full bg-slate-900/95 backdrop-blur-sm border-l border-slate-700/50 z-50 flex flex-col"
           >
+            {/* Toggle Button Inside Sidebar */}
+            <motion.button
+              onClick={onToggle}
+              className="absolute top-1/2 -left-4 transform -translate-y-1/2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white p-2 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200 z-50"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <X className="w-4 h-4" />
+            </motion.button>
             {/* Header */}
             <div className="p-4 border-b border-slate-700/50">
               <h3 className="text-white font-semibold flex items-center">
