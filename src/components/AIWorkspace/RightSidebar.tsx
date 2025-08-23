@@ -45,16 +45,22 @@ const teamMembers = [
     tools: ['LinkedIn', 'PerplexityAI', 'BrightData']
   },
   { 
-    name: 'Ash', 
-    role: 'Engagement Assistant', 
-    color: 'from-orange-500 to-red-500',
-    tools: ['CalCom', 'CRM', 'Instagram']
-  },
-  { 
     name: 'Clara', 
     role: 'Feedback Analyst', 
     color: 'from-indigo-500 to-purple-500',
     tools: ['Gmail', 'BrightData']
+  },
+  { 
+    name: 'Tom', 
+    role: 'Meeting Assistant', 
+    color: 'from-cyan-500 to-blue-500',
+    tools: ['CalCom']
+  },
+  { 
+    name: 'Ash', 
+    role: 'Engagement Assistant', 
+    color: 'from-orange-500 to-red-500',
+    tools: ['CRM', 'Instagram']
   }
 ];
 
@@ -78,10 +84,13 @@ export function RightSidebar({ isOpen, onToggle, onToolMention, workspaceId }: R
   // Veritabanından mesajları çek
   useEffect(() => {
     const fetchMessages = async () => {
+      if (!workspaceId) return;
+      
       try {
         const { data, error } = await supabase
           .from('agent_chat')
           .select('*')
+          .eq('ai_workspace_id', workspaceId)
           .order('created_at', { ascending: false })
           .limit(20);
           
@@ -111,7 +120,7 @@ export function RightSidebar({ isOpen, onToggle, onToolMention, workspaceId }: R
     const interval = setInterval(fetchMessages, 5000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [workspaceId]);
   
   // Veritabanından workspace araçlarını çek
   useEffect(() => {

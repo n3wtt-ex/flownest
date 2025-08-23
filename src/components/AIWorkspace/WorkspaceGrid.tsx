@@ -233,7 +233,7 @@ export function WorkspaceGrid({
                 <div className="space-y-3 mb-4">
                   <div className="flex items-center text-slate-300">
                     <Users className="w-4 h-4 mr-2 text-cyan-400" />
-                    <span className="text-sm">{getSelectedToolsCount(workspace.id)}/5 Araç Seçili</span>
+                    <span className="text-sm">{getSelectedToolsCount(workspace.id)}/6 Araç Seçili</span>
                   </div>
                   <div className="flex items-center text-slate-300">
                     <Calendar className="w-4 h-4 mr-2 text-purple-400" />
@@ -245,18 +245,18 @@ export function WorkspaceGrid({
                 <div className="w-full bg-slate-700 rounded-full h-2 mb-4">
                   <div 
                     className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${(getSelectedToolsCount(workspace.id) / 5) * 100}%` }}
+                    style={{ width: `${(getSelectedToolsCount(workspace.id) / 6) * 100}%` }}
                   />
                 </div>
 
                 {/* Status */}
                 <div className="flex items-center justify-between">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    getSelectedToolsCount(workspace.id) === 5 
+                    getSelectedToolsCount(workspace.id) === 6 
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                       : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                   }`}>
-                    {getSelectedToolsCount(workspace.id) === 5 ? 'Hazır' : 'Yapılandırılıyor'}
+                    {getSelectedToolsCount(workspace.id) === 6 ? 'Hazır' : 'Yapılandırılıyor'}
                   </span>
                 </div>
               </div>
