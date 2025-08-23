@@ -37,7 +37,7 @@ export function ChatBox({ messages: initialMessages, workspaceId }: ChatBoxProps
 
   useEffect(() => {
     // Mesaj gönderildiğinde otomatik scroll yapma
-  }, [messages, isTyping]);
+  }, [messages, isTyping]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;

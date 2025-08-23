@@ -199,20 +199,23 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
 
   // Yeni tablodan workspace verilerini çek
   const fetchWorkspaceData = async () => {
-    const { data, error } = await supabase
-      .from('workspace')
-      .select('*')
-      .eq('workspace_id', workspace.id)
-      .single();
+    try {
+      console.log('Fetching workspace data for workspace_id:', workspace.id);
+      const { data, error } = await supabase
+        .from('workspace')
+        .select('*')
+        .eq('workspace_id', workspace.id)
+        .single();
+        
+      if (error) {
+        console.error('Error fetching workspace data:', error);
+        return;
+      }
       
-    if (error) {
-      console.error('Error fetching workspace data:', error);
-      return;
-    }
-    
-    setWorkspaceData(data);
-    
-    // Veri geldiğinde araçları otomatik seç
+      console.log('Workspace data fetched:', data);
+      setWorkspaceData(data);
+      
+      // Veri geldiğinde araçları otomatik seç
       if (data) {
         const newSelectedTools: { [key: string]: { tool: string; position: { x: number; y: number } } } = {};
         
@@ -223,34 +226,47 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
             const toolName = data[agent];
             const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
             
+            console.log(`Processing agent: ${agent}, tool: ${toolName}`);
+            
             if (agentPosition && agentPosition.tools.includes(toolName)) {
               newSelectedTools[agentKey] = {
                 tool: toolName,
                 position: { x: agentPosition.x, y: agentPosition.y }
               };
+              console.log(`Added tool for ${agentKey}: ${toolName}`);
+            } else {
+              console.log(`Tool not found for ${agentKey}: ${toolName}`);
             }
           }
         });
         
+        console.log('Setting selected tools:', newSelectedTools);
         setSelectedTools(newSelectedTools);
       }
+    } catch (error) {
+      console.error('Error in fetchWorkspaceData:', error);
+    }
   };
 
   // Workspace verilerini periyodik olarak güncelle
   useEffect(() => {
-    fetchWorkspaceData();
-    
-    const interval = setInterval(fetchWorkspaceData, 3000);
-    return () => clearInterval(interval);
+    if (workspace && workspace.id) {
+      fetchWorkspaceData();
+      
+      const interval = setInterval(fetchWorkspaceData, 3000);
+      return () => clearInterval(interval);
+    }
   }, [workspace.id]);
 
   // Onboarding completion handler
   const handleOnboardingComplete = (onboardingData: any) => {
-    onUpdateWorkspace({
+    const updatedWorkspace = {
       ...workspace,
       onboardingCompleted: true,
       ...onboardingData
-    });
+    };
+    
+    onUpdateWorkspace(updatedWorkspace);
     
     // Onboarding tamamlandıktan sonra pozisyonları yeniden hesapla
     setTimeout(() => {
@@ -272,6 +288,9 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       </div>
     );
   }
+
+  // Onboarding tamamlandıktan sonra workspace board'u render et
+  try {
 
   // Yeni workspace oluşturulduğunda tabloya satır ekle
     useEffect(() => {
@@ -340,7 +359,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
             {/* Connection Lines - Z-INDEX: 5 (Altında) */}
             <div style={{ zIndex: 5 }}>
               <ConnectionLines 
-                selectedTools={selectedTools}
+                selectedTools={selectedTools || {}}
                 containerDimensions={containerDimensions}
                 isRightSidebarOpen={isRightSidebarOpen}
               />
@@ -404,4 +423,21 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       />
     </div>
   );
+  } catch (error) {
+    console.error('Error rendering WorkspaceBoard:', error);
+    return (
+      <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative flex items-center justify-center">
+        <div className="text-white text-center p-4">
+          <h3 className="text-xl font-bold mb-2">Bir hata oluştu</h3>
+          <p className="text-slate-300">Workspace yüklenirken bir hata meydana geldi.</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+          >
+            Sayfayı Yenile
+          </button>
+        </div>
+      </div>
+    );
+  }
 }

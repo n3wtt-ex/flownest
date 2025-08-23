@@ -71,36 +71,42 @@ const formatTimestamp = (timestamp: string) => {
 };
 
 export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarProps) {
+  console.log('RightSidebar rendered with isOpen:', isOpen);
+  
   const [messages, setMessages] = useState<Message[]>([]);
   
   // Veritabanından mesajları çek
   useEffect(() => {
     const fetchMessages = async () => {
-      console.log('Fetching messages from database...');
-      
-      const { data, error } = await supabase
-        .from('agent_chat')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20);
+      try {
+        console.log('Fetching messages from database...');
         
-      if (error) {
-        console.error('Error fetching messages:', error);
-        return;
+        const { data, error } = await supabase
+          .from('agent_chat')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(20);
+          
+        if (error) {
+          console.error('Error fetching messages:', error);
+          return;
+        }
+        
+        console.log('Messages fetched:', data);
+        
+        // Veritabanı verisini Message formatına dönüştür
+        const formattedMessages: Message[] = data.map((item: AgentChat) => ({
+          id: item.id,
+          agent: item.agent_name,
+          text: item.message,
+          timestamp: formatTimestamp(item.created_at)
+        }));
+        
+        console.log('Formatted messages:', formattedMessages);
+        setMessages(formattedMessages);
+      } catch (error) {
+        console.error('Error in fetchMessages:', error);
       }
-      
-      console.log('Messages fetched:', data);
-      
-      // Veritabanı verisini Message formatına dönüştür
-      const formattedMessages: Message[] = data.map((item: AgentChat) => ({
-        id: item.id,
-        agent: item.agent_name,
-        text: item.message,
-        timestamp: formatTimestamp(item.created_at)
-      }));
-      
-      console.log('Formatted messages:', formattedMessages);
-      setMessages(formattedMessages);
     };
     
     // İlk yükleme
@@ -110,9 +116,10 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
     const interval = setInterval(fetchMessages, 5000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
   
   const handleToolClick = (agent: string, tool: string) => {
+    console.log('Tool clicked:', agent, tool);
     onToolMention(agent, tool);
   };
 

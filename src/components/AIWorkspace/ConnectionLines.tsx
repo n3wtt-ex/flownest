@@ -17,8 +17,13 @@ export function ConnectionLines({
   containerDimensions = { width: 800, height: 480 },
   isRightSidebarOpen = false 
 }: ConnectionLinesProps) {
-  const toolEntries = Object.entries(selectedTools);
-  if (toolEntries.length < 2) return null;
+  // selectedTools null veya undefined olabilir, bu durumda boş bir obje kullan
+  const safeSelectedTools = selectedTools || {};
+  
+  const toolEntries = Object.entries(safeSelectedTools);
+  if (toolEntries.length < 2) {
+    return null;
+  }
 
   // Sidebar genişliğini hesaplamıyoruz, çünkü sidebar workspace'i etkilemeyecek
   const sidebarWidth = 0;
