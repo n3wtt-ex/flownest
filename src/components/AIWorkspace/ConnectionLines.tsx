@@ -33,13 +33,13 @@ export function ConnectionLines({
     .map(agent => toolEntries.find(([key]) => key === agent))
     .filter(Boolean) as [string, SelectedTool][];
 
-  const ICON_SIZE = 60;
+  const ICON_SIZE = 80;
   const ICON_CENTER_OFFSET = ICON_SIZE / 2;
 
   const adjustedViewportWidth = containerDimensions.width;
 
   // Offset mantığı - sidebar durumuna göre ayarlamıyoruz
-  const manualOffsetX = -35;
+  const manualOffsetX = -40;
   const manualOffsetY = -45;
 
   return (
@@ -80,10 +80,10 @@ export function ConnectionLines({
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x + ICON_CENTER_OFFSET - 40;
-          const startY = toolData.position.y + ICON_CENTER_OFFSET - 45;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET - 40;
-          const endY = nextToolData.position.y + ICON_CENTER_OFFSET - 45;
+          const startX = toolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
+          const startY = toolData.position.y + ICON_CENTER_OFFSET + manualOffsetY;
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
+          const endY = nextToolData.position.y + ICON_CENTER_OFFSET + manualOffsetY;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -117,10 +117,10 @@ export function ConnectionLines({
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x + ICON_CENTER_OFFSET - 40;
-          const startY = toolData.position.y + ICON_CENTER_OFFSET - 45;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET - 40;
-          const endY = nextToolData.position.y + ICON_CENTER_OFFSET - 45;
+          const startX = toolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
+          const startY = toolData.position.y + ICON_CENTER_OFFSET + manualOffsetY;
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
+          const endY = nextToolData.position.y + ICON_CENTER_OFFSET + manualOffsetY;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -152,10 +152,10 @@ export function ConnectionLines({
         {orderedTools.slice(0, -1).map(([agentKey, toolData], index) => {
           const [nextAgentKey, nextToolData] = orderedTools[index + 1];
           
-          const startX = toolData.position.x + ICON_CENTER_OFFSET - 40;
-          const startY = toolData.position.y + ICON_CENTER_OFFSET - 45;
-          const endX = nextToolData.position.x + ICON_CENTER_OFFSET - 40;
-          const endY = nextToolData.position.y + ICON_CENTER_OFFSET - 45;
+          const startX = toolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
+          const startY = toolData.position.y + ICON_CENTER_OFFSET + manualOffsetY;
+          const endX = nextToolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
+          const endY = nextToolData.position.y + ICON_CENTER_OFFSET + manualOffsetY;
           
           const deltaX = endX - startX;
           const deltaY = endY - startY;
@@ -180,8 +180,8 @@ export function ConnectionLines({
 
         {/* Debug */}
         {process.env.NODE_ENV === 'development' && orderedTools.map(([agentKey, toolData]) => {
-          const centerX = toolData.position.x + ICON_CENTER_OFFSET - 40;
-          const centerY = toolData.position.y + ICON_CENTER_OFFSET - 45;
+          const centerX = toolData.position.x + ICON_CENTER_OFFSET + manualOffsetX;
+          const centerY = toolData.position.y + ICON_CENTER_OFFSET + manualOffsetY;
           
           return (
             <g key={`debug-${agentKey}-${isRightSidebarOpen}`}>

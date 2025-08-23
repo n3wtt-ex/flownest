@@ -46,11 +46,11 @@ const toolSections = [
 const agents = [
   { name: 'Eva', role: 'Project Director', avatar: '👩‍💼' },
   { name: 'Leo', role: 'Lead Researcher', avatar: '👨‍🔬' },
-  { name: 'Mike', role: 'Campaign Manager', avatar: '👨‍💻' },
-  { name: 'Sophie', role: 'Copywriter', avatar: '👩‍✍️' },
-  { name: 'Clara', role: 'Feedback Analyst', avatar: '👩‍📊' },
+  { name: 'Mike', role: 'Campaign Manager', avatar: '👨‍🚀' },
+  { name: 'Sophie', role: 'Copywriter', avatar: '👩‍🎨' },
+  { name: 'Clara', role: 'Data Analyst', avatar: '👩‍📊' },
   { name: 'Tom', role: 'Meeting Assistant', avatar: '👨‍💻' },
-  { name: 'Ash', role: 'Engagement & CRM Assistant', avatar: '👨‍💼' }
+  { name: 'Ash', role: 'Engagement & CRM Assistant', avatar: '👩‍💼' }
 ];
 
 export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {

@@ -46,7 +46,7 @@ const teamMembers = [
   },
   { 
     name: 'Clara', 
-    role: 'Feedback Analyst', 
+    role: 'Data Analyst', 
     color: 'from-indigo-500 to-purple-500',
     tools: ['Gmail', 'BrightData']
   },
