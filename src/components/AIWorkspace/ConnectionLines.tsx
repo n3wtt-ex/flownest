@@ -39,8 +39,8 @@ export function ConnectionLines({
   const adjustedViewportWidth = containerDimensions.width;
 
   // Offset mantığı - sidebar durumuna göre ayarlamıyoruz
-  const manualOffsetX = -30;
-  const manualOffsetY = -30;
+  const manualOffsetX = -25;
+  const manualOffsetY = -35;
 
   return (
     <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>

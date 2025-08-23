@@ -15,6 +15,7 @@ interface RightSidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   onToolMention: (agent: string, tool: string) => void;
+  workspaceId: string;
 }
 
 interface AgentChat {
@@ -70,17 +71,14 @@ const formatTimestamp = (timestamp: string) => {
   return `${month}/${day} ${hours}.${minutes}`;
 };
 
-export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarProps) {
-  console.log('RightSidebar rendered with isOpen:', isOpen);
-  
+export function RightSidebar({ isOpen, onToggle, onToolMention, workspaceId }: RightSidebarProps) {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedTools, setSelectedTools] = useState<{[key: string]: string}>({});
   
   // Veritabanından mesajları çek
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        console.log('Fetching messages from database...');
-        
         const { data, error } = await supabase
           .from('agent_chat')
           .select('*')
@@ -92,8 +90,6 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
           return;
         }
         
-        console.log('Messages fetched:', data);
-        
         // Veritabanı verisini Message formatına dönüştür
         const formattedMessages: Message[] = data.map((item: AgentChat) => ({
           id: item.id,
@@ -102,7 +98,6 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
           timestamp: formatTimestamp(item.created_at)
         }));
         
-        console.log('Formatted messages:', formattedMessages);
         setMessages(formattedMessages);
       } catch (error) {
         console.error('Error in fetchMessages:', error);
@@ -116,10 +111,48 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
     const interval = setInterval(fetchMessages, 5000);
     
     return () => clearInterval(interval);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
+  
+  // Veritabanından workspace araçlarını çek
+  useEffect(() => {
+    const fetchWorkspaceTools = async () => {
+      if (!workspaceId) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('workspace')
+          .select('*')
+          .eq('workspace_id', workspaceId)
+          .single();
+          
+        if (error) {
+          console.error('Error fetching workspace tools:', error);
+          return;
+        }
+        
+        if (data) {
+          const tools: {[key: string]: string} = {};
+          Object.keys(data).forEach(agent => {
+            if (agent !== 'workspace_id' && data[agent]) {
+              tools[agent] = data[agent];
+            }
+          });
+          setSelectedTools(tools);
+        }
+      } catch (error) {
+        console.error('Error in fetchWorkspaceTools:', error);
+      }
+    };
+    
+    fetchWorkspaceTools();
+    
+    // 3 saniyede bir araç verilerini güncelle
+    const interval = setInterval(fetchWorkspaceTools, 3000);
+    
+    return () => clearInterval(interval);
+  }, [workspaceId]);
   
   const handleToolClick = (agent: string, tool: string) => {
-    console.log('Tool clicked:', agent, tool);
     onToolMention(agent, tool);
   };
 
@@ -171,22 +204,34 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
 
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto">
-              {/* Team Members - Manuel araç seçimi kaldırıldı */}
+              {/* Team Members - Otomatik araç seçimi */}
               <div className="p-4 border-b border-slate-700/50">
                 <h4 className="text-slate-300 text-sm font-medium mb-3">Aktif Üyeler</h4>
                 <div className="space-y-3">
-                  {teamMembers.map((member) => (
-                    <div key={member.name} className="bg-slate-800/50 rounded-lg p-3">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${member.color}`}></div>
-                        <span className="text-slate-300 text-sm font-medium">{member.name}</span>
-                        <span className="text-slate-500 text-xs">• {member.role}</span>
+                  {teamMembers.map((member) => {
+                    const selectedTool = selectedTools[member.name.toLowerCase()];
+                    return (
+                      <div key={member.name} className="bg-slate-800/50 rounded-lg p-3">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className={`w-2 h-2 rounded-full bg-gradient-to-r ${member.color}`}></div>
+                          <span className="text-slate-300 text-sm font-medium">{member.name}</span>
+                          <span className="text-slate-500 text-xs">• {member.role}</span>
+                        </div>
+                        {selectedTool ? (
+                          <div className="flex items-center space-x-2">
+                            <div className="px-2 py-1 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-300 text-xs rounded-full border border-cyan-500/30">
+                              {selectedTool}
+                            </div>
+                            <span className="text-slate-400 text-xs">AI tarafından seçildi</span>
+                          </div>
+                        ) : (
+                          <div className="text-slate-400 text-xs">
+                            Araç bekleniyor...
+                          </div>
+                        )}
                       </div>
-                      <div className="text-slate-400 text-xs">
-                        Araçlar otomatik olarak AI tarafından seçilir
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 

@@ -36,7 +36,7 @@ export function AgentHeader({ agents }: AgentHeaderProps) {
         </div>
         
         <div className="text-slate-400 text-sm">
-          AI Workspace • 6 Active Agents
+          AI Workspace • 7 Active Agents
         </div>
       </div>
     </div>

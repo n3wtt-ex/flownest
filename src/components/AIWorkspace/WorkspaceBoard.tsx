@@ -49,7 +49,7 @@ const agents = [
   { name: 'Mike', role: 'Campaign Manager', avatar: '👨‍💻' },
   { name: 'Sophie', role: 'Copywriter', avatar: '👩‍✍️' },
   { name: 'Clara', role: 'Feedback Analyst', avatar: '👩‍📊' },
-  { name: 'Tom', role: 'Data Analyst', avatar: '👨‍💻' },
+  { name: 'Tom', role: 'Meeting Assistant', avatar: '👨‍💻' },
   { name: 'Ash', role: 'Engagement & CRM Assistant', avatar: '👨‍💼' }
 ];
 
@@ -200,7 +200,6 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   // Yeni tablodan workspace verilerini çek
   const fetchWorkspaceData = async () => {
     try {
-      console.log('Fetching workspace data for workspace_id:', workspace.id);
       const { data, error } = await supabase
         .from('workspace')
         .select('*')
@@ -212,7 +211,6 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         return;
       }
       
-      console.log('Workspace data fetched:', data);
       setWorkspaceData(data);
       
       // Veri geldiğinde araçları otomatik seç
@@ -226,21 +224,15 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
             const toolName = data[agent];
             const agentPosition = toolPositions[agentKey as keyof typeof toolPositions];
             
-            console.log(`Processing agent: ${agent}, tool: ${toolName}`);
-            
             if (agentPosition && agentPosition.tools.includes(toolName)) {
               newSelectedTools[agentKey] = {
                 tool: toolName,
                 position: { x: agentPosition.x, y: agentPosition.y }
               };
-              console.log(`Added tool for ${agentKey}: ${toolName}`);
-            } else {
-              console.log(`Tool not found for ${agentKey}: ${toolName}`);
             }
           }
         });
         
-        console.log('Setting selected tools:', newSelectedTools);
         setSelectedTools(newSelectedTools);
       }
     } catch (error) {
@@ -420,6 +412,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         isOpen={isRightSidebarOpen} 
         onToggle={() => setIsRightSidebarOpen(!isRightSidebarOpen)} 
         onToolMention={handleToolMention} 
+        workspaceId={workspace.id}
       />
     </div>
   );
