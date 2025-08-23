@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Send, X, Users } from 'lucide-react';
+import { MessageSquare, X, Users } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
 
 interface Message {
   id: string;
@@ -14,6 +15,13 @@ interface RightSidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   onToolMention: (agent: string, tool: string) => void;
+}
+
+interface AgentChat {
+  id: string;
+  agent_name: string;
+  message: string;
+  created_at: string;
 }
 
 const teamMembers = [
@@ -49,78 +57,59 @@ const teamMembers = [
   }
 ];
 
-const sampleMessages: Message[] = [
-  {
-    id: '1',
-    agent: 'Leo',
-    text: 'Apollo ile lead araştırması başlattım. Google Maps entegrasyonu da hazır.',
-    timestamp: '14:32',
-    mentionedTools: ['Apollo', 'GoogleMaps']
-  },
-  {
-    id: '2',
-    agent: 'Mike',
-    text: 'Instantly ve Lemlist kampanyaları hazır. E-posta dizileri aktif.',
-    timestamp: '14:35',
-    mentionedTools: ['Instantly', 'Lemlist']
-  },
-  {
-    id: '3',
-    agent: 'Sophie',
-    text: 'LinkedIn outreach metinleri hazır. PerplexityAI ile içerik optimizasyonu yapıldı.',
-    timestamp: '14:38',
-    mentionedTools: ['LinkedIn', 'PerplexityAI']
-  },
-  {
-    id: '4',
-    agent: 'Ash',
-    text: 'CalCom entegrasyonu tamamlandı. CRM ile senkronizasyon hazır.',
-    timestamp: '14:42',
-    mentionedTools: ['CalCom', 'CRM']
-  },
-  {
-    id: '5',
-    agent: 'Clara',
-    text: 'Gmail API bağlantısı kuruldu. BrightData ile veri analizi başladı.',
-    timestamp: '14:45',
-    mentionedTools: ['Gmail', 'BrightData']
-  }
-];
+// Tarih formatlama fonksiyonu
+const formatTimestamp = (timestamp: string) => {
+  const date = new Date(timestamp);
+  // Türkiye saat diliminde (UTC+3) göster
+  const utcDate = new Date(date.getTime() + 3 * 60 * 60 * 1000);
+  const month = (utcDate.getUTCMonth() + 1).toString().padStart(2, '0');
+  const day = utcDate.getUTCDate().toString().padStart(2, '0');
+  const hours = utcDate.getUTCHours().toString().padStart(2, '0');
+  const minutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
+  
+  return `${month}/${day} ${hours}.${minutes}`;
+};
 
 export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarProps) {
-  const [messages, setMessages] = useState<Message[]>(sampleMessages);
-  const [inputValue, setInputValue] = useState('');
-
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      agent: 'You',
-      text: inputValue,
-      timestamp: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+  const [messages, setMessages] = useState<Message[]>([]);
+  
+  // Veritabanından mesajları çek
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from('agent_chat')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20);
+        
+      if (error) {
+        console.error('Error fetching messages:', error);
+        return;
+      }
+      
+      // Veritabanı verisini Message formatına dönüştür
+      const formattedMessages: Message[] = data.map((item: AgentChat) => ({
+        id: item.id,
+        agent: item.agent_name,
+        text: item.message,
+        timestamp: formatTimestamp(item.created_at)
+      }));
+      
+      setMessages(formattedMessages);
     };
-
-    setMessages(prev => [...prev, newMessage]);
-    setInputValue('');
-  };
-
+    
+    // İlk yükleme
+    fetchMessages();
+    
+    // 5 saniyede bir veriyi güncelle
+    const interval = setInterval(fetchMessages, 5000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
   const handleToolClick = (agent: string, tool: string) => {
     onToolMention(agent, tool);
   };
-
-  React.useEffect(() => {
-    // Simulate automatic tool mentions when messages are added
-    messages.forEach(message => {
-      if (message.mentionedTools) {
-        message.mentionedTools.forEach(tool => {
-          setTimeout(() => {
-            onToolMention(message.agent, tool);
-          }, 500);
-        });
-      }
-    });
-  }, []);
 
   return (
     <>
@@ -231,25 +220,10 @@ export function RightSidebar({ isOpen, onToggle, onToolMention }: RightSidebarPr
               </div>
             </div>
 
-            {/* Input */}
+            {/* Input - Removed as per requirements */}
             <div className="p-4 border-t border-slate-700/50">
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder="Mesaj yazın..."
-                  className="flex-1 bg-slate-800 text-white placeholder-slate-400 px-3 py-2 rounded-lg border border-slate-600 focus:border-cyan-500 focus:outline-none text-sm"
-                />
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleSendMessage}
-                  className="bg-gradient-to-r from-cyan-500 to-purple-500 text-white p-2 rounded-lg hover:shadow-lg transition-shadow duration-200"
-                >
-                  <Send className="w-4 h-4" />
-                </motion.button>
+              <div className="text-slate-400 text-sm text-center">
+                Bu kanal sadece izleme amaçlıdır. Mesaj göndermek için chatbot'u kullanın.
               </div>
             </div>
           </motion.div>
