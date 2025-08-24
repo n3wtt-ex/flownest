@@ -732,22 +732,10 @@ export function Responses() {
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
-        
-
-        
-        @keyframes slideTab {
-          from {
-            transform: translateX(-10px);
-          }
-          to {
-            transform: translateX(2px);
-          }
-        }
-        
-        .tab-active {
-          animation: slideTab 0.3s ease-out;
-        }
       `}</style>
+    </div>
+  );
+}
     </div>
   );
 }
