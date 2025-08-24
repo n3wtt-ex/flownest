@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { OnboardingCard } from './OnboardingCard';
 
 interface Step3CardProps {
   onSave: (data: { name: string; companyName: string; companyInfo: string }) => void;

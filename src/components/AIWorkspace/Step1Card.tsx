@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { OnboardingCard } from './OnboardingCard';
 
 interface Step1CardProps {
   onSave: (data: { targetCustomers: number }) => void;

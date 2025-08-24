@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { OnboardingCard } from './OnboardingCard';
 
 const eventLabels = {
   'demo': 'Demo',
