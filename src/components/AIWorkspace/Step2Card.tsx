@@ -1,5 +1,4 @@
-<div className="w-full max-w-md mx-auto">
-      <div className="bg-gradient-to-br from-slate-950 via-slate-900 toimport React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Step2CardProps {
   onSave: (data: { targetAudience: string }) => void;
