@@ -90,6 +90,8 @@ export function Responses() {
   const [completedMeetings, setCompletedMeetings] = useState<Set<string>>(new Set());
   const [crmTransfers, setCrmTransfers] = useState<Set<string>>(new Set());
   const [crmTransferLoading, setCrmTransferLoading] = useState<Set<string>>(new Set());
+  const [isEditingReply, setIsEditingReply] = useState(false);
+  const [replyText, setReplyText] = useState('');
 
   const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ message, type });
@@ -109,7 +111,7 @@ export function Responses() {
     },
     { 
       key: 'Soru Soruyor' as const, 
-      label: 'Soru Soruyor', 
+      label: 'Soru?', 
       icon: <HelpCircle className="w-3 h-3" />, 
       color: 'bg-amber-500',
       activeColor: 'bg-amber-600',
@@ -284,28 +286,42 @@ export function Responses() {
       <div className="flex h-[calc(100vh-80px)] relative">
         {/* Main Container - Shifted Left */}
         <div className="flex-1 flex relative ml-6">
-          {/* Vertical Tabs - Left Side - Smaller Size */}
-          <div className="flex flex-col justify-center space-y-1 mr-2">
+          {/* Vertical Tabs - Left Side - Smaller Size & Better Positioning */}
+          <div className="flex flex-col justify-start pt-16 space-y-1 mr-2">
             {categories.map((category, index) => (
               <motion.div
                 key={category.key}
                 className="relative"
                 whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                animate={{
+                  x: activeCategory === category.key ? 4 : 0,
+                  scale: activeCategory === category.key ? 1.05 : 0.95,
+                  zIndex: activeCategory === category.key ? 20 : 10 - index
+                }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 20,
+                  duration: 0.2 
+                }}
               >
                 <div
                   className={`w-12 h-16 rounded-l-lg cursor-pointer transition-all duration-300 ${
                     activeCategory === category.key
-                      ? `${category.activeColor} shadow-md`
-                      : `${category.color} hover:${category.activeColor} shadow-sm`
+                      ? `${category.activeColor} shadow-lg`
+                      : `${category.color} hover:${category.activeColor} shadow-sm opacity-75`
                   }`}
                   onClick={() => {
                     setActiveCategory(category.key);
                     setSelectedEmail(null);
                     setExpandedCard(null);
+                    setIsEditingReply(false);
                   }}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, category.key)}
+                  style={{
+                    zIndex: activeCategory === category.key ? 20 : 10 - index
+                  }}
                 >
                   <div className="h-full flex flex-col items-center justify-center space-y-1.5 py-2">
                     <div className="text-white">
@@ -579,19 +595,42 @@ export function Responses() {
                       <motion.button 
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => handleAction(selectedEmail.id, 'Yanıt Maili Gönder', selectedEmail.sender)}
-                        className="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        onClick={() => {
+                          if (isEditingReply && replyText.trim()) {
+                            handleAction(selectedEmail.id, 'Yanıt Maili Gönder', selectedEmail.sender);
+                            setIsEditingReply(false);
+                            setReplyText('');
+                          } else {
+                            handleAction(selectedEmail.id, 'Yanıt Maili Gönder', selectedEmail.sender);
+                          }
+                        }}
+                        disabled={isEditingReply && !replyText.trim()}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          isEditingReply && !replyText.trim() 
+                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                            : 'bg-blue-500 hover:bg-blue-600 text-white'
+                        }`}
                       >
                         <Send className="w-4 h-4" />
-                        <span>Send Reply</span>
+                        <span>{isEditingReply ? 'Send Custom Reply' : 'Send Reply'}</span>
                       </motion.button>
                       <motion.button 
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="flex items-center space-x-2 bg-gray-100 dark:bg-slate-600 hover:bg-gray-200 dark:hover:bg-slate-500 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        onClick={() => {
+                          setIsEditingReply(!isEditingReply);
+                          if (!isEditingReply) {
+                            setReplyText('');
+                          }
+                        }}
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                          isEditingReply
+                            ? 'bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700'
+                            : 'bg-gray-100 dark:bg-slate-600 hover:bg-gray-200 dark:hover:bg-slate-500 text-gray-700 dark:text-gray-300'
+                        }`}
                       >
                         <Edit className="w-4 h-4" />
-                        <span>Edit Reply</span>
+                        <span>{isEditingReply ? 'Cancel Edit' : 'Edit Reply'}</span>
                       </motion.button>
                       <motion.button 
                         whileHover={{ scale: 1.02 }}
@@ -602,6 +641,70 @@ export function Responses() {
                         <span>Forward</span>
                       </motion.button>
                     </div>
+                    
+                    {/* Edit Reply Section */}
+                    <AnimatePresence>
+                      {isEditingReply && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ 
+                            opacity: 1, 
+                            height: 'auto', 
+                            marginTop: 24,
+                            transition: { 
+                              height: { duration: 0.3, ease: "easeOut" },
+                              opacity: { duration: 0.2, delay: 0.1 },
+                              marginTop: { duration: 0.3, ease: "easeOut" }
+                            }
+                          }}
+                          exit={{ 
+                            opacity: 0, 
+                            height: 0, 
+                            marginTop: 0,
+                            transition: { 
+                              height: { duration: 0.2, ease: "easeIn" },
+                              opacity: { duration: 0.1 },
+                              marginTop: { duration: 0.2, ease: "easeIn" }
+                            }
+                          }}
+                          className="border-t border-blue-200 dark:border-blue-800 pt-6"
+                        >
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Yanıtınızı yazın:
+                              </label>
+                              <textarea
+                                value={replyText}
+                                onChange={(e) => setReplyText(e.target.value)}
+                                placeholder={`Merhaba ${selectedEmail?.sender},\n\nTeşekkür ederiz. Sorularınızla ilgili detaylı bilgi vermek isterim...\n\nEn iyi dileklerimle,\nNazma`}
+                                className="w-full h-32 px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                                autoFocus
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div className="text-xs text-gray-500 dark:text-gray-400">
+                                {replyText.length} karakter
+                              </div>
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => setReplyText('')}
+                                  className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+                                >
+                                  Temizle
+                                </button>
+                                <button
+                                  onClick={() => setReplyText(`Merhaba ${selectedEmail?.sender},\n\nTeşekkür ederiz. Sorularınızla ilgili detaylı bilgi vermek isterim...\n\nEn iyi dileklerimle,\nNazma`)}
+                                  className="text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                                >
+                                  Şablon Yükle
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </motion.div>
