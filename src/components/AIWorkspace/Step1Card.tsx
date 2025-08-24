@@ -46,7 +46,7 @@ export function Step1Card({ onSave, initialData }: Step1CardProps) {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-3xl shadow-2xl border border-slate-600/50 overflow-hidden backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl shadow-2xl border border-blue-700/30 overflow-hidden backdrop-blur-sm">
         {/* Header */}
         <div className="px-8 pt-8 pb-6">
           <div className="flex items-center justify-end mb-6">

@@ -48,10 +48,10 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-3xl shadow-2xl border border-slate-600/50 overflow-hidden backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl shadow-2xl border border-blue-700/30 overflow-hidden backdrop-blur-sm">
         {/* Header */}
-        <div className="px-6 pt-6 pb-4">
-          <div className="flex items-center justify-end mb-4">
+        <div className="px-5 pt-5 pb-3">
+          <div className="flex items-center justify-end mb-3">
             <div className="flex items-center space-x-2">
               <span className="text-slate-400 text-sm font-medium">Step</span>
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -60,13 +60,13 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
             </div>
           </div>
           
-          <div className="space-y-3">
-            <h2 className="text-xl font-bold text-white leading-tight">
+          <div className="space-y-2.5">
+            <h2 className="text-lg font-bold text-white leading-tight">
               Kendinizi tanıtın
             </h2>
             
-            <div className="bg-slate-800/60 rounded-lg p-3 border border-slate-700/50">
-              <p className="text-slate-300 text-xs leading-relaxed">
+            <div className="bg-blue-900/40 rounded-lg p-2.5 border border-blue-700/50">
+              <p className="text-blue-200 text-xs leading-relaxed">
                 Kişisel ve şirket bilgilerinizi paylaşın...
               </p>
             </div>
@@ -74,13 +74,13 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
         </div>
 
         {/* Content */}
-        <div className="px-6 pb-4">
-          <div className="space-y-4">
+        <div className="px-5 pb-3">
+          <div className="space-y-3">
             {/* Name Input */}
-            <div className="space-y-1.5">
-              <label className="block text-slate-300 text-xs font-medium">
+            <div className="space-y-1">
+              <label className="block text-blue-300 text-xs font-medium">
                 <div className="flex items-center space-x-1.5">
-                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                   </svg>
                   <span>İsim</span>
@@ -91,15 +91,15 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Adınızı girin"
-                className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 text-sm"
+                className="w-full px-3 py-2 bg-blue-900/40 border border-blue-600/50 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 text-sm"
               />
             </div>
 
             {/* Company Name Input */}
-            <div className="space-y-1.5">
-              <label className="block text-slate-300 text-xs font-medium">
+            <div className="space-y-1">
+              <label className="block text-blue-300 text-xs font-medium">
                 <div className="flex items-center space-x-1.5">
-                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
                   </svg>
                   <span>Şirket Adı</span>
@@ -110,15 +110,15 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="Şirket adınızı girin"
-                className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 text-sm"
+                className="w-full px-3 py-2 bg-blue-900/40 border border-blue-600/50 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 text-sm"
               />
             </div>
 
             {/* Company Info Textarea */}
-            <div className="space-y-1.5">
-              <label className="block text-slate-300 text-xs font-medium">
+            <div className="space-y-1">
+              <label className="block text-blue-300 text-xs font-medium">
                 <div className="flex items-center space-x-1.5">
-                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                   </svg>
                   <span>Şirket Açıklaması</span>
@@ -129,10 +129,10 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
                   value={companyInfo}
                   onChange={(e) => setCompanyInfo(e.target.value)}
                   placeholder="Kısa bir açıklama..."
-                  className="w-full h-20 px-3 py-2.5 bg-slate-800/80 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 resize-none text-xs leading-relaxed"
+                  className="w-full h-16 px-3 py-2 bg-blue-900/40 border border-blue-600/50 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 resize-none text-xs leading-relaxed"
                   maxLength={300}
                 />
-                <div className="absolute bottom-2 right-2 text-slate-400 text-xs bg-slate-800/80 px-1.5 py-0.5 rounded text-xs">
+                <div className="absolute bottom-1.5 right-2 text-blue-300 text-xs bg-blue-900/60 px-1.5 py-0.5 rounded text-xs">
                   {companyInfo.length}/300
                 </div>
               </div>
@@ -140,7 +140,7 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
 
             {!isValid && (
               <div className="flex items-center space-x-1.5 text-red-400 text-xs">
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
                 <span>Lütfen tüm alanları doldurun</span>
@@ -150,11 +150,11 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
         </div>
 
         {/* Save Button */}
-        <div className="px-6 pb-6">
+        <div className="px-5 pb-5">
           <button
             onClick={handleSave}
             disabled={!isValid}
-            className={`w-full py-3 rounded-xl font-semibold text-white transition-all duration-200 ${
+            className={`w-full py-2.5 rounded-xl font-semibold text-white transition-all duration-200 ${
               isValid
                 ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                 : 'bg-slate-700 cursor-not-allowed opacity-50'
