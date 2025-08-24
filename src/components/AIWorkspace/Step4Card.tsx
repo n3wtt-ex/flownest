@@ -90,10 +90,6 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
     <div className="w-full max-w-md mx-auto">
       <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-3xl shadow-2xl border border-slate-600/50 overflow-hidden backdrop-blur-sm">
         {/* Header */}
-        <div className="px-8 pt-8 pb-6">
-          <div className="flex items-center justify-end mb-6">
-            <div className="flex items-center space-x-2">
-        {/* Header */}
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-center justify-end mb-4">
             <div className="flex items-center space-x-2">
