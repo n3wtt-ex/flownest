@@ -88,10 +88,14 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl shadow-2xl border border-slate-700/50 overflow-hidden backdrop-blur-sm">
+      <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-3xl shadow-2xl border border-slate-600/50 overflow-hidden backdrop-blur-sm">
         {/* Header */}
         <div className="px-8 pt-8 pb-6">
           <div className="flex items-center justify-end mb-6">
+            <div className="flex items-center space-x-2">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4">
+          <div className="flex items-center justify-end mb-4">
             <div className="flex items-center space-x-2">
               <span className="text-slate-400 text-sm font-medium">Step</span>
               <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
@@ -100,13 +104,13 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
             </div>
           </div>
           
-          <div className="space-y-4">
-            <h2 className="text-2xl font-bold text-white leading-tight">
+          <div className="space-y-3">
+            <h2 className="text-xl font-bold text-white leading-tight">
               Bir event seçin
             </h2>
             
-            <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
-              <p className="text-slate-300 text-sm leading-relaxed">
+            <div className="bg-slate-800/60 rounded-lg p-3 border border-slate-700/50">
+              <p className="text-slate-300 text-xs leading-relaxed">
                 Hangi türde bir etkinlik düzenlemek istiyorsunuz?
               </p>
             </div>
@@ -114,19 +118,19 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
         </div>
 
         {/* Content */}
-        <div className="px-8 pb-6">
-          <div className="space-y-6">
+        <div className="px-6 pb-4">
+          <div className="space-y-4">
             {/* Event Selection */}
-            <div className="space-y-3">
-              <label className="block text-slate-300 text-sm font-medium">
+            <div className="space-y-2">
+              <label className="block text-slate-300 text-xs font-medium">
                 Event Türü Seçin
               </label>
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-2">
                 {Object.entries(eventLabels).map(([key, label]) => (
                   <button
                     key={key}
                     onClick={() => setSelectedEvent(key)}
-                    className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                    className={`flex items-center space-x-2.5 p-3 rounded-lg border-2 transition-all duration-200 text-left ${
                       selectedEvent === key
                         ? 'border-blue-500 bg-blue-500/10 text-white shadow-lg'
                         : 'border-slate-600/50 bg-slate-800/50 text-slate-300 hover:border-blue-500/50 hover:bg-slate-800/80'
@@ -136,12 +140,12 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
                       {eventIcons[key as keyof typeof eventIcons]}
                     </div>
                     <div className="flex-grow">
-                      <div className="font-medium">{label}</div>
+                      <div className="font-medium text-sm">{label}</div>
                     </div>
                     {selectedEvent === key && (
                       <div className="flex-shrink-0">
-                        <div className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                          <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         </div>
@@ -153,10 +157,10 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
             </div>
 
             {/* Event Content */}
-            <div className="space-y-3">
-              <label className="block text-slate-300 text-sm font-medium">
-                <div className="flex items-center space-x-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <div className="space-y-2">
+              <label className="block text-slate-300 text-xs font-medium">
+                <div className="flex items-center space-x-1.5">
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                   </svg>
                   <span>Event Detayları</span>
@@ -166,11 +170,11 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
                 <textarea
                   value={eventContent}
                   onChange={(e) => setEventContent(e.target.value)}
-                  className="w-full h-32 px-4 py-3 bg-slate-800/80 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 resize-none text-sm leading-relaxed"
-                  maxLength={1000}
+                  className="w-full h-24 px-3 py-2.5 bg-slate-800/80 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 resize-none text-xs leading-relaxed"
+                  maxLength={500}
                 />
-                <div className="absolute bottom-3 right-3 text-slate-400 text-xs bg-slate-800/80 px-2 py-1 rounded">
-                  {eventContent.length}/1000
+                <div className="absolute bottom-2 right-2 text-slate-400 text-xs bg-slate-800/80 px-1.5 py-0.5 rounded text-xs">
+                  {eventContent.length}/500
                 </div>
               </div>
             </div>
@@ -178,11 +182,11 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
         </div>
 
         {/* Save Button */}
-        <div className="px-8 pb-8">
+        <div className="px-6 pb-6">
           <button
             onClick={handleSave}
             disabled={!isValid}
-            className={`w-full py-4 rounded-xl font-semibold text-white transition-all duration-200 ${
+            className={`w-full py-3 rounded-xl font-semibold text-white transition-all duration-200 ${
               isValid
                 ? 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
                 : 'bg-slate-700 cursor-not-allowed opacity-50'
