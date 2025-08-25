@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Search, MapPin, Globe, Plus, Filter, Eye, MoreHorizontal, FileText, Trash2, Edit3, Check, X, ChevronDown } from 'lucide-react';
 import { Lead as LeadType } from '../types';
 import { supabase } from '../lib/supabase';
-import { useCampaigns } from './CampaignsContext';
+import { useCampaigns } from '../contexts/CampaignsContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
 // Refresh icon component
@@ -179,7 +179,7 @@ export function Leads() {
     }
   };
 
-    const handleRefreshWebhook = async () => {
+  const handleRefreshWebhook = async () => {
     setIsRefreshing(true);
     
     try {
@@ -581,9 +581,9 @@ export function Leads() {
       setIsRefreshing(false);
       setShowResults(true);
     }
-  };;
+  };
 
-    const handleSearch = async () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim() || !selectedProvider) return;
 
     setIsSearching(true);
@@ -1134,6 +1134,7 @@ export function Leads() {
       setError(`Failed to save lead: ${err.message}`);
     }
   };
+
   const updateLeadStatus = async (leadId: string, status: 'New' | 'Verified' | 'Skipped') => {
     try {
       const { error } = await supabase
@@ -1245,19 +1246,19 @@ export function Leads() {
 
   const getSourceColor = (source: string) => {
     switch (source) {
-      case 'apollo': return 'bg-blue-100 text-blue-800';
-      case 'google_maps': return 'bg-green-100 text-green-800';
-      case 'apify': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'apollo': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200';
+      case 'google_maps': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200';
+      case 'apify': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'New': return 'bg-blue-100 text-blue-800';
-      case 'Verified': return 'bg-green-100 text-green-800';
-      case 'Skipped': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'New': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200';
+      case 'Verified': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200';
+      case 'Skipped': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
     }
   };
 
@@ -1287,10 +1288,10 @@ export function Leads() {
 
   if (loading) {
     return (
-      <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center dark:bg-slate-900">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading leads...</p>
+          <p className="text-gray-600 dark:text-gray-400">Loading leads...</p>
         </div>
       </div>
     );
@@ -1298,7 +1299,7 @@ export function Leads() {
 
   if (error) {
     return (
-      <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+      <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center dark:bg-slate-900">
         <div className="text-center">
           <div className="text-red-500 mb-4">Error: {error}</div>
           <button
@@ -1325,7 +1326,7 @@ export function Leads() {
             <Search className="w-8 h-8 text-white" />
           </motion.div>
           <h1
-            className="text-4xl font-bold text-gray-900 mb-2"
+            className="text-4xl font-bold text-gray-900 mb-2 dark:text-white"
           >
             {language === 'tr' ? 'Lead Yönetimi' : 'Lead Management'}
           </h1>
@@ -1333,7 +1334,7 @@ export function Leads() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-gray-600 text-lg"
+            className="text-gray-600 text-lg dark:text-gray-400"
           >
             Manage and organize your leads
           </motion.p>
@@ -1342,11 +1343,11 @@ export function Leads() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Search Area */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 dark:bg-slate-800 dark:border-slate-700">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">{language === 'tr' ? 'Lead Arama' : 'Search for Leads'}</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 dark:text-white">{language === 'tr' ? 'Lead Arama' : 'Search for Leads'}</h2>
             
             {/* Provider Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">{language === 'tr' ? 'Arama Sağlayıcısını Seçin' : 'Choose Search Provider'}</label>
+              <label className="block text-sm font-medium text-gray-700 mb-3 dark:text-gray-300">{language === 'tr' ? 'Arama Sağlayıcısını Seçin' : 'Choose Search Provider'}</label>
               <div className="flex space-x-4">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -1354,15 +1355,15 @@ export function Leads() {
                   onClick={() => setSelectedProvider('apollo')}
                   className={`flex-1 p-4 rounded-xl border-2 transition-all duration-200 ${
                     selectedProvider === 'apollo'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200'
+                      : 'border-gray-200 hover:border-gray-300 dark:border-slate-600 dark:hover:border-slate-500'
                   }`}
                 >
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Search className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-blue-900/30">
+                    <Search className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="font-semibold">Apollo</div>
-                  <div className="text-sm text-gray-600">{language === 'tr' ? 'B2B Veritabanı' : 'B2B Database'}</div>
+                  <div className="font-semibold dark:text-white">Apollo</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{language === 'tr' ? 'B2B Veritabanı' : 'B2B Database'}</div>
                 </motion.button>
 
                 <motion.button
@@ -1371,22 +1372,22 @@ export function Leads() {
                   onClick={() => setSelectedProvider('google_maps')}
                   className={`flex-1 p-4 rounded-xl border-2 transition-all duration-200 ${
                     selectedProvider === 'google_maps'
-                      ? 'border-green-500 bg-green-50 text-green-700'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200'
+                      : 'border-gray-200 hover:border-gray-300 dark:border-slate-600 dark:hover:border-slate-500'
                   }`}
                 >
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <MapPin className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-green-900/30">
+                    <MapPin className="w-6 h-6 text-green-600 dark:text-green-400" />
                   </div>
-                  <div className="font-semibold">Google Maps</div>
-                  <div className="text-sm text-gray-600">Local Businesses</div>
+                  <div className="font-semibold dark:text-white">Google Maps</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Local Businesses</div>
                 </motion.button>
               </div>
             </div>
 
             {/* Search Input */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">
                 {selectedProvider === 'google_maps' ? (language === 'tr' ? 'Webhook için Mesaj' : 'Message for Webhook') : (language === 'tr' ? 'Arama Sorgusu' : 'Search Query')}
               </label>
               <div className="flex space-x-2">
@@ -1401,7 +1402,7 @@ export function Leads() {
                         ? (language === 'tr' ? 'örn., lokasyon: Istanbul anahtar kelimeler: kafe' : 'e.g., location: Istanbul keywords: cafe')
                         : (language === 'tr' ? 'Arama sorgusunu girin' : 'Enter search query')
                   }
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 <motion.button
@@ -1409,7 +1410,7 @@ export function Leads() {
                   whileTap={{ scale: 0.95 }}
                   onClick={handleFormIconClick}
                   disabled={!selectedProvider}
-                  className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
                   title="Open form for selected provider"
                 >
                   <FileText className="w-5 h-5" />
@@ -1429,25 +1430,25 @@ export function Leads() {
             {/* Quick Presets */}
             {selectedProvider !== 'google_maps' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Quick Presets</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">Quick Presets</label>
                 <div className="flex flex-wrap gap-2">
                   {selectedProvider === 'apollo' ? (
                     <>
                       <button
                         onClick={() => setSearchQuery('SaaS companies 50-200 employees')}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors dark:bg-blue-900/30 dark:text-blue-200 dark:hover:bg-blue-800/30"
                       >
                         SaaS Companies
                       </button>
                       <button
                         onClick={() => setSearchQuery('Marketing agencies in California')}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors dark:bg-blue-900/30 dark:text-blue-200 dark:hover:bg-blue-800/30"
                       >
                         Marketing Agencies
                       </button>
                       <button
                         onClick={() => setSearchQuery(language === 'tr' ? 'Istanbul\'daki e-ticaret şirketleri' : 'e-commerce companies in Istanbul')}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors"
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 transition-colors dark:bg-blue-900/30 dark:text-blue-200 dark:hover:bg-blue-800/30"
                       >
                         {language === 'tr' ? 'E-ticaret' : 'E-commerce'}
                       </button>
@@ -1456,19 +1457,19 @@ export function Leads() {
                     <>
                       <button
                         onClick={() => setSearchQuery(language === 'tr' ? 'Manhattan\'daki restoranlar' : 'restaurants in Manhattan')}
-                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
+                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors dark:bg-green-900/30 dark:text-green-200 dark:hover:bg-green-800/30"
                       >
                         {language === 'tr' ? 'Restoranlar' : 'Restaurants'}
                       </button>
                       <button
                         onClick={() => setSearchQuery(language === 'tr' ? 'Los Angeles\'taki spor salonlari' : 'gyms in Los Angeles')}
-                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
+                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors dark:bg-green-900/30 dark:text-green-200 dark:hover:bg-green-800/30"
                       >
                         {language === 'tr' ? 'Spor Salonlari' : 'Gyms'}
                       </button>
                       <button
                         onClick={() => setSearchQuery(language === 'tr' ? 'Seattle\'taki kahve dukkanlari' : 'coffee shops in Seattle')}
-                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors"
+                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm hover:bg-green-200 transition-colors dark:bg-green-900/30 dark:text-green-200 dark:hover:bg-green-800/30"
                       >
                         {language === 'tr' ? 'Kahve Dukkanlari' : 'Coffee Shops'}
                       </button>
@@ -1480,23 +1481,23 @@ export function Leads() {
 
             {/* Search History */}
             {selectedProvider !== 'google_maps' && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Recent Searches</h3>
+              <div className="mt-6 p-4 bg-gray-50 rounded-lg dark:bg-slate-700">
+                <h3 className="text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">Recent Searches</h3>
                 <div className="space-y-1">
-                  <div className="text-sm text-gray-600">• SaaS companies in San Francisco</div>
-                  <div className="text-sm text-gray-600">• Marketing agencies 10-50 employees</div>
-                  <div className="text-sm text-gray-600">• E-commerce startups</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">• SaaS companies in San Francisco</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">• Marketing agencies 10-50 employees</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">• E-commerce startups</div>
                 </div>
               </div>
             )}
           </div>
 
           {/* Results Area */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 dark:bg-slate-800 dark:border-slate-700">
             {/* Results Header */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 dark:border-slate-700">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">Search Results</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Search Results</h2>
                 <div className="flex items-center space-x-2">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -1510,21 +1511,21 @@ export function Leads() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="px-3 py-1 pr-8 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px] dark:bg-slate-800 dark:border-slate-600 dark:text-white"
+                    className="px-3 py-1 pr-8 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                   >
-                    <option value="all" className="dark:bg-slate-800 dark:text-white">{language === 'tr' ? 'Tüm Durumlar' : 'All Status'}</option>
-                    <option value="New" className="dark:bg-slate-800 dark:text-white">{language === 'tr' ? 'Yeni' : 'New'}</option>
-                    <option value="Verified" className="dark:bg-slate-800 dark:text-white">{language === 'tr' ? 'Doğrulanmış' : 'Verified'}</option>
-                    <option value="Skipped" className="dark:bg-slate-800 dark:text-white">{language === 'tr' ? 'Atlanmış' : 'Skipped'}</option>
+                    <option value="all" className="dark:bg-slate-700 dark:text-white">{language === 'tr' ? 'Tüm Durumlar' : 'All Status'}</option>
+                    <option value="New" className="dark:bg-slate-700 dark:text-white">{language === 'tr' ? 'Yeni' : 'New'}</option>
+                    <option value="Verified" className="dark:bg-slate-700 dark:text-white">{language === 'tr' ? 'Doğrulanmış' : 'Verified'}</option>
+                    <option value="Skipped" className="dark:bg-slate-700 dark:text-white">{language === 'tr' ? 'Atlanmış' : 'Skipped'}</option>
                   </select>
-                  <button className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg">
+                  <button className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-slate-700">
                     <Filter className="w-4 h-4" />
                   </button>
                 </div>
               </div>
               
               {searchResults.length > 0 && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   {searchResults.length} results found
                 </div>
               )}
@@ -1535,45 +1536,45 @@ export function Leads() {
               {isSearching ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-                  <div className="text-gray-600">
+                  <div className="text-gray-600 dark:text-gray-400">
                     {selectedProvider === 'google_maps' ? 'Sending message...' : 'Searching for leads...'}
                   </div>
                 </div>
               ) : isRefreshing && selectedProvider === 'google_maps' ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <div className="text-gray-600">Refreshing leads...</div>
+                  <div className="text-gray-600 dark:text-gray-400">Refreshing leads...</div>
                 </div>
               ) : selectedProvider === 'google_maps' && !showResults && searchResults.length > 0 ? (
                 <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 dark:bg-green-900/30">
+                    <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">{language === 'tr' ? 'Mesaj Başarıyla Gönderildi' : 'Message Sent Successfully'}</h3>
-                  <p className="text-gray-600">{language === 'tr' ? 'Mesajınız n8n aracılığıyla webhook ile gönderildi.' : 'Your message has been sent via webhook to n8n.'}</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2 dark:text-white">{language === 'tr' ? 'Mesaj Başarıyla Gönderildi' : 'Message Sent Successfully'}</h3>
+                  <p className="text-gray-600 dark:text-gray-400">{language === 'tr' ? 'Mesajınız n8n aracılığıyla webhook ile gönderildi.' : 'Your message has been sent via webhook to n8n.'}</p>
                 </div>
               ) : searchResults.length === 0 ? (
                 <div className="text-center py-12">
-                  <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">{language === 'tr' ? 'Henüz sonuç yok' : 'No results yet'}</h3>
-                  <p className="text-gray-600">{language === 'tr' ? 'Potansiyel lead bulmak için bir arama yapın.' : 'Run a search to find potential leads.'}</p>
+                  <Search className="w-12 h-12 text-gray-400 mx-auto mb-4 dark:text-gray-500" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2 dark:text-white">{language === 'tr' ? 'Henüz sonuç yok' : 'No results yet'}</h3>
+                  <p className="text-gray-600 dark:text-gray-400">{language === 'tr' ? 'Potansiyel lead bulmak için bir arama yapın.' : 'Run a search to find potential leads.'}</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 sticky top-0 dark:bg-slate-800">
+                    <thead className="bg-gray-50 sticky top-0 dark:bg-slate-700">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'İsim' : 'Name'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Şirket' : 'Company'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Pozisyon' : 'Title'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'E-posta' : 'Email'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Telefon' : 'Phone'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Lokasyon' : 'Location'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Kaynak' : 'Source'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'Durum' : 'Status'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{language === 'tr' ? 'İşlemler' : 'Actions'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'İsim' : 'Name'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Şirket' : 'Company'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Pozisyon' : 'Title'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'E-posta' : 'Email'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Telefon' : 'Phone'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Lokasyon' : 'Location'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Kaynak' : 'Source'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Durum' : 'Status'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'İşlemler' : 'Actions'}</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200 dark:bg-slate-800 dark:divide-slate-700">
@@ -1583,7 +1584,7 @@ export function Leads() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="hover:bg-gray-50"
+                          className="hover:bg-gray-50 dark:hover:bg-slate-700"
                         >
                           <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                             {lead.name || 'N/A'}
@@ -1614,7 +1615,7 @@ export function Leads() {
                               {lead.status}
                             </span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             <div className="flex items-center space-x-2">
                               {lead.status === 'New' && (
                                 <motion.button
@@ -1627,7 +1628,7 @@ export function Leads() {
                                   Add to Leads
                                 </motion.button>
                               )}
-                              <button className="text-gray-400 hover:text-gray-600">
+                              <button className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
                                 <MoreHorizontal className="w-4 h-4" />
                               </button>
                             </div>
@@ -1643,81 +1644,81 @@ export function Leads() {
         </div>
 
         {/* Added Leads Summary */}
-          {leads.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
-            >
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 md:mb-0">Leads</h2>
-                
-                {/* Search and Filter Section */}
-                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-                  {/* Search Input */}
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <input
-                      type="text"
-                      placeholder="Search leads..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64"
-                    />
-                  </div>
-                  
-                  {/* Status Filter */}
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px]"
-                  >
-                    <option value="all">All Status</option>
-                    <option value="New">New</option>
-                    <option value="Verified">Verified</option>
-                    <option value="Skipped">Skipped</option>
-                    <option value="apollo_lead">Apollo Lead</option>
-                  </select>
-                  
-                  {/* Sector Filter */}
-                  <select
-                    value={sectorFilter}
-                    onChange={(e) => setSectorFilter(e.target.value as any)}
-                    className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px]"
-                  >
-                    <option value="all">All Sectors</option>
-                    <option value="Technology">Technology</option>
-                    <option value="Marketing">Marketing</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="E-commerce">E-commerce</option>
-                  </select>
+        {leads.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 dark:bg-slate-800 dark:border-slate-700"
+          >
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4 md:mb-0 dark:text-white">Leads</h2>
+              
+              {/* Search and Filter Section */}
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                {/* Search Input */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                  <input
+                    type="text"
+                    placeholder="Search leads..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  />
                 </div>
+                
+                {/* Status Filter */}
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                >
+                  <option value="all" className="dark:bg-slate-700 dark:text-white">All Status</option>
+                  <option value="New" className="dark:bg-slate-700 dark:text-white">New</option>
+                  <option value="Verified" className="dark:bg-slate-700 dark:text-white">Verified</option>
+                  <option value="Skipped" className="dark:bg-slate-700 dark:text-white">Skipped</option>
+                  <option value="apollo_lead" className="dark:bg-slate-700 dark:text-white">Apollo Lead</option>
+                </select>
+                
+                {/* Sector Filter */}
+                <select
+                  value={sectorFilter}
+                  onChange={(e) => setSectorFilter(e.target.value as any)}
+                  className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                >
+                  <option value="all" className="dark:bg-slate-700 dark:text-white">All Sectors</option>
+                  <option value="Technology" className="dark:bg-slate-700 dark:text-white">Technology</option>
+                  <option value="Marketing" className="dark:bg-slate-700 dark:text-white">Marketing</option>
+                  <option value="Finance" className="dark:bg-slate-700 dark:text-white">Finance</option>
+                  <option value="Healthcare" className="dark:bg-slate-700 dark:text-white">Healthcare</option>
+                  <option value="E-commerce" className="dark:bg-slate-700 dark:text-white">E-commerce</option>
+                </select>
               </div>
+            </div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 sticky top-0">
+                <thead className="bg-gray-50 sticky top-0 dark:bg-slate-700">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sector</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Campaign</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Name</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Company</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Title</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Email</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Phone</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Location</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Sector</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Campaign</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-gray-200 dark:bg-slate-800 dark:divide-slate-700">
                   {filteredResults.map((lead) => (
                     <motion.tr
                       key={lead.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: parseInt(lead.id) * 0.05 }}
-                      className="hover:bg-gray-50"
+                      className="hover:bg-gray-50 dark:hover:bg-slate-700"
                     >
                       {editingLeadId === lead.id ? (
                         // Edit Mode
@@ -1727,7 +1728,7 @@ export function Leads() {
                               type="text"
                               value={editForm.name || ''}
                               onChange={(e) => handleEditChange('name', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1735,7 +1736,7 @@ export function Leads() {
                               type="text"
                               value={editForm.companyName || ''}
                               onChange={(e) => handleEditChange('companyName', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1743,7 +1744,7 @@ export function Leads() {
                               type="text"
                               value={editForm.jobTitle || ''}
                               onChange={(e) => handleEditChange('jobTitle', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1751,7 +1752,7 @@ export function Leads() {
                               type="email"
                               value={editForm.email || ''}
                               onChange={(e) => handleEditChange('email', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1759,7 +1760,7 @@ export function Leads() {
                               type="text"
                               value={editForm.phone || ''}
                               onChange={(e) => handleEditChange('phone', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1767,7 +1768,7 @@ export function Leads() {
                               type="text"
                               value={editForm.location || ''}
                               onChange={(e) => handleEditChange('location', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1775,33 +1776,33 @@ export function Leads() {
                               type="text"
                               value={editForm.sector || ''}
                               onChange={(e) => handleEditChange('sector', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded"
+                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <select
                               value={editForm.status || 'New'}
                               onChange={(e) => handleEditChange('status', e.target.value)}
-                              className="px-2 py-1 border border-gray-300 rounded"
+                              className="px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
                             >
-                              <option value="New">New</option>
-                              <option value="Verified">Verified</option>
-                              <option value="Skipped">Skipped</option>
-                              <option value="apollo_lead">Apollo Lead</option>
+                              <option value="New" className="dark:bg-slate-700 dark:text-white">New</option>
+                              <option value="Verified" className="dark:bg-slate-700 dark:text-white">Verified</option>
+                              <option value="Skipped" className="dark:bg-slate-700 dark:text-white">Skipped</option>
+                              <option value="apollo_lead" className="dark:bg-slate-700 dark:text-white">Apollo Lead</option>
                             </select>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             <div className="flex items-center space-x-2">
                               <button
                                 onClick={saveEdit}
-                                className="p-1 text-green-600 hover:bg-green-100 rounded"
+                                className="p-1 text-green-600 hover:bg-green-100 rounded dark:text-green-400 dark:hover:bg-green-900/30"
                                 title="Save"
                               >
                                 <Check className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={cancelEdit}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
+                                className="p-1 text-red-600 hover:bg-red-100 rounded dark:text-red-400 dark:hover:bg-red-900/30"
                                 title="Cancel"
                               >
                                 <X className="w-4 h-4" />
@@ -1812,14 +1813,14 @@ export function Leads() {
                       ) : (
                         // View Mode
                         <>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                             {lead.name || 'N/A'}
                             {lead.linkedinURL && (
                               <a 
                                 href={lead.linkedinURL} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="ml-2 text-blue-600 hover:text-blue-800"
+                                className="ml-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                               >
                                 <span className="sr-only">LinkedIn</span>
                                 <svg className="w-4 h-4 inline" fill="currentColor" viewBox="0 0 24 24">
@@ -1828,62 +1829,57 @@ export function Leads() {
                               </a>
                             )}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                             {lead.companyName || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                             {lead.jobTitle || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                             {lead.email || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                             {lead.phone || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                             {lead.location || 'N/A'}{lead.country ? `, ${lead.country}` : ''}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
                             {lead.sector || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                              lead.status === 'New' ? 'bg-blue-100 text-blue-800' :
-                              lead.status === 'Verified' ? 'bg-green-100 text-green-800' :
-                              lead.status === 'apollo_lead' ? 'bg-purple-100 text-purple-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
+                            <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(lead.status)}`}>
                               {lead.status}
                             </span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             <div className="relative">
                               {campaignsLoading ? (
-                                <div className="px-2 py-1 text-xs text-gray-500">
+                                <div className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
                                   Loading campaigns...
                                 </div>
                               ) : campaignsError ? (
-                                <div className="px-2 py-1 text-xs text-red-500">
+                                <div className="px-2 py-1 text-xs text-red-500 dark:text-red-400">
                                   Error loading campaigns
                                 </div>
                               ) : lead.campaign_id ? (
-                                <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                                <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs dark:bg-green-900/30 dark:text-green-200">
                                   {campaigns.find(c => c.id === lead.campaign_id)?.name || 'Unknown Campaign'}
                                 </span>
                               ) : (
                                 <div className="relative" ref={el => dropdownRefs.current[lead.id] = el}>
                                   <button
                                     onClick={() => setCampaignDropdownOpen(prev => ({ ...prev, [lead.id]: !prev[lead.id] }))}
-                                    className="flex items-center px-3 py-1 bg-green-500 text-white rounded-lg text-xs hover:bg-green-600 transition-colors"
+                                    className="flex items-center px-3 py-1 bg-green-500 text-white rounded-lg text-xs hover:bg-green-600 transition-colors dark:bg-green-600 dark:hover:bg-green-700"
                                   >
                                     Add to Campaign
                                     <ChevronDown className="w-3 h-3 ml-1" />
                                   </button>
                                   {campaignDropdownOpen[lead.id] && (
-                                    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                                    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200 dark:bg-slate-800 dark:border-slate-700">
                                       <div className="py-1">
                                         {campaigns.length === 0 ? (
-                                          <div className="px-4 py-2 text-sm text-gray-500">
+                                          <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
                                             No campaigns available
                                           </div>
                                         ) : (
@@ -1891,7 +1887,7 @@ export function Leads() {
                                             <button
                                               key={campaign.id}
                                               onClick={() => handleAddToCampaign(lead.id, campaign.id)}
-                                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700"
                                             >
                                               {campaign.name}
                                             </button>
@@ -1904,11 +1900,11 @@ export function Leads() {
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             <div className="flex items-center space-x-2">
                               <button 
                                 onClick={() => startEditing(lead)}
-                                className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                                className="p-1 text-blue-600 hover:bg-blue-100 rounded dark:text-blue-400 dark:hover:bg-blue-900/30"
                                 title="Edit"
                               >
                                 <Edit3 className="w-4 h-4" />
@@ -1919,10 +1915,10 @@ export function Leads() {
                                   lead.status === 'Verified' ? 'Skipped' : 
                                   lead.status === 'Skipped' ? 'New' : 'New')}
                                 className={`p-1 rounded ${
-                                  lead.status === 'New' ? 'text-green-600 hover:bg-green-100' :
-                                  lead.status === 'Verified' ? 'text-gray-600 hover:bg-gray-100' :
-                                  lead.status === 'Skipped' ? 'text-blue-600 hover:bg-blue-100' :
-                                  'text-blue-600 hover:bg-blue-100'
+                                  lead.status === 'New' ? 'text-green-600 hover:bg-green-100 dark:text-green-400 dark:hover:bg-green-900/30' :
+                                  lead.status === 'Verified' ? 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700' :
+                                  lead.status === 'Skipped' ? 'text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/30' :
+                                  'text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/30'
                                 }`}
                                 title={lead.status === 'New' ? 'Verify' : lead.status === 'Verified' ? 'Skip' : lead.status === 'Skipped' ? 'Mark as New' : 'Mark as New'}
                               >
@@ -1938,7 +1934,7 @@ export function Leads() {
                               </button>
                               <button 
                                 onClick={() => deleteLead(lead.id)}
-                                className="p-1 text-red-600 hover:bg-red-100 rounded"
+                                className="p-1 text-red-600 hover:bg-red-100 rounded dark:text-red-400 dark:hover:bg-red-900/30"
                                 title="Delete"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -1956,8 +1952,8 @@ export function Leads() {
         )}
 
         {/* Lead Details Section */}
-        <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Lead Details</h2>
+        <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 dark:bg-slate-800 dark:border-slate-700">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4 dark:text-white">Lead Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-blue-50 p-4 rounded-lg dark:bg-blue-900/30">
               <div className="text-sm text-blue-800 dark:text-blue-200">Total Leads</div>
