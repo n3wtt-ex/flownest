@@ -1,9 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 const SiteFooter: React.FC = () => {
-  const navigate = useNavigate();
-  
   return (
     <footer className="border-t border-border/60 bg-background/60 dark:bg-gray-900/60 dark:border-gray-700/60">
       <div className="container px-4 py-12 grid md:grid-cols-4 gap-8 text-sm dark:text-gray-300">
@@ -14,9 +11,9 @@ const SiteFooter: React.FC = () => {
         <div>
           <div className="font-semibold mb-2 dark:text-white">Ürün</div>
           <ul className="space-y-1 text-muted-foreground dark:text-gray-400">
-            <li><button className="story-link" onClick={() => navigate("#features")}>Özellikler</button></li>
-            <li><button className="story-link" onClick={() => navigate("#integrations")}>Entegrasyonlar</button></li>
-            <li><button className="story-link" onClick={() => navigate("#pricing")}>Fiyatlandırma</button></li>
+            <li><a className="story-link" href="#features">Özellikler</a></li>
+            <li><a className="story-link" href="#integrations">Entegrasyonlar</a></li>
+            <li><a className="story-link" href="#pricing">Fiyatlandırma</a></li>
           </ul>
         </div>
         <div>

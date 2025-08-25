@@ -36,7 +36,7 @@ const Hero: React.FC = () => {
       <div className="container mx-auto px-4 py-20 md:py-28">
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <div className="animate-enter">
-            <span className="inline-flex items-center rounded-full border border-border/60 bg-secondary/20 px-3 py-1 text-xs text-muted-foreground mb-4 shadow-sm dark:bg-gray-800/60 dark:border-gray-700/60 dark:text-gray-400">
+            <span className="inline-flex items-center rounded-full border border-border/60 bg-secondary/20 px-3 py-1 text-xs text-muted-foreground mb-4 shadow-sm dark:border-gray-700/60 dark:bg-gray-800/60 dark:text-gray-400">
               Yapay Zeka Destekli B2B Satış Otomasyonu
             </span>
             <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 dark:text-white">
@@ -67,7 +67,7 @@ const Hero: React.FC = () => {
               src={heroImg}
               alt="AI asistan arayüzünü gösteren izometrik laptop, mor-turkuaz neon parlamalarla"
               loading="eager"
-              className="relative w-full rounded-xl border border-border/60 shadow-glow hover-scale dark:border-gray-700"
+              className="relative w-full rounded-xl border border-border/60 shadow-glow hover-scale dark:border-gray-700/60"
             />
           </div>
         </div>

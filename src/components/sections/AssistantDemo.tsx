@@ -20,7 +20,7 @@ const AssistantDemo: React.FC = () => {
             </div>
             <div className="max-w-[85%] ml-auto text-right">
               <div className="text-xs text-muted-foreground mb-1 dark:text-gray-400">Asistan</div>
-              <div className="rounded-lg border border-primary/30 bg-secondary/20 p-4 dark:bg-gray-700/20 dark:border-primary/20 dark:text-gray-300">
+              <div className="rounded-lg border border-primary/30 bg-secondary/20 p-4 dark:bg-gray-700/40 dark:border-primary/20 dark:text-gray-300">
                 Hedef pazar filtrelendi. 512 uygun lead bulundu. 3 adımlı çok kanallı sekans hazırlandı. İlk gönderim yarın 09:00.
               </div>
             </div>
@@ -32,7 +32,7 @@ const AssistantDemo: React.FC = () => {
             </div>
             <div className="max-w-[85%] ml-auto text-right">
               <div className="text-xs text-muted-foreground mb-1 dark:text-gray-400">Asistan</div>
-              <div className="rounded-lg border border-primary/30 bg-secondary/20 p-4 dark:bg-gray-700/20 dark:border-primary/20 dark:text-gray-300">
+              <div className="rounded-lg border border-primary/30 bg-secondary/20 p-4 dark:bg-gray-700/40 dark:border-primary/20 dark:text-gray-300">
                 Uygulandı. Pozitif yanıtlar otomatik takvime aktarılacak ve CRM ile senkronize edilecek.
               </div>
             </div>
