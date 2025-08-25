@@ -489,7 +489,7 @@ export function Settings() {
                             type="text"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
                             placeholder="Adınızı ve soyadınızı girin"
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -522,7 +522,7 @@ export function Settings() {
                             type="tel"
                             value={contactInfo.phone || ''}
                             onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
                             placeholder={language === 'tr' ? 'Telefon numaranız' : 'Your phone number'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -537,7 +537,7 @@ export function Settings() {
                             type="text"
                             value={contactInfo.company || ''}
                             onChange={(e) => setContactInfo({...contactInfo, company: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
                             placeholder={language === 'tr' ? 'Şirket adınız' : 'Your company name'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -552,7 +552,7 @@ export function Settings() {
                             type="url"
                             value={contactInfo.website || ''}
                             onChange={(e) => setContactInfo({...contactInfo, website: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
                             placeholder={language === 'tr' ? 'https://example.com' : 'https://example.com'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -567,7 +567,7 @@ export function Settings() {
                             type="text"
                             value={contactInfo.country || ''}
                             onChange={(e) => setContactInfo({...contactInfo, country: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
                             placeholder={language === 'tr' ? 'Ülkeniz' : 'Your country'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -582,7 +582,7 @@ export function Settings() {
                             type="text"
                             value={contactInfo.city || ''}
                             onChange={(e) => setContactInfo({...contactInfo, city: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
                             placeholder="Şehir"
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -597,7 +597,7 @@ export function Settings() {
                             type="text"
                             value={contactInfo.postal_code || ''}
                             onChange={(e) => setContactInfo({...contactInfo, postal_code: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300"
+                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
                             placeholder={language === 'tr' ? 'Posta kodunuz' : 'Your postal code'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -613,7 +613,7 @@ export function Settings() {
                           value={contactInfo.address || ''}
                           onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
                           rows={4}
-                          className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 resize-none"
+                          className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 resize-none text-gray-900 placeholder-gray-500"
                           placeholder={language === 'tr' ? 'Tam adresiniz' : 'Your full address'}
                         />
                         <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
