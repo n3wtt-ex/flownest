@@ -258,27 +258,17 @@ export function Responses() {
         </motion.div>
       )}
 
-      {/* Header */}
-      <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
-              <MessageSquare className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Unibox
-              </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Yanıt Takibi</p>
-            </div>
+      {/* Page Title */}
+      <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 py-3">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+            <MessageSquare className="w-5 h-5 text-white" />
           </div>
-          <div className="flex items-center space-x-4">
-            <span className="bg-yellow-400 text-white px-3 py-1 rounded-full text-sm font-bold">
-              100
-            </span>
-            <button className="bg-blue-500 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-blue-600 transition-colors">
-              Get All Features
-            </button>
+          <div>
+            <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+              Unibox
+            </h1>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Yanıt Takibi</p>
           </div>
         </div>
       </div>
