@@ -20,7 +20,7 @@ const Navigation: React.FC = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/60">
+    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/60 dark:bg-gray-900/80 dark:border-gray-800/60">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -29,7 +29,7 @@ const Navigation: React.FC = () => {
               alt="Flownests Logo" 
               className="w-8 h-8 rounded-lg"
             />
-            <span className="font-bold text-xl">Flownests</span>
+            <span className="font-bold text-xl dark:text-white">Flownests</span>
           </div>
           
           <div className="hidden md:flex items-center gap-6">
@@ -37,7 +37,7 @@ const Navigation: React.FC = () => {
               <button
                 key={item.href}
                 onClick={() => scrollToSection(item.href)}
-                className="text-muted-foreground hover:text-primary transition-colors"
+                className="text-muted-foreground hover:text-primary transition-colors dark:text-gray-400 dark:hover:text-white"
               >
                 {item.label}
               </button>

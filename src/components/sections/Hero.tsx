@@ -36,18 +36,18 @@ const Hero: React.FC = () => {
       <div className="container mx-auto px-4 py-20 md:py-28">
         <div className="grid md:grid-cols-2 gap-10 items-center">
           <div className="animate-enter">
-            <span className="inline-flex items-center rounded-full border border-border/60 bg-secondary/20 px-3 py-1 text-xs text-muted-foreground mb-4 shadow-sm">
+            <span className="inline-flex items-center rounded-full border border-border/60 bg-secondary/20 px-3 py-1 text-xs text-muted-foreground mb-4 shadow-sm dark:bg-gray-800/60 dark:border-gray-700/60 dark:text-gray-400">
               Yapay Zeka Destekli B2B Satış Otomasyonu
             </span>
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 dark:text-white">
               <span className="block">B2B Satışta Yeni Çağ:</span>
               <span className="text-gradient-hero">Anahtar Teslim Otomasyon</span>
             </h1>
             <div className="mb-6">
-              <p className="text-xl md:text-2xl font-semibold text-primary mb-3">
+              <p className="text-xl md:text-2xl font-semibold text-primary mb-3 dark:text-blue-400">
                 "Satışı otomatikleştir, büyümeye odaklan"
               </p>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-xl">
+              <p className="text-lg md:text-xl text-muted-foreground max-w-xl dark:text-gray-400">
                 Potansiyel müşterilerinizi bulun, onlarla etkileşime geçin ve satış sürecinizi yapay zeka destekli asistanınızla yönetin — hepsi tek platformda.
               </p>
             </div>
@@ -56,7 +56,7 @@ const Hero: React.FC = () => {
                 Hemen Başla
               </Button>
               <Button size="xl" variant="outlineGlow" className="hover-scale" asChild>
-                <a href="#demo" aria-label="Demo İzle">Demo İzle</a>
+                <a href="#demo" aria-label="Demo İzle" className="dark:text-white dark:border-gray-600">Demo İzle</a>
               </Button>
             </div>
           </div>
@@ -67,7 +67,7 @@ const Hero: React.FC = () => {
               src={heroImg}
               alt="AI asistan arayüzünü gösteren izometrik laptop, mor-turkuaz neon parlamalarla"
               loading="eager"
-              className="relative w-full rounded-xl border border-border/60 shadow-glow hover-scale"
+              className="relative w-full rounded-xl border border-border/60 shadow-glow hover-scale dark:border-gray-700"
             />
           </div>
         </div>

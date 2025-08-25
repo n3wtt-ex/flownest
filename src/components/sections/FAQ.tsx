@@ -149,26 +149,26 @@ const faqData = [
 
 const FAQ: React.FC = () => {
   return (
-    <section id="faq" aria-labelledby="faq-heading" className="container px-4 py-20">
-      <h2 id="faq-heading" className="text-3xl md:text-4xl font-bold text-center mb-10">
+    <section id="faq" aria-labelledby="faq-heading" className="container px-4 py-20 dark:bg-gray-900">
+      <h2 id="faq-heading" className="text-3xl md:text-4xl font-bold text-center mb-10 dark:text-white">
         SSS — Flownests
       </h2>
       
       <div className="max-w-4xl mx-auto">
         {faqData.map((category, idx) => (
           <div key={idx} className="mb-8">
-            <h3 className="text-xl font-semibold text-primary mb-4">{category.category}</h3>
+            <h3 className="text-xl font-semibold text-primary mb-4 dark:text-blue-400">{category.category}</h3>
             <Accordion type="single" collapsible className="space-y-2">
               {category.questions.map((item, qIdx) => (
                 <AccordionItem 
                   key={qIdx} 
                   value={`${idx}-${qIdx}`}
-                  className="bg-card/60 border border-border/60 rounded-lg px-4"
+                  className="bg-card/60 border border-border/60 rounded-lg px-4 dark:bg-gray-800/60 dark:border-gray-700/60"
                 >
-                  <AccordionTrigger className="hover:no-underline">
+                  <AccordionTrigger className="hover:no-underline dark:text-white">
                     <span className="text-left font-medium">{item.q}</span>
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground leading-relaxed">
+                  <AccordionContent className="text-muted-foreground leading-relaxed dark:text-gray-400">
                     {item.a}
                   </AccordionContent>
                 </AccordionItem>

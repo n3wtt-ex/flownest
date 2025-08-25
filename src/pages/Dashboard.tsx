@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Layout } from "@/components/Layout/Layout";
 import { motion } from "framer-motion";
 import {
   Sidebar,
@@ -64,6 +63,20 @@ export default function Dashboard() {
     canonical.setAttribute('href', window.location.origin + '/dashboard');
   }, []);
 
+  // Tema değişikliğini uygulamak için useEffect
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    console.log('Dashboard - Saved theme from localStorage:', savedTheme);
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+      
+      // Tema değişikliğinin uygulandığını kontrol et
+      setTimeout(() => {
+        console.log('Dashboard - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+      }, 0);
+    }
+  }, []);
+
   // Scrollspy
   useEffect(() => {
     const elms = sections.map((s) => document.getElementById(s.id));
@@ -90,58 +103,56 @@ export default function Dashboard() {
   };
 
   return (
-    <Layout>
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full">
-          <Sidebar collapsible="icon" variant="floating" className="bg-card/60 backdrop-blur border-border/60">
-            <SidebarContent>
-              <div className="p-2 text-xs text-muted-foreground">Navigate</div>
-              <SidebarMenu>
-                {sections.map((s) => (
-                  <SidebarMenuItem key={s.id}>
-                    <SidebarMenuButton
-                      isActive={active === s.id}
-                      onClick={() => onNavClick(s.id)}
-                      className={active === s.id ? "ring-1 ring-primary/60 shadow-glow bg-accent/20" : ""}
-                      tooltip={s.label}
-                    >
-                      <s.icon />
-                      <span>{s.label}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarContent>
-          </Sidebar>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <Sidebar collapsible="icon" variant="floating" className="bg-card/60 backdrop-blur border-border/60 dark:bg-gray-800/60 dark:border-gray-700/60">
+          <SidebarContent>
+            <div className="p-2 text-xs text-muted-foreground dark:text-gray-400">Navigate</div>
+            <SidebarMenu>
+              {sections.map((s) => (
+                <SidebarMenuItem key={s.id}>
+                  <SidebarMenuButton
+                    isActive={active === s.id}
+                    onClick={() => onNavClick(s.id)}
+                    className={active === s.id ? "ring-1 ring-primary/60 shadow-glow bg-accent/20 dark:ring-primary/40 dark:bg-gray-700/50" : "dark:hover:bg-gray-700/30"}
+                    tooltip={s.label}
+                  >
+                    <s.icon />
+                    <span>{s.label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarContent>
+        </Sidebar>
 
-          <SidebarInset>
-            <header className="sticky top-0 z-20 h-12 border-b bg-background/60 backdrop-blur flex items-center gap-2 px-3">
-              <SidebarTrigger />
-              <div className="text-sm text-muted-foreground">Modern B2B Sales Automation Dashboard</div>
-            </header>
+        <SidebarInset>
+          <header className="sticky top-0 z-20 h-12 border-b bg-background/60 backdrop-blur flex items-center gap-2 px-3 dark:bg-gray-900/60 dark:border-gray-800">
+            <SidebarTrigger />
+            <div className="text-sm text-muted-foreground dark:text-gray-400">Modern B2B Sales Automation Dashboard</div>
+          </header>
 
-            <div ref={containerRef} className="scroll-smooth">
-              <AIAgentBot onActionClick={requireLogin} />
-              <LeadFinding />
-              <Campaigns onCreate={() => requireLogin()} />
-              <EmailPersonalization />
-              <Feedback />
-              <CRM />
-              <Account />
-            </div>
-          </SidebarInset>
-        </div>
+          <div ref={containerRef} className="scroll-smooth bg-slate-50 dark:bg-gray-900">
+            <AIAgentBot onActionClick={requireLogin} />
+            <LeadFinding />
+            <Campaigns onCreate={() => requireLogin()} />
+            <EmailPersonalization />
+            <Feedback />
+            <CRM />
+            <Account />
+          </div>
+        </SidebarInset>
+      </div>
 
-        <LoginModal
-          open={loginOpen}
-          onOpenChange={setLoginOpen}
-          onSubmit={() => {
-            setIsLoggedIn(true);
-            setLoginOpen(false);
-          }}
-        />
-      </SidebarProvider>
-    </Layout>
+      <LoginModal
+        open={loginOpen}
+        onOpenChange={setLoginOpen}
+        onSubmit={() => {
+          setIsLoggedIn(true);
+          setLoginOpen(false);
+        }}
+      />
+    </SidebarProvider>
   );
 }
 
@@ -159,10 +170,10 @@ function SectionShell({ id, title, children }: { id: string; title: string; chil
       whileInView="show"
       viewport={{ once: false, amount: 0.2 }}
       variants={sectionVariants}
-      className="min-h-screen w-full flex items-center"
+      className="min-h-screen w-full flex items-center dark:bg-gray-900"
     >
       <div className="container mx-auto px-4 py-14">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gradient-hero">{title}</h2>
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gradient-hero dark:text-white">{title}</h2>
         {children}
       </div>
     </motion.section>
@@ -174,20 +185,22 @@ function AIAgentBot({ onActionClick }: { onActionClick: () => void }) {
     <SectionShell id="ai-agent" title="AI Agent Bot">
       <div className="grid md:grid-cols-2 gap-6 items-stretch">
         {/* Chat */}
-        <Card className="bg-card/70 backdrop-blur border-border/60">
+        <Card className="bg-card/70 backdrop-blur border-border/60 dark:bg-gray-800/70 dark:border-gray-700/60">
           <CardHeader>
-            <CardTitle>Asistan Sohbeti</CardTitle>
+            <CardTitle className="dark:text-white">Asistan Sohbeti</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="text-xs text-muted-foreground">Kullanıcı</div>
-            <div className="rounded-full px-4 py-3 border border-border/60 bg-background/60 w-fit max-w-[85%]">ABD FinTech için 300 lead çıkar ve 4 adımlı cold e‑posta sekansı hazırla.</div>
+            <div className="text-xs text-muted-foreground dark:text-gray-400">Kullanıcı</div>
+            <div className="rounded-full px-4 py-3 border border-border/60 bg-background/60 w-fit max-w-[85%] dark:bg-gray-700/60 dark:border-gray-600">
+              ABD FinTech için 300 lead çıkar ve 4 adımlı cold e‑posta sekansı hazırla.
+            </div>
 
-            <div className="text-xs text-muted-foreground">Bot</div>
-            <div className="rounded-2xl px-4 py-3 border border-primary/40 bg-secondary/20 w-fit max-w-[85%]">
+            <div className="text-xs text-muted-foreground dark:text-gray-400">Bot</div>
+            <div className="rounded-2xl px-4 py-3 border border-primary/40 bg-secondary/20 w-fit max-w-[85%] dark:bg-gray-700/40 dark:border-primary/30">
               Hedef pazar filtrelendi. 327 uygun lead bulundu. Sekans taslağı hazır. <span className="opacity-70">(yazıyor…)</span>
             </div>
 
-            <div className="flex items-center gap-1 text-muted-foreground">
+            <div className="flex items-center gap-1 text-muted-foreground dark:text-gray-400">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-pulse [animation-delay:120ms]" />
               <span className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse [animation-delay:240ms]" />
@@ -198,9 +211,9 @@ function AIAgentBot({ onActionClick }: { onActionClick: () => void }) {
         {/* Workspace */}
         <div className="relative">
           <div className="absolute -inset-6 bg-gradient-hero opacity-20 blur-3xl rounded-full" aria-hidden />
-          <Card className="relative bg-card/70 backdrop-blur border-border/60 overflow-hidden">
+          <Card className="relative bg-card/70 backdrop-blur border-border/60 overflow-hidden dark:bg-gray-800/70 dark:border-gray-700/60">
             <CardHeader className="flex-row items-center justify-between">
-              <CardTitle>Workspace</CardTitle>
+              <CardTitle className="dark:text-white">Workspace</CardTitle>
               <div className="flex gap-2">
                 <Button variant="hero" size="lg" onClick={onActionClick}>
                   <PlayCircle /> Work
@@ -211,7 +224,7 @@ function AIAgentBot({ onActionClick }: { onActionClick: () => void }) {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="h-64 md:h-80 rounded-xl border border-border/60 bg-[radial-gradient(1200px_circle_at_10%_-20%,hsl(var(--brand-cyan)/0.08),transparent_40%),radial-gradient(1200px_circle_at_90%_-10%,hsl(var(--brand-purple)/0.08),transparent_40%)]" />
+              <div className="h-64 md:h-80 rounded-xl border border-border/60 bg-[radial-gradient(1200px_circle_at_10%_-20%,hsl(var(--brand-cyan)/0.08),transparent_40%),radial-gradient(1200px_circle_at_90%_-10%,hsl(var(--brand-purple)/0.08),transparent_40%)] dark:bg-[radial-gradient(1200px_circle_at_10%_-20%,hsl(var(--brand-cyan)/0.12),transparent_40%),radial-gradient(1200px_circle_at_90%_-10%,hsl(var(--brand-purple)/0.12),transparent_40%)]" />
             </CardContent>
           </Card>
         </div>
@@ -226,46 +239,54 @@ function LeadFinding() {
       <div className="grid md:grid-cols-2 gap-6">
         {/* Mini chat + actions */}
         <div className="space-y-4 relative">
-          <Card className="bg-card/70 backdrop-blur border-border/60">
+          <Card className="bg-card/70 backdrop-blur border-border/60 dark:bg-gray-800/70 dark:border-gray-700/60">
             <CardHeader>
-              <CardTitle>Sorgu</CardTitle>
+              <CardTitle className="dark:text-white">Sorgu</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm">NYC, AI SaaS, 10–50 çalışan, C‑level kontak</div>
-              <div className="rounded-lg border border-primary/40 bg-secondary/20 p-3 text-sm">32 potansiyel sonuç bulundu. Kaynak: Google Maps, Apollo.</div>
+              <div className="rounded-lg border border-border/60 bg-background/60 p-3 text-sm dark:bg-gray-700/60 dark:border-gray-600">
+                NYC, AI SaaS, 10–50 çalışan, C‑level kontak
+              </div>
+              <div className="rounded-lg border border-primary/40 bg-secondary/20 p-3 text-sm dark:bg-gray-700/40 dark:border-primary/30">
+                32 potansiyel sonuç bulundu. Kaynak: Google Maps, Apollo.
+              </div>
             </CardContent>
           </Card>
 
           {/* Floating bubbles */}
           <div className="absolute -top-3 -right-3 flex gap-3">
-            <div className="w-14 h-14 rounded-full border border-primary/40 bg-secondary/30 backdrop-blur flex items-center justify-center shadow-glow">GM</div>
-            <div className="w-14 h-14 rounded-full border border-primary/40 bg-secondary/30 backdrop-blur flex items-center justify-center shadow-glow">Ap</div>
+            <div className="w-14 h-14 rounded-full border border-primary/40 bg-secondary/30 backdrop-blur flex items-center justify-center shadow-glow dark:bg-gray-700/40 dark:border-primary/30">
+              GM
+            </div>
+            <div className="w-14 h-14 rounded-full border border-primary/40 bg-secondary/30 backdrop-blur flex items-center justify-center shadow-glow dark:bg-gray-700/40 dark:border-primary/30">
+              Ap
+            </div>
           </div>
         </div>
 
         {/* Table placeholder */}
-        <Card className="bg-card/70 backdrop-blur border-border/60">
+        <Card className="bg-card/70 backdrop-blur border-border/60 dark:bg-gray-800/70 dark:border-gray-700/60">
           <CardHeader>
-            <CardTitle>Sonuçlar (örnek)</CardTitle>
+            <CardTitle className="dark:text-white">Sonuçlar (örnek)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="overflow-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Company</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>City</TableHead>
-                    <TableHead>Email</TableHead>
+                    <TableHead className="dark:text-gray-300">Company</TableHead>
+                    <TableHead className="dark:text-gray-300">Title</TableHead>
+                    <TableHead className="dark:text-gray-300">City</TableHead>
+                    <TableHead className="dark:text-gray-300">Email</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {Array.from({ length: 6 }).map((_, i) => (
-                    <TableRow key={i} className="hover:bg-accent/20">
-                      <TableCell>Acme AI</TableCell>
-                      <TableCell>CTO</TableCell>
-                      <TableCell>NYC</TableCell>
-                      <TableCell>ct[email protected]</TableCell>
+                    <TableRow key={i} className="hover:bg-accent/20 dark:hover:bg-gray-700/30">
+                      <TableCell className="dark:text-gray-300">Acme AI</TableCell>
+                      <TableCell className="dark:text-gray-300">CTO</TableCell>
+                      <TableCell className="dark:text-gray-300">NYC</TableCell>
+                      <TableCell className="dark:text-gray-300">ct[email protected]</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -282,17 +303,29 @@ function Campaigns({ onCreate }: { onCreate: () => void }) {
   return (
     <SectionShell id="campaigns" title="Campaigns">
       <div className="flex justify-end mb-4">
-        <Button variant="hero" size="lg" onClick={onCreate}>Create New Campaign</Button>
+        <Button variant="hero" size="lg" onClick={onCreate}>
+          Create New Campaign
+        </Button>
       </div>
       <div className="grid md:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i} className="bg-card/70 border-border/60 backdrop-blur hover:translate-y-[-2px] transition-transform">
+          <Card key={i} className="bg-card/70 border-border/60 backdrop-blur hover:translate-y-[-2px] transition-transform dark:bg-gray-800/70 dark:border-gray-700/60 dark:hover:bg-gray-700/30">
             <CardHeader>
-              <CardTitle>US SaaS Cold #{i + 1}</CardTitle>
+              <CardTitle className="dark:text-white">US SaaS Cold #{i + 1}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <div className="text-sm text-muted-foreground">Sent: {20 + i * 5} • Replies: {5 + i}</div>
+              <div className="text-sm text-muted-foreground dark:text-gray-400">
+                Sent {20 + i * 5} • Replies {5 + i}
+              </div>
               <Progress value={30 + i * 10} />
+              <div className="flex gap-2">
+                <Button size="sm" variant="hero" onClick={onCreate}>
+                  {i % 2 === 0 ? "Pause" : "Start"}
+                </Button>
+                <Button size="sm" variant="outlineGlow" onClick={onCreate}>
+                  Open
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
@@ -300,11 +333,15 @@ function Campaigns({ onCreate }: { onCreate: () => void }) {
 
       {/* Detail placeholder */}
       <div className="mt-8">
-        <Card className="bg-card/70 border-border/60 backdrop-blur">
+        <Card className="bg-card/70 border-border/60 backdrop-blur dark:bg-gray-800/70 dark:border-gray-700/60">
           <CardHeader>
-            <CardTitle>Campaign Detail (tabs placeholder)</CardTitle>
+            <CardTitle className="dark:text-white">Campaign Detail (tabs placeholder)</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">Analytics / Leads / Steps / Settings (UI taslağı)</CardContent>
+          <CardContent>
+            <div className="text-sm text-muted-foreground dark:text-gray-400">
+              Analytics / Leads / Steps / Settings (UI taslağı)
+            </div>
+          </CardContent>
         </Card>
       </div>
     </SectionShell>
@@ -326,27 +363,29 @@ function EmailPersonalization() {
     <SectionShell id="email-personalization" title="Email Personalization">
       <div className="overflow-auto">
         <Table>
-          <TableHeader className="sticky top-0">
+          <TableHeader className="sticky top-0 dark:bg-gray-800">
             <TableRow>
-              <TableHead className="w-40">Action</TableHead>
+              <TableHead className="w-40 dark:text-gray-300">Action</TableHead>
               {columns.map((c) => (
-                <TableHead key={c}>{c}</TableHead>
+                <TableHead key={c} className="dark:text-gray-300">{c}</TableHead>
               ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {Array.from({ length: 5 }).map((_, i) => (
-              <TableRow key={i} className="hover:bg-accent/20">
+              <TableRow key={i} className="hover:bg-accent/20 dark:hover:bg-gray-700/30">
                 <TableCell>
-                  <Button size="sm" variant="hero">Personalize Email</Button>
+                  <Button size="sm" variant="hero">
+                    Personalize Email
+                  </Button>
                 </TableCell>
-                <TableCell>Jane</TableCell>
-                <TableCell>Doe</TableCell>
-                <TableCell>Acme AI</TableCell>
-                <TableCell>jane.doe@acme.ai</TableCell>
-                <TableCell>Intro</TableCell>
-                <TableCell>Hi Jane…</TableCell>
-                <TableCell>Hey Jane, saw your post…</TableCell>
+                <TableCell className="dark:text-gray-300">Jane</TableCell>
+                <TableCell className="dark:text-gray-300">Doe</TableCell>
+                <TableCell className="dark:text-gray-300">Acme AI</TableCell>
+                <TableCell className="dark:text-gray-300">jane.doe@acme.ai</TableCell>
+                <TableCell className="dark:text-gray-300">Intro</TableCell>
+                <TableCell className="dark:text-gray-300">Hi Jane…</TableCell>
+                <TableCell className="dark:text-gray-300">Hey Jane, saw your post…</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -362,26 +401,26 @@ function EmailPersonalization() {
 function Feedback() {
   return (
     <SectionShell id="feedback" title="Feedback (Inbox)">
-      <Card className="bg-card/70 border-border/60 backdrop-blur">
+      <Card className="bg-card/70 border-border/60 backdrop-blur dark:bg-gray-800/70 dark:border-gray-700/60">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Sender</TableHead>
-                <TableHead>Subject</TableHead>
-                <TableHead>Preview</TableHead>
-                <TableHead>Reply</TableHead>
-                <TableHead>Interest</TableHead>
+                <TableHead className="dark:text-gray-300">Sender</TableHead>
+                <TableHead className="dark:text-gray-300">Subject</TableHead>
+                <TableHead className="dark:text-gray-300">Preview</TableHead>
+                <TableHead className="dark:text-gray-300">Reply</TableHead>
+                <TableHead className="dark:text-gray-300">Interest</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {Array.from({ length: 8 }).map((_, i) => (
-                <TableRow key={i} className="hover:bg-accent/20">
-                  <TableCell>john@company.com</TableCell>
-                  <TableCell>Re: intro</TableCell>
-                  <TableCell>Let’s talk next week…</TableCell>
-                  <TableCell>Pending</TableCell>
-                  <TableCell>Warm</TableCell>
+                <TableRow key={i} className="hover:bg-accent/20 dark:hover:bg-gray-700/30">
+                  <TableCell className="dark:text-gray-300">john@company.com</TableCell>
+                  <TableCell className="dark:text-gray-300">Re: intro</TableCell>
+                  <TableCell className="dark:text-gray-300">Let’s talk next week…</TableCell>
+                  <TableCell className="dark:text-gray-300">Pending</TableCell>
+                  <TableCell className="dark:text-gray-300">Warm</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -395,9 +434,11 @@ function Feedback() {
 function CRM() {
   return (
     <SectionShell id="crm" title="CRM (no design changes)">
-      <Card className="bg-card/70 border-border/60 backdrop-blur">
+      <Card className="bg-card/70 border-border/60 backdrop-blur dark:bg-gray-800/70 dark:border-gray-700/60">
         <CardContent>
-          <div className="text-muted-foreground text-sm">Mevcut CRM görünümü korunur (placeholder).</div>
+          <div className="text-muted-foreground text-sm dark:text-gray-400">
+            Mevcut CRM görünümü korunur (placeholder).
+          </div>
         </CardContent>
       </Card>
     </SectionShell>
@@ -407,9 +448,11 @@ function CRM() {
 function Account() {
   return (
     <SectionShell id="account" title="Account (no design changes)">
-      <Card className="bg-card/70 border-border/60 backdrop-blur">
+      <Card className="bg-card/70 border-border/60 backdrop-blur dark:bg-gray-800/70 dark:border-gray-700/60">
         <CardContent>
-          <div className="text-muted-foreground text-sm">Mevcut Account görünümü korunur (placeholder).</div>
+          <div className="text-muted-foreground text-sm dark:text-gray-400">
+            Mevcut Account görünümü korunur (placeholder).
+          </div>
         </CardContent>
       </Card>
     </SectionShell>
@@ -421,9 +464,9 @@ function LoginModal({ open, onOpenChange, onSubmit }: { open: boolean; onOpenCha
   const [password, setPassword] = useState("");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="backdrop-blur bg-card/70 border-border/60">
+      <DialogContent className="backdrop-blur bg-card/70 border-border/60 dark:bg-gray-800/70 dark:border-gray-700/60">
         <DialogHeader>
-          <DialogTitle>Giriş Yap</DialogTitle>
+          <DialogTitle className="dark:text-white">Giriş Yap</DialogTitle>
         </DialogHeader>
         <form
           onSubmit={(e) => {
@@ -433,14 +476,16 @@ function LoginModal({ open, onOpenChange, onSubmit }: { open: boolean; onOpenCha
           className="space-y-4"
         >
           <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <Label htmlFor="email" className="dark:text-gray-300">Email</Label>
+            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="dark:bg-gray-700/60 dark:border-gray-600 dark:text-white" />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">Şifre</Label>
-            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <Label htmlFor="password" className="dark:text-gray-300">Şifre</Label>
+            <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="dark:bg-gray-700/60 dark:border-gray-600 dark:text-white" />
           </div>
-          <Button type="submit" variant="hero" className="w-full">Giriş Yap</Button>
+          <Button type="submit" variant="hero" className="w-full">
+            Giriş Yap
+          </Button>
         </form>
       </DialogContent>
     </Dialog>
