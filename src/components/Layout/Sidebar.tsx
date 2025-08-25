@@ -82,7 +82,7 @@ export function Sidebar() {
         <div className="flex h-16 items-center px-6">
           <div className="flex items-center space-x-3">
             <img 
-              src="/logo_flownests.svg" 
+              src="/logo_flownests-_2_.svg" 
               alt="FlowNests Logo" 
               className={clsx(
                 "transition-all duration-300 ease-in-out", 
