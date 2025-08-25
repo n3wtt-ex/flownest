@@ -84,11 +84,17 @@ export function Sidebar() {
             <img 
               src="/logo_flownests.svg" 
               alt="FlowNests Logo" 
-              className="w-8 h-8"
+              className={clsx(
+                "transition-all duration-300 ease-in-out", 
+                isCollapsed ? "w-10 h-10" : "w-10 h-10"
+              )}
             />
-            {!isCollapsed && (
-              <span className="text-xl font-bold text-slate-900">FlowNests</span>
-            )}
+            <span className={clsx(
+              "text-xl font-bold text-slate-900 transition-all duration-300 ease-in-out",
+              isCollapsed ? "opacity-0 w-0 h-0 overflow-hidden" : "opacity-100"
+            )}>
+              FlowNests
+            </span>
           </div>
         </div>
 
