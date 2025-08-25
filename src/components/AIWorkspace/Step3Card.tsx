@@ -65,8 +65,8 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
               Kendinizi tanıtın
             </h2>
             
-            <div className="bg-blue-900/40 rounded-lg p-2.5 border border-blue-700/50">
-              <p className="text-blue-200 text-xs leading-relaxed">
+            <div className="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700/50">
+              <p className="text-slate-300 text-xs leading-relaxed">
                 Kişisel ve şirket bilgilerinizi paylaşın...
               </p>
             </div>
@@ -78,7 +78,7 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
           <div className="space-y-3">
             {/* Name Input */}
             <div className="space-y-1">
-              <label className="block text-blue-300 text-xs font-medium">
+              <label className="block text-slate-400 text-xs font-medium">
                 <div className="flex items-center space-x-1.5">
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
@@ -91,13 +91,13 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Adınızı girin"
-                className="w-full px-3 py-2 bg-blue-900/40 border border-blue-600/50 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 text-sm"
+                className="w-full px-3 py-2 bg-slate-800/80 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 text-sm"
               />
             </div>
 
             {/* Company Name Input */}
             <div className="space-y-1">
-              <label className="block text-blue-300 text-xs font-medium">
+              <label className="block text-slate-400 text-xs font-medium">
                 <div className="flex items-center space-x-1.5">
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
@@ -110,13 +110,13 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="Şirket adınızı girin"
-                className="w-full px-3 py-2 bg-blue-900/40 border border-blue-600/50 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 text-sm"
+                className="w-full px-3 py-2 bg-slate-800/80 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 text-sm"
               />
             </div>
 
             {/* Company Info Textarea */}
             <div className="space-y-1">
-              <label className="block text-blue-300 text-xs font-medium">
+              <label className="block text-slate-400 text-xs font-medium">
                 <div className="flex items-center space-x-1.5">
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
@@ -129,10 +129,10 @@ export function Step3Card({ onSave, initialData }: Step3CardProps) {
                   value={companyInfo}
                   onChange={(e) => setCompanyInfo(e.target.value)}
                   placeholder="Kısa bir açıklama..."
-                  className="w-full h-16 px-3 py-2 bg-blue-900/40 border border-blue-600/50 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 resize-none text-xs leading-relaxed"
+                  className="w-full h-16 px-3 py-2 bg-slate-800/80 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 resize-none text-xs leading-relaxed"
                   maxLength={300}
                 />
-                <div className="absolute bottom-1.5 right-2 text-blue-300 text-xs bg-blue-900/60 px-1.5 py-0.5 rounded text-xs">
+                <div className="absolute bottom-1.5 right-2 text-slate-400 text-xs bg-slate-800/80 px-1.5 py-0.5 rounded text-xs">
                   {companyInfo.length}/300
                 </div>
               </div>

@@ -105,8 +105,8 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
               Bir event seçin
             </h2>
             
-            <div className="bg-blue-900/40 rounded-lg p-2 border border-blue-700/50">
-              <p className="text-blue-200 text-xs leading-relaxed">
+            <div className="bg-slate-800/60 rounded-lg p-2 border border-slate-700/50">
+              <p className="text-slate-300 text-xs leading-relaxed">
                 Hangi türde bir etkinlik düzenlemek istiyorsunuz?
               </p>
             </div>
@@ -118,7 +118,7 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
           <div className="space-y-3">
             {/* Event Selection */}
             <div className="space-y-1.5">
-              <label className="block text-blue-300 text-xs font-medium">
+              <label className="block text-slate-400 text-xs font-medium">
                 Event Türü Seçin
               </label>
               <div className="grid grid-cols-1 gap-1.5">
@@ -129,10 +129,10 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
                     className={`flex items-center space-x-2 p-2.5 rounded-lg border-2 transition-all duration-200 text-left ${
                       selectedEvent === key
                         ? 'border-blue-500 bg-blue-500/10 text-white shadow-lg'
-                        : 'border-blue-600/50 bg-blue-900/40 text-blue-200 hover:border-blue-500/50 hover:bg-blue-800/60'
+                        : 'border-slate-600/50 bg-slate-800/80 text-slate-300 hover:border-blue-500/50 hover:bg-slate-700/60'
                     }`}
                   >
-                    <div className={`flex-shrink-0 ${selectedEvent === key ? 'text-blue-400' : 'text-blue-300'}`}>
+                    <div className={`flex-shrink-0 ${selectedEvent === key ? 'text-blue-400' : 'text-slate-400'}`}>
                       {eventIcons[key as keyof typeof eventIcons]}
                     </div>
                     <div className="flex-grow">
@@ -154,7 +154,7 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
 
             {/* Event Content */}
             <div className="space-y-1.5">
-              <label className="block text-blue-300 text-xs font-medium">
+              <label className="block text-slate-400 text-xs font-medium">
                 <div className="flex items-center space-x-1">
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
@@ -166,10 +166,10 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
                 <textarea
                   value={eventContent}
                   onChange={(e) => setEventContent(e.target.value)}
-                  className="w-full h-16 px-3 py-2 bg-blue-900/40 border border-blue-600/50 rounded-lg text-white placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 resize-none text-xs leading-relaxed"
+                  className="w-full h-16 px-3 py-2 bg-slate-800/80 border border-slate-600/50 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-200 resize-none text-xs leading-relaxed"
                   maxLength={300}
                 />
-                <div className="absolute bottom-1.5 right-2 text-blue-300 text-xs bg-blue-900/60 px-1 py-0.5 rounded text-xs">
+                <div className="absolute bottom-1.5 right-2 text-slate-400 text-xs bg-slate-800/80 px-1 py-0.5 rounded text-xs">
                   {eventContent.length}/300
                 </div>
               </div>
