@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { DashboardShell } from "@/components/layout/DashboardShell";
+import { Layout } from "@/components/Layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,7 +50,7 @@ export default function LeadFindingPage() {
   const verify = (id: string) => setRows(rows.map(r => r.id===id ? { ...r, status: 'verified' } : r));
 
   return (
-    <DashboardShell>
+    <Layout>
       <div className="container mx-auto grid md:grid-cols-[360px,1fr] gap-6">
         <Card className="bg-card/70 border-border/60 backdrop-blur h-full">
           <CardHeader>
@@ -123,7 +123,7 @@ export default function LeadFindingPage() {
           </CardContent>
         </Card>
       </div>
-    </DashboardShell>
+    </Layout>
   );
 }
 

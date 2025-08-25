@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Layout } from "@/components/Layout/Layout";
 import { motion } from "framer-motion";
 import {
   Sidebar,
@@ -89,56 +90,58 @@ export default function Dashboard() {
   };
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <Sidebar collapsible="icon" variant="floating" className="bg-card/60 backdrop-blur border-border/60">
-          <SidebarContent>
-            <div className="p-2 text-xs text-muted-foreground">Navigate</div>
-            <SidebarMenu>
-              {sections.map((s) => (
-                <SidebarMenuItem key={s.id}>
-                  <SidebarMenuButton
-                    isActive={active === s.id}
-                    onClick={() => onNavClick(s.id)}
-                    className={active === s.id ? "ring-1 ring-primary/60 shadow-glow bg-accent/20" : ""}
-                    tooltip={s.label}
-                  >
-                    <s.icon />
-                    <span>{s.label}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarContent>
-        </Sidebar>
+    <Layout>
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <Sidebar collapsible="icon" variant="floating" className="bg-card/60 backdrop-blur border-border/60">
+            <SidebarContent>
+              <div className="p-2 text-xs text-muted-foreground">Navigate</div>
+              <SidebarMenu>
+                {sections.map((s) => (
+                  <SidebarMenuItem key={s.id}>
+                    <SidebarMenuButton
+                      isActive={active === s.id}
+                      onClick={() => onNavClick(s.id)}
+                      className={active === s.id ? "ring-1 ring-primary/60 shadow-glow bg-accent/20" : ""}
+                      tooltip={s.label}
+                    >
+                      <s.icon />
+                      <span>{s.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarContent>
+          </Sidebar>
 
-        <SidebarInset>
-          <header className="sticky top-0 z-20 h-12 border-b bg-background/60 backdrop-blur flex items-center gap-2 px-3">
-            <SidebarTrigger />
-            <div className="text-sm text-muted-foreground">Modern B2B Sales Automation Dashboard</div>
-          </header>
+          <SidebarInset>
+            <header className="sticky top-0 z-20 h-12 border-b bg-background/60 backdrop-blur flex items-center gap-2 px-3">
+              <SidebarTrigger />
+              <div className="text-sm text-muted-foreground">Modern B2B Sales Automation Dashboard</div>
+            </header>
 
-          <div ref={containerRef} className="scroll-smooth">
-            <AIAgentBot onActionClick={requireLogin} />
-            <LeadFinding />
-            <Campaigns onCreate={() => requireLogin()} />
-            <EmailPersonalization />
-            <Feedback />
-            <CRM />
-            <Account />
-          </div>
-        </SidebarInset>
-      </div>
+            <div ref={containerRef} className="scroll-smooth">
+              <AIAgentBot onActionClick={requireLogin} />
+              <LeadFinding />
+              <Campaigns onCreate={() => requireLogin()} />
+              <EmailPersonalization />
+              <Feedback />
+              <CRM />
+              <Account />
+            </div>
+          </SidebarInset>
+        </div>
 
-      <LoginModal
-        open={loginOpen}
-        onOpenChange={setLoginOpen}
-        onSubmit={() => {
-          setIsLoggedIn(true);
-          setLoginOpen(false);
-        }}
-      />
-    </SidebarProvider>
+        <LoginModal
+          open={loginOpen}
+          onOpenChange={setLoginOpen}
+          onSubmit={() => {
+            setIsLoggedIn(true);
+            setLoginOpen(false);
+          }}
+        />
+      </SidebarProvider>
+    </Layout>
   );
 }
 

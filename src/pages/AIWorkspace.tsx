@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DashboardShell } from "@/components/layout/DashboardShell";
+import { Layout } from "@/components/Layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -58,7 +58,7 @@ export default function AIWorkspacePage() {
   };
 
   return (
-    <DashboardShell>
+    <Layout>
       <section aria-labelledby="aiws-title" className="container mx-auto">
         <h1 id="aiws-title" className="sr-only">AI Work Space</h1>
 
@@ -103,7 +103,7 @@ export default function AIWorkspacePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </DashboardShell>
+    </Layout>
   );
 }
 

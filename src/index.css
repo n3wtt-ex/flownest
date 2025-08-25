@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
@@ -126,30 +126,108 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  .border-border {
+    border-color: hsl(var(--border));
+  }
+  
+  .bg-background {
+    background-color: hsl(var(--background));
+  }
+  
+  .text-foreground {
+    color: hsl(var(--foreground));
+  }
+  
+  .bg-card {
+    background-color: hsl(var(--card));
+  }
+  
+  .text-card-foreground {
+    color: hsl(var(--card-foreground));
+  }
+  
+  .bg-popover {
+    background-color: hsl(var(--popover));
+  }
+  
+  .text-popover-foreground {
+    color: hsl(var(--popover-foreground));
+  }
+  
+  .text-primary {
+    color: hsl(var(--primary));
+  }
+  
+  .bg-primary {
+    background-color: hsl(var(--primary));
+  }
+  
+  .text-primary-foreground {
+    color: hsl(var(--primary-foreground));
+  }
+  
+  .bg-secondary {
+    background-color: hsl(var(--secondary));
+  }
+  
+  .text-secondary-foreground {
+    color: hsl(var(--secondary-foreground));
+  }
+  
+  .bg-muted {
+    background-color: hsl(var(--muted));
+  }
+  
+  .text-muted-foreground {
+    color: hsl(var(--muted-foreground));
+  }
+  
+  .bg-accent {
+    background-color: hsl(var(--accent));
+  }
+  
+  .text-accent-foreground {
+    color: hsl(var(--accent-foreground));
+  }
+  
+  .bg-destructive {
+    background-color: hsl(var(--destructive));
+  }
+  
+  .text-destructive-foreground {
+    color: hsl(var(--destructive-foreground));
+  }
+  
   .bg-gradient-hero {
     background-image: var(--gradient-hero);
   }
+  
   .text-gradient-hero {
     background-image: var(--gradient-hero);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
+  
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
+  
   /* Interactive utilities */
   .hover-scale {
     transition: transform 200ms ease;
     transform: translateZ(0);
   }
+  
   .hover-scale:hover {
     transform: scale(1.05);
   }
+  
   .story-link {
     position: relative;
     display: inline-block;
   }
+  
   .story-link::after {
     content: "";
     position: absolute;
@@ -162,6 +240,7 @@ All colors MUST be HSL.
     transform-origin: bottom right;
     transition: transform 300ms ease;
   }
+  
   .story-link:hover::after {
     transform: scaleX(1);
     transform-origin: bottom left;

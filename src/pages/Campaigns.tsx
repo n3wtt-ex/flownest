@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { DashboardShell } from "@/components/layout/DashboardShell";
+import { Layout } from "@/components/Layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,7 +52,7 @@ export default function CampaignsPage() {
   };
 
   return (
-    <DashboardShell>
+    <Layout>
       <div className="container mx-auto">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -130,7 +130,7 @@ export default function CampaignsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </DashboardShell>
+    </Layout>
   );
 }
 
