@@ -13,6 +13,7 @@ import { Leads } from './pages/LeadsManagement';
 import { Campaigns } from './pages/Campaigns';
 import { Responses } from './pages/Responses';
 import { Settings } from './pages/Settings';
+import Landing from './pages/Landing';
 
 // Dashboard wrapper bileşeni
 function DashboardWrapper() {
@@ -63,34 +64,29 @@ function App() {
     );
   }
 
-  if (!user) {
-    return (
-      <Router>
-        <Routes>
-          <Route path="/login" element={<LoginRegister />} />
-          <Route path="/register" element={<LoginRegister />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </Router>
-    );
-  }
-
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/ui-bot" replace />} />
-          <Route path="ui-bot" element={<UIBot />} />
-          <Route path="email" element={<Email />} />
-          <Route path="leads" element={<Leads />} />
-          <Route path="campaigns" element={<Campaigns />} />
-          <Route path="responses" element={<Responses />} />
-          <Route path="crm" element={<DashboardWrapper />} />
-          <Route path="crm/contacts" element={<Contacts />} />
-          <Route path="crm/companies" element={<Companies />} />
-          <Route path="crm/deals" element={<Deals />} />
-          <Route path="settings" element={<Settings />} />
-        </Route>
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<LoginRegister />} />
+        <Route path="/register" element={<LoginRegister />} />
+        {user ? (
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Navigate to="/ui-bot" replace />} />
+            <Route path="ui-bot" element={<UIBot />} />
+            <Route path="email" element={<Email />} />
+            <Route path="leads" element={<Leads />} />
+            <Route path="campaigns" element={<Campaigns />} />
+            <Route path="responses" element={<Responses />} />
+            <Route path="crm" element={<DashboardWrapper />} />
+            <Route path="crm/contacts" element={<Contacts />} />
+            <Route path="crm/companies" element={<Companies />} />
+            <Route path="crm/deals" element={<Deals />} />
+            <Route path="settings" element={<Settings />} />
+          </Route>
+        ) : (
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        )}
       </Routes>
     </Router>
   );
