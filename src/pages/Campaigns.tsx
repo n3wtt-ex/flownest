@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { Layout } from "@/components/Layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -52,72 +51,70 @@ export default function CampaignsPage() {
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-extrabold">Campaigns</h1>
-            <p className="text-sm text-muted-foreground">Active: {campaigns.filter(c=>c.status==='active').length} • Paused: {campaigns.filter(c=>c.status==='paused').length}</p>
-          </div>
-          <Button variant="hero" onClick={() => setOpen(true)}>+ Add New</Button>
+    <div className="container mx-auto">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-extrabold">Campaigns</h1>
+          <p className="text-sm text-muted-foreground">Active: {campaigns.filter(c=>c.status==='active').length} • Paused: {campaigns.filter(c=>c.status==='paused').length}</p>
         </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {campaigns.map((c) => (
-            <Card key={c.id} className="bg-card/70 border-border/60 backdrop-blur hover:translate-y-[-2px] transition-transform">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <span className="truncate">{c.name}</span>
-                  <Badge variant="secondary">{c.status}</Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="text-sm text-muted-foreground">Sent {c.metrics.sent} • Clicks {c.metrics.clicks} • Replied {c.metrics.replied}</div>
-                <Progress value={c.progress} />
-                <div className="flex gap-2">
-                  <Button size="sm" variant="hero" onClick={() => toggle(c.id)}>{c.status === 'active' ? 'Pause' : 'Start'}</Button>
-                  <Button size="sm" variant="outlineGlow" onClick={() => setSelected(c.id)}>Open</Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {current && (
-          <div className="mt-8">
-            <Card className="bg-card/70 border-border/60 backdrop-blur">
-              <CardHeader>
-                <CardTitle>{current.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="analytics">
-                  <TabsList>
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                    <TabsTrigger value="leads">Leads</TabsTrigger>
-                    <TabsTrigger value="sequences">Sequences</TabsTrigger>
-                    <TabsTrigger value="options">Options</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="analytics" className="mt-4">
-                    <div className="grid md:grid-cols-3 gap-4 mb-4">
-                      <Stat title="Sequence started" value={current.metrics.sent} />
-                      <Stat title="Click rate" value={`${Math.round((current.metrics.clicks/(current.metrics.sent||1))*100)}%`} />
-                      <Stat title="Reply rate" value={`${Math.round((current.metrics.replied/(current.metrics.sent||1))*100)}%`} />
-                    </div>
-                    <div className="h-64">
-                      <Chart />
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="leads" className="mt-4 text-sm text-muted-foreground">Leads table placeholder</TabsContent>
-                  <TabsContent value="sequences" className="mt-4 text-sm text-muted-foreground">Steps editor placeholder</TabsContent>
-                  <TabsContent value="options" className="mt-4 text-sm text-muted-foreground">Scheduling & toggles placeholder</TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+        <Button variant="hero" onClick={() => setOpen(true)}>+ Add New</Button>
       </div>
+
+      <div className="grid md:grid-cols-3 gap-6">
+        {campaigns.map((c) => (
+          <Card key={c.id} className="bg-card/70 border-border/60 backdrop-blur hover:translate-y-[-2px] transition-transform">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="truncate">{c.name}</span>
+                <Badge variant="secondary">{c.status}</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="text-sm text-muted-foreground">Sent {c.metrics.sent} • Clicks {c.metrics.clicks} • Replied {c.metrics.replied}</div>
+              <Progress value={c.progress} />
+              <div className="flex gap-2">
+                <Button size="sm" variant="hero" onClick={() => toggle(c.id)}>{c.status === 'active' ? 'Pause' : 'Start'}</Button>
+                <Button size="sm" variant="outlineGlow" onClick={() => setSelected(c.id)}>Open</Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {current && (
+        <div className="mt-8">
+          <Card className="bg-card/70 border-border/60 backdrop-blur">
+            <CardHeader>
+              <CardTitle>{current.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="analytics">
+                <TabsList>
+                  <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                  <TabsTrigger value="leads">Leads</TabsTrigger>
+                  <TabsTrigger value="sequences">Sequences</TabsTrigger>
+                  <TabsTrigger value="options">Options</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="analytics" className="mt-4">
+                  <div className="grid md:grid-cols-3 gap-4 mb-4">
+                    <Stat title="Sequence started" value={current.metrics.sent} />
+                    <Stat title="Click rate" value={`${Math.round((current.metrics.clicks/(current.metrics.sent||1))*100)}%`} />
+                    <Stat title="Reply rate" value={`${Math.round((current.metrics.replied/(current.metrics.sent||1))*100)}%`} />
+                  </div>
+                  <div className="h-64">
+                    <Chart />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="leads" className="mt-4 text-sm text-muted-foreground">Leads table placeholder</TabsContent>
+                <TabsContent value="sequences" className="mt-4 text-sm text-muted-foreground">Steps editor placeholder</TabsContent>
+                <TabsContent value="options" className="mt-4 text-sm text-muted-foreground">Scheduling & toggles placeholder</TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
@@ -130,7 +127,7 @@ export default function CampaignsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Layout>
+    </div>
   );
 }
 
