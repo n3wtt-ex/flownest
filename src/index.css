@@ -11,34 +11,34 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Light theme as default */
-    --background: 0 0% 100%; /* White background */
-    --foreground: 222.2 47.4% 11.2%; /* Dark text */
+    --background: 214 95% 5%; /* #020817 background */
+    --foreground: 210 40% 98%; /* Light text for dark background */
 
     /* --- Cards --- */
-    --card: 0 0% 100%; /* White cards */
-    --card-foreground: 222.2 47.4% 11.2%; /* Dark text on cards */
+    --card: 214 95% 10%; /* Slightly lighter than background */
+    --card-foreground: 210 40% 98%; /* Light text on cards */
 
     /* --- Popover --- */
-    --popover: 0 0% 100%; /* White popover */
-    --popover-foreground: 222.2 47.4% 11.2%; /* Dark text in popover */
+    --popover: 214 95% 10%; /* Slightly lighter popover */
+    --popover-foreground: 210 40% 98%; /* Light text in popover */
 
     /* --- Primary Colors --- */
     --primary: 191 100% 50%; /* --brand-cyan */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%; /* Light secondary */
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 214 95% 15%; /* Darker secondary */
+    --secondary-foreground: 210 40% 98%;
     
     /* Light theme appropriate colors */
     --muted: 210 40% 96%; /* Light muted background */
     --muted-foreground: 215.4 16.3% 46.9%; /* Muted text */
-    --accent: 210 40% 96%; /* Light accent */
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 214 95% 15%; /* Darker accent */
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%; /* Red for destructive actions */
     --destructive-foreground: 0 0% 100%;
 
     /* --- Border/Input/Ring --- */
-    --border: 214.3 31.8% 91.4%; /* Light subtle border */
-    --input: 214.3 31.8% 91.4%; /* Light input border */
+    --border: 214 95% 20%; /* Lighter border for visibility */
+    --input: 214 95% 20%; /* Darker input border */
     --ring: 191 100% 50%; /* Cyan focus ring */
 
     /* --- Sidebar --- */
