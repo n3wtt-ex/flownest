@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronDown, Building2, Settings, Users, Plus } from 'lucide-react';
-import { useOrganization } from '../contexts/OrganizationContext';
+import { useOrganization } from '../../contexts/OrganizationContext';
 
 export function OrganizationSelector() {
   const { currentOrganization, userOrganizations, switchOrganization, loading } = useOrganization();
