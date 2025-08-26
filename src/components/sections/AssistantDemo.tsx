@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 
 const AssistantDemo: React.FC = () => {
   return (
-    <section id="demo" aria-labelledby="ai-heading" className="container px-4 py-20 dark:bg-gray-900">
+    <section id="demo" aria-labelledby="ai-heading" className="container py-20">
       <h2 id="ai-heading" className="text-3xl md:text-4xl font-bold text-center mb-10 dark:text-white">
         AI Asistan Gösterimi
       </h2>

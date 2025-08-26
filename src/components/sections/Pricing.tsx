@@ -24,7 +24,7 @@ const Pricing: React.FC = () => {
   const navigate = useNavigate();
   
   return (
-    <section id="pricing" aria-labelledby="pricing-heading" className="container px-4 py-20 dark:bg-gray-900">
+    <section id="pricing" aria-labelledby="pricing-heading" className="container py-20">
       <h2 id="pricing-heading" className="text-3xl md:text-4xl font-bold text-center mb-10 dark:text-white">
         Fiyatlandırma
       </h2>

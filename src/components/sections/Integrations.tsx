@@ -15,7 +15,7 @@ const tools = [
 
 const Integrations: React.FC = () => {
   return (
-    <section id="integrations" aria-labelledby="integrations-heading" className="container px-4 py-20 dark:bg-gray-900">
+    <section id="integrations" aria-labelledby="integrations-heading" className="container py-20">
       <h2 id="integrations-heading" className="text-3xl md:text-4xl font-bold text-center mb-10 dark:text-white">
         Entegrasyonlar
       </h2>

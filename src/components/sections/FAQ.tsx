@@ -149,7 +149,7 @@ const faqData = [
 
 const FAQ: React.FC = () => {
   return (
-    <section id="faq" aria-labelledby="faq-heading" className="container px-4 py-20 dark:bg-gray-900">
+    <section id="faq" aria-labelledby="faq-heading" className="container py-20">
       <h2 id="faq-heading" className="text-3xl md:text-4xl font-bold text-center mb-10 dark:text-white">
         SSS — Flownests
       </h2>
