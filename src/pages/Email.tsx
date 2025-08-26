@@ -70,8 +70,8 @@ export function Email() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'warming': return 'bg-yellow-100 text-yellow-800';
+      case 'active': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+      case 'warming': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
       case 'paused': return 'bg-muted text-muted-foreground';
       default: return 'bg-muted text-muted-foreground';
     }
@@ -499,18 +499,18 @@ export function Email() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6 overflow-hidden"
+          className="bg-card rounded-2xl shadow-sm border border-border mb-6 overflow-hidden"
         >
           <div className={`flex ${!isSettingsOpen ? 'h-[76px]' : ''}`}>
             {/* Left Side - Settings Panel (Half Width) */}
-            <div className="w-1/2 border-r border-gray-200">
+            <div className="w-1/2 border-r border-border">
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                 className="w-full p-6 flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <Settings className="w-6 h-6 text-blue-600" />
-                  <h2 className="text-xl font-semibold text-gray-900">{language === 'tr' ? 'Müşteri Toplantısı Ayarları' : 'Customer Meeting Settings'}</h2>
+                  <h2 className="text-xl font-semibold text-foreground">{language === 'tr' ? 'Müşteri Toplantısı Ayarları' : 'Customer Meeting Settings'}</h2>
                 </div>
                 <motion.div
                   animate={{ rotate: isSettingsOpen ? 180 : 0 }}
@@ -528,7 +528,7 @@ export function Email() {
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="border-t border-gray-200"
+                    className="border-t border-border"
                   >
                     <div className="p-6 space-y-6">
                       {/* Event Type Section */}
@@ -542,11 +542,11 @@ export function Email() {
                             className={`w-full p-3 text-left rounded-lg border-2 transition-all ${
                               !isIntroductionMode 
                                 ? 'border-blue-500 bg-blue-50 text-blue-900' 
-                                : 'border-gray-200 hover:border-gray-300'
+                                : 'border-border hover:border-muted-foreground'
                             }`}
                           >
                             <div className="font-medium">Event Content</div>
-                            <div className="text-sm text-gray-600">Demo, E-book, Loom, etc.</div>
+                            <div className="text-sm text-muted-foreground">Demo, E-book, Loom, etc.</div>
                           </button>
                           
                           <button
@@ -554,11 +554,11 @@ export function Email() {
                             className={`w-full p-3 text-left rounded-lg border-2 transition-all ${
                               isIntroductionMode 
                                 ? 'border-blue-500 bg-blue-50 text-blue-900' 
-                                : 'border-gray-200 hover:border-gray-300'
+                                : 'border-border hover:border-muted-foreground'
                             }`}
                           >
                             <div className="font-medium">Kendini Tanıt</div>
-                            <div className="text-sm text-gray-600">Kişisel ve şirket bilgileri</div>
+                            <div className="text-sm text-muted-foreground">Kişisel ve şirket bilgileri</div>
                           </button>
                         </div>
                       </div>
@@ -633,17 +633,17 @@ export function Email() {
                     className="h-full"
                   >
                     {/* Content Editor Header */}
-                    <div className="p-6 border-b border-gray-200">
+                    <div className="p-6 border-b border-border">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
                             <Edit3 className="w-5 h-5 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-foreground">
                               {isIntroductionMode ? 'Introduction Editor' : 'Content Editor'}
                             </h3>
-                            <p className="text-sm text-gray-600 capitalize">
+                            <p className="text-sm text-muted-foreground capitalize">
                               Editing: {isIntroductionMode ? 'Kendini Tanıt' : selectedEvent}
                             </p>
                           </div>
@@ -751,7 +751,7 @@ export function Email() {
                             <textarea
                               value={editContent}
                               onChange={(e) => handleContentChange(e.target.value)}
-                              className="w-full h-48 p-4 border-2 border-dashed border-gray-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none bg-gray-50 hover:bg-white"
+                              className="w-full h-48 p-4 border-2 border-dashed border-border rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none bg-muted hover:bg-card"
                               placeholder="Enter your content here..."
                             />
                             <div className="absolute top-3 right-3">
@@ -815,18 +815,18 @@ export function Email() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden dark:bg-crm-dark dark:border-slate-700"
+          className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden"
         >
           {/* Table Header */}
-          <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Email Accounts</h2>
+          <div className="p-6 border-b border-border flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-foreground">Email Accounts</h2>
             <div className="flex items-center space-x-2">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={fetchEmailAccounts}
                 disabled={isLoading}
-                className="flex items-center justify-center p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                className="flex items-center justify-center p-2 bg-muted text-muted-foreground rounded-lg hover:bg-accent transition-colors"
               >
                 {isLoading ? (
                   <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
@@ -848,37 +848,37 @@ export function Email() {
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Health Score
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Daily Limit
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200 dark:bg-crm-dark dark:divide-slate-700">
+              <tbody className="bg-card divide-y divide-border">
                 {emailAccounts.map((account, index) => (
                   <motion.tr
                       key={account.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="hover:bg-gray-50 transition-colors dark:hover:bg-slate-800"
+                      className="hover:bg-muted transition-colors"
                     >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
                           <Mail className="w-5 h-5 text-white" />
                         </div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-foreground">
                           {account.email}
                         </div>
                       </div>
@@ -894,7 +894,7 @@ export function Email() {
                          account.status === 'warming' ? 'Warming' : 'Paused'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {account.dailyLimit}
                     </td>
                   </motion.tr>
@@ -911,34 +911,34 @@ export function Email() {
           transition={{ delay: 0.4 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6"
         >
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
             <div className="flex items-center">
               <Shield className="w-8 h-8 text-green-600 mb-2" />
             </div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-foreground">
               {emailAccounts.filter(acc => acc.status === 'active').length}
             </div>
-            <div className="text-sm text-gray-600">Active Accounts</div>
+            <div className="text-sm text-muted-foreground">Active Accounts</div>
           </div>
           
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
             <div className="flex items-center">
               <Mail className="w-8 h-8 text-blue-600 mb-2" />
             </div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-foreground">
               {emailAccounts.length}
             </div>
-            <div className="text-sm text-gray-600">Total Accounts</div>
+            <div className="text-sm text-muted-foreground">Total Accounts</div>
           </div>
           
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+          <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
             <div className="flex items-center">
               <Zap className="w-8 h-8 text-purple-600 mb-2" />
             </div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-foreground">
               {emailAccounts.length > 0 ? Math.round(emailAccounts.reduce((sum, acc) => sum + acc.healthScore, 0) / emailAccounts.length) : 0}%
             </div>
-            <div className="text-sm text-gray-600">Average Health Score</div>
+            <div className="text-sm text-muted-foreground">Average Health Score</div>
           </div>
         </motion.div>
       </div>

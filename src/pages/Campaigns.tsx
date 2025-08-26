@@ -1172,7 +1172,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     <div className="text-2xl font-bold text-blue-600">{selectedCampaign.sent}</div>
                     <div className="text-sm text-muted-foreground">Sequence Started</div>
                   </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                  <div className="text-center p-4 bg-muted rounded-lg">
                     <div className="text-2xl font-bold text-green-600">{selectedCampaign.open_rate}%</div>
                     <div className="text-sm text-muted-foreground">Open Rate</div>
                   </div>
@@ -1328,13 +1328,13 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         disabled={refreshingLeads}
                         className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
                           refreshingLeads 
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            ? 'bg-muted text-muted-foreground cursor-not-allowed' 
+                            : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
                         }`}
                         title="Leads'i Yenile"
                       >
                         {refreshingLeads ? (
-                          <svg className="animate-spin h-4 w-4 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <svg className="animate-spin h-4 w-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
@@ -1359,7 +1359,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                             <div className="flex space-x-2">
                               <button
                                 onClick={() => setAddLeadMethod('manual')}
-                                className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'manual' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                                className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'manual' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
                               >
                                 <UserPlus className="w-4 h-4 inline mr-2" />
                                 Manual Entry
@@ -1396,7 +1396,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                   // Close the modal
                                   setIsAddLeadsModalOpen(false);
                                 }}
-                                className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'import' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}`}
+                                className={`flex-1 px-4 py-2 rounded-lg ${addLeadMethod === 'import' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
                               >
                                 <Upload className="w-4 h-4 inline mr-2" />
                                 Import CSV
@@ -1470,9 +1470,9 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                 />
                               </div>
                             ) : (
-                              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                                <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                                <p className="text-gray-600 mb-4">Click the Import CSV button to start the import process via n8n.</p>
+                              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
+                                <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                                <p className="text-muted-foreground mb-4">Click the Import CSV button to start the import process via n8n.</p>
                                 <button
                                   onClick={() => {
                                     // Send data to webhook
@@ -1526,7 +1526,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                   setNewLeadCountry('');
                                   setIsAddLeadsModalOpen(false);
                                 }}
-                                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                                className="px-4 py-2 text-muted-foreground hover:text-foreground"
                               >
                                 Cancel
                               </button>

@@ -373,12 +373,12 @@ export function Settings() {
                   
                   <div className="space-y-4">
                     <div className="group p-4 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 border border-blue-200/30 hover:shadow-lg transition-all duration-300">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Üyelik Tarihi</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Üyelik Tarihi</p>
                       <p className="text-foreground font-semibold">10.08.2025</p>
                     </div>
                     
                     <div className="group p-4 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg transition-all duration-300">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Kullanıcı ID</p>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Kullanıcı ID</p>
                       <p className="text-foreground font-mono text-sm">e07218f6...</p>
                     </div>
                   </div>
@@ -556,7 +556,7 @@ export function Settings() {
                     </div>
                     
                     {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-gray-200/50">
+                    <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-border">
                       <button
                         type="button"
                         onClick={() => setIsEditing(false)}
@@ -598,7 +598,7 @@ export function Settings() {
                         <div key={field.label} className="group p-5 rounded-2xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm border border-white/30 hover:shadow-lg hover:border-white/50 transition-all duration-300 hover:scale-105 dark:from-slate-800/40 dark:to-slate-800/20 dark:border-slate-700/30" style={{animationDelay: `${index * 0.1}s`}}>
                           <div className="flex items-center mb-2">
                             <span className="text-lg mr-2">{field.icon}</span>
-                            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{field.label}</p>
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{field.label}</p>
                           </div>
                           {field.isLink && field.value !== 'Belirtilmemiş' ? (
                             <a 
@@ -620,7 +620,7 @@ export function Settings() {
                     <div className="group p-5 rounded-2xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm border border-white/30 hover:shadow-lg hover:border-white/50 transition-all duration-300 hover:scale-105">
                       <div className="flex items-center mb-2">
                         <span className="text-lg mr-2">📍</span>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Adres</p>
+                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Adres</p>
                       </div>
                       <p className="text-foreground font-semibold">{contactInfo.address || 'Belirtilmemiş'}</p>
                     </div>
@@ -652,7 +652,7 @@ export function Settings() {
                         </div>
                         <div>
                           <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'Tema Ayarı' : 'Theme Setting'}</h3>
-                          <p className="text-gray-600">{language === 'tr' ? 'Açık veya koyu tema arasında geçiş yapın' : 'Switch between light and dark themes'}</p>
+                          <p className="text-muted-foreground">{language === 'tr' ? 'Açık veya koyu tema arasında geçiş yapın' : 'Switch between light and dark themes'}</p>
                         </div>
                       </div>
                       <div className="relative">
@@ -668,7 +668,7 @@ export function Settings() {
                             }`}
                           />
                         </button>
-                        <span className="ml-3 text-sm font-medium text-gray-900 dark:text-white">
+                        <span className="ml-3 text-sm font-medium text-foreground">
                           {language === 'tr' ? (theme === 'dark' ? 'Koyu' : 'Açık') : (theme === 'dark' ? 'Dark' : 'Light')}
                         </span>
                       </div>
@@ -686,7 +686,7 @@ export function Settings() {
                         </div>
                         <div>
                           <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'Dil Ayarı' : 'Language Setting'}</h3>
-                          <p className="text-gray-600">{language === 'tr' ? 'Uygulama dilini değiştirin' : 'Change application language'}</p>
+                          <p className="text-muted-foreground">{language === 'tr' ? 'Uygulama dilini değiştirin' : 'Change application language'}</p>
                         </div>
                       </div>
                       <div className="relative">
@@ -722,7 +722,7 @@ export function Settings() {
                         </div>
                         <div>
                           <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'Şifre Değiştir' : 'Change Password'}</h3>
-                          <p className="text-gray-600">{language === 'tr' ? 'Şifrenizi güvenli tutun' : 'Keep your password secure'}</p>
+                          <p className="text-muted-foreground">{language === 'tr' ? 'Şifrenizi güvenli tutun' : 'Keep your password secure'}</p>
                         </div>
                       </div>
                       <button className="group px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center">
@@ -745,7 +745,7 @@ export function Settings() {
                         </div>
                         <div>
                           <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'Bildirimler' : 'Notifications'}</h3>
-                          <p className="text-gray-600">{language === 'tr' ? 'E-posta ve bildirim tercihlerinizi yönetin' : 'Manage your email and notification preferences'}</p>
+                          <p className="text-muted-foreground">{language === 'tr' ? 'E-posta ve bildirim tercihlerinizi yönetin' : 'Manage your email and notification preferences'}</p>
                         </div>
                       </div>
                       <button className="group px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center">
@@ -768,7 +768,7 @@ export function Settings() {
                         </div>
                         <div>
                           <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'İki Faktörlü Kimlik Doğrulama' : 'Two-Factor Authentication'}</h3>
-                          <p className="text-gray-600">{language === 'tr' ? 'Hesabınızı ek güvenlik ile koruyun' : 'Protect your account with additional security'}</p>
+                          <p className="text-muted-foreground">{language === 'tr' ? 'Hesabınızı ek güvenlik ile koruyun' : 'Protect your account with additional security'}</p>
                         </div>
                       </div>
                       

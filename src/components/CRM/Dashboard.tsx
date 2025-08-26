@@ -332,11 +332,11 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               
               {searchResults.deals.length > 0 && (
                 <div className="p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">{t('crm.dashboard.search.deals')}</h4>
+                  <h4 className="text-sm font-medium text-foreground mb-2">{t('crm.dashboard.search.deals')}</h4>
                   {searchResults.deals.map(deal => (
                     <div 
                       key={deal.id} 
-                      className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer dark:hover:bg-gray-700"
+                      className="flex items-center p-2 hover:bg-muted rounded cursor-pointer"
                       onClick={() => {
                         handleNavigation('deals');
                         setShowSearchResults(false);
@@ -345,8 +345,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                     >
                       <Handshake className="w-4 h-4 text-orange-500 mr-2" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">{deal.title}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-300">
+                        <p className="text-sm font-medium text-foreground">{deal.title}</p>
+                        <p className="text-xs text-muted-foreground">
                           {deal.contact?.full_name || deal.company?.name || t('crm.dashboard.search.unknown')} - ${deal.amount?.toLocaleString() || '0'}
                         </p>
                       </div>
@@ -385,7 +385,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Stage Statistics */}
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 dark:text-white">{t('crm.dashboard.pipeline.title')}</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">{t('crm.dashboard.pipeline.title')}</h3>
           {stageStats.length > 0 ? (
             <div className="space-y-4">
               {stageStats.map((stage, index) => (

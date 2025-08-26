@@ -16,6 +16,15 @@ import { Settings } from './pages/Settings';
 import Landing from './pages/Landing';
 import { CampaignsProvider } from './contexts/CampaignsContext';
 
+// Landing page wrapper with forced light theme
+function LandingWithLightTheme() {
+  return (
+    <div className="light bg-white text-gray-900 min-h-screen">
+      <Landing />
+    </div>
+  );
+}
+
 // Dashboard wrapper bileşeni
 function DashboardWrapper() {
   const navigate = useNavigate();
@@ -55,7 +64,7 @@ function App() {
     <Router>
       <CampaignsProvider>
         <Routes>
-          <Route path="/" element={<Landing />} />
+          <Route path="/" element={<LandingWithLightTheme />} />
           <Route path="/login" element={<LoginRegister />} />
           <Route path="/register" element={<LoginRegister />} />
           {user ? (
