@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Search, DollarSign, Calendar, User, Building2, Edit, Trash2, X, List, LayoutGrid, MoreHorizontal } from 'lucide-react';
+import { useSidebar } from '../../contexts/SidebarContext';
 
 // Mock data ve types
 interface Deal {
@@ -89,6 +90,7 @@ const t = (key: string) => {
 
 export function Deals() {
   const language = 'en';
+  const { isCollapsed } = useSidebar();
   const [deals, setDeals] = useState<Deal[]>([]);
   const [stages, setStages] = useState<PipelineStage[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -470,7 +472,7 @@ export function Deals() {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="appearance-none w-full px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            className="appearance-none w-full px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white [&::-webkit-appearance]:none [&::-moz-appearance]:none"
           >
             <option value="all">{t('crm.deals.allStatuses')}</option>
             <option value="open">{t('crm.deals.status.open')}</option>
@@ -514,11 +516,17 @@ export function Deals() {
       {/* Content */}
       {viewMode === 'kanban' ? (
         /* Kanban View */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className={`kanban-container grid gap-4 transition-all duration-300 ease-in-out ${
+          isCollapsed 
+            ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6' 
+            : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+        }`}>
           {kanbanColumns.map((column) => (
             <div
               key={column.id}
-              className={`${column.color} border-2 border-dashed rounded-lg p-4 min-h-96`}
+              className={`kanban-column ${column.color} border-2 border-dashed rounded-lg transition-all duration-300 ease-in-out ${
+                isCollapsed ? 'p-4' : 'p-3 lg:p-4'
+              } min-h-96`}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, column.id)}
             >
@@ -526,14 +534,20 @@ export function Deals() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <h3 className="font-semibold text-gray-900">{column.title}</h3>
+                  <h3 className={`font-semibold text-gray-900 ${
+                    isCollapsed ? 'text-sm' : 'text-xs lg:text-sm'
+                  }`}>{column.title}</h3>
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className={`text-gray-500 ${
+                  isCollapsed ? 'text-sm' : 'text-xs lg:text-sm'
+                }`}>
                   ${column.deals.reduce((sum, deal) => sum + (deal.amount || 0), 0).toLocaleString()}
                 </div>
               </div>
 
-              <div className="text-xs text-gray-500 mb-4">
+              <div className={`text-gray-500 mb-4 ${
+                isCollapsed ? 'text-xs' : 'text-xs'
+              }`}>
                 {column.deals.length} deals
               </div>
 
@@ -544,67 +558,95 @@ export function Deals() {
                     key={deal.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, deal.id)}
-                    className="bg-white rounded-lg p-4 shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-shadow"
+                    className={`deal-card bg-white rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-all duration-200 ease-in-out ${
+                      isCollapsed ? 'p-4' : 'p-3 lg:p-4'
+                    }`}
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-medium text-gray-900 text-sm leading-tight">
+                      <h4 className={`font-medium text-gray-900 leading-tight ${
+                        isCollapsed ? 'text-sm' : 'text-xs lg:text-sm'
+                      }`}>
                         {deal.title}
                       </h4>
-                      <button className="text-gray-400 hover:text-gray-600">
-                        <MoreHorizontal className="w-4 h-4" />
+                      <button className="text-gray-400 hover:text-gray-600 flex-shrink-0">
+                        <MoreHorizontal className={`${
+                          isCollapsed ? 'w-4 h-4' : 'w-3 h-3 lg:w-4 lg:h-4'
+                        }`} />
                       </button>
                     </div>
 
-                    <div className="flex items-center space-x-2 mb-3">
+                    <div className={`flex items-center mb-3 ${
+                      isCollapsed ? 'space-x-2' : 'space-x-1 lg:space-x-2'
+                    }`}>
                       {deal.contacts && (
-                        <div className="flex items-center text-xs text-gray-600">
-                          <User className="w-3 h-3 mr-1" />
-                          {deal.contacts.full_name}
+                        <div className={`flex items-center text-gray-600 ${
+                          isCollapsed ? 'text-xs' : 'text-xs'
+                        }`}>
+                          <User className={`mr-1 ${
+                            isCollapsed ? 'w-3 h-3' : 'w-3 h-3'
+                          }`} />
+                          <span className="truncate max-w-20">{deal.contacts.full_name}</span>
                         </div>
                       )}
                       {deal.companies && (
-                        <div className="flex items-center text-xs text-gray-600">
-                          <Building2 className="w-3 h-3 mr-1" />
-                          {deal.companies.name}
+                        <div className={`flex items-center text-gray-600 ${
+                          isCollapsed ? 'text-xs' : 'text-xs'
+                        }`}>
+                          <Building2 className={`mr-1 ${
+                            isCollapsed ? 'w-3 h-3' : 'w-3 h-3'
+                          }`} />
+                          <span className="truncate max-w-20">{deal.companies.name}</span>
                         </div>
                       )}
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <div className="font-semibold text-gray-900">
+                      <div className={`font-semibold text-gray-900 ${
+                        isCollapsed ? 'text-sm' : 'text-xs lg:text-sm'
+                      }`}>
                         ${deal.amount?.toLocaleString() || '0'}
                       </div>
                       {deal.close_date && (
-                        <div className="flex items-center text-xs text-gray-500">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          {new Date(deal.close_date).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric'
-                          })}
+                        <div className={`flex items-center text-gray-500 ${
+                          isCollapsed ? 'text-xs' : 'text-xs'
+                        }`}>
+                          <Calendar className={`mr-1 ${
+                            isCollapsed ? 'w-3 h-3' : 'w-3 h-3'
+                          }`} />
+                          <span className="hidden sm:inline">
+                            {new Date(deal.close_date).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </span>
                         </div>
                       )}
                     </div>
 
                     {deal.source && (
-                      <div className="mt-2 text-xs text-gray-500">
-                        Source: {deal.source}
+                      <div className={`mt-2 text-gray-500 ${
+                        isCollapsed ? 'text-xs' : 'text-xs'
+                      }`}>
+                        <span className="truncate">Source: {deal.source}</span>
                       </div>
                     )}
 
                     <div className="flex items-center justify-between mt-3">
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(deal.status)}`}>
+                      <span className={`inline-flex px-2 py-1 font-medium rounded-full ${getStatusColor(deal.status)} ${
+                        isCollapsed ? 'text-xs' : 'text-xs'
+                      }`}>
                         {getStatusLabel(deal.status)}
                       </span>
                       <div className="flex space-x-1">
                         <button 
                           onClick={() => openEditModal(deal)}
-                          className="text-gray-400 hover:text-blue-600"
+                          className="text-gray-400 hover:text-blue-600 transition-colors"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <button 
                           onClick={() => handleDeleteDeal(deal)}
-                          className="text-gray-400 hover:text-red-600"
+                          className="text-gray-400 hover:text-red-600 transition-colors"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
