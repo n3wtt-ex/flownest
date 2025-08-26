@@ -193,6 +193,32 @@ All colors MUST be HSL.
     border-color: transparent !important;
   }
   
+  /* Landing page card styling - restore subtle gray backgrounds and shadows */
+  .bg-landing-dark .bg-card\/60 {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  }
+  
+  .bg-landing-dark .bg-card\/60:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  /* FAQ accordion items styling */
+  .bg-landing-dark .bg-gray-800\/60 {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  /* Integration section card styling */
+  .bg-landing-dark .dark\:bg-gray-800\/60 {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  }
+  
   .bg-gradient-hero {
     background-image: var(--gradient-hero);
   }
