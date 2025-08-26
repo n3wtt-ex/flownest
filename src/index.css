@@ -126,6 +126,11 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  /* Fixed dark background that ignores theme */
+  .bg-fixed-dark {
+    background-color: #29313d !important;
+  }
+  
   .bg-gradient-hero {
     background-image: var(--gradient-hero);
   }
