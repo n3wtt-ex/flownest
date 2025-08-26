@@ -11,34 +11,34 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Light theme as default */
-    --background: 214 95% 5%; /* #020817 background */
-    --foreground: 210 40% 98%; /* Light text for dark background */
+    --background: 0 0% 100%; /* White background */
+    --foreground: 222.2 47.4% 11.2%; /* Dark text */
 
     /* --- Cards --- */
-    --card: 214 95% 10%; /* Slightly lighter than background */
-    --card-foreground: 210 40% 98%; /* Light text on cards */
+    --card: 0 0% 100%; /* White cards */
+    --card-foreground: 222.2 47.4% 11.2%; /* Dark text on cards */
 
     /* --- Popover --- */
-    --popover: 214 95% 10%; /* Slightly lighter popover */
-    --popover-foreground: 210 40% 98%; /* Light text in popover */
+    --popover: 0 0% 100%; /* White popover */
+    --popover-foreground: 222.2 47.4% 11.2%; /* Dark text in popover */
 
     /* --- Primary Colors --- */
     --primary: 191 100% 50%; /* --brand-cyan */
     --primary-foreground: 0 0% 100%;
-    --secondary: 214 95% 15%; /* Darker secondary */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%; /* Light secondary */
+    --secondary-foreground: 222.2 47.4% 11.2%;
     
     /* Light theme appropriate colors */
     --muted: 210 40% 96%; /* Light muted background */
     --muted-foreground: 215.4 16.3% 46.9%; /* Muted text */
-    --accent: 214 95% 15%; /* Darker accent */
-    --accent-foreground: 210 40% 98%;
+    --accent: 210 40% 96%; /* Light accent */
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%; /* Red for destructive actions */
     --destructive-foreground: 0 0% 100%;
 
     /* --- Border/Input/Ring --- */
-    --border: 214 95% 20%; /* Lighter border for visibility */
-    --input: 214 95% 20%; /* Darker input border */
+    --border: 214.3 31.8% 91.4%; /* Light subtle border */
+    --input: 214.3 31.8% 91.4%; /* Light input border */
     --ring: 191 100% 50%; /* Cyan focus ring */
 
     /* --- Sidebar --- */
@@ -92,13 +92,13 @@ All colors MUST be HSL.
 
 
   .dark {
-    --background: 214 95% 5%;
+    --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
-    --card: 214 95% 5%;
+    --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 214 95% 5%;
+    --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 210 40% 98%;
@@ -180,6 +180,11 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  /* Landing page specific background */
+  .bg-landing-dark {
+    background-color: #020817 !important;
+  }
+  
   .bg-gradient-hero {
     background-image: var(--gradient-hero);
   }

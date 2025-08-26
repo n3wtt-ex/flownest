@@ -20,7 +20,7 @@ import { OrganizationProvider } from './contexts/OrganizationContext';
 // Landing page wrapper with forced light theme
 function LandingWithLightTheme() {
   return (
-    <div className="light bg-white text-gray-900 min-h-screen">
+    <div className="light bg-landing-dark text-white min-h-screen">
       <Landing />
     </div>
   );
