@@ -15,6 +15,7 @@ import { Responses } from './pages/Responses';
 import { Settings } from './pages/Settings';
 import Landing from './pages/Landing';
 import { CampaignsProvider } from './contexts/CampaignsContext';
+import { OrganizationProvider } from './contexts/OrganizationContext';
 
 // Landing page wrapper with forced light theme
 function LandingWithLightTheme() {
@@ -63,28 +64,30 @@ function App() {
   return (
     <Router>
       <CampaignsProvider>
-        <Routes>
-          <Route path="/" element={<LandingWithLightTheme />} />
-          <Route path="/login" element={<LoginRegister />} />
-          <Route path="/register" element={<LoginRegister />} />
-          {user ? (
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Navigate to="/ui-bot" replace />} />
-              <Route path="ui-bot" element={<UIBot />} />
-              <Route path="email" element={<Email />} />
-              <Route path="leads" element={<Leads />} />
-              <Route path="campaigns" element={<Campaigns />} />
-              <Route path="responses" element={<Responses />} />
-              <Route path="crm" element={<DashboardWrapper />} />
-              <Route path="crm/contacts" element={<Contacts />} />
-              <Route path="crm/companies" element={<Companies />} />
-              <Route path="crm/deals" element={<Deals />} />
-              <Route path="settings" element={<Settings />} />
-            </Route>
-          ) : (
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          )}
-        </Routes>
+        <OrganizationProvider>
+          <Routes>
+            <Route path="/" element={<LandingWithLightTheme />} />
+            <Route path="/login" element={<LoginRegister />} />
+            <Route path="/register" element={<LoginRegister />} />
+            {user ? (
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Navigate to="/ui-bot" replace />} />
+                <Route path="ui-bot" element={<UIBot />} />
+                <Route path="email" element={<Email />} />
+                <Route path="leads" element={<Leads />} />
+                <Route path="campaigns" element={<Campaigns />} />
+                <Route path="responses" element={<Responses />} />
+                <Route path="crm" element={<DashboardWrapper />} />
+                <Route path="crm/contacts" element={<Contacts />} />
+                <Route path="crm/companies" element={<Companies />} />
+                <Route path="crm/deals" element={<Deals />} />
+                <Route path="settings" element={<Settings />} />
+              </Route>
+            ) : (
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            )}
+          </Routes>
+        </OrganizationProvider>
       </CampaignsProvider>
     </Router>
   );

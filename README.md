@@ -64,6 +64,20 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/861048aa-1e66-4b03-9015-974211fc951d) and click on Share -> Publish.
 
+## MCP Integration
+
+This project includes Model Context Protocol (MCP) integration for enhanced AI assistance:
+
+- **Supabase MCP**: Direct access to your Supabase database and documentation
+- **Context 7 MCP**: Access to library documentation and code context
+
+Configuration files are available in the `mcp-config/` directory:
+- `combined-mcp-config.json` - Complete MCP setup (recommended)
+- `MCP_SETUP_GUIDE.md` - Detailed setup instructions
+- Test scripts for verifying the installation
+
+To set up MCP integration, follow the guide in `mcp-config/MCP_SETUP_GUIDE.md`.
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!

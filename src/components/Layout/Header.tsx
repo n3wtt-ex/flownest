@@ -2,6 +2,7 @@ import React from 'react';
 import { Bell, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { ThemeToggle } from '../ui/theme-toggle';
+import { OrganizationSelector } from '../Organization/OrganizationSelector';
 
 export function Header() {
   const { user } = useAuth();
@@ -9,7 +10,9 @@ export function Header() {
   return (
     <header className="bg-background border-b border-border px-6 py-4">
       <div className="flex items-center justify-between">
-        <div className="flex-1"></div>
+        <div className="flex items-center space-x-4">
+          <OrganizationSelector />
+        </div>
 
         <div className="flex items-center space-x-4">
           <ThemeToggle />
