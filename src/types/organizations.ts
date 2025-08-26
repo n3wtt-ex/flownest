@@ -56,6 +56,7 @@ export interface OrganizationContext {
   loading: boolean;
   error: string | null;
   switchOrganization: (organizationId: string) => Promise<void>;
+  createOrganization: (data: CreateOrganizationData) => Promise<void>;
   updateOrganization: (data: UpdateOrganizationData) => Promise<void>;
   inviteUser: (data: InviteUserData) => Promise<void>;
   removeUser: (userId: string) => Promise<void>;

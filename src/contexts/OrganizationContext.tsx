@@ -79,6 +79,44 @@ export function OrganizationProvider({ children }: OrganizationProviderProps) {
     }
   };
 
+  const createOrganization = async (data: CreateOrganizationData) => {
+    try {
+      if (!user) throw new Error('User not authenticated');
+
+      // Create the organization
+      const { data: organization, error: orgError } = await supabase
+        .from('organizations')
+        .insert({
+          name: data.name,
+          slug: data.slug || data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
+          domain: data.domain || null,
+          settings: data.settings || {}
+        })
+        .select()
+        .single();
+
+      if (orgError) throw orgError;
+
+      // Add the user as owner of the organization
+      const { error: memberError } = await supabase
+        .from('user_organizations')
+        .insert({
+          user_id: user.id,
+          organization_id: organization.id,
+          role: 'owner'
+        });
+
+      if (memberError) throw memberError;
+
+      // Reload organizations to get fresh data
+      await loadUserOrganizations();
+    } catch (err) {
+      console.error('Error creating organization:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create organization');
+      throw err;
+    }
+  };
+
   const switchOrganization = async (organizationId: string) => {
     try {
       const userOrg = userOrganizations.find(uo => uo.organization_id === organizationId);
@@ -185,6 +223,7 @@ export function OrganizationProvider({ children }: OrganizationProviderProps) {
     loading,
     error,
     switchOrganization,
+    createOrganization,
     updateOrganization,
     inviteUser,
     removeUser,
