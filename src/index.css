@@ -185,6 +185,14 @@ All colors MUST be HSL.
     background-color: #020817 !important;
   }
   
+  /* Landing page border overrides */
+  .bg-landing-dark .border,
+  .bg-landing-dark [class*="border-"],
+  .bg-landing-dark .border-border\/60,
+  .bg-landing-dark .border-border {
+    border-color: transparent !important;
+  }
+  
   .bg-gradient-hero {
     background-image: var(--gradient-hero);
   }
