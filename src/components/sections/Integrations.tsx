@@ -21,9 +21,9 @@ const Integrations: React.FC = () => {
       </h2>
 
       <Card className="bg-card/60 border-border/60 p-8 dark:bg-gray-800/60 dark:border-gray-700/60">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center justify-items-center">
+        <div className="flex flex-wrap justify-center gap-6">
           {tools.map((t) => (
-            <div key={t.name} className="flex flex-col items-center gap-2 hover-scale dark:text-gray-300">
+            <div key={t.name} className="w-full sm:w-[calc(50%-12px)] md:w-[calc(25%-18px)] flex flex-col items-center gap-2 hover-scale dark:text-gray-300">
               <t.icon className="h-8 w-8 text-primary dark:text-blue-400" />
               <span className="text-sm text-muted-foreground dark:text-gray-400">{t.name}</span>
             </div>
