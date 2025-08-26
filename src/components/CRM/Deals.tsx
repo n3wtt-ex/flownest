@@ -407,12 +407,12 @@ export function Deals() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{t('crm.deals.title')}</h1>
-          <p className="text-gray-600">{deals.length} {t('crm.deals.total')}</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('crm.deals.title')}</h1>
+          <p className="text-muted-foreground">{deals.length} {t('crm.deals.total')}</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           <Plus className="w-4 h-4 mr-2" />
           {t('crm.deals.addNew')}
@@ -421,36 +421,36 @@ export function Deals() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-blue-600" />
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+              <DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">{t('crm.deals.stats.totalValue')}</p>
-              <p className="text-2xl font-bold text-gray-900">${totalValue.toLocaleString()}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('crm.deals.stats.totalValue')}</p>
+              <p className="text-2xl font-bold text-card-foreground">${totalValue.toLocaleString()}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
           <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-green-600" />
+            <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+              <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">{t('crm.deals.stats.active')}</p>
-              <p className="text-2xl font-bold text-gray-900">{openDeals.length}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('crm.deals.stats.active')}</p>
+              <p className="text-2xl font-bold text-card-foreground">{openDeals.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
           <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-purple-600" />
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+              <DollarSign className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">{t('crm.deals.stats.won')}</p>
-              <p className="text-2xl font-bold text-gray-900">{wonDeals.length}</p>
+              <p className="text-sm font-medium text-muted-foreground">{t('crm.deals.stats.won')}</p>
+              <p className="text-2xl font-bold text-card-foreground">{wonDeals.length}</p>
             </div>
           </div>
         </div>
@@ -459,20 +459,20 @@ export function Deals() {
       {/* Filters & View Toggle */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             type="text"
             placeholder={t('crm.deals.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
           />
         </div>
         <div className="relative">
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="appearance-none w-full px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white [&::-webkit-appearance]:none [&::-moz-appearance]:none"
+            className="appearance-none w-full px-4 py-2 pr-8 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground [&::-webkit-appearance]:none [&::-moz-appearance]:none"
           >
             <option value="all">{t('crm.deals.allStatuses')}</option>
             <option value="open">{t('crm.deals.status.open')}</option>
@@ -480,20 +480,20 @@ export function Deals() {
             <option value="lost">{t('crm.deals.status.lost')}</option>
           </select>
           <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
         </div>
         
         {/* View Toggle */}
-        <div className="flex items-center bg-white border border-gray-300 rounded-lg">
+        <div className="flex items-center bg-card border border-border rounded-lg">
           <button
             onClick={() => setViewMode('kanban')}
             className={`p-2 rounded-l-lg transition-colors ${
               viewMode === 'kanban' 
-                ? 'bg-blue-50 text-blue-600 border-r border-blue-200' 
-                : 'text-gray-400 hover:text-gray-600'
+                ? 'bg-accent text-accent-foreground border-r border-border' 
+                : 'text-muted-foreground hover:text-foreground'
             }`}
             title="Kanban View"
           >
@@ -503,8 +503,8 @@ export function Deals() {
             onClick={() => setViewMode('list')}
             className={`p-2 rounded-r-lg transition-colors ${
               viewMode === 'list' 
-                ? 'bg-blue-50 text-blue-600' 
-                : 'text-gray-400 hover:text-gray-600'
+                ? 'bg-accent text-accent-foreground' 
+                : 'text-muted-foreground hover:text-foreground'
             }`}
             title="List View"
           >
@@ -534,18 +534,18 @@ export function Deals() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <h3 className={`font-semibold text-gray-900 ${
+                  <h3 className={`font-semibold text-card-foreground ${
                     isCollapsed ? 'text-sm' : 'text-xs lg:text-sm'
                   }`}>{column.title}</h3>
                 </div>
-                <div className={`text-gray-500 ${
+                <div className={`text-muted-foreground ${
                   isCollapsed ? 'text-sm' : 'text-xs lg:text-sm'
                 }`}>
                   ${column.deals.reduce((sum, deal) => sum + (deal.amount || 0), 0).toLocaleString()}
                 </div>
               </div>
 
-              <div className={`text-gray-500 mb-4 ${
+              <div className={`text-muted-foreground mb-4 ${
                 isCollapsed ? 'text-xs' : 'text-xs'
               }`}>
                 {column.deals.length} deals
@@ -558,17 +558,17 @@ export function Deals() {
                     key={deal.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, deal.id)}
-                    className={`deal-card bg-white rounded-lg shadow-sm border border-gray-200 cursor-move hover:shadow-md transition-all duration-200 ease-in-out ${
+                    className={`deal-card bg-card rounded-lg shadow-sm border border-border cursor-move hover:shadow-md transition-all duration-200 ease-in-out ${
                       isCollapsed ? 'p-4' : 'p-3 lg:p-4'
                     }`}
                   >
                     <div className="flex items-start justify-between mb-2">
-                      <h4 className={`font-medium text-gray-900 leading-tight ${
+                      <h4 className={`font-medium text-card-foreground leading-tight ${
                         isCollapsed ? 'text-sm' : 'text-xs lg:text-sm'
                       }`}>
                         {deal.title}
                       </h4>
-                      <button className="text-gray-400 hover:text-gray-600 flex-shrink-0">
+                      <button className="text-muted-foreground hover:text-foreground flex-shrink-0">
                         <MoreHorizontal className={`${
                           isCollapsed ? 'w-4 h-4' : 'w-3 h-3 lg:w-4 lg:h-4'
                         }`} />
@@ -579,7 +579,7 @@ export function Deals() {
                       isCollapsed ? 'space-x-2' : 'space-x-1 lg:space-x-2'
                     }`}>
                       {deal.contacts && (
-                        <div className={`flex items-center text-gray-600 ${
+                        <div className={`flex items-center text-muted-foreground ${
                           isCollapsed ? 'text-xs' : 'text-xs'
                         }`}>
                           <User className={`mr-1 ${
@@ -589,7 +589,7 @@ export function Deals() {
                         </div>
                       )}
                       {deal.companies && (
-                        <div className={`flex items-center text-gray-600 ${
+                        <div className={`flex items-center text-muted-foreground ${
                           isCollapsed ? 'text-xs' : 'text-xs'
                         }`}>
                           <Building2 className={`mr-1 ${
@@ -601,13 +601,13 @@ export function Deals() {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <div className={`font-semibold text-gray-900 ${
+                      <div className={`font-semibold text-card-foreground ${
                         isCollapsed ? 'text-sm' : 'text-xs lg:text-sm'
                       }`}>
                         ${deal.amount?.toLocaleString() || '0'}
                       </div>
                       {deal.close_date && (
-                        <div className={`flex items-center text-gray-500 ${
+                        <div className={`flex items-center text-muted-foreground ${
                           isCollapsed ? 'text-xs' : 'text-xs'
                         }`}>
                           <Calendar className={`mr-1 ${
@@ -624,7 +624,7 @@ export function Deals() {
                     </div>
 
                     {deal.source && (
-                      <div className={`mt-2 text-gray-500 ${
+                      <div className={`mt-2 text-muted-foreground ${
                         isCollapsed ? 'text-xs' : 'text-xs'
                       }`}>
                         <span className="truncate">Source: {deal.source}</span>
@@ -640,13 +640,13 @@ export function Deals() {
                       <div className="flex space-x-1">
                         <button 
                           onClick={() => openEditModal(deal)}
-                          className="text-gray-400 hover:text-blue-600 transition-colors"
+                          className="text-muted-foreground hover:text-primary transition-colors"
                         >
                           <Edit className="w-3 h-3" />
                         </button>
                         <button 
                           onClick={() => handleDeleteDeal(deal)}
-                          className="text-gray-400 hover:text-red-600 transition-colors"
+                          className="text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -660,42 +660,42 @@ export function Deals() {
         </div>
       ) : (
         /* List View */
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-muted/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     {t('crm.deals.table.deal')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     {t('crm.deals.table.contactCompany')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     {t('crm.deals.table.stage')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     {t('crm.deals.table.value')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     {t('crm.deals.table.status')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     {t('crm.deals.table.closeDate')}
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     {t('crm.deals.table.actions')}
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {filteredDeals.map((deal) => (
-                  <tr key={deal.id} className="hover:bg-gray-50">
+                  <tr key={deal.id} className="hover:bg-muted/30">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{deal.title}</div>
+                        <div className="text-sm font-medium text-card-foreground">{deal.title}</div>
                         {deal.source && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-muted-foreground">
                             {t('crm.deals.source')}: {deal.source}
                           </div>
                         )}
@@ -704,14 +704,14 @@ export function Deals() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         {deal.contacts && (
-                          <div className="flex items-center text-sm text-gray-900">
-                            <User className="w-4 h-4 text-gray-400 mr-2" />
+                          <div className="flex items-center text-sm text-card-foreground">
+                            <User className="w-4 h-4 text-muted-foreground mr-2" />
                             {deal.contacts.full_name}
                           </div>
                         )}
                         {deal.companies && (
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Building2 className="w-4 h-4 text-gray-400 mr-2" />
+                          <div className="flex items-center text-sm text-muted-foreground">
+                            <Building2 className="w-4 h-4 text-muted-foreground mr-2" />
                             {deal.companies.name}
                           </div>
                         )}
@@ -719,31 +719,31 @@ export function Deals() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-card-foreground">
                           {deal.pipeline_stages?.name || t('crm.deals.stage.notSpecified')}
                         </div>
                         {deal.pipeline_stages?.probability && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-muted-foreground">
                             {deal.pipeline_stages.probability}% {t('crm.deals.stage.probability')}
                           </div>
                         )}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-card-foreground">
                         ${deal.amount?.toLocaleString() || '0'}
                       </div>
-                      <div className="text-xs text-gray-500">{deal.currency}</div>
+                      <div className="text-xs text-muted-foreground">{deal.currency}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(deal.status)}`}>
                         {getStatusLabel(deal.status)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                       {deal.close_date ? (
                         <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                          <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
                           {new Date(deal.close_date).toLocaleDateString((language as string) === 'tr' ? 'tr-TR' : 'en-US')}
                         </div>
                       ) : (
@@ -754,13 +754,13 @@ export function Deals() {
                       <div className="flex items-center justify-end space-x-2">
                         <button 
                           onClick={() => openEditModal(deal)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-primary hover:text-primary/80"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button 
                           onClick={() => handleDeleteDeal(deal)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-destructive hover:text-destructive/80"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -776,16 +776,16 @@ export function Deals() {
 
       {filteredDeals.length === 0 && (
         <div className="text-center py-12">
-          <DollarSign className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('crm.deals.noDeals')}</h3>
-          <p className="text-gray-600 mb-4">
+          <DollarSign className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-card-foreground mb-2">{t('crm.deals.noDeals')}</h3>
+          <p className="text-muted-foreground mb-4">
             {searchTerm || selectedStatus !== 'all' 
               ? t('crm.deals.noDealsSearch')
               : t('crm.deals.noDealsYet')}
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
           >
             <Plus className="w-4 h-4 mr-2" />
             {t('crm.deals.addFirst')}
@@ -795,13 +795,13 @@ export function Deals() {
 
       {/* Add Deal Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-card rounded-lg p-6 w-full max-w-md max-h-screen overflow-y-auto border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">{t('crm.deals.addDeal')}</h2>
+              <h2 className="text-lg font-semibold text-card-foreground">{t('crm.deals.addDeal')}</h2>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -809,7 +809,7 @@ export function Deals() {
 
             <form onSubmit={(e) => { e.preventDefault(); handleAddDeal(); }} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-card-foreground mb-1">
                   {t('crm.deals.dealTitle')} *
                 </label>
                 <input
@@ -817,13 +817,13 @@ export function Deals() {
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-card-foreground mb-1">
                     {t('crm.deals.value')}
                   </label>
                   <input
@@ -831,17 +831,17 @@ export function Deals() {
                     step="0.01"
                     value={formData.amount}
                     onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-card-foreground mb-1">
                     {t('crm.deals.currency')}
                   </label>
                   <select
                     value={formData.currency}
                     onChange={(e) => setFormData({...formData, currency: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                   >
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
@@ -851,13 +851,13 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-card-foreground mb-1">
                   {t('crm.deals.contact')}
                 </label>
                 <select
                   value={formData.contact_id}
                   onChange={(e) => setFormData({...formData, contact_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                 >
                   <option value="">{t('crm.deals.contact.select')}</option>
                   {contacts.map(contact => (
@@ -869,13 +869,13 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-card-foreground mb-1">
                   {t('crm.deals.company')}
                 </label>
                 <select
                   value={formData.company_id}
                   onChange={(e) => setFormData({...formData, company_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                 >
                   <option value="">{t('crm.deals.company.select')}</option>
                   {companies.map(company => (
@@ -887,13 +887,13 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-card-foreground mb-1">
                   {t('crm.deals.stage')}
                 </label>
                 <select
                   value={formData.pipeline_stage_id}
                   onChange={(e) => setFormData({...formData, pipeline_stage_id: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                 >
                   <option value="">{t('crm.deals.stage.select')}</option>
                   {stages.map(stage => (
@@ -905,25 +905,25 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-card-foreground mb-1">
                   {t('crm.deals.closeDate')}
                 </label>
                 <input
                   type="date"
                   value={formData.close_date}
                   onChange={(e) => setFormData({...formData, close_date: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-card-foreground mb-1">
                   {t('crm.deals.status.label')}
                 </label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                 >
                   <option value="open">{t('crm.deals.status.open')}</option>
                   <option value="won">{t('crm.deals.status.won')}</option>
@@ -932,7 +932,7 @@ export function Deals() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-card-foreground mb-1">
                   {t('crm.deals.source')}
                 </label>
                 <input
@@ -940,19 +940,19 @@ export function Deals() {
                   value={formData.source}
                   onChange={(e) => setFormData({...formData, source: e.target.value})}
                   placeholder={t('crm.deals.source.placeholder')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-card-foreground mb-1">
                   {t('crm.deals.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                 />
               </div>
 
@@ -960,13 +960,13 @@ export function Deals() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-4 py-2 text-foreground border border-input rounded-lg hover:bg-muted"
                 >
                   {t('crm.deals.cancel')}
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
                 >
                   {t('crm.deals.save')}
                 </button>

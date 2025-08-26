@@ -75,7 +75,7 @@ export function Sidebar() {
   return (
     <>
       <div className={clsx(
-        "flex h-full flex-col bg-white border-r border-slate-200 transition-all duration-300 ease-in-out",
+        "flex h-full flex-col bg-sidebar-background border-r border-sidebar-border transition-all duration-300 ease-in-out",
         isCollapsed ? "w-16" : "w-64"
       )}>
         {/* Logo */}
@@ -90,7 +90,7 @@ export function Sidebar() {
               )}
             />
             <span className={clsx(
-              "text-xl font-bold text-slate-900 transition-all duration-300 ease-in-out",
+              "text-xl font-bold text-sidebar-foreground transition-all duration-300 ease-in-out",
               isCollapsed ? "opacity-0 w-0 h-0 overflow-hidden" : "opacity-100"
             )}>
               FlowNests
@@ -103,7 +103,7 @@ export function Sidebar() {
           {/* Main Navigation */}
           <div>
             {!isCollapsed && (
-              <h3 className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              <h3 className="px-3 text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-2">
                 {language === 'tr' ? 'Ana Modüller' : 'Main Modules'}
               </h3>
             )}
@@ -119,8 +119,8 @@ export function Sidebar() {
                       'group flex items-center px-3 py-2.5 text-sm rounded-lg transition-colors duration-150',
                       isCollapsed ? "justify-center" : "",
                       isActive
-                        ? 'bg-slate-100 text-slate-900 font-semibold'
-                        : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900 font-medium'
+                        ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
+                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground font-medium'
                     )
                   }
                 >
@@ -129,7 +129,7 @@ export function Sidebar() {
                       <item.icon className={clsx(
                         "flex-shrink-0", 
                         isCollapsed ? "h-5 w-5" : "mr-3 h-5 w-5",
-                        isActive ? "text-blue-600" : "text-slate-500 group-hover:text-slate-700"
+                        isActive ? "text-sidebar-primary" : "text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70"
                       )} />
                       {!isCollapsed && (
                         <div className="flex-1">
@@ -146,7 +146,7 @@ export function Sidebar() {
           {/* CRM Sub-navigation */}
           <div>
             {!isCollapsed && (
-              <h3 className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+              <h3 className="px-3 text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-2">
                 {language === 'tr' ? 'CRM Modülleri' : 'CRM Modules'}
               </h3>
             )}
@@ -163,15 +163,15 @@ export function Sidebar() {
                       'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
                       isCollapsed ? "justify-center" : "",
                       isActive
-                        ? 'bg-slate-100 text-slate-900'
-                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                        : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
                     )
                   }
                 >
                   <item.icon className={clsx(
                     "flex-shrink-0",
                     isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4",
-                    "text-slate-400 group-hover:text-slate-600"
+                    "text-sidebar-foreground/40 group-hover:text-sidebar-foreground/60"
                   )} />
                   {!isCollapsed && item.name[language]}
                 </NavLink>
@@ -181,12 +181,12 @@ export function Sidebar() {
         </nav>
 
         {/* Bottom Actions */}
-        <div className="border-t border-slate-200 p-4 space-y-2">
+        <div className="border-t border-sidebar-border p-4 space-y-2">
           <NavLink
             to="/settings"
             onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Ayarlar" : "Settings")}
             onMouseLeave={handleMouseLeave}
-            className="flex items-center px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors"
+            className="flex items-center px-3 py-2 text-sm font-medium text-sidebar-foreground/60 rounded-lg hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
           >
             <Settings className={clsx(
               "flex-shrink-0",
@@ -198,7 +198,7 @@ export function Sidebar() {
             onClick={handleSignOut}
             onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Çıkış Yap" : "Sign Out")}
             onMouseLeave={handleMouseLeave}
-            className="w-full flex items-center px-3 py-2 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-colors"
+            className="w-full flex items-center px-3 py-2 text-sm font-medium text-sidebar-foreground/60 rounded-lg hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
           >
             <LogOut className={clsx(
               "flex-shrink-0",
@@ -214,21 +214,21 @@ export function Sidebar() {
         ref={collapseButtonRef}
         onClick={toggleSidebar}
         className={clsx(
-          "fixed top-1/2 transform -translate-y-1/2 bg-white border border-slate-200 rounded-r-lg shadow-md hover:bg-slate-50 transition-all duration-200 flex items-center justify-center z-50",
+          "fixed top-1/2 transform -translate-y-1/2 bg-sidebar-background border border-sidebar-border rounded-r-lg shadow-md hover:bg-sidebar-accent/30 transition-all duration-200 flex items-center justify-center z-50",
           isCollapsed ? "left-16 w-6 h-10" : "left-64 w-4 h-8"
         )}
       >
         {isCollapsed ? (
-          <ChevronRight className="w-4 h-4 text-slate-500" />
+          <ChevronRight className="w-4 h-4 text-sidebar-foreground/50" />
         ) : (
-          <ChevronLeft className="w-3 h-3 text-slate-500" />
+          <ChevronLeft className="w-3 h-3 text-sidebar-foreground/50" />
         )}
       </button>
 
       {/* Tooltip */}
       {tooltip && (
         <div
-          className="fixed z-50 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm"
+          className="fixed z-50 px-3 py-2 text-sm font-medium text-primary-foreground bg-popover border border-border rounded-lg shadow-sm"
           style={{
             left: `${tooltip.x}px`,
             top: `${tooltip.y}px`,
@@ -236,7 +236,7 @@ export function Sidebar() {
           }}
         >
           {tooltip.name}
-          <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-gray-900"></div>
+          <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-popover"></div>
         </div>
       )}
     </>

@@ -235,7 +235,7 @@ export function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-100/40 relative overflow-hidden dark:bg-crm-dark">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
@@ -251,10 +251,10 @@ export function Settings() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-foreground via-primary to-secondary bg-clip-text text-transparent mb-3">
             {language === 'tr' ? 'Hesap Ayarları' : 'Account Settings'}
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {language === 'tr' ? 'Profil bilgilerinizi ve iletişim ayarlarınızı modernize edin' : 'Modernize your profile information and communication settings'}
           </p>
         </div>
@@ -281,10 +281,10 @@ export function Settings() {
             <div className="sticky top-8">
               <div className="group relative">
                 {/* Glassmorphism Effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
+                <div className="absolute inset-0 bg-card/60 backdrop-blur-xl rounded-3xl border border-border shadow-2xl shadow-black/10"></div>
                 
                 {/* Content */}
-                <div className="relative p-8 dark:bg-crm-dark">
+                <div className="relative p-8">
                   <div className="text-center">
                     {/* Avatar Section */}
                     <div className="relative inline-block mb-6">
@@ -310,7 +310,7 @@ export function Settings() {
                           <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
                             <button
                               onClick={() => fileInputRef.current?.click()}
-                              className="group p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/20"
+                              className="group p-3 bg-card/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-border"
                               disabled={uploading}
                             >
                               {uploading ? (
@@ -326,7 +326,7 @@ export function Settings() {
                             {avatarUrl && (
                               <button
                                 onClick={deleteAvatar}
-                                className="group p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/20"
+                                className="group p-3 bg-card/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-border"
                               >
                                 <svg className="w-5 h-5 text-red-600 group-hover:text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -348,10 +348,10 @@ export function Settings() {
                     </div>
 
                     {/* User Info */}
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2 dark:text-white">
+                    <h2 className="text-2xl font-bold text-card-foreground mb-2">
                       {fullName || 'Kullanıcı'}
                     </h2>
-                    <p className="text-gray-600 mb-4 font-medium">{user?.email}</p>
+                    <p className="text-muted-foreground mb-4 font-medium">{user?.email}</p>
                     
                     {/* Status Badge */}
                     <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-sm font-semibold shadow-lg shadow-blue-500/25 mb-6">
@@ -390,20 +390,20 @@ export function Settings() {
           {/* Main Content - Sağ Panel */}
           <div className="xl:col-span-8">
             {/* Profile Information Card */}
-            <div className="group relative mb-8 dark:bg-crm-dark">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10 dark:from-slate-800/60 dark:to-slate-800/30 dark:border-slate-700/20"></div>
+            <div className="group relative mb-8">
+              <div className="absolute inset-0 bg-card/60 backdrop-blur-xl rounded-3xl border border-border shadow-2xl shadow-black/10"></div>
               
               <div className="relative p-8">
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
                   <div className="flex items-center mb-4 sm:mb-0">
                     <div className="w-3 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-4"></div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{language === 'tr' ? 'Profil Bilgileri' : 'Profile Information'}</h2>
+                    <h2 className="text-2xl font-bold text-card-foreground">{language === 'tr' ? 'Profil Bilgileri' : 'Profile Information'}</h2>
                   </div>
                   
                   <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-900 to-gray-700 text-white rounded-2xl hover:from-gray-800 hover:to-gray-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-2xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                   >
                     <svg className="w-5 h-5 mr-2 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

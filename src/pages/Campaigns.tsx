@@ -1098,7 +1098,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 
   if (selectedCampaign) {
     return (
-      <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="p-6 min-h-screen bg-background">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
@@ -1242,23 +1242,23 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
               </div>
 
               {/* Chart Placeholder */}
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+              <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Performance Over Time</h3>
+                  <h3 className="text-lg font-semibold text-card-foreground">Performance Over Time</h3>
                   <div className="relative">
-                    <select className="pl-3 pr-8 py-1 border border-gray-300 rounded-lg text-sm bg-white appearance-none cursor-pointer min-w-[140px]">
+                    <select className="pl-3 pr-8 py-1 border border-input rounded-lg text-sm bg-background text-foreground appearance-none cursor-pointer min-w-[140px]">
                       <option>Last 4 weeks</option>
                       <option>Last 8 weeks</option>
                       <option>Last 12 weeks</option>
                     </select>
-                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                   </div>
                 </div>
-                <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                <div className="h-64 bg-muted rounded-lg flex items-center justify-center">
                   <div className="text-center">
-                    <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                    <div className="text-gray-600">Chart visualization would appear here</div>
-                    <div className="text-sm text-gray-500 mt-2">
+                    <BarChart3 className="w-12 h-12 text-muted-foreground mx-auto mb-2" />
+                    <div className="text-muted-foreground">Chart visualization would appear here</div>
+                    <div className="text-sm text-muted-foreground mt-2">
                       Sent (blue) • Opens (yellow) • Clicks (lime) • Replies (green)
                     </div>
                   </div>
@@ -1267,31 +1267,31 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
             </TabsContent>
 
             <TabsContent value="leads" className="space-y-6">
-              <div className="bg-white rounded-lg shadow-sm">
+              <div className="bg-card rounded-lg shadow-sm">
                 {/* Search and Filter moved to top */}
-                <div className="p-4 border-b border-gray-200">
+                <div className="p-4 border-b border-border">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                       <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <input
                           type="text"
                           placeholder="Search leads..."
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
-                          className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                         />
                       </div>
                       <div className="relative">
                         <button 
                           onClick={() => setFilterOpen(!filterOpen)}
-                          className="flex items-center px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                          className="flex items-center px-3 py-2 border border-input rounded-lg hover:bg-muted"
                         >
                           <Filter className="w-4 h-4 mr-2" />
                           Filter
                         </button>
                         {filterOpen && (
-                          <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                          <div className="absolute top-full left-0 mt-1 w-48 bg-card border border-border rounded-lg shadow-lg z-10">
                             <div className="p-3">
                               <div className="space-y-2">
                                 <label className="flex items-center">
@@ -2024,7 +2024,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
   }
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:bg-slate-900">
+    <div className="p-6 min-h-screen bg-background">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -2032,7 +2032,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
             <motion.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-bold text-gray-900 mb-2"
+              className="text-3xl font-bold text-foreground mb-2"
             >
               Campaigns
             </motion.h1>
@@ -2040,7 +2040,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-gray-600"
+              className="text-muted-foreground"
             >
               {campaigns.filter(c => c.status === 'active').length} active, {campaigns.filter(c => c.status === 'paused').length} paused campaigns
             </motion.p>
@@ -2106,20 +2106,20 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
         </div>
 
         {/* Campaign List */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden dark:bg-slate-800 dark:border-slate-700">
+        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
           {/* Table Header */}
-          <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 dark:bg-slate-800 dark:border-slate-700">
+          <div className="bg-muted/50 px-6 py-4 border-b border-border">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
                   <input
                     type="checkbox"
-                    className="rounded border-gray-300"
+                    className="rounded border-input"
                     checked={selectedCampaigns.length === campaigns.length && campaigns.length > 0}
                     onChange={toggleAllCampaigns}
                   />
                 </div>
-                <div className="grid grid-cols-7 gap-4 flex-1 text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                <div className="grid grid-cols-7 gap-4 flex-1 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   <div>NAME</div>
                   <div>STATUS</div>
                   <div>PROGRESS</div>
@@ -2133,14 +2133,14 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
           </div>
 
           {/* Campaign Rows */}
-          <div className="divide-y divide-gray-200 dark:divide-slate-700">
+          <div className="divide-y divide-border">
                     {campaigns.map((campaign: Campaign, index: number) => (
             <motion.div
               key={campaign.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="px-6 py-4 hover:bg-gray-50 transition-colors dark:hover:bg-slate-800"
+              className="px-6 py-4 hover:bg-muted/30 transition-colors"
             >
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
@@ -2168,18 +2168,18 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                             if (e.key === 'Escape') cancelEditCampaign();
                           }}
                           onBlur={saveEditCampaign}
-                          className="px-2 py-1 text-sm border border-gray-300 rounded"
+                          className="px-2 py-1 text-sm border border-input rounded bg-background text-foreground"
                           autoFocus
                         />
                       </div>
                     ) : (
-                      <div className="font-medium text-gray-900 dark:text-white">{campaign.name}</div>
+                      <div className="font-medium text-card-foreground">{campaign.name}</div>
                     )}
                   </div>
 
                   {/* Status */}
                   <div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(campaign.status)} dark:text-white`}>
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(campaign.status)}`}>
                       {getStatusLabel(campaign.status)}
                     </span>
                   </div>
@@ -2187,35 +2187,35 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                   {/* Progress */}
                   <div>
                     <div className="flex items-center space-x-2">
-                      <div className="flex-1 bg-gray-200 rounded-full h-2 dark:bg-slate-700">
+                      <div className="flex-1 bg-muted rounded-full h-2">
                         <div
                           className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${campaign.progress}%` }}
                         ></div>
                       </div>
-                      <span className="text-sm text-gray-600 min-w-[40px] dark:text-gray-300">{campaign.progress}%</span>
+                      <span className="text-sm text-muted-foreground min-w-[40px]">{campaign.progress}%</span>
                     </div>
                   </div>
 
                   {/* Sent */}
                   <div>
-                    <div className="font-semibold text-gray-900 dark:text-white">{campaign.sent}</div>
+                    <div className="font-semibold text-card-foreground">{campaign.sent}</div>
                   </div>
 
                   {/* Click */}
                   <div>
-                    <div className="font-semibold text-gray-900 dark:text-white">{campaign.clicks}</div>
+                    <div className="font-semibold text-card-foreground">{campaign.clicks}</div>
                   </div>
 
                   {/* Replied */}
                   <div>
-                    <div className="font-semibold text-gray-900 dark:text-white">{campaign.replied}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-300">{campaign.reply_rate}%</div>
+                    <div className="font-semibold text-card-foreground">{campaign.replied}</div>
+                    <div className="text-sm text-muted-foreground">{campaign.reply_rate}%</div>
                   </div>
 
                   {/* Opportunities */}
                   <div>
-                    <div className="font-semibold text-gray-900 dark:text-white">{campaign.opportunities}</div>
+                    <div className="font-semibold text-card-foreground">{campaign.opportunities}</div>
                   </div>
                 </div>
 

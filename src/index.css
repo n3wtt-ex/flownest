@@ -10,56 +10,51 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* === YENİ: Arka plan rengi orijinal koyu renk === */
-    --background: 222.2 84% 4.9%; /* #020817 */
-    /* === YENİ: Ön plan rengi açık tutuluyor === */
-    --foreground: 0 0% 98%; /* Neredeyse beyaz, kontrast için iyi */
+    /* Light theme as default */
+    --background: 0 0% 100%; /* White background */
+    --foreground: 222.2 47.4% 11.2%; /* Dark text */
 
-    /* --- Kartlar --- */
-    /* Yeni: Kartlar da koyu temaya uygun olsun ama biraz daha açık */
-    --card: 220 20% 10%; /* #14171f gibi bir renk */
-    --card-foreground: 0 0% 95%; /* Kart içindeki yazı */
+    /* --- Cards --- */
+    --card: 0 0% 100%; /* White cards */
+    --card-foreground: 222.2 47.4% 11.2%; /* Dark text on cards */
 
     /* --- Popover --- */
-    --popover: 220 25% 12%; /* #181c27 gibi */
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 100%; /* White popover */
+    --popover-foreground: 222.2 47.4% 11.2%; /* Dark text in popover */
 
-    /* --- Ana Renkler --- */
-    /* Marka renklerini koruyabiliriz, ama kullanımına dikkat etmek gerek */
+    /* --- Primary Colors --- */
     --primary: 191 100% 50%; /* --brand-cyan */
     --primary-foreground: 0 0% 100%;
-    --secondary: 255 89% 67%; /* --brand-purple */
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%; /* Light secondary */
+    --secondary-foreground: 222.2 47.4% 11.2%;
     
-    /* Daha açık tonlar, kontrast ve okunurluk için */
-    --muted: 215 20% 30%; /* #424b63 gibi */
-    --muted-foreground: 0 0% 85%; /* Soluk gri-beyaz */
-    --accent: 260 70% 60%; /* Farklı bir mor tonu */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%; /* Kırmızı */
+    /* Light theme appropriate colors */
+    --muted: 210 40% 96%; /* Light muted background */
+    --muted-foreground: 215.4 16.3% 46.9%; /* Muted text */
+    --accent: 210 40% 96%; /* Light accent */
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%; /* Red for destructive actions */
     --destructive-foreground: 0 0% 100%;
 
     /* --- Border/Input/Ring --- */
-    /* Bu renkler de koyu temaya uygun hale getirildi */
-    --border: 215 20% 20%; /* #2a3247 gibi */
-    --input: var(--border);
-    --ring: 191 100% 50%; /* Cyan, odaklanma efekti için */
+    --border: 214.3 31.8% 91.4%; /* Light subtle border */
+    --input: 214.3 31.8% 91.4%; /* Light input border */
+    --ring: 191 100% 50%; /* Cyan focus ring */
 
     /* --- Sidebar --- */
-    /* Sidebar da ana arka planla uyumlu olsun */
-    --sidebar-background: 220 25% 12%; /* Popover ile aynı */
-    --sidebar-foreground: 0 0% 90%;
+    --sidebar-background: 0 0% 100%; /* White sidebar */
+    --sidebar-foreground: 222.2 47.4% 11.2%; /* Dark text */
     --sidebar-primary: 191 100% 50%; /* Cyan */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 15%; /* Card ile aynı */
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 215 20% 18%;
+    --sidebar-accent: 210 40% 96%; /* Light accent */
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%; /* Light border */
     --sidebar-ring: 191 100% 50%; /* Cyan */
 
-    /* --- Radius ve diğer temel değerler --- */
+    /* --- Radius and other base values --- */
     --radius: 0.5rem;
 
-    /* --- Marka Renkleri (Değişmeden) --- */
+    /* --- Brand Colors (unchanged) --- */
     --brand-cyan: 191 100% 50%;
     --brand-purple: 255 89% 67%;
     --brand-yellow: 46 100% 65%;
