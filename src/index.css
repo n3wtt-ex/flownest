@@ -220,6 +220,19 @@ All colors MUST be HSL.
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
   }
   
+  /* AI Assistant section card styling */
+  .bg-landing-dark .bg-card\/70,
+  .bg-landing-dark .dark\:bg-gray-800\/70 {
+    background-color: rgba(2, 8, 23, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .bg-landing-dark .border-border\/60,
+  .bg-landing-dark .dark\:border-gray-700\/60 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  
   .bg-gradient-hero {
     background-image: var(--gradient-hero);
   }
