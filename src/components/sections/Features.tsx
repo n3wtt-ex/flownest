@@ -13,21 +13,21 @@ const features = [
 
 const Features: React.FC = () => {
   return (
-    <section id="features" aria-labelledby="features-heading" className="container px-4 py-20 dark:bg-gray-900">
-      <h2 id="features-heading" className="text-3xl md:text-4xl font-bold mb-10 text-center dark:text-white">
+    <section id="features" aria-labelledby="features-heading" className="container py-20">
+      <h2 id="features-heading" className="text-3xl md:text-4xl font-bold mb-10 text-center">
         Platform Özellikleri
       </h2>
       <div className="grid md:grid-cols-3 gap-6">
         {features.map((f) => (
-          <Card key={f.title} className="border-border/60 bg-card/60 backdrop-blur-sm hover-scale dark:bg-gray-800/60 dark:border-gray-700/60">
+          <Card key={f.title} className="border-border/60 bg-card/60 backdrop-blur-sm hover-scale">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <f.icon className="h-6 w-6 text-primary dark:text-blue-400" />
-                <CardTitle className="text-xl dark:text-white">{f.title}</CardTitle>
+                <f.icon className="h-6 w-6 text-primary" />
+                <CardTitle className="text-xl">{f.title}</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground dark:text-gray-400">{f.desc}</p>
+              <p className="text-muted-foreground">{f.desc}</p>
             </CardContent>
           </Card>
         ))}
