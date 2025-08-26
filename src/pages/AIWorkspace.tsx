@@ -159,7 +159,7 @@ function WorkspaceBoard({ workspace, list, onUpdate, onSwitch }: {
         </div>
       </div>
 
-      <div ref={containerRef} className="relative rounded-2xl border bg-[radial-gradient(1200px_circle_at_10%_-20%,hsl(var(--brand-cyan)/0.06),transparent_40%),radial-gradient(1200px_circle_at_90%_-10%,hsl(var(--brand-purple)/0.06),transparent_40%)] overflow-hidden">
+      <div ref={containerRef} className="relative rounded-2xl border-border/60 bg-card/70 backdrop-blur overflow-hidden">
         <div className="grid grid-cols-6 gap-2 p-6 min-h-[48vh]">
           {(Object.keys(workspace.selections) as (keyof Selection)[]).map((k, i) => {
             const optList = SECTION_OPTIONS[k];

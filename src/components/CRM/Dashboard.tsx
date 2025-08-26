@@ -391,7 +391,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               {stageStats.map((stage, index) => (
                 <div 
                   key={index} 
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer dark:bg-gray-700 dark:hover:bg-gray-600"
+                  className="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors cursor-pointer"
                   onClick={() => handleNavigation('deals')}
                 >
                   <div>

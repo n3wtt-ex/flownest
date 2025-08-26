@@ -19,6 +19,7 @@ import { useAuth } from '../../hooks/useAuth';
 import clsx from 'clsx';
 import { useSidebar } from '../../contexts/SidebarContext';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useTheme } from '../ui/theme-provider';
 
 // DO NOT MODIFY CRM/ACCOUNT PAGES - These are production components
 const mainNavItems = [
@@ -41,6 +42,7 @@ export function Sidebar() {
   const { signOut } = useAuth();
   const { isCollapsed, toggleSidebar } = useSidebar();
   const { language } = useLanguage();
+  const { theme } = useTheme();
   const [tooltip, setTooltip] = useState<{name: string, x: number, y: number} | null>(null);
   const collapseButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -76,7 +78,8 @@ export function Sidebar() {
     <>
       <div className={clsx(
         "flex h-full flex-col bg-sidebar-background border-r border-sidebar-border transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-16" : "w-64"
+        isCollapsed ? "w-16" : "w-64",
+        theme === "dark" ? "sidebar-custom" : ""
       )}>
         {/* Logo */}
         <div className="flex h-16 items-center px-6">

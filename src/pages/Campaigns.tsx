@@ -1765,7 +1765,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                     }).catch(error => console.error('Error updating delay:', error));
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-border rounded bg-background text-foreground focus:ring-1 focus:ring-ring"
+                                className="w-16 px-2 py-1 text-xs border border-border rounded bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 onClick={(e) => e.stopPropagation()}
                               />
                           </div>
