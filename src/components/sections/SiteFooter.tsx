@@ -5,7 +5,7 @@ const SiteFooter: React.FC = () => {
     <footer className="border-t border-border/60 bg-background/60 dark:bg-gray-900/60 dark:border-gray-700/60">
       <div className="container py-12 grid md:grid-cols-4 gap-8 text-sm">
         <div>
-          <div className="text-lg font-bold mb-2 dark:text-white">Orkestra</div>
+          <div className="text-lg font-bold mb-2 dark:text-white">flownests</div>
           <p className="text-muted-foreground dark:text-gray-400">Anahtar teslim B2B satış otomasyon platformu.</p>
         </div>
         <div>
@@ -34,7 +34,7 @@ const SiteFooter: React.FC = () => {
         </div>
       </div>
       <div className="border-t border-border/60 dark:border-gray-700/60 py-6 text-center text-xs text-muted-foreground dark:text-gray-500">
-        © {new Date().getFullYear()} Orkestra. Tüm hakları saklıdır.
+        © {new Date().getFullYear()} flownests. Tüm hakları saklıdır.
       </div>
     </footer>
   );
