@@ -43,20 +43,6 @@ function DashboardWrapper() {
 function App() {
   const { user, loading } = useAuth();
 
-  // Tema değişikliğini uygulamak için useEffect
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    console.log('App - Saved theme from localStorage:', savedTheme);
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      
-      // Tema değişikliğinin uygulandığını kontrol et
-      setTimeout(() => {
-        console.log('App - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-      }, 0);
-    }
-  }, []);
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">

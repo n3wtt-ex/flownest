@@ -983,7 +983,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
       case 'active': return 'bg-green-100 text-green-800';
       case 'paused': return 'bg-yellow-100 text-yellow-800';
       case 'completed': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -1113,7 +1113,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
               >
                 ← Back to Campaigns
               </button>
-              <h1 className="text-3xl font-bold text-gray-900">{selectedCampaign.name}</h1>
+              <h1 className="text-3xl font-bold text-foreground">{selectedCampaign.name}</h1>
             </div>
             <div className="flex items-center space-x-3">
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedCampaign.status)}`}>
@@ -1129,12 +1129,12 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
           </div>
 
           {/* Progress Bar */}
-          <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
+          <div className="bg-card rounded-lg p-4 mb-6 shadow-sm border border-border">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Campaign Progress</span>
-              <span className="text-sm text-gray-500">{selectedCampaign.progress}%</span>
+              <span className="text-sm font-medium text-foreground">Campaign Progress</span>
+              <span className="text-sm text-muted-foreground">{selectedCampaign.progress}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="w-full bg-muted rounded-full h-2">
               <div 
                 className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${selectedCampaign.progress}%` }}
@@ -1157,11 +1157,11 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 
             <TabsContent value="analytics" className="space-y-6">
               {/* Summary Stats */}
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+              <div className="bg-card rounded-lg p-6 shadow-sm border border-border">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Campaign Overview</h3>
+                  <h3 className="text-lg font-semibold text-foreground">Campaign Overview</h3>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">Status:</span>
+                    <span className="text-sm text-muted-foreground">Status:</span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedCampaign.status)}`}>
                       {getStatusLabel(selectedCampaign.status)}
                     </span>
@@ -1170,72 +1170,72 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">{selectedCampaign.sent}</div>
-                    <div className="text-sm text-gray-600">Sequence Started</div>
+                    <div className="text-sm text-muted-foreground">Sequence Started</div>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">{selectedCampaign.open_rate}%</div>
-                    <div className="text-sm text-gray-600">Open Rate</div>
+                    <div className="text-sm text-muted-foreground">Open Rate</div>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
                     <div className="text-2xl font-bold text-purple-600">{selectedCampaign.click_rate}%</div>
-                    <div className="text-sm text-gray-600">Click Rate</div>
+                    <div className="text-sm text-muted-foreground">Click Rate</div>
                   </div>
                   <div className="text-center p-4 bg-orange-50 rounded-lg">
                     <div className="text-2xl font-bold text-orange-600">{selectedCampaign.reply_rate}%</div>
-                    <div className="text-sm text-gray-600">Reply Rate</div>
+                    <div className="text-sm text-muted-foreground">Reply Rate</div>
                   </div>
                   <div className="text-center p-4 bg-indigo-50 rounded-lg">
                     <div className="text-2xl font-bold text-indigo-600">{selectedCampaign.positive_reply_rate}%</div>
-                    <div className="text-sm text-gray-600">Positive Reply Rate</div>
+                    <div className="text-sm text-muted-foreground">Positive Reply Rate</div>
                   </div>
                 </div>
               </div>
 
               {/* KPI Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-slate-800 dark:border-slate-700">
+                <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Performance Metrics</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Performance Metrics</h3>
                   </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Emails Sent</span>
-                      <span className="font-semibold dark:text-white">{selectedCampaign.sent}</span>
+                      <span className="text-muted-foreground">Emails Sent</span>
+                      <span className="font-semibold text-foreground">{selectedCampaign.sent}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Total Opens</span>
-                      <span className="font-semibold dark:text-white">{Math.round(selectedCampaign.sent * selectedCampaign.open_rate / 100)}</span>
+                      <span className="text-muted-foreground">Total Opens</span>
+                      <span className="font-semibold text-foreground">{Math.round(selectedCampaign.sent * selectedCampaign.open_rate / 100)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Total Clicks</span>
-                      <span className="font-semibold dark:text-white">{selectedCampaign.clicks}</span>
+                      <span className="text-muted-foreground">Total Clicks</span>
+                      <span className="font-semibold text-foreground">{selectedCampaign.clicks}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Total Replies</span>
-                      <span className="font-semibold dark:text-white">{selectedCampaign.replied}</span>
+                      <span className="text-muted-foreground">Total Replies</span>
+                      <span className="font-semibold text-foreground">{selectedCampaign.replied}</span>
                     </div>
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-slate-800 dark:border-slate-700">
+                <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Conversion Funnel</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Conversion Funnel</h3>
                   </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Opportunities</span>
+                      <span className="text-muted-foreground">Opportunities</span>
                       <span className="font-semibold text-blue-600 dark:text-blue-400">{selectedCampaign.opportunities}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Conversions</span>
+                      <span className="text-muted-foreground">Conversions</span>
                       <span className="font-semibold text-green-600 dark:text-green-400">{selectedCampaign.conversions}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Revenue Generated</span>
+                      <span className="text-muted-foreground">Revenue Generated</span>
                       <span className="font-semibold text-purple-600 dark:text-purple-400">${selectedCampaign.revenue.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-600 dark:text-gray-300">Conversion Rate</span>
-                      <span className="font-semibold dark:text-white">{((selectedCampaign.conversions / selectedCampaign.sent) * 100).toFixed(1)}%</span>
+                      <span className="text-muted-foreground">Conversion Rate</span>
+                      <span className="font-semibold text-foreground">{((selectedCampaign.conversions / selectedCampaign.sent) * 100).toFixed(1)}%</span>
                     </div>
                   </div>
                 </div>

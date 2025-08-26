@@ -72,8 +72,8 @@ export function Email() {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
       case 'warming': return 'bg-yellow-100 text-yellow-800';
-      case 'paused': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'paused': return 'bg-muted text-muted-foreground';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -481,7 +481,7 @@ export function Email() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl font-bold text-gray-900 mb-2"
+            className="text-4xl font-bold text-foreground mb-2"
           >
             Email Hesabı
           </motion.h1>
@@ -489,7 +489,7 @@ export function Email() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-gray-600 text-lg"
+            className="text-muted-foreground text-lg"
           >
             E-posta hesaplarınızı yönetin ve kampanyalarınızı optimize edin
           </motion.p>

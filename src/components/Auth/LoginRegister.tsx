@@ -57,7 +57,7 @@ export function LoginRegister() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
             <div className="flex justify-center">
@@ -65,10 +65,10 @@ export function LoginRegister() {
                 <Bot className="w-8 h-8 text-white" />
               </div>
             </div>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-6 text-3xl font-extrabold text-foreground">
               Kayıt başarılı!
             </h2>
-            <p className="mt-2 text-gray-600">
+            <p className="mt-2 text-muted-foreground">
               Hesabınız oluşturuldu. Şimdi giriş yapabilirsiniz.
             </p>
             <button
@@ -84,7 +84,7 @@ export function LoginRegister() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center">
@@ -92,10 +92,10 @@ export function LoginRegister() {
               <Bot className="w-8 h-8 text-white" />
             </div>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
             {isLogin ? 'Hesabınıza giriş yapın' : 'Yeni hesap oluşturun'}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-muted-foreground">
             Veya{' '}
             <button
               onClick={toggleForm}
@@ -105,7 +105,7 @@ export function LoginRegister() {
             </button>
           </p>
         </div>
-        <form className="mt-8 space-y-6 bg-white p-8 rounded-2xl shadow-xl transition-all duration-500" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6 bg-card/50 backdrop-blur-sm p-8 rounded-2xl shadow-xl transition-all duration-500 border border-border" onSubmit={handleSubmit}>
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg transition-all duration-300 animate-pulse">
               {error}
@@ -114,12 +114,12 @@ export function LoginRegister() {
           <div className="space-y-4">
             {!isLogin && (
               <div className="relative">
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="fullName" className="block text-sm font-medium text-foreground mb-1">
                   Ad Soyad
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400" />
+                    <User className="h-5 w-5 text-muted-foreground" />
                   </div>
                   <input
                     id="fullName"
@@ -128,19 +128,19 @@ export function LoginRegister() {
                     required={!isLogin}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="pl-10 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all duration-300"
+                    className="pl-10 appearance-none relative block w-full px-3 py-3 border border-border placeholder-muted-foreground text-foreground bg-background rounded-xl focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring focus:z-10 sm:text-sm transition-all duration-300"
                     placeholder="Ad ve soyadınızı girin"
                   />
                 </div>
               </div>
             )}
             <div className="relative">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
                 E-posta adresi
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
                   id="email"
@@ -150,18 +150,18 @@ export function LoginRegister() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all duration-300"
+                  className="pl-10 appearance-none relative block w-full px-3 py-3 border border-border placeholder-muted-foreground text-foreground bg-background rounded-xl focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring focus:z-10 sm:text-sm transition-all duration-300"
                   placeholder="E-posta adresinizi girin"
                 />
               </div>
             </div>
             <div className="relative">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">
                 Şifre
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
                   id="password"
@@ -171,7 +171,7 @@ export function LoginRegister() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 appearance-none relative block w-full px-3 py-3 pr-12 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all duration-300"
+                  className="pl-10 appearance-none relative block w-full px-3 py-3 pr-12 border border-border placeholder-muted-foreground text-foreground bg-background rounded-xl focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring focus:z-10 sm:text-sm transition-all duration-300"
                   placeholder="Şifrenizi girin"
                 />
                 <button
@@ -180,9 +180,9 @@ export function LoginRegister() {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                    <EyeOff className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                    <Eye className="h-5 w-5 text-muted-foreground hover:text-foreground transition-colors" />
                   )}
                 </button>
               </div>
@@ -209,7 +209,7 @@ export function LoginRegister() {
             </button>
           </div>
         </form>
-        <div className="text-center text-sm text-gray-600">
+        <div className="text-center text-sm text-muted-foreground">
           <p>© 2025 CRM Platform. Tüm hakları saklıdır.</p>
         </div>
       </div>

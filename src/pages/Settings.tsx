@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../components/ui/theme-provider';
 
 interface ContactInfo {
   phone?: string;
@@ -16,6 +17,7 @@ interface ContactInfo {
 export function Settings() {
   const { user } = useAuth();
   const { language, setLanguage } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [fullName, setFullName] = useState(user?.user_metadata?.full_name || '');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.user_metadata?.avatar_url || null);
@@ -31,48 +33,7 @@ export function Settings() {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-  const [darkMode, setDarkMode] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Tema değişikliğini uygulamak için useEffect
-  useEffect(() => {
-    console.log('Settings - Dark mode state changed:', darkMode);
-    
-    // State değiştiğinde DOM'u güncelle
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
-    // Tema değişikliğinin uygulandığını kontrol et
-    setTimeout(() => {
-      console.log('Settings - After useEffect - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    }, 0);
-  }, [darkMode]);
-
-  // Tema ayarlarını localStorage'dan yükle
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    console.log('Settings - Saved theme from localStorage:', savedTheme);
-    
-    if (savedTheme === 'dark') {
-      // Önce DOM'u güncelle
-      document.documentElement.classList.add('dark');
-      
-      // State'i güncelle ama döngüyü önlemek için koşullu yap
-      requestAnimationFrame(() => {
-        if (!darkMode) {
-          setDarkMode(true);
-        }
-      });
-      
-      // Tema değişikliğinin uygulandığını kontrol et
-      setTimeout(() => {
-        console.log('Settings - After loading from localStorage - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-      }, 0);
-    }
-  }, []);
 
   // Kullanıcı iletişim bilgilerini veritabanından çek
   useEffect(() => {
@@ -128,15 +89,8 @@ export function Settings() {
 
     fetchContactInfo();
     
-    // Tema ve dil ayarlarını localStorage'dan yükle
-    const savedTheme = localStorage.getItem('theme');
+    // Dil ayarlarını localStorage'dan yükle
     const savedLanguage = localStorage.getItem('language');
-    
-    if (savedTheme === 'dark') {
-      setDarkMode(true);
-      // Tema değişikliğini tüm uygulamaya uygula
-      document.documentElement.classList.add('dark');
-    }
     
     if (savedLanguage === 'en') {
       setLanguage('en');
@@ -145,28 +99,9 @@ export function Settings() {
 
   // Tema değiştirme işlevi
   const toggleTheme = () => {
-    const newTheme = !darkMode;
-    console.log('Toggling theme to:', newTheme ? 'dark' : 'light');
-    
-    // Önce localStorage'ı güncelle
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-    
-    // Önce DOM'u güncelle
-    if (newTheme) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
-    // State'i güncelle (bu useEffect'i tetikleyecek)
-    setDarkMode(newTheme);
-    
-    console.log('Tema değiştirildi:', newTheme ? 'dark' : 'light');
-    
-    // Tema değişikliğinin uygulandığını kontrol et
-    requestAnimationFrame(() => {
-      console.log('Settings - After toggle - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    });
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    console.log('Tema değiştirildi:', newTheme);
   };
 
   // Dil değiştirme işlevi
@@ -431,7 +366,7 @@ export function Settings() {
               <div className="mt-6 group relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
                 <div className="relative p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <h3 className="text-xl font-bold text-foreground mb-6 flex items-center">
                     <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-3"></div>
                     Hesap Detayları
                   </h3>
@@ -439,12 +374,12 @@ export function Settings() {
                   <div className="space-y-4">
                     <div className="group p-4 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 border border-blue-200/30 hover:shadow-lg transition-all duration-300">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Üyelik Tarihi</p>
-                      <p className="text-gray-900 font-semibold">10.08.2025</p>
+                      <p className="text-foreground font-semibold">10.08.2025</p>
                     </div>
                     
                     <div className="group p-4 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg transition-all duration-300">
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Kullanıcı ID</p>
-                      <p className="text-gray-900 font-mono text-sm">e07218f6...</p>
+                      <p className="text-foreground font-mono text-sm">e07218f6...</p>
                     </div>
                   </div>
                 </div>
@@ -483,13 +418,13 @@ export function Settings() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       {/* Ad Soyad */}
                       <div className="group">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">{language === 'tr' ? 'Ad Soyad' : 'Full Name'}</label>
+                        <label className="block text-sm font-semibold text-foreground mb-2">{language === 'tr' ? 'Ad Soyad' : 'Full Name'}</label>
                         <div className="relative">
                           <input
                             type="text"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-background/70 backdrop-blur-sm border-2 border-border rounded-xl focus:border-ring focus:ring-4 focus:ring-ring/20 transition-all duration-300 hover:border-muted-foreground text-foreground placeholder-muted-foreground"
                             placeholder="Adınızı ve soyadınızı girin"
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -498,16 +433,16 @@ export function Settings() {
                       
                       {/* E-posta */}
                       <div className="group">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">E-posta</label>
+                        <label className="block text-sm font-semibold text-foreground mb-2">E-posta</label>
                         <div className="relative">
                           <input
                             type="email"
                             value={user?.email || ''}
                             disabled
-                            className="w-full px-4 py-3 bg-gray-100/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl text-gray-500 cursor-not-allowed"
+                            className="w-full px-4 py-3 bg-muted/50 backdrop-blur-sm border-2 border-border rounded-xl text-muted-foreground cursor-not-allowed"
                           />
                           <div className="absolute right-3 top-3">
-                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                           </div>
@@ -516,13 +451,13 @@ export function Settings() {
                       
                       {/* Telefon */}
                       <div className="group">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">{language === 'tr' ? 'Telefon' : 'Phone'}</label>
+                        <label className="block text-sm font-semibold text-foreground mb-2">{language === 'tr' ? 'Telefon' : 'Phone'}</label>
                         <div className="relative">
                           <input
                             type="tel"
                             value={contactInfo.phone || ''}
                             onChange={(e) => setContactInfo({...contactInfo, phone: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-background/70 backdrop-blur-sm border-2 border-border rounded-xl focus:border-ring focus:ring-4 focus:ring-ring/20 transition-all duration-300 hover:border-muted-foreground text-foreground placeholder-muted-foreground"
                             placeholder={language === 'tr' ? 'Telefon numaranız' : 'Your phone number'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -531,13 +466,13 @@ export function Settings() {
                       
                       {/* Şirket */}
                       <div className="group">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">{language === 'tr' ? 'Şirket' : 'Company'}</label>
+                        <label className="block text-sm font-semibold text-foreground mb-2">{language === 'tr' ? 'Şirket' : 'Company'}</label>
                         <div className="relative">
                           <input
                             type="text"
                             value={contactInfo.company || ''}
                             onChange={(e) => setContactInfo({...contactInfo, company: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-background/70 backdrop-blur-sm border-2 border-border rounded-xl focus:border-ring focus:ring-4 focus:ring-ring/20 transition-all duration-300 hover:border-muted-foreground text-foreground placeholder-muted-foreground"
                             placeholder={language === 'tr' ? 'Şirket adınız' : 'Your company name'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -546,13 +481,13 @@ export function Settings() {
                       
                       {/* Web Sitesi */}
                       <div className="group">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">{language === 'tr' ? 'Web Sitesi' : 'Website'}</label>
+                        <label className="block text-sm font-semibold text-foreground mb-2">{language === 'tr' ? 'Web Sitesi' : 'Website'}</label>
                         <div className="relative">
                           <input
                             type="url"
                             value={contactInfo.website || ''}
                             onChange={(e) => setContactInfo({...contactInfo, website: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-background/70 backdrop-blur-sm border-2 border-border rounded-xl focus:border-ring focus:ring-4 focus:ring-ring/20 transition-all duration-300 hover:border-muted-foreground text-foreground placeholder-muted-foreground"
                             placeholder={language === 'tr' ? 'https://example.com' : 'https://example.com'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -561,13 +496,13 @@ export function Settings() {
                       
                       {/* Ülke */}
                       <div className="group">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">{language === 'tr' ? 'Ülke' : 'Country'}</label>
+                        <label className="block text-sm font-semibold text-foreground mb-2">{language === 'tr' ? 'Ülke' : 'Country'}</label>
                         <div className="relative">
                           <input
                             type="text"
                             value={contactInfo.country || ''}
                             onChange={(e) => setContactInfo({...contactInfo, country: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-background/70 backdrop-blur-sm border-2 border-border rounded-xl focus:border-ring focus:ring-4 focus:ring-ring/20 transition-all duration-300 hover:border-muted-foreground text-foreground placeholder-muted-foreground"
                             placeholder={language === 'tr' ? 'Ülkeniz' : 'Your country'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -576,13 +511,13 @@ export function Settings() {
                       
                       {/* Şehir */}
                       <div className="group">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Şehir</label>
+                        <label className="block text-sm font-semibold text-foreground mb-2">Şehir</label>
                         <div className="relative">
                           <input
                             type="text"
                             value={contactInfo.city || ''}
                             onChange={(e) => setContactInfo({...contactInfo, city: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-background/70 backdrop-blur-sm border-2 border-border rounded-xl focus:border-ring focus:ring-4 focus:ring-ring/20 transition-all duration-300 hover:border-muted-foreground text-foreground placeholder-muted-foreground"
                             placeholder="Şehir"
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -591,13 +526,13 @@ export function Settings() {
                       
                       {/* Posta Kodu */}
                       <div className="group">
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">{language === 'tr' ? 'Posta Kodu' : 'Postal Code'}</label>
+                        <label className="block text-sm font-semibold text-foreground mb-2">{language === 'tr' ? 'Posta Kodu' : 'Postal Code'}</label>
                         <div className="relative">
                           <input
                             type="text"
                             value={contactInfo.postal_code || ''}
                             onChange={(e) => setContactInfo({...contactInfo, postal_code: e.target.value})}
-                            className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 text-gray-900 placeholder-gray-500"
+                            className="w-full px-4 py-3 bg-background/70 backdrop-blur-sm border-2 border-border rounded-xl focus:border-ring focus:ring-4 focus:ring-ring/20 transition-all duration-300 hover:border-muted-foreground text-foreground placeholder-muted-foreground"
                             placeholder={language === 'tr' ? 'Posta kodunuz' : 'Your postal code'}
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -607,13 +542,13 @@ export function Settings() {
                     
                     {/* Adres */}
                     <div className="group">
-                                              <label className="block text-sm font-semibold text-gray-700 mb-2">{language === 'tr' ? 'Adres' : 'Address'}</label>
+                                              <label className="block text-sm font-semibold text-foreground mb-2">{language === 'tr' ? 'Adres' : 'Address'}</label>
                       <div className="relative">
                         <textarea
                           value={contactInfo.address || ''}
                           onChange={(e) => setContactInfo({...contactInfo, address: e.target.value})}
                           rows={4}
-                          className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border-2 border-gray-200/50 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 hover:border-gray-300 resize-none text-gray-900 placeholder-gray-500"
+                          className="w-full px-4 py-3 bg-background/70 backdrop-blur-sm border-2 border-border rounded-xl focus:border-ring focus:ring-4 focus:ring-ring/20 transition-all duration-300 hover:border-muted-foreground resize-none text-foreground placeholder-muted-foreground"
                           placeholder={language === 'tr' ? 'Tam adresiniz' : 'Your full address'}
                         />
                         <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -625,7 +560,7 @@ export function Settings() {
                       <button
                         type="button"
                         onClick={() => setIsEditing(false)}
-                        className="px-6 py-3 text-gray-700 hover:text-gray-900 font-semibold rounded-xl hover:bg-gray-100/50 transition-all duration-300"
+                        className="px-6 py-3 text-muted-foreground hover:text-foreground font-semibold rounded-xl hover:bg-muted/50 transition-all duration-300"
                       >
                         {language === 'tr' ? 'İptal' : 'Cancel'}
                       </button>
@@ -675,7 +610,7 @@ export function Settings() {
                               {field.value}
                             </a>
                           ) : (
-                            <p className="text-gray-900 font-semibold">{field.value}</p>
+                            <p className="text-foreground font-semibold">{field.value}</p>
                           )}
                         </div>
                       ))}
@@ -687,7 +622,7 @@ export function Settings() {
                         <span className="text-lg mr-2">📍</span>
                         <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Adres</p>
                       </div>
-                      <p className="text-gray-900 font-semibold">{contactInfo.address || 'Belirtilmemiş'}</p>
+                      <p className="text-foreground font-semibold">{contactInfo.address || 'Belirtilmemiş'}</p>
                     </div>
                   </div>
                 )}
@@ -701,7 +636,7 @@ export function Settings() {
               <div className="relative p-8">
                 <div className="flex items-center mb-8">
                   <div className="w-3 h-8 bg-gradient-to-b from-purple-500 to-pink-600 rounded-full mr-4"></div>
-                  <h2 className="text-2xl font-bold text-gray-900">{language === 'tr' ? 'Hesap Ayarları' : 'Account Settings'}</h2>
+                  <h2 className="text-2xl font-bold text-foreground">{language === 'tr' ? 'Hesap Ayarları' : 'Account Settings'}</h2>
                 </div>
                 
                 {/* Tema ve Dil Ayarları */}
@@ -716,7 +651,7 @@ export function Settings() {
                           </svg>
                         </div>
                         <div>
-                          <h3 className="font-bold text-gray-900 text-lg">{language === 'tr' ? 'Tema Ayarı' : 'Theme Setting'}</h3>
+                          <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'Tema Ayarı' : 'Theme Setting'}</h3>
                           <p className="text-gray-600">{language === 'tr' ? 'Açık veya koyu tema arasında geçiş yapın' : 'Switch between light and dark themes'}</p>
                         </div>
                       </div>
@@ -724,17 +659,17 @@ export function Settings() {
                         <button 
                           onClick={toggleTheme}
                           className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ${
-                            darkMode ? 'bg-blue-600' : 'bg-gray-300'
+                            theme === 'dark' ? 'bg-blue-600' : 'bg-gray-300'
                           }`}
                         >
                           <span
                             className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                              darkMode ? 'translate-x-7' : 'translate-x-1'
+                              theme === 'dark' ? 'translate-x-7' : 'translate-x-1'
                             }`}
                           />
                         </button>
-                        <span className="ml-3 text-sm font-medium text-gray-900">
-                          {language === 'tr' ? (darkMode ? 'Koyu' : 'Açık') : (darkMode ? 'Dark' : 'Light')}
+                        <span className="ml-3 text-sm font-medium text-gray-900 dark:text-white">
+                          {language === 'tr' ? (theme === 'dark' ? 'Koyu' : 'Açık') : (theme === 'dark' ? 'Dark' : 'Light')}
                         </span>
                       </div>
                     </div>
@@ -750,7 +685,7 @@ export function Settings() {
                           </svg>
                         </div>
                         <div>
-                          <h3 className="font-bold text-gray-900 text-lg">{language === 'tr' ? 'Dil Ayarı' : 'Language Setting'}</h3>
+                          <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'Dil Ayarı' : 'Language Setting'}</h3>
                           <p className="text-gray-600">{language === 'tr' ? 'Uygulama dilini değiştirin' : 'Change application language'}</p>
                         </div>
                       </div>
@@ -767,7 +702,7 @@ export function Settings() {
                             }`}
                           />
                         </button>
-                        <span className="ml-3 text-sm font-medium text-gray-900">
+                        <span className="ml-3 text-sm font-medium text-foreground">
                           {language === 'tr' ? (language === 'tr' ? 'Türkçe' : 'İngilizce') : (language === 'tr' ? 'Turkish' : 'English')}
                         </span>
                       </div>
@@ -786,7 +721,7 @@ export function Settings() {
                           </svg>
                         </div>
                         <div>
-                          <h3 className="font-bold text-gray-900 text-lg">{language === 'tr' ? 'Şifre Değiştir' : 'Change Password'}</h3>
+                          <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'Şifre Değiştir' : 'Change Password'}</h3>
                           <p className="text-gray-600">{language === 'tr' ? 'Şifrenizi güvenli tutun' : 'Keep your password secure'}</p>
                         </div>
                       </div>
@@ -809,7 +744,7 @@ export function Settings() {
                           </svg>
                         </div>
                         <div>
-                          <h3 className="font-bold text-gray-900 text-lg">{language === 'tr' ? 'Bildirimler' : 'Notifications'}</h3>
+                          <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'Bildirimler' : 'Notifications'}</h3>
                           <p className="text-gray-600">{language === 'tr' ? 'E-posta ve bildirim tercihlerinizi yönetin' : 'Manage your email and notification preferences'}</p>
                         </div>
                       </div>
@@ -832,7 +767,7 @@ export function Settings() {
                           </svg>
                         </div>
                         <div>
-                          <h3 className="font-bold text-gray-900 text-lg">{language === 'tr' ? 'İki Faktörlü Kimlik Doğrulama' : 'Two-Factor Authentication'}</h3>
+                          <h3 className="font-bold text-foreground text-lg">{language === 'tr' ? 'İki Faktörlü Kimlik Doğrulama' : 'Two-Factor Authentication'}</h3>
                           <p className="text-gray-600">{language === 'tr' ? 'Hesabınızı ek güvenlik ile koruyun' : 'Protect your account with additional security'}</p>
                         </div>
                       </div>

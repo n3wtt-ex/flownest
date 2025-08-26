@@ -1249,7 +1249,7 @@ export function Leads() {
       case 'apollo': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200';
       case 'google_maps': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200';
       case 'apify': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -1257,8 +1257,8 @@ export function Leads() {
     switch (status) {
       case 'New': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200';
       case 'Verified': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200';
-      case 'Skipped': return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+      case 'Skipped': return 'bg-muted text-muted-foreground';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -1288,10 +1288,10 @@ export function Leads() {
 
   if (loading) {
     return (
-      <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center dark:bg-slate-900">
+      <div className="p-6 min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading leads...</p>
+          <p className="text-muted-foreground">Loading leads...</p>
         </div>
       </div>
     );
@@ -1299,7 +1299,7 @@ export function Leads() {
 
   if (error) {
     return (
-      <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center dark:bg-slate-900">
+      <div className="p-6 min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-500 mb-4">Error: {error}</div>
           <button
@@ -1314,7 +1314,7 @@ export function Leads() {
   }
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:bg-slate-900">
+    <div className="p-6 min-h-screen bg-background">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -1326,7 +1326,7 @@ export function Leads() {
             <Search className="w-8 h-8 text-white" />
           </motion.div>
           <h1
-            className="text-4xl font-bold text-gray-900 mb-2 dark:text-white"
+            className="text-4xl font-bold text-foreground mb-2"
           >
             {language === 'tr' ? 'Lead Yönetimi' : 'Lead Management'}
           </h1>
@@ -1334,7 +1334,7 @@ export function Leads() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-gray-600 text-lg dark:text-gray-400"
+            className="text-muted-foreground text-lg"
           >
             Manage and organize your leads
           </motion.p>
@@ -1342,12 +1342,12 @@ export function Leads() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Search Area */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 dark:bg-slate-800 dark:border-slate-700">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 dark:text-white">{language === 'tr' ? 'Lead Arama' : 'Search for Leads'}</h2>
+          <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
+            <h2 className="text-xl font-semibold text-foreground mb-6">{language === 'tr' ? 'Lead Arama' : 'Search for Leads'}</h2>
             
             {/* Provider Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3 dark:text-gray-300">{language === 'tr' ? 'Arama Sağlayıcısını Seçin' : 'Choose Search Provider'}</label>
+              <label className="block text-sm font-medium text-foreground mb-3">{language === 'tr' ? 'Arama Sağlayıcısını Seçin' : 'Choose Search Provider'}</label>
               <div className="flex space-x-4">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -1356,14 +1356,14 @@ export function Leads() {
                   className={`flex-1 p-4 rounded-xl border-2 transition-all duration-200 ${
                     selectedProvider === 'apollo'
                       ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200'
-                      : 'border-gray-200 hover:border-gray-300 dark:border-slate-600 dark:hover:border-slate-500'
+                      : 'border-border hover:border-gray-300'
                   }`}
                 >
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-blue-900/30">
                     <Search className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <div className="font-semibold dark:text-white">Apollo</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">{language === 'tr' ? 'B2B Veritabanı' : 'B2B Database'}</div>
+                  <div className="font-semibold text-foreground">Apollo</div>
+                  <div className="text-sm text-muted-foreground">{language === 'tr' ? 'B2B Veritabanı' : 'B2B Database'}</div>
                 </motion.button>
 
                 <motion.button
@@ -1373,21 +1373,21 @@ export function Leads() {
                   className={`flex-1 p-4 rounded-xl border-2 transition-all duration-200 ${
                     selectedProvider === 'google_maps'
                       ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200'
-                      : 'border-gray-200 hover:border-gray-300 dark:border-slate-600 dark:hover:border-slate-500'
+                      : 'border-border hover:border-gray-300'
                   }`}
                 >
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-green-900/30">
                     <MapPin className="w-6 h-6 text-green-600 dark:text-green-400" />
                   </div>
-                  <div className="font-semibold dark:text-white">Google Maps</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Local Businesses</div>
+                  <div className="font-semibold text-foreground">Google Maps</div>
+                  <div className="text-sm text-muted-foreground">Local Businesses</div>
                 </motion.button>
               </div>
             </div>
 
             {/* Search Input */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 {selectedProvider === 'google_maps' ? (language === 'tr' ? 'Webhook için Mesaj' : 'Message for Webhook') : (language === 'tr' ? 'Arama Sorgusu' : 'Search Query')}
               </label>
               <div className="flex space-x-2">
@@ -1402,7 +1402,7 @@ export function Leads() {
                         ? (language === 'tr' ? 'örn., lokasyon: Istanbul anahtar kelimeler: kafe' : 'e.g., location: Istanbul keywords: cafe')
                         : (language === 'tr' ? 'Arama sorgusunu girin' : 'Enter search query')
                   }
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 <motion.button
@@ -1410,7 +1410,7 @@ export function Leads() {
                   whileTap={{ scale: 0.95 }}
                   onClick={handleFormIconClick}
                   disabled={!selectedProvider}
-                  className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-slate-700 dark:text-gray-300 dark:hover:bg-slate-600"
+                  className="px-3 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   title="Open form for selected provider"
                 >
                   <FileText className="w-5 h-5" />
@@ -1430,7 +1430,7 @@ export function Leads() {
             {/* Quick Presets */}
             {selectedProvider !== 'google_maps' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">Quick Presets</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Quick Presets</label>
                 <div className="flex flex-wrap gap-2">
                   {selectedProvider === 'apollo' ? (
                     <>
@@ -1481,23 +1481,23 @@ export function Leads() {
 
             {/* Search History */}
             {selectedProvider !== 'google_maps' && (
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg dark:bg-slate-700">
-                <h3 className="text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">Recent Searches</h3>
+              <div className="mt-6 p-4 bg-muted rounded-lg">
+                <h3 className="text-sm font-medium text-foreground mb-2">Recent Searches</h3>
                 <div className="space-y-1">
-                  <div className="text-sm text-gray-600 dark:text-gray-400">• SaaS companies in San Francisco</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">• Marketing agencies 10-50 employees</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">• E-commerce startups</div>
+                  <div className="text-sm text-muted-foreground">• SaaS companies in San Francisco</div>
+                  <div className="text-sm text-muted-foreground">• Marketing agencies 10-50 employees</div>
+                  <div className="text-sm text-muted-foreground">• E-commerce startups</div>
                 </div>
               </div>
             )}
           </div>
 
           {/* Results Area */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 dark:bg-slate-800 dark:border-slate-700">
+          <div className="bg-card rounded-2xl shadow-sm border border-border">
             {/* Results Header */}
-            <div className="p-6 border-b border-gray-200 dark:border-slate-700">
+            <div className="p-6 border-b border-border">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Search Results</h2>
+                <h2 className="text-xl font-semibold text-foreground">Search Results</h2>
                 <div className="flex items-center space-x-2">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -1511,21 +1511,21 @@ export function Leads() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="px-3 py-1 pr-8 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    className="px-3 py-1 pr-8 border border-border rounded-lg text-sm focus:ring-2 focus:ring-ring focus:border-transparent min-w-[120px] bg-background text-foreground"
                   >
-                    <option value="all" className="dark:bg-slate-700 dark:text-white">{language === 'tr' ? 'Tüm Durumlar' : 'All Status'}</option>
-                    <option value="New" className="dark:bg-slate-700 dark:text-white">{language === 'tr' ? 'Yeni' : 'New'}</option>
-                    <option value="Verified" className="dark:bg-slate-700 dark:text-white">{language === 'tr' ? 'Doğrulanmış' : 'Verified'}</option>
-                    <option value="Skipped" className="dark:bg-slate-700 dark:text-white">{language === 'tr' ? 'Atlanmış' : 'Skipped'}</option>
+                    <option value="all">{language === 'tr' ? 'Tüm Durumlar' : 'All Status'}</option>
+                    <option value="New">{language === 'tr' ? 'Yeni' : 'New'}</option>
+                    <option value="Verified">{language === 'tr' ? 'Doğrulanmış' : 'Verified'}</option>
+                    <option value="Skipped">{language === 'tr' ? 'Atlanmış' : 'Skipped'}</option>
                   </select>
-                  <button className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-slate-700">
+                  <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg">
                     <Filter className="w-4 h-4" />
                   </button>
                 </div>
               </div>
               
               {searchResults.length > 0 && (
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="text-sm text-muted-foreground">
                   {searchResults.length} results found
                 </div>
               )}
@@ -1536,14 +1536,14 @@ export function Leads() {
               {isSearching ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
-                  <div className="text-gray-600 dark:text-gray-400">
+                  <div className="text-muted-foreground">
                     {selectedProvider === 'google_maps' ? 'Sending message...' : 'Searching for leads...'}
                   </div>
                 </div>
               ) : isRefreshing && selectedProvider === 'google_maps' ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <div className="text-gray-600 dark:text-gray-400">Refreshing leads...</div>
+                  <div className="text-muted-foreground">Refreshing leads...</div>
                 </div>
               ) : selectedProvider === 'google_maps' && !showResults && searchResults.length > 0 ? (
                 <div className="text-center py-12">
@@ -1552,56 +1552,56 @@ export function Leads() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2 dark:text-white">{language === 'tr' ? 'Mesaj Başarıyla Gönderildi' : 'Message Sent Successfully'}</h3>
-                  <p className="text-gray-600 dark:text-gray-400">{language === 'tr' ? 'Mesajınız n8n aracılığıyla webhook ile gönderildi.' : 'Your message has been sent via webhook to n8n.'}</p>
+                  <h3 className="text-lg font-medium text-foreground mb-2">{language === 'tr' ? 'Mesaj Başarıyla Gönderildi' : 'Message Sent Successfully'}</h3>
+                  <p className="text-muted-foreground">{language === 'tr' ? 'Mesajınız n8n aracılığıyla webhook ile gönderildi.' : 'Your message has been sent via webhook to n8n.'}</p>
                 </div>
               ) : searchResults.length === 0 ? (
                 <div className="text-center py-12">
                   <Search className="w-12 h-12 text-gray-400 mx-auto mb-4 dark:text-gray-500" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2 dark:text-white">{language === 'tr' ? 'Henüz sonuç yok' : 'No results yet'}</h3>
-                  <p className="text-gray-600 dark:text-gray-400">{language === 'tr' ? 'Potansiyel lead bulmak için bir arama yapın.' : 'Run a search to find potential leads.'}</p>
+                  <h3 className="text-lg font-medium text-foreground mb-2">{language === 'tr' ? 'Henüz sonuç yok' : 'No results yet'}</h3>
+                  <p className="text-muted-foreground">{language === 'tr' ? 'Potansiyel lead bulmak için bir arama yapın.' : 'Run a search to find potential leads.'}</p>
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50 sticky top-0 dark:bg-slate-700">
+                    <thead className="bg-muted sticky top-0">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'İsim' : 'Name'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Şirket' : 'Company'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Pozisyon' : 'Title'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'E-posta' : 'Email'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Telefon' : 'Phone'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Lokasyon' : 'Location'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Kaynak' : 'Source'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'Durum' : 'Status'}</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">{language === 'tr' ? 'İşlemler' : 'Actions'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{language === 'tr' ? 'İsim' : 'Name'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{language === 'tr' ? 'Şirket' : 'Company'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{language === 'tr' ? 'Pozisyon' : 'Title'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{language === 'tr' ? 'E-posta' : 'Email'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{language === 'tr' ? 'Telefon' : 'Phone'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{language === 'tr' ? 'Lokasyon' : 'Location'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{language === 'tr' ? 'Kaynak' : 'Source'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{language === 'tr' ? 'Durum' : 'Status'}</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{language === 'tr' ? 'İşlemler' : 'Actions'}</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 dark:bg-slate-800 dark:divide-slate-700">
+                    <tbody className="bg-background divide-y divide-border">
                       {searchResults.map((lead, index) => (
                         <motion.tr
                           key={lead.id}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="hover:bg-gray-50 dark:hover:bg-slate-700"
+                          className="hover:bg-muted/50"
                         >
-                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                             {lead.name || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.company_name || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.job_title || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.email || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.phone || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.location || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1615,7 +1615,7 @@ export function Leads() {
                               {lead.status}
                             </span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-muted-foreground">
                             <div className="flex items-center space-x-2">
                               {lead.status === 'New' && (
                                 <motion.button
@@ -1628,7 +1628,7 @@ export function Leads() {
                                   Add to Leads
                                 </motion.button>
                               )}
-                              <button className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
+                              <button className="text-muted-foreground hover:text-foreground">
                                 <MoreHorizontal className="w-4 h-4" />
                               </button>
                             </div>
@@ -1648,22 +1648,22 @@ export function Leads() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 dark:bg-slate-800 dark:border-slate-700"
+            className="mt-8 bg-card rounded-2xl shadow-sm border border-border p-6"
           >
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 md:mb-0 dark:text-white">Leads</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4 md:mb-0">Leads</h2>
               
               {/* Search and Filter Section */}
               <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 {/* Search Input */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <input
                     type="text"
                     placeholder="Search leads..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64 dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                    className="pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent w-full sm:w-64 bg-background text-foreground"
                   />
                 </div>
                 
@@ -1671,27 +1671,27 @@ export function Leads() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
-                  className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  className="px-3 py-2 pr-8 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent min-w-[140px] bg-background text-foreground"
                 >
-                  <option value="all" className="dark:bg-slate-700 dark:text-white">All Status</option>
-                  <option value="New" className="dark:bg-slate-700 dark:text-white">New</option>
-                  <option value="Verified" className="dark:bg-slate-700 dark:text-white">Verified</option>
-                  <option value="Skipped" className="dark:bg-slate-700 dark:text-white">Skipped</option>
-                  <option value="apollo_lead" className="dark:bg-slate-700 dark:text-white">Apollo Lead</option>
+                  <option value="all">All Status</option>
+                  <option value="New">New</option>
+                  <option value="Verified">Verified</option>
+                  <option value="Skipped">Skipped</option>
+                  <option value="apollo_lead">Apollo Lead</option>
                 </select>
                 
                 {/* Sector Filter */}
                 <select
                   value={sectorFilter}
                   onChange={(e) => setSectorFilter(e.target.value as any)}
-                  className="px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px] dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  className="px-3 py-2 pr-8 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent min-w-[140px] bg-background text-foreground"
                 >
-                  <option value="all" className="dark:bg-slate-700 dark:text-white">All Sectors</option>
-                  <option value="Technology" className="dark:bg-slate-700 dark:text-white">Technology</option>
-                  <option value="Marketing" className="dark:bg-slate-700 dark:text-white">Marketing</option>
-                  <option value="Finance" className="dark:bg-slate-700 dark:text-white">Finance</option>
-                  <option value="Healthcare" className="dark:bg-slate-700 dark:text-white">Healthcare</option>
-                  <option value="E-commerce" className="dark:bg-slate-700 dark:text-white">E-commerce</option>
+                  <option value="all">All Sectors</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="E-commerce">E-commerce</option>
                 </select>
               </div>
             </div>

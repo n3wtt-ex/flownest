@@ -234,7 +234,7 @@ export function Responses() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-background">
       {/* Notification */}
       {notification && (
         <motion.div
@@ -259,16 +259,16 @@ export function Responses() {
       )}
 
       {/* Page Title */}
-      <div className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 px-6 py-3">
+      <div className="bg-card border-b border-border px-6 py-3">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
             <MessageSquare className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+            <h1 className="text-lg font-bold text-foreground">
               Unibox
             </h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Yanıt Takibi</p>
+            <p className="text-xs text-muted-foreground">Yanıt Takibi</p>
           </div>
         </div>
       </div>
@@ -334,35 +334,35 @@ export function Responses() {
           </div>
 
           {/* Email List Container - Reduced Width by 15% */}
-          <div className="w-[374px] bg-white dark:bg-slate-800 shadow-lg border border-gray-200 dark:border-slate-700 rounded-lg">
+          <div className="w-[374px] bg-card shadow-lg border border-border rounded-lg">
             {/* Statistics Header */}
-            <div className="bg-gray-50 dark:bg-slate-700/50 border-b border-gray-200 dark:border-slate-600 p-3">
+            <div className="bg-muted border-b border-border p-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">İstatistikler</h3>
+                <h3 className="text-sm font-medium text-foreground">İstatistikler</h3>
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-1">
                     <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">İlgili: {emails.filter(e => e.tag === 'İlgili').length}</span>
+                    <span className="text-xs text-muted-foreground">İlgili: {emails.filter(e => e.tag === 'İlgili').length}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">Soru: {emails.filter(e => e.tag === 'Soru Soruyor').length}</span>
+                    <span className="text-xs text-muted-foreground">Soru: {emails.filter(e => e.tag === 'Soru Soruyor').length}</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400">İlgisiz: {emails.filter(e => e.tag === 'İlgisiz').length}</span>
+                    <span className="text-xs text-muted-foreground">İlgisiz: {emails.filter(e => e.tag === 'İlgisiz').length}</span>
                   </div>
                 </div>
               </div>
             </div>
             
             {/* Container Header */}
-            <div className="border-b border-gray-200 dark:border-slate-700 p-4">
+            <div className="border-b border-border p-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 className="text-lg font-semibold text-foreground">
                   {activeCategory}
                 </h2>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-sm text-muted-foreground">
                   {filteredEmails.length} e-posta
                 </span>
               </div>
@@ -377,10 +377,10 @@ export function Responses() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                   whileHover={{ scale: 1.01 }}
-                  className={`group relative bg-white dark:bg-slate-700 rounded-lg p-3 cursor-pointer transition-all duration-200 border ${
+                  className={`group relative bg-background rounded-lg p-3 cursor-pointer transition-all duration-200 border ${
                     selectedEmail?.id === email.id
                       ? 'ring-2 ring-blue-500 border-blue-500 shadow-md'
-                      : 'border-gray-200 dark:border-slate-600 hover:shadow-sm hover:border-gray-300 dark:hover:border-slate-500'
+                      : 'border-border hover:shadow-sm hover:border-gray-300'
                   } ${draggedEmail?.id === email.id ? 'opacity-50 scale-95' : ''}`}
                   draggable
                   onDragStart={(e) => handleDragStart(e, email)}
@@ -396,11 +396,11 @@ export function Responses() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-medium text-gray-900 dark:text-white truncate text-sm">
+                        <span className="font-medium text-foreground truncate text-sm">
                           {email.sender}
                         </span>
                         <div className="flex items-center space-x-2">
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                          <span className="text-xs text-muted-foreground">
                             {new Date(email.timestamp).toLocaleDateString('tr-TR')}
                           </span>
                           <div className={`w-2 h-2 rounded-full ${
@@ -409,10 +409,10 @@ export function Responses() {
                           }`}></div>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300 mb-2 truncate">
+                      <div className="text-sm text-foreground mb-2 truncate">
                         {email.subject}
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+                      <div className="text-xs text-muted-foreground line-clamp-2">
                         {email.content}
                       </div>
                     </div>
@@ -443,7 +443,7 @@ export function Responses() {
                             marginTop: { duration: 0.12, ease: "easeIn" }
                           }
                         }}
-                        className="pt-3 border-t border-gray-200 dark:border-slate-600"
+                        className="pt-3 border-t border-border"
                         style={{ overflow: "hidden" }}
                       >
                         <div className="flex flex-wrap gap-2">
@@ -503,7 +503,7 @@ export function Responses() {
           </div>
 
           {/* Right Panel - Detail Area */}
-          <div className="flex-1 bg-white dark:bg-slate-800 border-l border-gray-200 dark:border-slate-700">
+          <div className="flex-1 bg-card border-l border-border">
             {selectedEmail ? (
               <motion.div
                 initial={{ opacity: 0, x: 10 }}
@@ -511,20 +511,20 @@ export function Responses() {
                 className="h-full flex flex-col"
               >
                 {/* Email Header */}
-                <div className="border-b border-gray-200 dark:border-slate-700 p-6">
+                <div className="border-b border-border p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4">
                       <div className={`w-12 h-12 bg-gradient-to-br ${getAvatarColor(selectedEmail.sender)} rounded-lg flex items-center justify-center text-white font-semibold shadow-sm`}>
                         {getInitials(selectedEmail.sender)}
                       </div>
                       <div>
-                        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+                        <h2 className="text-xl font-semibold text-foreground mb-1">
                           {selectedEmail.sender}
                         </h2>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                        <p className="text-sm text-muted-foreground mb-2">
                           {selectedEmail.subject}
                         </p>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                           <div className="flex items-center space-x-1">
                             <Clock className="w-4 h-4" />
                             <span>{new Date(selectedEmail.timestamp).toLocaleDateString('tr-TR')}</span>

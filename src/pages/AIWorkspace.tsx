@@ -149,9 +149,9 @@ function WorkspaceBoard({ workspace, list, onUpdate, onSwitch }: {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <AgentHeader onClick={() => { /* open panel via RightPanelSlideOver button */ }} />
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-sm text-foreground">
           <span>Open:</span>
-          <select className="bg-transparent border rounded px-2 py-1" value={workspace.id} onChange={(e) => onSwitch(e.target.value)}>
+          <select className="bg-background border-border text-foreground rounded px-2 py-1" value={workspace.id} onChange={(e) => onSwitch(e.target.value)}>
             {list.map((w) => (
               <option key={w.id} value={w.id}>{w.name}</option>
             ))}

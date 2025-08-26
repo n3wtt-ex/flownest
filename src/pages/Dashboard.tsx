@@ -63,20 +63,6 @@ export default function Dashboard() {
     canonical.setAttribute('href', window.location.origin + '/dashboard');
   }, []);
 
-  // Tema değişikliğini uygulamak için useEffect
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    console.log('Dashboard - Saved theme from localStorage:', savedTheme);
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      
-      // Tema değişikliğinin uygulandığını kontrol et
-      setTimeout(() => {
-        console.log('Dashboard - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-      }, 0);
-    }
-  }, []);
-
   // Scrollspy
   useEffect(() => {
     const elms = sections.map((s) => document.getElementById(s.id));
