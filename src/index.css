@@ -61,6 +61,33 @@ All colors MUST be HSL.
     --hero-foreground: 0 0% 100%;
     --gradient-hero: linear-gradient(135deg, hsl(var(--brand-cyan)), hsl(var(--brand-purple)));
     --shadow-glow: 0 10px 30px -10px hsl(var(--brand-purple) / 0.35), 0 0 40px hsl(var(--brand-cyan) / 0.25);
+
+    /* --- Professional ChatBox Colors --- */
+    --chat-background: 10 10% 4%; /* Deep black background */
+    --chat-surface: 10 7% 11%; /* Secondary surface */
+    --chat-border: 0 0% 18%; /* Sharp borders */
+    --chat-accent: 212 100% 50%; /* Primary blue accent */
+    --chat-accent-hover: 212 100% 40%; /* Hover state */
+
+    /* Message Colors */
+    --user-work-bg: 174 100% 41%; /* Work mode - teal */
+    --user-work-border: 174 100% 37%; /* Work mode border */
+    --user-ask-bg: 258 90% 66%; /* Ask mode - purple */
+    --user-ask-border: 258 90% 58%; /* Ask mode border */
+    --ai-message-bg: 0 0% 18%; /* AI message background */
+    --ai-message-border: 0 0% 25%; /* AI message border */
+    --system-message-bg: 10 7% 11%; /* System message background */
+
+    /* Text Colors */
+    --text-primary: 0 0% 100%; /* Primary text */
+    --text-secondary: 0 0% 70%; /* Secondary text */
+    --text-muted: 0 0% 40%; /* Muted text */
+    --text-accent: 212 100% 50%; /* Accent text */
+
+    /* Status Colors */
+    --status-online: 141 69% 58%; /* Online indicator */
+    --status-typing: 38 92% 50%; /* Typing indicator */
+    --status-error: 0 84% 60%; /* Error state */
   }
 
 
@@ -109,6 +136,33 @@ All colors MUST be HSL.
     --hero-foreground: 0 0% 100%;
     --gradient-hero: linear-gradient(135deg, hsl(var(--brand-cyan)), hsl(var(--brand-purple)));
     --shadow-glow: 0 10px 30px -10px hsl(var(--brand-purple) / 0.35), 0 0 40px hsl(var(--brand-cyan) / 0.25);
+
+    /* Professional ChatBox Colors (Dark Theme) */
+    --chat-background: 10 10% 4%; /* Deep black background */
+    --chat-surface: 10 7% 11%; /* Secondary surface */
+    --chat-border: 0 0% 18%; /* Sharp borders */
+    --chat-accent: 212 100% 50%; /* Primary blue accent */
+    --chat-accent-hover: 212 100% 40%; /* Hover state */
+
+    /* Message Colors */
+    --user-work-bg: 174 100% 41%; /* Work mode - teal */
+    --user-work-border: 174 100% 37%; /* Work mode border */
+    --user-ask-bg: 258 90% 66%; /* Ask mode - purple */
+    --user-ask-border: 258 90% 58%; /* Ask mode border */
+    --ai-message-bg: 0 0% 18%; /* AI message background */
+    --ai-message-border: 0 0% 25%; /* AI message border */
+    --system-message-bg: 10 7% 11%; /* System message background */
+
+    /* Text Colors */
+    --text-primary: 0 0% 100%; /* Primary text */
+    --text-secondary: 0 0% 70%; /* Secondary text */
+    --text-muted: 0 0% 40%; /* Muted text */
+    --text-accent: 212 100% 50%; /* Accent text */
+
+    /* Status Colors */
+    --status-online: 141 69% 58%; /* Online indicator */
+    --status-typing: 38 92% 50%; /* Typing indicator */
+    --status-error: 0 84% 60%; /* Error state */
   }
 
 }
@@ -202,6 +256,124 @@ All colors MUST be HSL.
   /* Custom Sidebar Dark Theme */
   .dark .sidebar-custom {
     background-color: #1e293b !important;
+  }
+  
+  /* Professional ChatBox Utilities */
+  .chatbox-professional {
+    background: linear-gradient(135deg, hsl(var(--chat-background)) 0%, hsl(var(--chat-surface)) 100%);
+    border: 2px solid hsl(var(--chat-border));
+    border-radius: 0px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+  
+  .message-user-work {
+    background: linear-gradient(135deg, hsl(var(--user-work-bg)) 0%, hsl(var(--user-work-border)) 100%);
+    border: 1px solid hsl(var(--user-work-border));
+    border-radius: 2px;
+    color: hsl(0 0% 0%);
+    font-weight: 500;
+  }
+  
+  .message-user-ask {
+    background: linear-gradient(135deg, hsl(var(--user-ask-bg)) 0%, hsl(var(--user-ask-border)) 100%);
+    border: 1px solid hsl(var(--user-ask-border));
+    border-radius: 2px;
+    color: hsl(0 0% 100%);
+    font-weight: 500;
+  }
+  
+  .message-ai {
+    background: hsl(var(--ai-message-bg));
+    border: 1px solid hsl(var(--ai-message-border));
+    border-radius: 2px;
+    color: hsl(var(--text-primary));
+    border-left: 3px solid hsl(var(--chat-accent));
+  }
+  
+  .mode-button {
+    background: hsl(var(--ai-message-bg));
+    border: 1px solid hsl(var(--ai-message-border));
+    border-radius: 0px;
+    color: hsl(var(--text-secondary));
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+  }
+  
+  .mode-button.active.work {
+    background: linear-gradient(135deg, hsl(var(--user-work-bg)) 0%, hsl(var(--user-work-border)) 100%);
+    border: 1px solid hsl(var(--user-work-border));
+    color: hsl(0 0% 0%);
+    box-shadow: 0 0 10px hsl(var(--user-work-bg) / 0.3);
+  }
+  
+  .mode-button.active.ask {
+    background: linear-gradient(135deg, hsl(var(--user-ask-bg)) 0%, hsl(var(--user-ask-border)) 100%);
+    border: 1px solid hsl(var(--user-ask-border));
+    color: hsl(0 0% 100%);
+    box-shadow: 0 0 10px hsl(var(--user-ask-bg) / 0.3);
+  }
+  
+  /* Responsive ChatBox Design */
+  .chatbox-responsive {
+    width: 100%;
+    height: 60vh;
+    margin: 8px;
+  }
+  
+  @media (min-width: 768px) {
+    .chatbox-responsive {
+      width: 90%;
+      height: 70vh;
+      margin: 16px;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .chatbox-responsive {
+      width: 400px;
+      height: 600px;
+      margin: 24px;
+    }
+  }
+  
+  /* Mobile Optimizations */
+  @media (max-width: 768px) {
+    .mode-button {
+      padding: 12px 8px;
+      font-size: 12px;
+      min-height: 44px;
+    }
+    
+    .message-user-work,
+    .message-user-ask,
+    .message-ai {
+      max-width: 90%;
+      font-size: 14px;
+    }
+    
+    .chatbox-professional {
+      border-width: 1px;
+    }
+  }
+  
+  /* High Contrast Support */
+  @media (prefers-contrast: high) {
+    .chatbox-professional {
+      border: 3px solid hsl(0 0% 100%);
+      background: hsl(0 0% 0%);
+    }
+    
+    .message-ai {
+      border: 2px solid hsl(0 0% 100%);
+      background: hsl(0 0% 10%);
+    }
+    
+    .mode-button {
+      border: 2px solid hsl(0 0% 100%);
+    }
   }
   
   .deal-card {
