@@ -16,10 +16,10 @@ import { Settings } from './pages/Settings';
 import Landing from './pages/Landing';
 import { CampaignsProvider } from './contexts/CampaignsContext';
 
-// Landing page wrapper with forced light theme
+// Landing page wrapper with fixed dark theme
 function LandingWithLightTheme() {
   return (
-    <div className="light bg-white text-gray-900 min-h-screen">
+    <div className="bg-fixed-dark-landing text-white min-h-screen">
       <Landing />
     </div>
   );

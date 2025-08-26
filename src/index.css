@@ -126,9 +126,9 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
-  /* Fixed dark background that ignores theme */
-  .bg-fixed-dark {
-    background-color: #29313d !important;
+  /* Fixed dark background for landing page */
+  .bg-fixed-dark-landing {
+    background-color: #020817 !important;
   }
   
   .bg-gradient-hero {
