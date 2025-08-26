@@ -364,7 +364,7 @@ export function Settings() {
 
               {/* Account Details Card */}
               <div className="mt-6 group relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
+                <div className="absolute inset-0 bg-card/60 backdrop-blur-xl rounded-3xl border border-border shadow-2xl shadow-black/10"></div>
                 <div className="relative p-6">
                   <h3 className="text-xl font-bold text-foreground mb-6 flex items-center">
                     <div className="w-2 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-3"></div>
@@ -372,12 +372,12 @@ export function Settings() {
                   </h3>
                   
                   <div className="space-y-4">
-                    <div className="group p-4 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 border border-blue-200/30 hover:shadow-lg transition-all duration-300">
+                    <div className="group p-4 rounded-2xl bg-card/50 border border-border hover:shadow-lg transition-all duration-300">
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Üyelik Tarihi</p>
                       <p className="text-foreground font-semibold">10.08.2025</p>
                     </div>
                     
-                    <div className="group p-4 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg transition-all duration-300">
+                    <div className="group p-4 rounded-2xl bg-card/50 border border-border hover:shadow-lg transition-all duration-300">
                       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Kullanıcı ID</p>
                       <p className="text-foreground font-mono text-sm">e07218f6...</p>
                     </div>
@@ -595,7 +595,7 @@ export function Settings() {
                         { label: 'Şehir', value: contactInfo.city || 'Belirtilmemiş', icon: '🏙️' },
                         { label: 'Posta Kodu', value: contactInfo.postal_code || 'Belirtilmemiş', icon: '📮' }
                       ].map((field, index) => (
-                        <div key={field.label} className="group p-5 rounded-2xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm border border-white/30 hover:shadow-lg hover:border-white/50 transition-all duration-300 hover:scale-105 dark:from-slate-800/40 dark:to-slate-800/20 dark:border-slate-700/30" style={{animationDelay: `${index * 0.1}s`}}>
+                        <div key={field.label} className="group p-5 rounded-2xl bg-card/60 backdrop-blur-sm border border-border hover:shadow-lg hover:border-ring/50 transition-all duration-300 hover:scale-105" style={{animationDelay: `${index * 0.1}s`}}>
                           <div className="flex items-center mb-2">
                             <span className="text-lg mr-2">{field.icon}</span>
                             <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{field.label}</p>
@@ -617,7 +617,7 @@ export function Settings() {
                     </div>
                     
                     {/* Adres - Full Width */}
-                    <div className="group p-5 rounded-2xl bg-gradient-to-br from-white/40 to-white/20 backdrop-blur-sm border border-white/30 hover:shadow-lg hover:border-white/50 transition-all duration-300 hover:scale-105">
+                    <div className="group p-5 rounded-2xl bg-card/60 backdrop-blur-sm border border-border hover:shadow-lg hover:border-ring/50 transition-all duration-300 hover:scale-105">
                       <div className="flex items-center mb-2">
                         <span className="text-lg mr-2">📍</span>
                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Adres</p>
@@ -631,7 +631,7 @@ export function Settings() {
 
             {/* Account Settings Card */}
             <div className="group relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl shadow-black/10"></div>
+              <div className="absolute inset-0 bg-card/60 backdrop-blur-xl rounded-3xl border border-border shadow-2xl shadow-black/10"></div>
               
               <div className="relative p-8">
                 <div className="flex items-center mb-8">
@@ -642,7 +642,7 @@ export function Settings() {
                 {/* Tema ve Dil Ayarları */}
                 <div className="space-y-6 mb-8">
                   {/* Tema Ayarı */}
-                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 border border-blue-200/30 hover:shadow-lg hover:border-blue-300/50 transition-all duration-300 hover:scale-105">
+                  <div className="group p-6 rounded-2xl bg-card/50 border border-border hover:shadow-lg hover:border-ring/50 transition-all duration-300 hover:scale-105">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
@@ -676,7 +676,7 @@ export function Settings() {
                   </div>
                   
                   {/* Dil Ayarı */}
-                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg hover:border-purple-300/50 transition-all duration-300 hover:scale-105">
+                  <div className="group p-6 rounded-2xl bg-card/50 border border-border hover:shadow-lg hover:border-ring/50 transition-all duration-300 hover:scale-105">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
@@ -712,7 +712,7 @@ export function Settings() {
                 
                 <div className="space-y-4">
                   {/* Şifre Değiştir */}
-                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-blue-50/50 to-purple-50/50 border border-blue-200/30 hover:shadow-lg hover:border-blue-300/50 transition-all duration-300 hover:scale-105">
+                  <div className="group p-6 rounded-2xl bg-card/50 border border-border hover:shadow-lg hover:border-ring/50 transition-all duration-300 hover:scale-105">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
@@ -735,7 +735,7 @@ export function Settings() {
                   </div>
                   
                   {/* Bildirimler */}
-                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-purple-50/50 to-pink-50/50 border border-purple-200/30 hover:shadow-lg hover:border-purple-300/50 transition-all duration-300 hover:scale-105 dark:from-slate-800/50 dark:to-slate-800/50 dark:border-slate-700/30">
+                  <div className="group p-6 rounded-2xl bg-card/50 border border-border hover:shadow-lg hover:border-ring/50 transition-all duration-300 hover:scale-105">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
@@ -758,7 +758,7 @@ export function Settings() {
                   </div>
                   
                   {/* İki Faktörlü Kimlik Doğrulama */}
-                  <div className="group p-6 rounded-2xl bg-gradient-to-r from-emerald-50/50 to-teal-50/50 border border-emerald-200/30 hover:shadow-lg hover:border-emerald-300/50 transition-all duration-300 hover:scale-105">
+                  <div className="group p-6 rounded-2xl bg-card/50 border border-border hover:shadow-lg hover:border-ring/50 transition-all duration-300 hover:scale-105">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
                         <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">

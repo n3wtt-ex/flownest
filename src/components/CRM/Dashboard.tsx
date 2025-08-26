@@ -384,7 +384,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       {/* Pipeline Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Stage Statistics */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
           <h3 className="text-lg font-semibold text-foreground mb-4">{t('crm.dashboard.pipeline.title')}</h3>
           {stageStats.length > 0 ? (
             <div className="space-y-4">
@@ -395,19 +395,19 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                   onClick={() => handleNavigation('deals')}
                 >
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">{stage.stageName}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">{stage.count} {t('crm.dashboard.pipeline.deals')}</p>
+                    <p className="font-medium text-foreground">{stage.stageName}</p>
+                    <p className="text-sm text-muted-foreground">{stage.count} {t('crm.dashboard.pipeline.deals')}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-gray-900 dark:text-white">${stage.value.toLocaleString()}</p>
+                    <p className="font-semibold text-foreground">${stage.value.toLocaleString()}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-8">
-              <Target className="w-12 h-12 text-gray-400 mx-auto mb-4 dark:text-gray-300" />
-              <p className="text-gray-500 dark:text-gray-300">{t('crm.dashboard.pipeline.noActive')}</p>
+              <Target className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">{t('crm.dashboard.pipeline.noActive')}</p>
               <button
                 onClick={() => handleNavigation('deals')}
                 className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline dark:text-blue-400 dark:hover:text-blue-300"
@@ -419,9 +419,9 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         </div>
 
         {/* Recent Deals */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('crm.dashboard.recentDeals.title')}</h3>
+            <h3 className="text-lg font-semibold text-foreground">{t('crm.dashboard.recentDeals.title')}</h3>
             <button
               onClick={() => handleNavigation('deals')}
               className="text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline dark:text-blue-400 dark:hover:text-blue-300"
@@ -434,18 +434,18 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               {recentDeals.map((deal) => (
                 <div 
                   key={deal.id} 
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer dark:bg-gray-700 dark:hover:bg-gray-600"
+                  className="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors cursor-pointer"
                   onClick={() => handleNavigation('deals')}
                 >
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white">{deal.title}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                    <p className="font-medium text-foreground">{deal.title}</p>
+                    <p className="text-sm text-muted-foreground">
                       {deal.contact?.full_name || deal.company?.name || t('crm.dashboard.search.unknown')}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-300">{deal.stage?.name || t('crm.dashboard.pipeline.notSpecified')}</p>
+                    <p className="text-xs text-muted-foreground">{deal.stage?.name || t('crm.dashboard.pipeline.notSpecified')}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-gray-900 dark:text-white">
+                    <p className="font-semibold text-foreground">
                       ${deal.amount?.toLocaleString() || '0'}
                     </p>
                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(deal.status)}`}>
@@ -457,8 +457,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
             </div>
           ) : (
             <div className="text-center py-8">
-              <Handshake className="w-12 h-12 text-gray-400 mx-auto mb-4 dark:text-gray-300" />
-              <p className="text-gray-500 dark:text-gray-300">{t('crm.dashboard.recentDeals.noDeals')}</p>
+              <Handshake className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">{t('crm.dashboard.recentDeals.noDeals')}</p>
               <button
                 onClick={() => handleNavigation('deals')}
                 className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium hover:underline dark:text-blue-400 dark:hover:text-blue-300"
@@ -471,8 +471,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 dark:text-white">{t('crm.dashboard.quickActions.title')}</h3>
+      <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+        <h3 className="text-lg font-semibold text-foreground mb-4">{t('crm.dashboard.quickActions.title')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button 
             onClick={() => handleNavigation('contacts')}
@@ -499,31 +499,31 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       </div>
 
       {/* Performance Overview */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 dark:text-white">{t('crm.dashboard.performance.title')}</h3>
+      <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+        <h3 className="text-lg font-semibold text-foreground mb-4">{t('crm.dashboard.performance.title')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="text-center cursor-pointer hover:bg-gray-50 p-4 rounded-lg transition-colors dark:hover:bg-gray-700" onClick={() => handleNavigation('deals')}>
+          <div className="text-center cursor-pointer hover:bg-muted p-4 rounded-lg transition-colors" onClick={() => handleNavigation('deals')}>
             <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-3 dark:bg-blue-900/30">
               <Activity className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">{((stats.wonDeals / Math.max(stats.totalDeals, 1)) * 100).toFixed(1)}%</p>
-            <p className="text-sm text-gray-600 dark:text-gray-300">{t('crm.dashboard.performance.winRate')}</p>
+            <p className="text-2xl font-bold text-foreground">{((stats.wonDeals / Math.max(stats.totalDeals, 1)) * 100).toFixed(1)}%</p>
+            <p className="text-sm text-muted-foreground">{t('crm.dashboard.performance.winRate')}</p>
           </div>
-          <div className="text-center cursor-pointer hover:bg-gray-50 p-4 rounded-lg transition-colors dark:hover:bg-gray-700" onClick={() => handleNavigation('deals')}>
+          <div className="text-center cursor-pointer hover:bg-muted p-4 rounded-lg transition-colors" onClick={() => handleNavigation('deals')}>
             <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-3 dark:bg-green-900/30">
               <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl font-bold text-foreground">
               ${stats.totalDeals > 0 ? Math.round(stats.totalValue / stats.totalDeals).toLocaleString() : '0'}
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-300">{t('crm.dashboard.performance.avgDealValue')}</p>
+            <p className="text-sm text-muted-foreground">{t('crm.dashboard.performance.avgDealValue')}</p>
           </div>
-          <div className="text-center cursor-pointer hover:bg-gray-50 p-4 rounded-lg transition-colors dark:hover:bg-gray-700" onClick={() => handleNavigation('deals')}>
+          <div className="text-center cursor-pointer hover:bg-muted p-4 rounded-lg transition-colors" onClick={() => handleNavigation('deals')}>
             <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mb-3 dark:bg-purple-900/30">
               <TrendingUp className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
-            <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.openDeals}</p>
-            <p className="text-sm text-gray-600 dark:text-gray-300">{t('crm.dashboard.performance.activePipeline')}</p>
+            <p className="text-2xl font-bold text-foreground">{stats.openDeals}</p>
+            <p className="text-sm text-muted-foreground">{t('crm.dashboard.performance.activePipeline')}</p>
           </div>
         </div>
       </div>

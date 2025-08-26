@@ -506,7 +506,7 @@ export function Email() {
             <div className="w-1/2 border-r border-border">
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="w-full p-6 flex items-center justify-center hover:bg-gray-50 transition-colors"
+                className="w-full p-6 flex items-center justify-center hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <Settings className="w-6 h-6 text-blue-600" />
@@ -517,7 +517,7 @@ export function Email() {
                   transition={{ duration: 0.2 }}
                   className="ml-4"
                 >
-                  <ChevronDown className="w-5 h-5 text-gray-500" />
+                  <ChevronDown className="w-5 h-5 text-muted-foreground" />
                 </motion.div>
               </button>
 
@@ -533,7 +533,7 @@ export function Email() {
                     <div className="p-6 space-y-6">
                       {/* Event Type Section */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                           Content Type
                         </label>
                         <div className="space-y-3">
@@ -566,7 +566,7 @@ export function Email() {
                       {/* Event Dropdown - Only show when not in introduction mode */}
                       {!isIntroductionMode && (
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                          <label className="block text-sm font-medium text-foreground mb-2">
                             {language === 'tr' ? 'Etkinlik Türü' : 'Event Type'}
                           </label>
                           <select
@@ -592,7 +592,7 @@ export function Email() {
                       {/* Import Section - Only show when not in introduction mode */}
                       {!isIntroductionMode && (
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-3">
+                          <label className="block text-sm font-medium text-foreground mb-3">
                             Import Options
                           </label>
                           <div className="flex space-x-3">
@@ -666,7 +666,7 @@ export function Email() {
                           <div className="space-y-4">
                             <div>
                               <label 
-                                className="block text-sm font-medium text-gray-700 mb-2"
+                                className="block text-sm font-medium text-foreground mb-2"
                                 title={language === 'tr' ? 'Emailler kimin adina gonderilsin' : 'Who should emails be sent from'}
                               >
                                 {language === 'tr' ? 'Isim' : 'Name'}
@@ -675,14 +675,14 @@ export function Email() {
                                 type="text"
                                 value={introName}
                                 onChange={(e) => handleIntroNameChange(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring transition-all"
                                 placeholder={language === 'tr' ? 'Adinizi girin...' : 'Enter your name...'}
                               />
                             </div>
                             
                             <div>
                               <label 
-                                className="block text-sm font-medium text-gray-700 mb-2"
+                                className="block text-sm font-medium text-foreground mb-2"
                                 title={language === 'tr' ? 'Sirketinizin adi' : 'Your company name'}
                               >
                                 {language === 'tr' ? 'Sirket Adi' : 'Company Name'}
@@ -691,14 +691,14 @@ export function Email() {
                                 type="text"
                                 value={introCompanyName}
                                 onChange={(e) => handleIntroCompanyNameChange(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring transition-all"
                                 placeholder={language === 'tr' ? 'Sirket adinizi girin...' : 'Enter your company name...'}
                               />
                             </div>
                             
                             <div>
                               <label 
-                                className="block text-sm font-medium text-gray-700 mb-2"
+                                className="block text-sm font-medium text-foreground mb-2"
                                 title="Şirketiniz ve sunduğunuz hizmet hakkında bilgi verin"
                               >
                                 İşletmeni Tanıt
@@ -706,14 +706,14 @@ export function Email() {
                               <textarea
                                 value={introCompany}
                                 onChange={(e) => handleIntroCompanyChange(e.target.value)}
-                                className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                                className="w-full h-32 p-4 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring transition-all resize-none"
                                 placeholder={language === 'tr' ? 'Sirketiniz ve hizmetleriniz hakkinda bilgi girin...' : 'Enter information about your company and services...'}
                               />
                             </div>
                           </div>
                           
                           <div className="flex items-center justify-between">
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-muted-foreground">
                               {introName.length + introCompanyName.length + introCompany.length} {language === 'tr' ? 'karakter' : 'characters'}
                             </div>
                             <motion.button
@@ -724,7 +724,7 @@ export function Email() {
                               className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
                                 isIntroModified
                                   ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg'
-                                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                  : 'bg-muted text-muted-foreground cursor-not-allowed'
                               }`}
                             >
                               <Save className="w-4 h-4 mr-2" />
@@ -755,12 +755,12 @@ export function Email() {
                               placeholder="Enter your content here..."
                             />
                             <div className="absolute top-3 right-3">
-                              <FileText className="w-5 h-5 text-gray-400" />
+                              <FileText className="w-5 h-5 text-muted-foreground" />
                             </div>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-muted-foreground">
                               {editContent.length} {language === 'tr' ? 'karakter' : 'characters'}
                             </div>
                             <motion.button
@@ -771,7 +771,7 @@ export function Email() {
                               className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
                                 isContentModified
                                   ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg'
-                                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                  : 'bg-muted text-muted-foreground cursor-not-allowed'
                               }`}
                             >
                               <Save className="w-4 h-4 mr-2" />
@@ -799,7 +799,7 @@ export function Email() {
 
               {/* Placeholder when settings are closed */}
               {!isSettingsOpen && (
-                <div className="h-full flex items-center justify-center p-6 text-gray-400">
+                <div className="h-full flex items-center justify-center p-6 text-muted-foreground">
                   <div className="text-center">
                     <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p className="text-sm">Open settings to edit content</p>
@@ -829,7 +829,7 @@ export function Email() {
                 className="flex items-center justify-center p-2 bg-muted text-muted-foreground rounded-lg hover:bg-accent transition-colors"
               >
                 {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <RefreshCw className="w-5 h-5" />
                 )}

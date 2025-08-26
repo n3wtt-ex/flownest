@@ -1356,7 +1356,7 @@ export function Leads() {
                   className={`flex-1 p-4 rounded-xl border-2 transition-all duration-200 ${
                     selectedProvider === 'apollo'
                       ? 'border-blue-500 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200'
-                      : 'border-border hover:border-gray-300'
+                      : 'border-border hover:border-muted-foreground'
                   }`}
                 >
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-blue-900/30">
@@ -1373,7 +1373,7 @@ export function Leads() {
                   className={`flex-1 p-4 rounded-xl border-2 transition-all duration-200 ${
                     selectedProvider === 'google_maps'
                       ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200'
-                      : 'border-border hover:border-gray-300'
+                      : 'border-border hover:border-muted-foreground'
                   }`}
                 >
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 dark:bg-green-900/30">
@@ -1718,7 +1718,7 @@ export function Leads() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: parseInt(lead.id) * 0.05 }}
-                      className="hover:bg-gray-50 dark:hover:bg-slate-700"
+                      className="hover:bg-muted/50"
                     >
                       {editingLeadId === lead.id ? (
                         // Edit Mode
@@ -1736,7 +1736,7 @@ export function Leads() {
                               type="text"
                               value={editForm.companyName || ''}
                               onChange={(e) => handleEditChange('companyName', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                              className="w-full px-2 py-1 border border-border rounded bg-background text-foreground"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1744,7 +1744,7 @@ export function Leads() {
                               type="text"
                               value={editForm.jobTitle || ''}
                               onChange={(e) => handleEditChange('jobTitle', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                              className="w-full px-2 py-1 border border-border rounded bg-background text-foreground"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1752,7 +1752,7 @@ export function Leads() {
                               type="email"
                               value={editForm.email || ''}
                               onChange={(e) => handleEditChange('email', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                              className="w-full px-2 py-1 border border-border rounded bg-background text-foreground"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1760,7 +1760,7 @@ export function Leads() {
                               type="text"
                               value={editForm.phone || ''}
                               onChange={(e) => handleEditChange('phone', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                              className="w-full px-2 py-1 border border-border rounded bg-background text-foreground"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1768,7 +1768,7 @@ export function Leads() {
                               type="text"
                               value={editForm.location || ''}
                               onChange={(e) => handleEditChange('location', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                              className="w-full px-2 py-1 border border-border rounded bg-background text-foreground"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1776,14 +1776,14 @@ export function Leads() {
                               type="text"
                               value={editForm.sector || ''}
                               onChange={(e) => handleEditChange('sector', e.target.value)}
-                              className="w-full px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                              className="w-full px-2 py-1 border border-border rounded bg-background text-foreground"
                             />
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
                             <select
                               value={editForm.status || 'New'}
                               onChange={(e) => handleEditChange('status', e.target.value)}
-                              className="px-2 py-1 border border-gray-300 rounded dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                              className="px-2 py-1 border border-border rounded bg-background text-foreground"
                             >
                               <option value="New" className="dark:bg-slate-700 dark:text-white">New</option>
                               <option value="Verified" className="dark:bg-slate-700 dark:text-white">Verified</option>
@@ -1813,7 +1813,7 @@ export function Leads() {
                       ) : (
                         // View Mode
                         <>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                             {lead.name || 'N/A'}
                             {lead.linkedinURL && (
                               <a 
@@ -1829,22 +1829,22 @@ export function Leads() {
                               </a>
                             )}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.companyName || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.jobTitle || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.email || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.phone || 'N/A'}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.location || 'N/A'}{lead.country ? `, ${lead.country}` : ''}
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-foreground">
                             {lead.sector || 'N/A'}
                           </td>
                           <td className="px-4 py-4 whitespace-nowrap">
@@ -1852,10 +1852,10 @@ export function Leads() {
                               {lead.status}
                             </span>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-muted-foreground">
                             <div className="relative">
                               {campaignsLoading ? (
-                                <div className="px-2 py-1 text-xs text-gray-500 dark:text-gray-400">
+                                <div className="px-2 py-1 text-xs text-muted-foreground">
                                   Loading campaigns...
                                 </div>
                               ) : campaignsError ? (
@@ -1876,10 +1876,10 @@ export function Leads() {
                                     <ChevronDown className="w-3 h-3 ml-1" />
                                   </button>
                                   {campaignDropdownOpen[lead.id] && (
-                                    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200 dark:bg-slate-800 dark:border-slate-700">
+                                    <div className="absolute top-full left-0 mt-1 w-48 bg-card rounded-md shadow-lg z-10 border border-border">
                                       <div className="py-1">
                                         {campaigns.length === 0 ? (
-                                          <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
+                                          <div className="px-4 py-2 text-sm text-muted-foreground">
                                             No campaigns available
                                           </div>
                                         ) : (
@@ -1887,7 +1887,7 @@ export function Leads() {
                                             <button
                                               key={campaign.id}
                                               onClick={() => handleAddToCampaign(lead.id, campaign.id)}
-                                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700"
+                                              className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted"
                                             >
                                               {campaign.name}
                                             </button>
@@ -1900,7 +1900,7 @@ export function Leads() {
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                          <td className="px-4 py-4 whitespace-nowrap text-sm text-muted-foreground">
                             <div className="flex items-center space-x-2">
                               <button 
                                 onClick={() => startEditing(lead)}
@@ -1916,7 +1916,7 @@ export function Leads() {
                                   lead.status === 'Skipped' ? 'New' : 'New')}
                                 className={`p-1 rounded ${
                                   lead.status === 'New' ? 'text-green-600 hover:bg-green-100 dark:text-green-400 dark:hover:bg-green-900/30' :
-                                  lead.status === 'Verified' ? 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700' :
+                                  lead.status === 'Verified' ? 'text-muted-foreground hover:bg-muted' :
                                   lead.status === 'Skipped' ? 'text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/30' :
                                   'text-blue-600 hover:bg-blue-100 dark:text-blue-400 dark:hover:bg-blue-900/30'
                                 }`}

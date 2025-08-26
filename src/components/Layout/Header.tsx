@@ -1,6 +1,7 @@
 import React from 'react';
 import { Bell, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { ThemeToggle } from '../ui/theme-toggle';
 
 export function Header() {
   const { user } = useAuth();
@@ -11,6 +12,7 @@ export function Header() {
         <div className="flex-1"></div>
 
         <div className="flex items-center space-x-4">
+          <ThemeToggle />
           <button className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors">
             <Bell className="h-5 w-5" />
           </button>

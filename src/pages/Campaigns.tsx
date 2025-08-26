@@ -1168,24 +1168,24 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">{selectedCampaign.sent}</div>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg dark:bg-blue-900/30">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{selectedCampaign.sent}</div>
                     <div className="text-sm text-muted-foreground">Sequence Started</div>
                   </div>
                   <div className="text-center p-4 bg-muted rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{selectedCampaign.open_rate}%</div>
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">{selectedCampaign.open_rate}%</div>
                     <div className="text-sm text-muted-foreground">Open Rate</div>
                   </div>
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">{selectedCampaign.click_rate}%</div>
+                  <div className="text-center p-4 bg-purple-50 rounded-lg dark:bg-purple-900/30">
+                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{selectedCampaign.click_rate}%</div>
                     <div className="text-sm text-muted-foreground">Click Rate</div>
                   </div>
-                  <div className="text-center p-4 bg-orange-50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">{selectedCampaign.reply_rate}%</div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg dark:bg-orange-900/30">
+                    <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{selectedCampaign.reply_rate}%</div>
                     <div className="text-sm text-muted-foreground">Reply Rate</div>
                   </div>
-                  <div className="text-center p-4 bg-indigo-50 rounded-lg">
-                    <div className="text-2xl font-bold text-indigo-600">{selectedCampaign.positive_reply_rate}%</div>
+                  <div className="text-center p-4 bg-indigo-50 rounded-lg dark:bg-indigo-900/30">
+                    <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{selectedCampaign.positive_reply_rate}%</div>
                     <div className="text-sm text-muted-foreground">Positive Reply Rate</div>
                   </div>
                 </div>
@@ -1410,63 +1410,63 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                   placeholder="Email address"
                                   value={newLeadEmail}
                                   onChange={(e) => setNewLeadEmail(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 />
                                 <input
                                   type="text"
                                   placeholder="Contact name"
                                   value={newLeadName}
                                   onChange={(e) => setNewLeadName(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 />
                                 <input
                                   type="text"
                                   placeholder="Company name"
                                   value={newLeadCompany}
                                   onChange={(e) => setNewLeadCompany(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 />
                                 <input
                                   type="text"
                                   placeholder="Website"
                                   value={newLeadWebsite}
                                   onChange={(e) => setNewLeadWebsite(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 />
                                 <input
                                   type="text"
                                   placeholder="LinkedIn URL"
                                   value={newLeadLinkedIn}
                                   onChange={(e) => setNewLeadLinkedIn(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 />
                                 <input
                                   type="text"
                                   placeholder="Sector"
                                   value={newLeadSector}
                                   onChange={(e) => setNewLeadSector(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 />
                                 <input
                                   type="text"
                                   placeholder="Job Title"
                                   value={newLeadJobTitle}
                                   onChange={(e) => setNewLeadJobTitle(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 />
                                 <input
                                   type="text"
                                   placeholder="Location"
                                   value={newLeadLocation}
                                   onChange={(e) => setNewLeadLocation(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 />
                                 <input
                                   type="text"
                                   placeholder="Country"
                                   value={newLeadCountry}
                                   onChange={(e) => setNewLeadCountry(e.target.value)}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                                 />
                               </div>
                             ) : (
@@ -1578,9 +1578,9 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                 {/* Leads Table */}
                 <div className="overflow-x-auto">
                   <table className="w-full">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-muted">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                           <input 
                             type="checkbox" 
                             className="rounded"
@@ -1588,19 +1588,19 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                             onChange={toggleAllLeads}
                           />
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email Provider</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">#</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Email Provider</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Contact</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Company</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-card divide-y divide-border">
                       {filteredLeads.map((lead: Lead, index: number) => (
                         <React.Fragment key={lead.id}>
-                          <tr className="hover:bg-gray-50">
+                          <tr className="hover:bg-muted/50">
                             <td className="px-6 py-4 whitespace-nowrap">
                               <input 
                                 type="checkbox" 
@@ -1609,14 +1609,14 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                 onChange={() => toggleLeadSelection(lead.id)}
                               />
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{index + 1}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{index + 1}</td>
                             <td 
-                              className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 cursor-pointer hover:text-blue-600"
+                              className="px-6 py-4 whitespace-nowrap text-sm text-foreground cursor-pointer hover:text-blue-600"
                               onClick={() => toggleLeadExpansion(lead.id)}
                             >
                               {lead.email}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.provider}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{lead.provider}</td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                                 lead.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -1626,9 +1626,9 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                 {lead.status}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.contact}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{lead.company}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{lead.contact}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{lead.company}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                               <div className="flex space-x-2">
                                 <button 
                                   onClick={() => handlePersonalize(lead.id, lead.email)}
@@ -1647,28 +1647,28 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                           </tr>
                           {lead.expanded && (
                             <tr>
-                              <td colSpan={8} className="px-6 py-4 bg-gray-50">
+                              <td colSpan={8} className="px-6 py-4 bg-muted">
                                 <div className="space-y-4">
-                                  <h4 className="font-semibold text-gray-900">Personalized Content</h4>
+                                  <h4 className="font-semibold text-foreground">Personalized Content</h4>
                                   
                                   {/* Email Steps */}
                                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {(personalizationData[lead.id]?.emails || []).map((email: PersonalizedEmail) => (
-                                      <div key={email.step} className="bg-white p-4 rounded-lg border">
-                                        <h5 className="font-medium text-gray-900 mb-2">Email Step {email.step}</h5>
-                                        <div className="text-sm text-gray-600 mb-2">
+                                      <div key={email.step} className="bg-card p-4 rounded-lg border border-border">
+                                        <h5 className="font-medium text-foreground mb-2">Email Step {email.step}</h5>
+                                        <div className="text-sm text-muted-foreground mb-2">
                                           <strong>Subject:</strong> {email.subject}
                                         </div>
-                                        <div className="text-sm text-gray-600">
+                                        <div className="text-sm text-muted-foreground">
                                           <strong>Body:</strong>
-                                          <div className="mt-1 p-2 bg-gray-50 rounded text-xs max-h-32 overflow-y-auto">
+                                          <div className="mt-1 p-2 bg-muted rounded text-xs max-h-32 overflow-y-auto">
                                             {email.body}
                                           </div>
                                         </div>
                                       </div>
                                     ))}
                                     {(personalizationData[lead.id]?.emails || []).length === 0 && (
-                                      <div className="col-span-3 text-center text-gray-500 py-4">
+                                      <div className="col-span-3 text-center text-muted-foreground py-4">
                                         No personalized emails available
                                       </div>
                                     )}
@@ -1676,15 +1676,15 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                   
                                   {/* LinkedIn Section */}
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="bg-white p-4 rounded-lg border">
-                                      <h5 className="font-medium text-gray-900 mb-2">LinkedIn Status</h5>
-                                      <div className="text-sm text-gray-600">
+                                    <div className="bg-card p-4 rounded-lg border border-border">
+                                      <h5 className="font-medium text-foreground mb-2">LinkedIn Status</h5>
+                                      <div className="text-sm text-muted-foreground">
                                         {personalizationData[lead.id]?.linkedinStatus || 'Not connected'}
                                       </div>
                                     </div>
-                                    <div className="bg-white p-4 rounded-lg border">
-                                      <h5 className="font-medium text-gray-900 mb-2">LinkedIn Message</h5>
-                                      <div className="text-sm text-gray-600 max-h-24 overflow-y-auto">
+                                    <div className="bg-card p-4 rounded-lg border border-border">
+                                      <h5 className="font-medium text-foreground mb-2">LinkedIn Message</h5>
+                                      <div className="text-sm text-muted-foreground max-h-24 overflow-y-auto">
                                         {personalizationData[lead.id]?.linkedinMessage || 'No message available'}
                                       </div>
                                     </div>
@@ -1704,8 +1704,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
             <TabsContent value="sequences" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Steps List */}
-                <div className="bg-white rounded-lg shadow-sm p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Sequence Steps</h3>
+                <div className="bg-card rounded-lg shadow-sm p-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Sequence Steps</h3>
                   <div className="space-y-3">
                     {sequences.map((step: SequenceStep, index: number) => (
                       <div
@@ -1717,8 +1717,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                         }}
                         className={`relative p-3 rounded-lg cursor-pointer transition-colors ${
                           selectedStep && selectedStep.id === step.id 
-                            ? 'bg-blue-50 border-2 border-blue-300' 
-                            : 'bg-gray-50 hover:bg-gray-100'
+                            ? 'bg-blue-50 border-2 border-blue-300 dark:bg-blue-900/30 dark:border-blue-600' 
+                            : 'bg-muted hover:bg-muted/80'
                         }`}
                       >
                       <button
@@ -1730,14 +1730,14 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       >
                           <Trash2 className="w-4 h-4" />
                         </button>
-                        <div className="font-medium text-gray-900">Step {index + 1}</div>
-                        <div className="text-sm text-gray-600 truncate pr-8">{step.subject}</div>
-                        <div className="text-xs text-gray-500 mt-1">{step.variants} variant(s)</div>
+                        <div className="font-medium text-foreground">Step {index + 1}</div>
+                        <div className="text-sm text-muted-foreground truncate pr-8">{step.subject}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{step.variants} variant(s)</div>
                         
                         {/* Delay Input */}
                         {index < sequences.length - 1 && (
                           <div className="mt-2 flex items-center space-x-2">
-                            <label className="text-xs text-gray-600 whitespace-nowrap">
+                            <label className="text-xs text-muted-foreground whitespace-nowrap">
                               Next step delay (days):
                             </label>
                               <input
@@ -1765,7 +1765,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                                     }).catch(error => console.error('Error updating delay:', error));
                                   }
                                 }}
-                                className="w-16 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500"
+                                className="w-16 px-2 py-1 text-xs border border-border rounded bg-background text-foreground focus:ring-1 focus:ring-ring"
                                 onClick={(e) => e.stopPropagation()}
                               />
                           </div>
@@ -1778,7 +1778,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                           addSequenceStep();
                         }
                       }}
-                      className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-400 hover:text-blue-600 transition-colors"
+                      className="w-full p-3 border-2 border-dashed border-border rounded-lg text-muted-foreground hover:border-ring hover:text-foreground transition-colors"
                     >
                       + Add Step
                     </button>
@@ -1786,14 +1786,14 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                 </div>
 
                 {/* Step Editor */}
-                <div className="lg:col-span-2 bg-white rounded-lg shadow-sm p-6">
+                <div className="lg:col-span-2 bg-card rounded-lg shadow-sm p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Edit Step</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Edit Step</h3>
                     <div className="flex items-center space-x-2">
-                      <button className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg">
+                      <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg">
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg">
+                      <button className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg">
                         <Send className="w-4 h-4" />
                       </button>
                     </div>
@@ -1802,33 +1802,33 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                   {selectedStep ? (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                        <label className="block text-sm font-medium text-foreground mb-2">Subject</label>
                         <input
                           type="text"
                           value={selectedStep.subject}
                           onChange={(e) => updateSelectedStep('subject', e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                           placeholder="Email subject..."
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Body</label>
+                        <label className="block text-sm font-medium text-foreground mb-2">Body</label>
                         <textarea
                           value={selectedStep.body}
                           onChange={(e) => updateSelectedStep('body', e.target.value)}
                           rows={12}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                           placeholder="Email body..."
                         />
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                      <div className="flex items-center justify-between pt-4 border-t border-border">
                         <div className="flex items-center space-x-4">
-                          <button className="text-sm text-blue-600 hover:text-blue-800">AI Tools</button>
-                          <button className="text-sm text-blue-600 hover:text-blue-800">Templates</button>
-                          <button className="text-sm text-blue-600 hover:text-blue-800">Variables</button>
-                          <button className="text-sm text-blue-600 hover:text-blue-800">Formatting</button>
+                          <button className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">AI Tools</button>
+                          <button className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Templates</button>
+                          <button className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Variables</button>
+                          <button className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">Formatting</button>
                         </div>
                         <button 
                           onClick={saveSequenceStep}
@@ -1840,7 +1840,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     </div>
                   ) : (
                     <div className="flex items-center justify-center h-64">
-                      <p className="text-gray-500">Düzenlemek için bir adım seçin veya yeni bir adım ekleyin</p>
+                      <p className="text-muted-foreground">Düzenlemek için bir adım seçin veya yeni bir adım ekleyin</p>
                     </div>
                   )}
                 </div>
@@ -1850,12 +1850,12 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
             <TabsContent value="options" className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Scheduling */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Scheduling</h3>
+                <div className="bg-card rounded-lg shadow-sm p-6 border border-border">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Scheduling</h3>
                   
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Days of Week</label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Days of Week</label>
                       <div className="flex space-x-2">
                         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day: string) => (
                           <button
@@ -1864,7 +1864,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                             className={`px-3 py-2 text-sm border rounded-lg transition-colors ${
                               selectedDays.includes(day)
                                 ? 'bg-blue-500 text-white border-blue-500'
-                                : 'border-gray-300 hover:bg-gray-50'
+                                : 'border-border hover:bg-muted text-foreground'
                             }`}
                           >
                             {day}
@@ -1874,7 +1874,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Daily Send Limit</label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Daily Send Limit</label>
                       <input
                         type="number"
                         value={dailyLimit}
@@ -1882,12 +1882,12 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                           setDailyLimit(Number(e.target.value));
                           setHasUnsavedChanges(true);
                         }}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Sending Window</label>
+                      <label className="block text-sm font-medium text-foreground mb-2">Sending Window</label>
                       <div className="flex items-center space-x-2">
                         <input
                           type="time"
@@ -1896,9 +1896,9 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                             setStartTime(e.target.value);
                             setHasUnsavedChanges(true);
                           }}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                         />
-                        <span className="text-gray-500">to</span>
+                        <span className="text-muted-foreground">to</span>
                         <input
                           type="time"
                           value={endTime}
@@ -1906,7 +1906,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                             setEndTime(e.target.value);
                             setHasUnsavedChanges(true);
                           }}
-                          className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="px-3 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring"
                         />
                       </div>
                     </div>
@@ -1914,14 +1914,14 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                 </div>
 
                 {/* Tracking & Settings */}
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Tracking & Settings</h3>
+                <div className="bg-card rounded-lg shadow-sm p-6 border border-border">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">Tracking & Settings</h3>
                   
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="font-medium text-gray-900">Open Rate Tracking</div>
-                        <div className="text-sm text-gray-600">Track when emails are opened</div>
+                        <div className="font-medium text-foreground">Open Rate Tracking</div>
+                        <div className="text-sm text-muted-foreground">Track when emails are opened</div>
                       </div>
                       <div 
                         onClick={() => {
@@ -1929,7 +1929,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                           setHasUnsavedChanges(true);
                         }}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
-                          openTracking ? 'bg-indigo-600' : 'bg-gray-300'
+                          openTracking ? 'bg-indigo-600' : 'bg-muted'
                         }`}
                       >
                         <span 
@@ -1942,8 +1942,8 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <div className="font-medium text-gray-900">Link Tracking</div>
-                        <div className="text-sm text-gray-600">Track link clicks in emails</div>
+                        <div className="font-medium text-foreground">Link Tracking</div>
+                        <div className="text-sm text-muted-foreground">Track link clicks in emails</div>
                       </div>
                       <div 
                         onClick={() => {
@@ -1951,7 +1951,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                           setHasUnsavedChanges(true);
                         }}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
-                          clickTracking ? 'bg-indigo-600' : 'bg-gray-300'
+                          clickTracking ? 'bg-indigo-600' : 'bg-muted'
                         }`}
                       >
                         <span 
@@ -1963,18 +1963,18 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     </div>
 
                     <div>
-                      <div className="font-medium text-gray-900 mb-2">Reply Handling</div>
-                      <div className="text-sm text-gray-600 mb-3">Choose how to handle replies</div>
+                      <div className="font-medium text-foreground mb-2">Reply Handling</div>
+                      <div className="text-sm text-muted-foreground mb-3">Choose how to handle replies</div>
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-700">Only Text</span>
+                          <span className="text-sm text-foreground">Only Text</span>
                           <div 
                             onClick={() => {
                               setOnlyText(!onlyText);
                               setHasUnsavedChanges(true);
                             }}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
-                              onlyText ? 'bg-indigo-600' : 'bg-gray-300'
+                              onlyText ? 'bg-indigo-600' : 'bg-muted'
                             }`}
                           >
                             <span 
@@ -1985,14 +1985,14 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-700">Stop on Reply</span>
+                          <span className="text-sm text-foreground">Stop on Reply</span>
                           <div 
                             onClick={() => {
                               setStopOnReply(!stopOnReply);
                               setHasUnsavedChanges(true);
                             }}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
-                              stopOnReply ? 'bg-indigo-600' : 'bg-gray-300'
+                              stopOnReply ? 'bg-indigo-600' : 'bg-muted'
                             }`}
                           >
                             <span 
@@ -2005,7 +2005,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-gray-200">
+                    <div className="pt-4 border-t border-border">
                       <button 
                         onClick={saveAsDraft}
                         className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
