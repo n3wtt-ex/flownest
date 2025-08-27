@@ -213,7 +213,7 @@ export function AdminPanel() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card className="admin-stats-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Toplam Kullanıcı' : 'Total Users'}
@@ -225,7 +225,7 @@ export function AdminPanel() {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="admin-stats-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Aktif Kullanıcı' : 'Active Users'}
@@ -237,7 +237,7 @@ export function AdminPanel() {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="admin-stats-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Engellenen' : 'Blocked'}
@@ -249,7 +249,7 @@ export function AdminPanel() {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="admin-stats-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Developer' : 'Developer'}
@@ -264,12 +264,12 @@ export function AdminPanel() {
 
         {/* Admin Tabs */}
         <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="users">
+          <TabsList className="admin-panel-tabs grid w-full grid-cols-2">
+            <TabsTrigger value="users" className="admin-panel-tab-trigger">
               <Users className="h-4 w-4 mr-2" />
               {language === 'tr' ? 'Kullanıcı Yönetimi' : 'User Management'}
             </TabsTrigger>
-            <TabsTrigger value="tickets">
+            <TabsTrigger value="tickets" className="admin-panel-tab-trigger">
               <MessageSquare className="h-4 w-4 mr-2" />
               {language === 'tr' ? 'Destek Talepleri' : 'Support Tickets'}
             </TabsTrigger>
@@ -277,7 +277,7 @@ export function AdminPanel() {
 
           <TabsContent value="users" className="space-y-6">
             {/* User Management */}
-            <Card>
+            <Card className="admin-panel-user-management">
               <CardHeader>
                 <CardTitle>{language === 'tr' ? 'Kullanıcı Yönetimi' : 'User Management'}</CardTitle>
                 <CardDescription>
@@ -295,11 +295,11 @@ export function AdminPanel() {
                   placeholder={language === 'tr' ? 'Kullanıcı ara...' : 'Search users...'}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="admin-input-field pl-10"
                 />
               </div>
               <Select value={filterPlan} onValueChange={setFilterPlan}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="admin-input-field w-48">
                   <SelectValue placeholder={language === 'tr' ? 'Plan filtresi' : 'Filter by plan'} />
                 </SelectTrigger>
                 <SelectContent>
@@ -340,7 +340,7 @@ export function AdminPanel() {
                     </TableRow>
                   ) : (
                     filteredUsers.map((user) => (
-                      <TableRow key={user.id}>
+                      <TableRow key={user.id} className="admin-table-row">
                         <TableCell>
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
@@ -390,7 +390,7 @@ export function AdminPanel() {
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
+                              <Button variant="ghost" className="admin-action-button h-8 w-8 p-0">
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
@@ -450,7 +450,7 @@ export function AdminPanel() {
 
         {/* Edit User Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent>
+          <DialogContent className="admin-dialog-content">
             <DialogHeader>
               <DialogTitle>
                 {language === 'tr' ? 'Abonelik Planını Değiştir' : 'Change Subscription Plan'}
@@ -463,7 +463,7 @@ export function AdminPanel() {
             </DialogHeader>
             <div className="space-y-4">
               <Select value={newSubscriptionPlan} onValueChange={setNewSubscriptionPlan}>
-                <SelectTrigger>
+                <SelectTrigger className="admin-input-field">
                   <SelectValue placeholder={language === 'tr' ? 'Plan seçin' : 'Select plan'} />
                 </SelectTrigger>
                 <SelectContent>
@@ -477,7 +477,7 @@ export function AdminPanel() {
                 <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
                   {language === 'tr' ? 'İptal' : 'Cancel'}
                 </Button>
-                <Button onClick={() => handleUserAction(selectedUser!.id, 'change_plan')}>
+                <Button className="admin-action-button" onClick={() => handleUserAction(selectedUser!.id, 'change_plan')}>
                   {language === 'tr' ? 'Güncelle' : 'Update'}
                 </Button>
               </div>

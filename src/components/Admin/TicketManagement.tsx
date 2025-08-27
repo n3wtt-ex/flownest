@@ -229,7 +229,7 @@ export function TicketManagement() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+        <Card className="admin-stats-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {language === 'tr' ? 'Toplam Talep' : 'Total Tickets'}
@@ -241,7 +241,7 @@ export function TicketManagement() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="admin-stats-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {language === 'tr' ? 'Açık Talepler' : 'Open Tickets'}
@@ -253,7 +253,7 @@ export function TicketManagement() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="admin-stats-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {language === 'tr' ? 'İşlemde' : 'In Progress'}
@@ -265,7 +265,7 @@ export function TicketManagement() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="admin-stats-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {language === 'tr' ? 'Çözüldü' : 'Resolved'}
@@ -279,7 +279,7 @@ export function TicketManagement() {
       </div>
 
       {/* Tickets Table */}
-      <Card>
+      <Card className="admin-panel-card">
         <CardHeader>
           <CardTitle>{language === 'tr' ? 'Destek Talepleri' : 'Support Tickets'}</CardTitle>
           <CardDescription>
@@ -295,10 +295,10 @@ export function TicketManagement() {
               placeholder={language === 'tr' ? 'Talep ara...' : 'Search tickets...'}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1"
+              className="admin-input-field flex-1"
             />
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="admin-input-field w-48">
                 <SelectValue placeholder={language === 'tr' ? 'Duruma göre filtrele' : 'Filter by status'} />
               </SelectTrigger>
               <SelectContent>
@@ -340,7 +340,7 @@ export function TicketManagement() {
                   </TableRow>
                 ) : (
                   filteredTickets.map((ticket) => (
-                    <TableRow key={ticket.id}>
+                    <TableRow key={ticket.id} className="admin-table-row">
                       <TableCell>
                         <div>
                           <div className="font-medium">{ticket.title}</div>
@@ -376,6 +376,7 @@ export function TicketManagement() {
                         <Button
                           variant="outline"
                           size="sm"
+                          className="admin-action-button"
                           onClick={() => openTicketDialog(ticket)}
                         >
                           <Eye className="h-4 w-4 mr-1" />
@@ -393,7 +394,7 @@ export function TicketManagement() {
 
       {/* Ticket Detail Dialog */}
       <Dialog open={isTicketDialogOpen} onOpenChange={setIsTicketDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="admin-dialog-content max-w-4xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5" />
@@ -471,7 +472,7 @@ export function TicketManagement() {
                     {language === 'tr' ? 'Durum Güncelle' : 'Update Status'}
                   </label>
                   <Select value={newStatus} onValueChange={setNewStatus}>
-                    <SelectTrigger>
+                    <SelectTrigger className="admin-input-field">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -487,7 +488,7 @@ export function TicketManagement() {
                     {language === 'tr' ? 'Öncelik Güncelle' : 'Update Priority'}
                   </label>
                   <Select value={newPriority} onValueChange={setNewPriority}>
-                    <SelectTrigger>
+                    <SelectTrigger className="admin-input-field">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -510,6 +511,7 @@ export function TicketManagement() {
                   value={responseMessage}
                   onChange={(e) => setResponseMessage(e.target.value)}
                   rows={4}
+                  className="admin-input-field"
                 />
               </div>
 
@@ -518,7 +520,7 @@ export function TicketManagement() {
                 <Button variant="outline" onClick={() => setIsTicketDialogOpen(false)}>
                   {language === 'tr' ? 'İptal' : 'Cancel'}
                 </Button>
-                <Button onClick={updateTicket}>
+                <Button className="admin-action-button" onClick={updateTicket}>
                   <Reply className="h-4 w-4 mr-2" />
                   {language === 'tr' ? 'Güncelle ve Yanıtla' : 'Update & Reply'}
                 </Button>

@@ -396,6 +396,177 @@ All colors MUST be HSL.
     }
   }
   
+  /* Admin Panel & Support Panel UI Improvements */
+  
+  /* Admin Panel Styling - Light Mode Only */
+  .admin-panel-card {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
+  }
+  
+  .admin-panel-tabs {
+    background-color: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+  }
+  
+  .admin-panel-tab-trigger {
+    background-color: transparent !important;
+    color: #64748b !important;
+    border-radius: 6px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .admin-panel-tab-trigger[data-state="active"] {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  }
+  
+  .admin-panel-user-management {
+    background: linear-gradient(135deg, #fefefe 0%, #f8fafc 100%) !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  }
+  
+  /* Support Panel Styling - Light Mode Only */
+  .support-panel-card {
+    background: linear-gradient(135deg, #fefefe 0%, #f8fafc 100%) !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  }
+  
+  .support-ticket-create {
+    background: linear-gradient(135deg, #fefefe 0%, #f0f9ff 100%) !important;
+    border: 1px solid #bae6fd !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  }
+  
+  .support-new-ticket-button {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+    border: 1px solid #2563eb !important;
+    color: white !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px 0 rgba(59, 130, 246, 0.3) !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .support-new-ticket-button:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+    box-shadow: 0 4px 8px 0 rgba(59, 130, 246, 0.4) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Stats Cards Improvements */
+  .admin-stats-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06) !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .admin-stats-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12) !important;
+  }
+  
+  .support-stats-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
+    border: 1px solid #bae6fd !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06) !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .support-stats-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px 0 rgba(59, 130, 246, 0.15) !important;
+  }
+  
+  /* Table Improvements */
+  .admin-table-row:hover {
+    background-color: #f8fafc !important;
+  }
+  
+  .support-table-row:hover {
+    background-color: #f0f9ff !important;
+  }
+  
+  /* Button Improvements */
+  .admin-action-button {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+    border: 1px solid #5b21b6 !important;
+    color: white !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .admin-action-button:hover {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  .support-view-button {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    border: 1px solid #047857 !important;
+    color: white !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .support-view-button:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Dialog Improvements */
+  .admin-dialog-content {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  }
+  
+  .support-dialog-content {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
+    border: 1px solid #bae6fd !important;
+    border-radius: 12px !important;
+    box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1), 0 10px 10px -5px rgba(59, 130, 246, 0.04) !important;
+  }
+  
+  /* Input Field Improvements */
+  .admin-input-field {
+    background-color: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .admin-input-field:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+  }
+  
+  .support-input-field {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  .support-input-field:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  }
+
   /* High Contrast Support */
   @media (prefers-contrast: high) {
     .chatbox-professional {

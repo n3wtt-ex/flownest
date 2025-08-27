@@ -236,12 +236,12 @@ export function Support() {
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="support-new-ticket-button">
                 <Plus className="h-4 w-4 mr-2" />
                 {language === 'tr' ? 'Yeni Talep' : 'New Ticket'}
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="support-dialog-content">
               <DialogHeader>
                 <DialogTitle>
                   {language === 'tr' ? 'Yeni Destek Talebi' : 'New Support Ticket'}
@@ -261,6 +261,7 @@ export function Support() {
                     placeholder={language === 'tr' ? 'Sorununuzu kısaca özetleyin' : 'Briefly summarize your issue'}
                     value={newTicket.title}
                     onChange={(e) => setNewTicket(prev => ({ ...prev, title: e.target.value }))}
+                    className="support-input-field"
                   />
                 </div>
                 <div>
@@ -272,6 +273,7 @@ export function Support() {
                     value={newTicket.description}
                     onChange={(e) => setNewTicket(prev => ({ ...prev, description: e.target.value }))}
                     rows={4}
+                    className="support-input-field"
                   />
                 </div>
                 <div>
@@ -282,7 +284,7 @@ export function Support() {
                     value={newTicket.priority} 
                     onValueChange={(value) => setNewTicket(prev => ({ ...prev, priority: value as any }))}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="support-input-field">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -297,7 +299,7 @@ export function Support() {
                   <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                     {language === 'tr' ? 'İptal' : 'Cancel'}
                   </Button>
-                  <Button onClick={createTicket}>
+                  <Button className="support-new-ticket-button" onClick={createTicket}>
                     {language === 'tr' ? 'Talep Oluştur' : 'Create Ticket'}
                   </Button>
                 </div>
@@ -308,7 +310,7 @@ export function Support() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
+          <Card className="support-stats-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Toplam Talep' : 'Total Tickets'}
@@ -320,7 +322,7 @@ export function Support() {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="support-stats-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Açık' : 'Open'}
@@ -332,7 +334,7 @@ export function Support() {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="support-stats-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'İşlemde' : 'In Progress'}
@@ -344,7 +346,7 @@ export function Support() {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="support-stats-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Çözüldü' : 'Resolved'}
@@ -358,7 +360,7 @@ export function Support() {
         </div>
 
         {/* Tickets List */}
-        <Card>
+        <Card className="support-panel-card">
           <CardHeader>
             <CardTitle>{language === 'tr' ? 'Destek Talepleriniz' : 'Your Support Tickets'}</CardTitle>
             <CardDescription>
@@ -387,7 +389,7 @@ export function Support() {
                 {tickets.map((ticket) => (
                   <div
                     key={ticket.id}
-                    className="border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                    className="support-table-row border rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                     onClick={() => viewTicket(ticket)}
                   >
                     <div className="flex items-start justify-between">
@@ -412,7 +414,7 @@ export function Support() {
                           </div>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="support-view-button">
                         <Eye className="h-4 w-4 mr-1" />
                         {language === 'tr' ? 'Görüntüle' : 'View'}
                       </Button>
@@ -426,7 +428,7 @@ export function Support() {
 
         {/* Ticket Detail Dialog */}
         <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="support-dialog-content max-w-4xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
@@ -521,9 +523,9 @@ export function Support() {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         rows={3}
-                        className="flex-1"
+                        className="support-input-field flex-1"
                       />
-                      <Button onClick={sendMessage} disabled={!newMessage.trim()}>
+                      <Button className="support-new-ticket-button" onClick={sendMessage} disabled={!newMessage.trim()}>
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>
