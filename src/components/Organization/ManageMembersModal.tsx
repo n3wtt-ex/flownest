@@ -69,7 +69,15 @@ export function ManageMembersModal({ isOpen, onClose }: ManageMembersModalProps)
 
   const handleInviteUser = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check member limit (maximum 5 members per organization)
+    if (members.length >= 5) {
+      setError('Maximum 5 members allowed per organization');
+      return;
+    }
+    
     setInviteLoading(true);
+    setError(null);
     try {
       await inviteUser(inviteData);
       setInviteData({ email: '', role: 'member' });
@@ -77,6 +85,7 @@ export function ManageMembersModal({ isOpen, onClose }: ManageMembersModalProps)
       await loadMembers();
     } catch (err) {
       console.error('Error inviting user:', err);
+      setError(err instanceof Error ? err.message : 'Failed to invite user');
     } finally {
       setInviteLoading(false);
     }
@@ -154,13 +163,26 @@ export function ManageMembersModal({ isOpen, onClose }: ManageMembersModalProps)
           {/* Invite User Section */}
           <div className="mb-6">
             {!showInviteForm ? (
-              <button
-                onClick={() => setShowInviteForm(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>Invite Member</span>
-              </button>
+              <div>
+                {members.length >= 5 ? (
+                  <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-4">
+                    <p className="text-amber-600 dark:text-amber-400 text-sm font-medium">
+                      Member limit reached (5/5)
+                    </p>
+                    <p className="text-amber-600 dark:text-amber-400 text-xs mt-1">
+                      You have reached the maximum number of members allowed per organization.
+                    </p>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowInviteForm(true)}
+                    className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    <span>Invite Member ({members.length}/5)</span>
+                  </button>
+                )}
+              </div>
             ) : (
               <form onSubmit={handleInviteUser} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 space-y-3">
                 <div className="flex items-center space-x-2 mb-3">
@@ -218,7 +240,7 @@ export function ManageMembersModal({ isOpen, onClose }: ManageMembersModalProps)
           {/* Members List */}
           <div className="space-y-3">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-              Current Members ({members.length})
+              Current Members ({members.length}/5)
             </h3>
             
             {loading ? (

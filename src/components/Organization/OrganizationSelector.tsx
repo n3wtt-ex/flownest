@@ -1,28 +1,18 @@
 import React from 'react';
-import { ChevronDown, Building2, Settings, Users, Plus } from 'lucide-react';
+import { ChevronDown, Building2, Settings, Users } from 'lucide-react';
 import { useOrganization } from '../../contexts/OrganizationContext';
-import { CreateOrganizationModal } from './CreateOrganizationModal';
 import { OrganizationSettingsModal } from './OrganizationSettingsModal';
 import { ManageMembersModal } from './ManageMembersModal';
 
 export function OrganizationSelector() {
   const { currentOrganization, userOrganizations, switchOrganization, loading } = useOrganization();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [showCreateModal, setShowCreateModal] = React.useState(false);
   const [showSettingsModal, setShowSettingsModal] = React.useState(false);
   const [showMembersModal, setShowMembersModal] = React.useState(false);
 
-  const handleCreateSuccess = () => {
-    // Modal will close itself and reload organizations
-    setIsOpen(false);
-  };
-
-  const handleModalOpen = (modalType: 'create' | 'settings' | 'members') => {
+  const handleModalOpen = (modalType: 'settings' | 'members') => {
     setIsOpen(false);
     switch (modalType) {
-      case 'create':
-        setShowCreateModal(true);
-        break;
       case 'settings':
         setShowSettingsModal(true);
         break;
@@ -118,14 +108,6 @@ export function OrganizationSelector() {
 
               <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                 <button 
-                  onClick={() => handleModalOpen('create')}
-                  className="w-full flex items-center space-x-2 px-2 py-2 rounded-md text-left hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="text-sm">Create Organization</span>
-                </button>
-                
-                <button 
                   onClick={() => handleModalOpen('settings')}
                   className="w-full flex items-center space-x-2 px-2 py-2 rounded-md text-left hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors"
                 >
@@ -147,12 +129,6 @@ export function OrganizationSelector() {
       )}
       
       {/* Modals */}
-      <CreateOrganizationModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSuccess={handleCreateSuccess}
-      />
-      
       <OrganizationSettingsModal
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
