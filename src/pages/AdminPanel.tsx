@@ -37,7 +37,7 @@ interface UserStats {
 }
 
 export function AdminPanel() {
-  const { user } = useAuth();
+  const { user: currentUser } = useAuth();
   const { currentOrganization } = useOrganization();
   const { language } = useLanguage();
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -107,6 +107,19 @@ export function AdminPanel() {
   const handleUserAction = async (userId: string, action: 'block' | 'activate' | 'change_plan') => {
     try {
       if (action === 'block') {
+        // Prevent self-blocking
+        if (userId === currentUser?.id) {
+          alert(language === 'tr' ? 'Kendinizi engelleyemezsiniz!' : 'You cannot block yourself!');
+          return;
+        }
+        
+        // Prevent developers from blocking other developers
+        const targetUser = users.find(u => u.id === userId);
+        if (targetUser?.organization?.subscription_plan === 'developer') {
+          alert(language === 'tr' ? 'Developer kullanıcıları engelleyemezsiniz!' : 'You cannot block developer users!');
+          return;
+        }
+        
         const { error } = await supabase
           .from('user_organizations')
           .update({ is_active: false })
@@ -121,12 +134,22 @@ export function AdminPanel() {
         
         if (error) throw error;
       } else if (action === 'change_plan' && selectedUser && newSubscriptionPlan) {
-        const { error } = await supabase
-          .from('organizations')
-          .update({ subscription_plan: newSubscriptionPlan })
-          .eq('id', selectedUser.organization?.id);
+        // Prevent making users developers (only super admin should do this)
+        if (newSubscriptionPlan === 'developer') {
+          alert(language === 'tr' ? 'Developer planı sadece süper admin tarafından atanabilir!' : 'Developer plan can only be assigned by super admin!');
+          return;
+        }
         
-        if (error) throw error;
+        // Use the database function for proper ENUM handling
+        const { data, error } = await supabase
+          .rpc('update_organization_subscription_plan', {
+            org_id: selectedUser.organization?.id,
+            new_plan: newSubscriptionPlan
+          });
+        
+        if (error) {
+          throw error;
+        }
         
         setIsEditDialogOpen(false);
         setNewSubscriptionPlan('');
@@ -136,6 +159,7 @@ export function AdminPanel() {
       await loadUsers();
     } catch (error) {
       console.error('Error performing user action:', error);
+      alert(language === 'tr' ? 'İşlem sırasında hata oluştu!' : 'An error occurred during the operation!');
     }
   };
 
@@ -375,6 +399,7 @@ export function AdminPanel() {
                                 {language === 'tr' ? 'İşlemler' : 'Actions'}
                               </DropdownMenuLabel>
                               <DropdownMenuSeparator />
+                              {/* Only show plan change if not trying to make someone developer */}
                               <DropdownMenuItem
                                 onClick={() => {
                                   setSelectedUser(user);
@@ -385,22 +410,25 @@ export function AdminPanel() {
                                 <Edit className="mr-2 h-4 w-4" />
                                 {language === 'tr' ? 'Planı Değiştir' : 'Change Plan'}
                               </DropdownMenuItem>
-                              {user.user_organization?.is_active ? (
-                                <DropdownMenuItem
-                                  onClick={() => handleUserAction(user.id, 'block')}
-                                  className="text-red-600"
-                                >
-                                  <Ban className="mr-2 h-4 w-4" />
-                                  {language === 'tr' ? 'Engelle' : 'Block'}
-                                </DropdownMenuItem>
-                              ) : (
-                                <DropdownMenuItem
-                                  onClick={() => handleUserAction(user.id, 'activate')}
-                                  className="text-green-600"
-                                >
-                                  <CheckCircle className="mr-2 h-4 w-4" />
-                                  {language === 'tr' ? 'Aktifleştir' : 'Activate'}
-                                </DropdownMenuItem>
+                              {/* Don't show block/activate for self or for developers */}
+                              {user.id !== currentUser?.id && user.organization?.subscription_plan !== 'developer' && (
+                                user.user_organization?.is_active ? (
+                                  <DropdownMenuItem
+                                    onClick={() => handleUserAction(user.id, 'block')}
+                                    className="text-red-600"
+                                  >
+                                    <Ban className="mr-2 h-4 w-4" />
+                                    {language === 'tr' ? 'Engelle' : 'Block'}
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem
+                                    onClick={() => handleUserAction(user.id, 'activate')}
+                                    className="text-green-600"
+                                  >
+                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                    {language === 'tr' ? 'Aktifleştir' : 'Activate'}
+                                  </DropdownMenuItem>
+                                )
                               )}
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -442,7 +470,7 @@ export function AdminPanel() {
                   <SelectItem value="starter">Starter</SelectItem>
                   <SelectItem value="professional">Professional</SelectItem>
                   <SelectItem value="enterprise">Enterprise</SelectItem>
-                  <SelectItem value="developer">Developer</SelectItem>
+                  {/* Developer option removed - only super admin can assign this */}
                 </SelectContent>
               </Select>
               <div className="flex justify-end gap-3">
