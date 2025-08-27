@@ -14,6 +14,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { useLanguage } from '../../contexts/LanguageContext';
 
+// Add type for potential parser errors
+type ParserError<T> = { error: true } & string;
+
 interface TicketStats {
   total_tickets: number;
   open_tickets: number;
@@ -55,13 +58,19 @@ export function TicketManagement() {
 
       if (error) throw error;
 
-      setTickets(ticketsData || []);
+      // Fix TypeScript error by checking if data is a ParserError
+      if (ticketsData && !Array.isArray(ticketsData) && 'error' in ticketsData) {
+        console.error('Parser error:', ticketsData);
+        setTickets([]);
+      } else {
+        setTickets(ticketsData || []);
+      }
 
       // Calculate stats
-      const totalTickets = ticketsData?.length || 0;
-      const openTickets = ticketsData?.filter(t => t.status === 'open').length || 0;
-      const inProgressTickets = ticketsData?.filter(t => t.status === 'in_progress').length || 0;
-      const resolvedTickets = ticketsData?.filter(t => t.status === 'resolved' || t.status === 'closed').length || 0;
+      const totalTickets = Array.isArray(ticketsData) ? ticketsData.length : 0;
+      const openTickets = Array.isArray(ticketsData) ? ticketsData.filter(t => t.status === 'open').length : 0;
+      const inProgressTickets = Array.isArray(ticketsData) ? ticketsData.filter(t => t.status === 'in_progress').length : 0;
+      const resolvedTickets = Array.isArray(ticketsData) ? ticketsData.filter(t => t.status === 'resolved' || t.status === 'closed').length : 0;
 
       setStats({
         total_tickets: totalTickets,
@@ -89,7 +98,13 @@ export function TicketManagement() {
 
       if (error) throw error;
 
-      setTicketMessages(messagesData || []);
+      // Fix TypeScript error by checking if data is a ParserError
+      if (messagesData && !Array.isArray(messagesData) && 'error' in messagesData) {
+        console.error('Parser error:', messagesData);
+        setTicketMessages([]);
+      } else {
+        setTicketMessages(messagesData || []);
+      }
     } catch (error) {
       console.error('Error loading ticket messages:', error);
     }

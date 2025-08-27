@@ -52,10 +52,11 @@ export function useAuth() {
   };
 
   // Function to verify email with OTP token
-  const verifyEmail = async (token: string) => {
+  const verifyEmail = async (token: string, email: string) => {
     const { data, error } = await supabase.auth.verifyOtp({
       type: 'email',
       token,
+      email: email,
     });
     return { data, error };
   };
