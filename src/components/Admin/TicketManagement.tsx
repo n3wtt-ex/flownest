@@ -108,6 +108,8 @@ export function TicketManagement() {
     if (!selectedTicket) return;
 
     try {
+      setLoading(true); // Show loading state during update
+      
       const updates: UpdateTicketData = {};
 
       if (newStatus !== selectedTicket.status) {
@@ -147,22 +149,32 @@ export function TicketManagement() {
         if (messageError) throw messageError;
       }
 
+      // Close dialog and reset form
+      setIsTicketDialogOpen(false);
+      setSelectedTicket(null);
+      setResponseMessage('');
+      setNewStatus('');
+      setNewPriority('');
+      
       // Reload tickets and messages
       await loadTickets();
-      await loadTicketMessages(selectedTicket.id);
-
-      setResponseMessage('');
+      
+      // Show success message
+      alert(language === 'tr' ? 'Talep başarıyla güncellendi!' : 'Ticket updated successfully!');
     } catch (error) {
       console.error('Error updating ticket:', error);
+      alert(language === 'tr' ? 'Talep güncellenirken hata oluştu!' : 'Error updating ticket!');
+    } finally {
+      setLoading(false);
     }
   };
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      open: 'destructive',
-      in_progress: 'default',
-      resolved: 'default',
-      closed: 'secondary'
+      open: 'destructive ticket-status-open',
+      in_progress: 'default ticket-status-in-progress',
+      resolved: 'default ticket-status-resolved',
+      closed: 'secondary ticket-status-closed'
     };
 
     const labels = {
@@ -173,7 +185,7 @@ export function TicketManagement() {
     };
 
     return (
-      <Badge variant={variants[status as keyof typeof variants] as any}>
+      <Badge variant={variants[status as keyof typeof variants] as any} className={variants[status as keyof typeof variants]}>
         {labels[status as keyof typeof labels] || status}
       </Badge>
     );
@@ -181,10 +193,10 @@ export function TicketManagement() {
 
   const getPriorityBadge = (priority: string) => {
     const variants = {
-      low: 'secondary',
-      medium: 'default',
-      high: 'destructive',
-      urgent: 'destructive'
+      low: 'secondary priority-low',
+      medium: 'default priority-medium',
+      high: 'destructive priority-high',
+      urgent: 'destructive priority-urgent'
     };
 
     const labels = {
@@ -195,7 +207,7 @@ export function TicketManagement() {
     };
 
     return (
-      <Badge variant={variants[priority as keyof typeof variants] as any}>
+      <Badge variant={variants[priority as keyof typeof variants] as any} className={variants[priority as keyof typeof variants]}>
         {labels[priority as keyof typeof labels] || priority}
       </Badge>
     );
@@ -229,7 +241,7 @@ export function TicketManagement() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="admin-stats-card">
+        <Card className="admin-stats-card admin-stats-total">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {language === 'tr' ? 'Toplam Talep' : 'Total Tickets'}
@@ -241,7 +253,7 @@ export function TicketManagement() {
           </CardContent>
         </Card>
         
-        <Card className="admin-stats-card">
+        <Card className="admin-stats-card admin-stats-active">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {language === 'tr' ? 'Açık Talepler' : 'Open Tickets'}
@@ -253,7 +265,7 @@ export function TicketManagement() {
           </CardContent>
         </Card>
         
-        <Card className="admin-stats-card">
+        <Card className="admin-stats-card admin-stats-in-progress">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {language === 'tr' ? 'İşlemde' : 'In Progress'}
@@ -265,7 +277,7 @@ export function TicketManagement() {
           </CardContent>
         </Card>
         
-        <Card className="admin-stats-card">
+        <Card className="admin-stats-card admin-stats-resolved">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {language === 'tr' ? 'Çözüldü' : 'Resolved'}

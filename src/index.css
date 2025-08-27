@@ -398,74 +398,145 @@ All colors MUST be HSL.
   
   /* Admin Panel & Support Panel UI Improvements */
   
-  /* Admin Panel Styling - Light Mode Only */
+  /* Admin Panel Styling - Updated for both light and dark mode */
   .admin-panel-card {
-    background-color: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
+    background-color: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important;
   }
   
   .admin-panel-tabs {
-    background-color: #f1f5f9 !important;
-    border: 1px solid #cbd5e1 !important;
+    background-color: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     border-radius: 8px !important;
   }
   
   .admin-panel-tab-trigger {
     background-color: transparent !important;
-    color: #64748b !important;
+    color: hsl(var(--muted-foreground)) !important;
     border-radius: 6px !important;
     font-weight: 500 !important;
     transition: all 0.2s ease !important;
   }
   
   .admin-panel-tab-trigger[data-state="active"] {
-    background-color: #ffffff !important;
-    color: #1e293b !important;
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
   }
   
   .admin-panel-user-management {
-    background: linear-gradient(135deg, #fefefe 0%, #f8fafc 100%) !important;
-    border: 1px solid #e2e8f0 !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
   }
   
-  /* Support Panel Styling - Light Mode Only */
+  /* Specific card styling for different types */
+  .admin-stats-total {
+    border-left: 4px solid hsl(var(--primary)) !important;
+  }
+  
+  .admin-stats-active {
+    border-left: 4px solid hsl(142 76% 36%) !important; /* Green */
+  }
+  
+  .admin-stats-blocked {
+    border-left: 4px solid hsl(0 84% 60%) !important; /* Red */
+  }
+  
+  .admin-stats-developer {
+    border-left: 4px solid hsl(221 83% 53%) !important; /* Blue */
+  }
+  
+  .admin-stats-in-progress {
+    border-left: 4px solid hsl(38 92% 50%) !important; /* Yellow */
+  }
+  
+  .admin-stats-resolved {
+    border-left: 4px solid hsl(142 76% 36%) !important; /* Green */
+  }
+  
+  /* Support Panel Styling - Updated for both light and dark mode */
   .support-panel-card {
-    background: linear-gradient(135deg, #fefefe 0%, #f8fafc 100%) !important;
-    border: 1px solid #e2e8f0 !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
   }
   
   .support-ticket-create {
-    background: linear-gradient(135deg, #fefefe 0%, #f0f9ff 100%) !important;
-    border: 1px solid #bae6fd !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
   }
   
   .support-new-ticket-button {
-    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
-    border: 1px solid #2563eb !important;
-    color: white !important;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%) !important;
+    border: 1px solid hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
     font-weight: 600 !important;
-    box-shadow: 0 2px 4px 0 rgba(59, 130, 246, 0.3) !important;
+    box-shadow: 0 2px 4px 0 hsl(var(--primary) / 0.3) !important;
     transition: all 0.2s ease !important;
   }
   
   .support-new-ticket-button:hover {
-    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
-    box-shadow: 0 4px 8px 0 rgba(59, 130, 246, 0.4) !important;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%) !important;
+    box-shadow: 0 4px 8px 0 hsl(var(--primary) / 0.4) !important;
     transform: translateY(-1px) !important;
   }
   
-  /* Stats Cards Improvements */
+  /* Support ticket status colors */
+  .ticket-status-open {
+    background-color: hsl(0 84% 60% / 0.1) !important;
+    color: hsl(0 84% 60%) !important;
+    border: 1px solid hsl(0 84% 60% / 0.2) !important;
+  }
+  
+  .ticket-status-in-progress {
+    background-color: hsl(38 92% 50% / 0.1) !important;
+    color: hsl(38 92% 50%) !important;
+    border: 1px solid hsl(38 92% 50% / 0.2) !important;
+  }
+  
+  .ticket-status-resolved {
+    background-color: hsl(142 76% 36% / 0.1) !important;
+    color: hsl(142 76% 36%) !important;
+    border: 1px solid hsl(142 76% 36% / 0.2) !important;
+  }
+  
+  .ticket-status-closed {
+    background-color: hsl(215 20% 65% / 0.1) !important;
+    color: hsl(215 20% 65%) !important;
+    border: 1px solid hsl(215 20% 65% / 0.2) !important;
+  }
+  
+  /* Priority badge styling */
+  .priority-low {
+    background-color: hsl(215 20% 65% / 0.1) !important;
+    color: hsl(215 20% 65%) !important;
+  }
+  
+  .priority-medium {
+    background-color: hsl(210 40% 98% / 0.1) !important;
+    color: hsl(210 40% 98%) !important;
+  }
+  
+  .priority-high {
+    background-color: hsl(38 92% 50% / 0.1) !important;
+    color: hsl(38 92% 50%) !important;
+  }
+  
+  .priority-urgent {
+    background-color: hsl(0 84% 60% / 0.1) !important;
+    color: hsl(0 84% 60%) !important;
+  }
+  
+  /* Stats Cards Improvements - Updated for both light and dark mode */
   .admin-stats-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-    border: 1px solid #e2e8f0 !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     border-radius: 10px !important;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06) !important;
     transition: all 0.2s ease !important;
@@ -477,8 +548,8 @@ All colors MUST be HSL.
   }
   
   .support-stats-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
-    border: 1px solid #bae6fd !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     border-radius: 10px !important;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.06) !important;
     transition: all 0.2s ease !important;
@@ -486,36 +557,36 @@ All colors MUST be HSL.
   
   .support-stats-card:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 8px 0 rgba(59, 130, 246, 0.15) !important;
+    box-shadow: 0 4px 8px 0 hsl(var(--primary) / 0.15) !important;
   }
   
   /* Table Improvements */
   .admin-table-row:hover {
-    background-color: #f8fafc !important;
+    background-color: hsl(var(--accent)) !important;
   }
   
   .support-table-row:hover {
-    background-color: #f0f9ff !important;
+    background-color: hsl(var(--accent)) !important;
   }
   
-  /* Button Improvements */
+  /* Button Improvements - Updated for both light and dark mode */
   .admin-action-button {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
-    border: 1px solid #5b21b6 !important;
-    color: white !important;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%) !important;
+    border: 1px solid hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
     font-weight: 500 !important;
     border-radius: 6px !important;
     transition: all 0.2s ease !important;
   }
   
   .admin-action-button:hover {
-    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%) !important;
     transform: translateY(-1px) !important;
   }
   
   .support-view-button {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-    border: 1px solid #047857 !important;
+    background: linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(142 76% 36%) 100%) !important;
+    border: 1px solid hsl(142 76% 36%) !important;
     color: white !important;
     font-weight: 500 !important;
     border-radius: 6px !important;
@@ -523,48 +594,52 @@ All colors MUST be HSL.
   }
   
   .support-view-button:hover {
-    background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+    background: linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(142 76% 36%) 100%) !important;
     transform: translateY(-1px) !important;
   }
   
-  /* Dialog Improvements */
+  /* Dialog Improvements - Updated for both light and dark mode */
   .admin-dialog-content {
-    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-    border: 1px solid #e2e8f0 !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     border-radius: 12px !important;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
   }
   
   .support-dialog-content {
-    background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%) !important;
-    border: 1px solid #bae6fd !important;
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
     border-radius: 12px !important;
-    box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1), 0 10px 10px -5px rgba(59, 130, 246, 0.04) !important;
+    box-shadow: 0 20px 25px -5px hsl(var(--primary) / 0.1), 0 10px 10px -5px hsl(var(--primary) / 0.04) !important;
   }
   
-  /* Input Field Improvements */
+  /* Input Field Improvements - Updated for both light and dark mode */
   .admin-input-field {
-    background-color: #ffffff !important;
-    border: 1px solid #d1d5db !important;
+    background-color: hsl(var(--background)) !important;
+    border: 1px solid hsl(var(--input)) !important;
     border-radius: 6px !important;
     transition: all 0.2s ease !important;
+    color: hsl(var(--foreground)) !important;
   }
   
   .admin-input-field:focus {
-    border-color: #6366f1 !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+    border-color: hsl(var(--ring)) !important;
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.1) !important;
+    outline: none !important;
   }
   
   .support-input-field {
-    background-color: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
+    background-color: hsl(var(--background)) !important;
+    border: 1px solid hsl(var(--input)) !important;
     border-radius: 6px !important;
     transition: all 0.2s ease !important;
+    color: hsl(var(--foreground)) !important;
   }
   
   .support-input-field:focus {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+    border-color: hsl(var(--ring)) !important;
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.1) !important;
+    outline: none !important;
   }
 
   /* High Contrast Support */

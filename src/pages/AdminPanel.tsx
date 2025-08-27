@@ -156,6 +156,10 @@ export function AdminPanel() {
         setSelectedUser(null);
       }
       
+      // Show success message
+      alert(language === 'tr' ? 'İşlem başarıyla tamamlandı!' : 'Operation completed successfully!');
+      
+      // Reload users to update UI
       await loadUsers();
     } catch (error) {
       console.error('Error performing user action:', error);
@@ -213,7 +217,7 @@ export function AdminPanel() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="admin-stats-card">
+          <Card className="admin-stats-card admin-stats-total">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Toplam Kullanıcı' : 'Total Users'}
@@ -225,7 +229,7 @@ export function AdminPanel() {
             </CardContent>
           </Card>
           
-          <Card className="admin-stats-card">
+          <Card className="admin-stats-card admin-stats-active">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Aktif Kullanıcı' : 'Active Users'}
@@ -237,7 +241,7 @@ export function AdminPanel() {
             </CardContent>
           </Card>
           
-          <Card className="admin-stats-card">
+          <Card className="admin-stats-card admin-stats-blocked">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Engellenen' : 'Blocked'}
@@ -249,7 +253,7 @@ export function AdminPanel() {
             </CardContent>
           </Card>
           
-          <Card className="admin-stats-card">
+          <Card className="admin-stats-card admin-stats-developer">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {language === 'tr' ? 'Developer' : 'Developer'}
