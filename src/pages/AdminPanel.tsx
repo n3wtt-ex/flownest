@@ -61,38 +61,32 @@ export function AdminPanel() {
     try {
       setLoading(true);
       
-      // Get all users with their organization info
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+      // Get all users with their organization info using the admin function
+      const { data: adminUsers, error } = await supabase
+        .rpc('get_admin_users');
       
-      if (authError) throw authError;
+      if (error) throw error;
       
-      // Get organization data for each user
-      const usersWithOrgs = await Promise.all(
-        authUsers.users.map(async (authUser) => {
-          const { data: userOrg } = await supabase
-            .from('user_organizations')
-            .select(`
-              role, joined_at, is_active,
-              organization:organizations(id, name, subscription_plan, is_active)
-            `)
-            .eq('user_id', authUser.id)
-            .eq('is_active', true)
-            .single();
-          
-          return {
-            id: authUser.id,
-            email: authUser.email || '',
-            created_at: authUser.created_at,
-            user_metadata: authUser.user_metadata,
-            organization: userOrg?.organization || null,
-            user_organization: userOrg ? {
-              role: userOrg.role,
-              joined_at: userOrg.joined_at,
-              is_active: userOrg.is_active
-            } : null
-          };
-        })
-      );
+      // Transform the data to match our interface
+      const usersWithOrgs = adminUsers?.map((adminUser: any) => {
+        return {
+          id: adminUser.user_id,
+          email: adminUser.user_email || '',
+          created_at: adminUser.user_created_at,
+          user_metadata: adminUser.user_metadata || {},
+          organization: {
+            id: adminUser.organization_id,
+            name: adminUser.organization_name,
+            subscription_plan: adminUser.subscription_plan,
+            is_active: adminUser.organization_is_active
+          },
+          user_organization: {
+            role: adminUser.role,
+            joined_at: adminUser.joined_at,
+            is_active: adminUser.is_active
+          }
+        };
+      }) || [];
       
       setUsers(usersWithOrgs);
       
