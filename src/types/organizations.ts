@@ -5,7 +5,7 @@ export interface Organization {
   slug: string;
   domain?: string;
   settings: Record<string, any>;
-  subscription_plan: 'starter' | 'professional' | 'enterprise';
+  subscription_plan: 'starter' | 'professional' | 'enterprise' | 'developer';
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -41,7 +41,7 @@ export interface UpdateOrganizationData {
   name?: string;
   domain?: string;
   settings?: Record<string, any>;
-  subscription_plan?: 'starter' | 'professional' | 'enterprise';
+  subscription_plan?: 'starter' | 'professional' | 'enterprise' | 'developer';
   is_active?: boolean;
 }
 

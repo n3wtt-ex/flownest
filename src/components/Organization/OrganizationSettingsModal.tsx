@@ -38,7 +38,12 @@ export function OrganizationSettingsModal({ isOpen, onClose }: OrganizationSetti
     setSuccess(false);
 
     try {
-      await updateOrganization(formData);
+      // Only update name and domain, subscription_plan is read-only
+      const updateData: UpdateOrganizationData = {
+        name: formData.name,
+        domain: formData.domain
+      };
+      await updateOrganization(updateData);
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
@@ -130,14 +135,19 @@ export function OrganizationSettingsModal({ isOpen, onClose }: OrganizationSetti
             <select
               id="subscription-plan"
               value={formData.subscription_plan}
-              onChange={(e) => handleInputChange('subscription_plan', e.target.value as 'starter' | 'professional' | 'enterprise')}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              disabled={loading}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-900 dark:text-white cursor-not-allowed"
+              disabled={true}
             >
               <option value="starter">Starter</option>
               <option value="professional">Professional</option>
               <option value="enterprise">Enterprise</option>
+              {formData.subscription_plan === 'developer' && (
+                <option value="developer">Developer</option>
+              )}
             </select>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              To upgrade your plan, please contact our development team.
+            </p>
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
