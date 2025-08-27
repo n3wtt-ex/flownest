@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useOrganization } from '../contexts/OrganizationContext';
@@ -51,13 +51,7 @@ export function AdminPanel() {
 
   const isDeveloper = currentOrganization?.subscription_plan === 'developer';
 
-  useEffect(() => {
-    if (isDeveloper) {
-      loadUsers();
-    }
-  }, [isDeveloper]);
-
-  const loadUsers = async () => {
+  const loadUsers = useCallback(async () => {
     try {
       setLoading(true);
       
@@ -102,7 +96,13 @@ export function AdminPanel() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isDeveloper) {
+      loadUsers();
+    }
+  }, [isDeveloper, loadUsers]);
 
   const handleUserAction = async (userId: string, action: 'block' | 'activate' | 'change_plan') => {
     try {
