@@ -1,4 +1,3 @@
-
 [functions.update-campaign-analytics]
 enabled = true
 verify_jwt = true
@@ -9,3 +8,12 @@ entrypoint = "./functions/update-campaign-analytics/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/update-campaign-analytics/*.html" ]
+
+[auth]
+# Enable email confirmations for new signups
+email = { enable_confirmations = true }
+
+# Optional: Customize email templates
+[auth.email.template.confirmation]
+subject = "Confirm Your Signup"
+content_path = "./supabase/templates/confirmation.html"

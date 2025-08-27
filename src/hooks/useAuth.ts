@@ -40,6 +40,7 @@ export function useAuth() {
         data: {
           full_name: fullName,
         },
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
       },
     });
     return { data, error };
@@ -50,11 +51,34 @@ export function useAuth() {
     return { error };
   };
 
+  // Function to verify email with OTP token
+  const verifyEmail = async (token: string) => {
+    const { data, error } = await supabase.auth.verifyOtp({
+      type: 'email',
+      token,
+    });
+    return { data, error };
+  };
+
+  // Function to resend email verification
+  const resendEmailVerification = async (email: string) => {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+      },
+    });
+    return { error };
+  };
+
   return {
     user,
     loading,
     signIn,
     signUp,
     signOut,
+    verifyEmail,
+    resendEmailVerification,
   };
 }

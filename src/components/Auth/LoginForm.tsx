@@ -9,20 +9,47 @@ export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { signIn } = useAuth();
+  const [emailNotVerified, setEmailNotVerified] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const { signIn, resendEmailVerification } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setEmailNotVerified(false);
+    setResendSuccess(false);
 
-    const { error } = await signIn(email, password);
+    const { data, error } = await signIn(email, password);
     
     if (error) {
-      setError(error.message);
+      // Check if the error is due to unverified email
+      if (error.message.includes('Email not confirmed') || error.message.includes('email')) {
+        setEmailNotVerified(true);
+      } else {
+        setError(error.message);
+      }
     } else {
-      navigate('/'); // Redirect to home page on successful login
+      // Check if user needs to verify email
+      if (data.user && !data.user.email_confirmed_at) {
+        setEmailNotVerified(true);
+      } else {
+        navigate('/'); // Redirect to home page on successful login
+      }
+    }
+    
+    setLoading(false);
+  };
+
+  const handleResendVerification = async () => {
+    setLoading(true);
+    const { error } = await resendEmailVerification(email);
+    
+    if (error) {
+      setError('Failed to resend verification email. Please try again.');
+    } else {
+      setResendSuccess(true);
     }
     
     setLoading(false);
@@ -38,28 +65,51 @@ export function LoginForm() {
             </div>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
-            Hesabınıza giriş yapın
+            Sign in to your account
           </h2>
           <p className="mt-2 text-center text-sm text-muted-foreground">
-            Veya{' '}
+            Or{' '}
             <Link
               to="/register"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              yeni hesap oluşturun
+              create a new account
             </Link>
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
+          {error && !resendSuccess && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
               {error}
             </div>
           )}
+          
+          {resendSuccess && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+              Verification email resent successfully! Please check your inbox.
+            </div>
+          )}
+          
+          {emailNotVerified && (
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg">
+              <p>Please verify your email address. Check your inbox for a confirmation email.</p>
+              <div className="mt-2 flex items-center">
+                <button 
+                  type="button"
+                  onClick={handleResendVerification}
+                  disabled={loading}
+                  className="font-medium text-blue-600 hover:text-blue-500 disabled:opacity-50"
+                >
+                  {loading ? 'Resending...' : 'Resend verification email'}
+                </button>
+              </div>
+            </div>
+          )}
+          
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground">
-                E-posta adresi
+                Email address
               </label>
               <input
                 id="email"
@@ -70,12 +120,12 @@ export function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-border placeholder-muted-foreground text-foreground bg-background rounded-lg focus:outline-none focus:ring-ring focus:border-ring focus:z-10 sm:text-sm"
-                placeholder="E-posta adresinizi girin"
+                placeholder="Enter your email address"
               />
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-foreground">
-                Şifre
+                Password
               </label>
               <div className="mt-1 relative">
                 <input
@@ -87,7 +137,7 @@ export function LoginForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none relative block w-full px-3 py-2 pr-10 border border-border placeholder-muted-foreground text-foreground bg-background rounded-lg focus:outline-none focus:ring-ring focus:border-ring focus:z-10 sm:text-sm"
-                  placeholder="Şifrenizi girin"
+                  placeholder="Enter your password"
                 />
                 <button
                   type="button"
@@ -110,7 +160,7 @@ export function LoginForm() {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
           </div>
         </form>

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Confirm Your Signup</title>
+</head>
+<body>
+  <h2>Confirm your signup</h2>
+  <p>Thank you for signing up! Please confirm your email address by clicking the link below:</p>
+  <p><a href="{{ .ConfirmationURL }}">Confirm your email</a></p>
+  <p>Alternatively, you can use this confirmation code: {{ .Token }}</p>
+  <p>If you didn't sign up for an account, you can safely ignore this email.</p>
+</body>
+</html>

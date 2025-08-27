@@ -16,6 +16,8 @@ import { Settings } from './pages/Settings';
 import AdminPanel from './pages/AdminPanel';
 import Support from './pages/Support';
 import Landing from './pages/Landing';
+import EmailConfirmation from './pages/EmailConfirmation';
+import AuthError from './pages/AuthError';
 import { CampaignsProvider } from './contexts/CampaignsContext';
 import { OrganizationProvider } from './contexts/OrganizationContext';
 
@@ -71,6 +73,8 @@ function App() {
             <Route path="/" element={<LandingWithLightTheme />} />
             <Route path="/login" element={<LoginRegister />} />
             <Route path="/register" element={<LoginRegister />} />
+            <Route path="/auth/confirm" element={<EmailConfirmation />} />
+            <Route path="/auth/error" element={<AuthError />} />
             {user ? (
               <Route path="/" element={<Layout />}>
                 <Route index element={<Navigate to="/ui-bot" replace />} />
