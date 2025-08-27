@@ -13,6 +13,8 @@ import { Leads } from './pages/LeadsManagement';
 import { Campaigns } from './pages/Campaigns';
 import { Responses } from './pages/Responses';
 import { Settings } from './pages/Settings';
+import AdminPanel from './pages/AdminPanel';
+import Support from './pages/Support';
 import Landing from './pages/Landing';
 import { CampaignsProvider } from './contexts/CampaignsContext';
 import { OrganizationProvider } from './contexts/OrganizationContext';
@@ -81,6 +83,8 @@ function App() {
                 <Route path="crm/contacts" element={<Contacts />} />
                 <Route path="crm/companies" element={<Companies />} />
                 <Route path="crm/deals" element={<Deals />} />
+                <Route path="admin" element={<AdminPanel />} />
+                <Route path="support" element={<Support />} />
                 <Route path="settings" element={<Settings />} />
               </Route>
             ) : (

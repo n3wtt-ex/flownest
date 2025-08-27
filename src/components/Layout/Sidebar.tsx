@@ -14,8 +14,11 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Shield,
+  HelpCircle,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useOrganization } from '../../contexts/OrganizationContext';
 import clsx from 'clsx';
 import { useSidebar } from '../../contexts/SidebarContext';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -40,11 +43,16 @@ const crmNavItems = [
 
 export function Sidebar() {
   const { signOut } = useAuth();
+  const { currentOrganization } = useOrganization();
   const { isCollapsed, toggleSidebar } = useSidebar();
   const { language } = useLanguage();
   const { theme } = useTheme();
   const [tooltip, setTooltip] = useState<{name: string, x: number, y: number} | null>(null);
   const collapseButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Get subscription plan from current organization
+  const subscriptionPlan = currentOrganization?.subscription_plan || 'starter';
+  const isDeveloper = subscriptionPlan === 'developer';
 
   const handleSignOut = async () => {
     await signOut();
@@ -185,6 +193,35 @@ export function Sidebar() {
 
         {/* Bottom Actions */}
         <div className="border-t border-sidebar-border p-4 space-y-2">
+          {/* Conditional Admin Panel or Support Button */}
+          {isDeveloper ? (
+            <NavLink
+              to="/admin"
+              onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Admin Panel" : "Admin Panel")}
+              onMouseLeave={handleMouseLeave}
+              className="flex items-center px-3 py-2 text-sm font-medium text-sidebar-foreground/60 rounded-lg hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+            >
+              <Shield className={clsx(
+                "flex-shrink-0",
+                isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4"
+              )} />
+              {!isCollapsed && (language === 'tr' ? "Admin Panel" : "Admin Panel")}
+            </NavLink>
+          ) : (
+            <NavLink
+              to="/support"
+              onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Destek" : "Support")}
+              onMouseLeave={handleMouseLeave}
+              className="flex items-center px-3 py-2 text-sm font-medium text-sidebar-foreground/60 rounded-lg hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+            >
+              <HelpCircle className={clsx(
+                "flex-shrink-0",
+                isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4"
+              )} />
+              {!isCollapsed && (language === 'tr' ? "Destek" : "Support")}
+            </NavLink>
+          )}
+          
           <NavLink
             to="/settings"
             onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Ayarlar" : "Settings")}
