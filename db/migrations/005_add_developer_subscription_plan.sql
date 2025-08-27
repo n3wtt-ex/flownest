@@ -1,22 +1,38 @@
--- Migration: Add developer subscription plan type
--- This migration adds the 'developer' option to subscription plans
+-- Migration: Add developer subscription plan type and convert to ENUM
+-- This migration creates an ENUM type for subscription plans and updates the table
 
--- Update the organizations table to allow 'developer' subscription plan
--- Note: PostgreSQL doesn't have built-in enum types in this schema, 
--- so we're using TEXT with check constraints or just TEXT field
+-- Step 1: Create the ENUM type for subscription plans
+CREATE TYPE subscription_plan_type AS ENUM (
+    'starter',
+    'professional', 
+    'enterprise',
+    'developer'
+);
 
--- Add a comment to document the valid subscription plan values
-COMMENT ON COLUMN organizations.subscription_plan IS 'Valid values: starter, professional, enterprise, developer';
+-- Step 2: Add a new column with ENUM type
+ALTER TABLE organizations 
+ADD COLUMN subscription_plan_new subscription_plan_type DEFAULT 'starter';
 
--- Optionally, you can add a check constraint to enforce valid values:
--- ALTER TABLE organizations 
--- ADD CONSTRAINT valid_subscription_plans 
--- CHECK (subscription_plan IN ('starter', 'professional', 'enterprise', 'developer'));
+-- Step 3: Copy data from old TEXT column to new ENUM column
+UPDATE organizations 
+SET subscription_plan_new = CASE 
+    WHEN subscription_plan = 'starter' THEN 'starter'::subscription_plan_type
+    WHEN subscription_plan = 'professional' THEN 'professional'::subscription_plan_type
+    WHEN subscription_plan = 'enterprise' THEN 'enterprise'::subscription_plan_type
+    WHEN subscription_plan = 'developer' THEN 'developer'::subscription_plan_type
+    ELSE 'starter'::subscription_plan_type -- Default for any invalid values
+END;
 
--- Update any existing organizations that might need the developer plan
--- (This would typically be done manually by an admin)
+-- Step 4: Drop the old TEXT column
+ALTER TABLE organizations DROP COLUMN subscription_plan;
+
+-- Step 5: Rename the new column to the original name
+ALTER TABLE organizations RENAME COLUMN subscription_plan_new TO subscription_plan;
+
+-- Step 6: Add NOT NULL constraint
+ALTER TABLE organizations ALTER COLUMN subscription_plan SET NOT NULL;
 
 -- Example: Update a specific organization to developer plan
 -- UPDATE organizations 
--- SET subscription_plan = 'developer' 
+-- SET subscription_plan = 'developer'::subscription_plan_type
 -- WHERE slug = 'your-dev-organization-slug';

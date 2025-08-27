@@ -15,13 +15,21 @@ FlowNest projesi artık tam bir multi-tenant (çoklu kiracı) mimariye sahiptir.
 
 #### Organizations Tablosu
 ```sql
+-- Subscription plan ENUM type
+CREATE TYPE subscription_plan_type AS ENUM (
+    'starter',
+    'professional', 
+    'enterprise',
+    'developer'
+);
+
 CREATE TABLE organizations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
     domain TEXT,
     settings JSONB DEFAULT '{}',
-    subscription_plan TEXT DEFAULT 'starter',
+    subscription_plan subscription_plan_type NOT NULL DEFAULT 'starter',
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
