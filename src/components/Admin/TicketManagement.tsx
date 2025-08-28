@@ -47,11 +47,11 @@ export function TicketManagement() {
       setLoading(true);
 
       // Load all tickets with user and organization info
+      // Fixed the query syntax to properly join auth.users table
       const { data: ticketsData, error } = await supabase
         .from('support_tickets')
         .select(`
           *,
-          user:auth.users(id, email, user_metadata),
           organization:organizations(id, name, subscription_plan)
         `)
         .order('created_at', { ascending: false });
@@ -98,12 +98,11 @@ export function TicketManagement() {
 
       if (error) throw error;
 
-      // Fix TypeScript error by checking if data is a ParserError
-      if (messagesData && !Array.isArray(messagesData) && 'error' in messagesData) {
-        console.error('Parser error:', messagesData);
-        setTicketMessages([]);
+      // Handle potential parser errors
+      if (messagesData && Array.isArray(messagesData)) {
+        setTicketMessages(messagesData);
       } else {
-        setTicketMessages(messagesData || []);
+        setTicketMessages([]);
       }
     } catch (error) {
       console.error('Error loading ticket messages:', error);
@@ -232,11 +231,11 @@ export function TicketManagement() {
     const matchesSearch = 
       ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ticket.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ticket.organization?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+      (ticket.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+      (ticket.organization?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
+  
     const matchesFilter = filterStatus === 'all' || ticket.status === filterStatus;
-    
+  
     return matchesSearch && matchesFilter;
   });
 
@@ -381,7 +380,7 @@ export function TicketManagement() {
                           <User className="h-4 w-4 text-gray-400" />
                           <div>
                             <div className="text-sm">{ticket.user?.user_metadata?.full_name || 'Unknown'}</div>
-                            <div className="text-xs text-gray-500">{ticket.user?.email}</div>
+                            <div className="text-xs text-gray-500">{ticket.user?.email || 'No email'}</div>
                           </div>
                         </div>
                       </TableCell>
@@ -438,11 +437,11 @@ export function TicketManagement() {
               <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <div>
                   <label className="text-sm font-medium">{language === 'tr' ? 'Kullanıcı' : 'User'}:</label>
-                  <p className="text-sm text-gray-600">{selectedTicket.user?.user_metadata?.full_name || selectedTicket.user?.email}</p>
+                  <p className="text-sm text-gray-600">{selectedTicket.user?.user_metadata?.full_name || selectedTicket.user?.email || 'Unknown'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium">{language === 'tr' ? 'Organizasyon' : 'Organization'}:</label>
-                  <p className="text-sm text-gray-600">{selectedTicket.organization?.name}</p>
+                  <p className="text-sm text-gray-600">{selectedTicket.organization?.name || 'Unknown'}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium">{language === 'tr' ? 'Durum' : 'Status'}:</label>
@@ -479,7 +478,7 @@ export function TicketManagement() {
                         <span className="text-sm font-medium">
                           {message.sender_type === 'admin' 
                             ? (language === 'tr' ? 'Admin' : 'Admin')
-                            : (message.sender?.user_metadata?.full_name || message.sender?.email)
+                            : (message.sender?.user_metadata?.full_name || message.sender?.email || 'Unknown User')
                           }
                         </span>
                         <span className="text-xs text-gray-500">
