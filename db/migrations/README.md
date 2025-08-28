@@ -15,6 +15,7 @@ This directory contains SQL migration scripts that define the database schema an
 9. `008_organizations_table_structure.sql` - Defines the organizations table structure
 10. `009_support_tickets_system.sql` - Defines the support tickets system
 11. `010_fix_ticket_messages_table.sql` - Fixes issues with the ticket_messages table
+12. `011_update_rls_policies_for_enterprise_users.sql` - Updates RLS policies to include enterprise users
 
 ## Important Notes
 
@@ -23,6 +24,7 @@ This directory contains SQL migration scripts that define the database schema an
 - These migrations are designed to work with Supabase PostgreSQL database
 - The `007_fix_organization_creation_triggers.sql` migration specifically addresses timing issues that occurred during user creation when multiple triggers tried to access organization information before it was created
 - The `010_fix_ticket_messages_table.sql` migration addresses issues with the ticket_messages table where the organization_id column was missing and the trigger to automatically set it was missing
+- The `011_update_rls_policies_for_enterprise_users.sql` migration updates the Row Level Security policies to allow both developer and enterprise plan users to view and manage all tickets and messages
 
 ## Applying Migrations
 
