@@ -87,25 +87,52 @@ export function TicketManagement() {
 
   const loadTicketMessages = async (ticketId: string) => {
     try {
-      const { data: messagesData, error } = await supabase
+      // First get the messages
+      const { data: messagesData, error: messagesError } = await supabase
         .from('ticket_messages')
-        .select(`
-          *,
-          sender:auth.users(id, email, user_metadata)
-        `)
+        .select('*')
         .eq('ticket_id', ticketId)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
+      if (messagesError) throw messagesError;
 
-      // Handle potential parser errors
-      if (messagesData && Array.isArray(messagesData)) {
-        setTicketMessages(messagesData);
+      // If we have messages, get the sender information for each message
+      if (messagesData && Array.isArray(messagesData) && messagesData.length > 0) {
+        // Get unique sender IDs
+        const senderIds = [...new Set(messagesData.map(msg => msg.sender_id))].filter(Boolean);
+        
+        if (senderIds.length > 0) {
+          // Get user details for all senders
+          const { data: usersData, error: usersError } = await supabase
+            .from('users')
+            .select('id, email, user_metadata')
+            .in('id', senderIds);
+
+          if (usersError) {
+            console.error('Error loading user data:', usersError);
+            setTicketMessages(messagesData);
+            return;
+          }
+
+          // Map messages with sender information
+          const messagesWithSenders = messagesData.map(message => {
+            const sender = usersData?.find(user => user.id === message.sender_id);
+            return {
+              ...message,
+              sender: sender ? sender : undefined
+            };
+          });
+
+          setTicketMessages(messagesWithSenders);
+        } else {
+          setTicketMessages(messagesData);
+        }
       } else {
         setTicketMessages([]);
       }
     } catch (error) {
       console.error('Error loading ticket messages:', error);
+      setTicketMessages([]);
     }
   };
 
