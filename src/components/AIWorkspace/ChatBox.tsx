@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import React, { useState, useEffect, useRef } from 'react';
+import { Send, Zap, HelpCircle, Bot, User, Sparkles, Copy, Reply, CheckSquare, X, Save, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Zap, HelpCircle } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -11,49 +10,404 @@ interface Message {
   timestamp: string;
 }
 
-interface ChatBoxTheme {
-  primary: string;
-  secondary: string;
-  surface: string;
-  border: string;
-  accent: {
-    work: string;
-    ask: string;
-  };
-  text: {
-    primary: string;
-    secondary: string;
-    muted: string;
-  };
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  mode: 'work' | 'ask';
+  createdAt: string;
 }
 
-interface ChatBoxProps {
-  messages: Message[];
-  workspaceId: string;
-  theme?: 'default' | 'professional' | 'minimal';
-  variant?: 'sharp' | 'rounded';
-  size?: 'compact' | 'standard' | 'expanded';
-  animations?: boolean;
-}
+// Header Component
+const Header = () => (
+  <div className="bg-slate-900/40 backdrop-blur p-4 rounded-2xl flex items-center justify-between mb-4">
+    <div className="flex items-center space-x-3">
+      <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full">
+        <Bot className="w-5 h-5 text-white" />
+      </div>
+      <div>
+        <h1 className="text-white font-bold text-lg">AI Workspace</h1>
+        <p className="text-slate-400 text-sm">Entegre araştırma arayüzü</p>
+      </div>
+    </div>
+    <div className="flex items-center space-x-3">
+      <div className="bg-slate-800/50 backdrop-blur px-3 py-1 rounded-full border border-slate-700/50">
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-green-500 rounded-full" aria-label="System online"></div>
+          <span className="text-slate-400 text-sm">7 Active Agents</span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
-export function ChatBox({ 
-  messages: initialMessages, 
-  workspaceId,
-  theme = 'professional',
-  variant = 'sharp',
-  size = 'standard',
-  animations = true
-}: ChatBoxProps) {
-  const [messages, setMessages] = useState<Message[]>(initialMessages || [
+// Mode Selector Component
+const ModeSelector = ({ currentMode, setCurrentMode }) => (
+  <div className="flex justify-center mb-6">
+    <div className="bg-slate-800/30 backdrop-blur p-1 rounded-full border border-slate-700/30">
+      {(['work', 'ask'] as const).map((mode) => (
+        <motion.button
+          key={mode}
+          onClick={() => setCurrentMode(mode)}
+          className={`px-5 py-2 font-semibold text-sm transition-all duration-200 flex items-center space-x-2 rounded-full ${
+            currentMode === mode
+              ? mode === 'work'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg'
+                : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
+              : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+          }`}
+          whileScale={{ scale: currentMode === mode ? 1.05 : 1 }}
+          whileTap={{ scale: 0.95 }}
+          aria-pressed={currentMode === mode}
+          aria-label={`Switch to ${mode} mode`}
+        >
+          <motion.div
+            animate={currentMode === mode ? { scale: [1, 1.1, 1] } : { scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {mode === 'work' ? <Zap className="w-4 h-4" /> : <HelpCircle className="w-4 h-4" />}
+          </motion.div>
+          <span className="uppercase tracking-wide font-semibold">
+            {mode === 'work' ? 'Work' : 'Ask'}
+          </span>
+        </motion.button>
+      ))}
+    </div>
+  </div>
+);
+
+// Message Item Component
+const MessageItem = ({ message, onCopy, onConvertToTask }) => {
+  const [showActions, setShowActions] = useState(false);
+
+  if (message.sender === 'ai') {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="flex justify-start"
+        onMouseEnter={() => setShowActions(true)}
+        onMouseLeave={() => setShowActions(false)}
+      >
+        <div className="group max-w-[70%] p-4 rounded-2xl shadow-lg bg-slate-800/70 border border-slate-700/40 backdrop-blur">
+          <div className="flex items-center space-x-2 mb-2">
+            <Sparkles className="w-4 h-4 text-purple-400" />
+            <span className="text-xs text-amber-300 font-semibold">AI Workspace</span>
+          </div>
+          
+          <p className="text-slate-100 text-sm leading-relaxed mb-3">{message.text}</p>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-500">
+              {new Date(message.timestamp).toLocaleTimeString('tr-TR', {
+                hour: '2-digit',
+                minute: '2-digit'
+              })}
+            </span>
+            
+            <div className="flex space-x-2">
+              <button
+                onClick={() => onConvertToTask(message)}
+                className="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded-full border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
+              >
+                Save as task
+              </button>
+              <button
+                onClick={() => console.log('Export:', message.text)}
+                className="px-3 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-full border border-purple-500/30 hover:bg-purple-500/30 transition-colors"
+              >
+                Export
+              </button>
+            </div>
+          </div>
+
+          {/* Message Actions */}
+          <AnimatePresence>
+            {showActions && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="absolute top-2 right-2 flex space-x-1 bg-slate-900/90 backdrop-blur rounded-full p-1"
+              >
+                <button
+                  onClick={() => onCopy(message.text)}
+                  className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full transition-colors"
+                  aria-label="Copy message"
+                >
+                  <Copy className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => console.log('Reply to:', message.text)}
+                  className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full transition-colors"
+                  aria-label="Reply to message"
+                >
+                  <Reply className="w-3 h-3" />
+                </button>
+                <button
+                  onClick={() => onConvertToTask(message)}
+                  className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-full transition-colors"
+                  aria-label="Convert to task"
+                >
+                  <CheckSquare className="w-3 h-3" />
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex justify-end"
+    >
+      <div className={`group max-w-[70%] p-4 rounded-2xl shadow-lg border ${
+        message.mode === 'work'
+          ? 'bg-emerald-600/10 border-emerald-500/20 text-emerald-100'
+          : 'bg-blue-500/10 border-blue-500/20 text-blue-100'
+      }`}>
+        <p className="text-sm leading-relaxed mb-2">{message.text}</p>
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-slate-500">
+            {new Date(message.timestamp).toLocaleTimeString('tr-TR', {
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </span>
+          {message.mode && (
+            <span className={`text-xs px-2 py-1 rounded-full font-medium border ${
+              message.mode === 'work'
+                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                : 'bg-blue-500/20 text-blue-300 border-blue-500/30'
+            }`}>
+              {message.mode.toUpperCase()}
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// Task Modal Component
+const TaskModal = ({ isOpen, onClose, onSave, initialText = '' }) => {
+  const [taskTitle, setTaskTitle] = useState(initialText.slice(0, 80));
+  const [taskDescription, setTaskDescription] = useState('');
+
+  const handleSave = () => {
+    onSave({
+      title: taskTitle,
+      description: taskDescription
+    });
+    setTaskTitle('');
+    setTaskDescription('');
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-slate-800/90 backdrop-blur border border-slate-700/40 rounded-2xl p-6 w-96 max-w-[90vw]"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-white font-semibold">Görev Olarak Kaydet</h3>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-slate-300 text-sm mb-2">Görev Başlığı</label>
+            <input
+              type="text"
+              value={taskTitle}
+              onChange={(e) => setTaskTitle(e.target.value)}
+              className="w-full bg-slate-900/50 border border-slate-600/30 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              placeholder="Görev başlığı..."
+            />
+          </div>
+          
+          <div>
+            <label className="block text-slate-300 text-sm mb-2">Açıklama</label>
+            <textarea
+              value={taskDescription}
+              onChange={(e) => setTaskDescription(e.target.value)}
+              className="w-full bg-slate-900/50 border border-slate-600/30 rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none h-20"
+              placeholder="Görev açıklaması..."
+            />
+          </div>
+        </div>
+        
+        <div className="flex space-x-3 mt-6">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 bg-slate-700/50 text-slate-300 rounded-xl hover:bg-slate-700 transition-colors"
+          >
+            İptal
+          </button>
+          <button
+            onClick={handleSave}
+            className="flex-1 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg"
+          >
+            Kaydet
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+// Typing Indicator Component
+const TypingIndicator = () => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 20 }}
+    className="flex justify-start"
+  >
+    <div className="flex items-start space-x-3 max-w-[70%]">
+      <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex-shrink-0">
+        <Sparkles className="w-4 h-4 text-white" />
+      </div>
+      <div className="bg-slate-800/70 border border-slate-700/40 backdrop-blur rounded-2xl p-4 shadow-lg">
+        <div className="flex items-center space-x-3">
+          <div className="flex space-x-1">
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="w-2 h-2 bg-purple-400 rounded-full"
+            />
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.2
+              }}
+              className="w-2 h-2 bg-purple-400 rounded-full"
+            />
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.4
+              }}
+              className="w-2 h-2 bg-purple-400 rounded-full"
+            />
+          </div>
+          <span className="text-slate-400 text-xs" aria-live="polite">AI düşünüyor...</span>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+// Input Bar Component
+const InputBar = ({ inputValue, setInputValue, currentMode, handleSendMessage, isTyping }) => (
+  <div className="bg-slate-900/40 backdrop-blur border border-slate-700/30 rounded-2xl p-4">
+    <div className="flex space-x-3">
+      <input
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage();
+          }
+        }}
+        placeholder={
+          currentMode === 'work' 
+            ? 'Görevinizi açıklayın...' 
+            : 'Sorunuzu sorun...'
+        }
+        className="flex-1 bg-slate-800/50 border border-slate-600/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all duration-200"
+        disabled={isTyping}
+        aria-label={`Type your ${currentMode} message here`}
+      />
+      <motion.button
+        onClick={handleSendMessage}
+        disabled={!inputValue.trim() || isTyping}
+        className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 ${
+          !inputValue.trim() || isTyping
+            ? 'bg-slate-800/50 border border-slate-700/30 text-slate-500 cursor-not-allowed'
+            : currentMode === 'work'
+              ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-emerald-500/25'
+              : 'bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg hover:shadow-blue-500/25'
+        }`}
+        whileHover={{ scale: inputValue.trim() && !isTyping ? 1.02 : 1 }}
+        whileTap={{ scale: inputValue.trim() && !isTyping ? 0.98 : 1 }}
+        aria-label={`Send ${currentMode} message`}
+      >
+        <Send className="w-4 h-4" />
+        <span className="hidden sm:inline">Gönder</span>
+      </motion.button>
+    </div>
+    
+    {/* Quick Actions */}
+    <div className="mt-3 flex items-center space-x-2 text-xs">
+      <span className="text-slate-500">Hızlı:</span>
+      {[
+        { label: 'Analiz', text: 'Proje durumunu analiz et' },
+        { label: 'Rapor', text: 'Rapor oluştur' },
+        { label: 'Yardım', text: 'Yardıma ihtiyacım var' }
+      ].map((action) => (
+        <button
+          key={action.label}
+          className="px-2 py-1 bg-slate-800/30 border border-slate-700/30 rounded-full text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+          onClick={() => setInputValue(action.text)}
+        >
+          {action.label}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+// Main Component
+export default function ModernAIChatbot() {
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'AI Workspace\'e hoş geldiniz! Ekip üyeleri burada iletişim kuracak ve görevleri yönetecek.',
-      sender: 'ai',
-      timestamp: new Date().toISOString()
-    },
-    {
-      id: '2',
-      text: 'Bir görev atamak için "Work" modunu, soru sormak için "Ask" modunu kullanabilirsiniz.',
+      text: 'AI Workspace\'e hoş geldiniz! Size nasıl yardımcı olabilirim?',
       sender: 'ai',
       timestamp: new Date().toISOString()
     }
@@ -61,56 +415,14 @@ export function ChatBox({
   const [inputValue, setInputValue] = useState('');
   const [currentMode, setCurrentMode] = useState<'work' | 'ask'>('work');
   const [isTyping, setIsTyping] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [taskToCreate, setTaskToCreate] = useState<Message | null>(null);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
-  // Enhanced animation variants for professional design
-  const messageVariants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20, 
-      scale: 0.95,
-      filter: "blur(4px)"
-    },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 20
-      }
-    }
-  };
-
-  const buttonVariants = {
-    hover: { 
-      scale: 1.02,
-      boxShadow: "0 4px 12px rgba(0, 132, 255, 0.2)",
-      transition: { duration: 0.15 }
-    },
-    tap: { 
-      scale: 0.98,
-      transition: { duration: 0.1 }
-    }
-  };
-
-  const typingIndicator = {
-    animate: {
-      opacity: [0.4, 1, 0.4],
-      scale: [0.95, 1, 0.95],
-      transition: {
-        duration: 1.5,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
-  };
-
   useEffect(() => {
-    // Mesaj gönderildiğinde otomatik scroll yapma
-  }, [messages, isTyping]); // eslint-disable-line react-hooks/exhaustive-deps
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
@@ -128,7 +440,6 @@ export function ChatBox({
     setIsTyping(true);
 
     try {
-      // Moda göre farklı anahtarlar kullanarak webhook'a mesaj gönder
       const payload: any = {
         timestamp: new Date().toISOString()
       };
@@ -139,12 +450,11 @@ export function ChatBox({
         payload.ask = `ask:${inputValue}`;
       }
 
-      // Webhook URL'sine mesajı gönder
       const response = await fetch('https://n8n.flownests.org/webhook-test/8caf5ac6-9fb5-4e68-9741-3d452248a95e', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Workspace-ID': workspaceId
+          'X-Workspace-ID': 'workspace-id'
         },
         body: JSON.stringify(payload),
       });
@@ -153,11 +463,8 @@ export function ChatBox({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // n8n'den gelen yanıtı al
       const responseData = await response.json();
       
-      // n8n'den gelen yanıtı sohbet ekranına ekle
-      // Yanıt formatına göre farklı alanlardan mesajı al
       let responseText = 'Mesajınız alındı, teşekkürler!';
       
       if (typeof responseData === 'string') {
@@ -175,16 +482,12 @@ export function ChatBox({
       } else if (responseData.output) {
         responseText = responseData.output;
       } else {
-        // JSON objesini string'e çevir ama sadece değeri al
         responseText = JSON.stringify(responseData, null, 2);
       }
       
-      // Satır sonlarını işlemeden direkt kullan
-      const processedText = responseText;
-      
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: processedText,
+        text: responseText,
         sender: 'ai',
         timestamp: new Date().toISOString()
       };
@@ -193,7 +496,6 @@ export function ChatBox({
     } catch (error) {
       console.error('Webhook error:', error);
       
-      // Hata durumunda fallback mesajı göster
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: 'Üzgünüm, mesajınız işlenirken bir hata oluştu. Lütfen tekrar deneyin.',
@@ -207,273 +509,99 @@ export function ChatBox({
     }
   };
 
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5, ease: "easeInOut" }}
-        className="chatbox-professional chatbox-responsive w-full h-full flex flex-col overflow-hidden"
-        role="chatbox"
-        aria-label="AI Assistant Chat Interface"
-        onKeyDown={(e) => {
-          // Enhanced keyboard navigation
-          if (e.key === 'Escape') {
-            setInputValue('');
-          }
-        }}
-        tabIndex={-1}
-      >
-        {/* Professional Header with Status Indicator */}
-        <div className="p-4 border-b-2" style={{
-          borderBottomColor: 'hsl(var(--chat-border))',
-          background: 'hsl(var(--chat-surface))'
-        }}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2">
-                <div 
-                  className="w-3 h-3 rounded-full" 
-                  style={{ backgroundColor: 'hsl(var(--status-online))' }}
-                  aria-label="AI Assistant Online"
-                ></div>
-                <h3 
-                  className="font-bold text-lg" 
-                  style={{ 
-                    color: 'hsl(var(--text-primary))',
-                    fontSize: '18px',
-                    fontWeight: '700'
-                  }}
-                >
-                  AI Assistant
-                </h3>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div 
-                className="w-2 h-2 rounded-full" 
-                style={{ backgroundColor: 'hsl(var(--status-online))' }}
-              ></div>
-            </div>
-          </div>
-          <p 
-            className="mt-1" 
-            style={{ 
-              color: 'hsl(var(--text-secondary))',
-              fontSize: '14px',
-              fontWeight: '400'
-            }}
-          >
-            Integrated Research Interface
-          </p>
-        </div>
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      console.log('Message copied to clipboard');
+    } catch (err) {
+      console.error('Failed to copy message:', err);
+    }
+  };
 
-        {/* Messages Container with Professional Styling */}
-        <div 
-          className="flex-1 p-4 overflow-y-auto space-y-4"
-          style={{
-            background: 'hsl(var(--chat-background))',
-            scrollbarWidth: 'thin',
-            scrollbarColor: 'hsl(var(--chat-border)) transparent'
-          }}
-          role="log"
-          aria-live="polite"
-          aria-label="Chat messages"
-        >
+  const handleConvertToTask = (message: Message) => {
+    setTaskToCreate(message);
+    setShowTaskModal(true);
+  };
+
+  const handleSaveTask = (taskData: { title: string; description: string }) => {
+    const newTask: Task = {
+      id: Date.now().toString(),
+      title: taskData.title,
+      description: taskData.description,
+      mode: currentMode,
+      createdAt: new Date().toISOString()
+    };
+    
+    setTasks(prev => [...prev, newTask]);
+    console.log('Task saved:', newTask);
+  };
+
+  return (
+    <div 
+      className="h-screen w-full flex flex-col p-6"
+      style={{
+        background: 'linear-gradient(180deg, #071026 0%, #051428 100%)'
+      }}
+    >
+      <Header />
+      
+      {/* Chat Window */}
+      <div className="flex-1 overflow-y-auto space-y-6 mb-6 relative">
+        <div role="list" aria-label="Chat messages">
           <AnimatePresence>
             {messages.map((message) => (
-              <motion.div
-                key={message.id}
-                layout
-                variants={animations ? messageVariants : {}}
-                initial={animations ? "hidden" : false}
-                animate={animations ? "visible" : {}}
-                exit={animations ? "hidden" : {}}
-                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div
-                  className={`max-w-[85%] p-3 text-sm leading-relaxed shadow-lg ${
-                    message.sender === 'user'
-                      ? message.mode === 'work'
-                        ? 'message-user-work'
-                        : 'message-user-ask'
-                      : 'message-ai'
-                  }`}
-                  style={{ 
-                    whiteSpace: 'pre-wrap',
-                    fontSize: '15px',
-                    lineHeight: '1.5'
-                  }}
-                >
-                  {message.text}
-                </div>
-              </motion.div>
+              <div key={message.id} role="listitem">
+                <MessageItem
+                  message={message}
+                  onCopy={handleCopy}
+                  onConvertToTask={handleConvertToTask}
+                />
+              </div>
             ))}
           </AnimatePresence>
 
-          {/* Professional Typing Indicator */}
-          {isTyping && (
-            <motion.div
-              variants={typingIndicator}
-              animate="animate"
-              className="flex justify-start"
-            >
-              <div 
-                className="message-ai p-3 shadow-lg"
-                style={{
-                  background: 'hsl(var(--ai-message-bg))',
-                  border: '1px solid hsl(var(--ai-message-border))'
-                }}
-              >
-                <div className="flex items-center space-x-1.5">
-                  <div 
-                    className="w-2 h-2 rounded-full animate-bounce" 
-                    style={{ backgroundColor: 'hsl(var(--status-typing))' }}
-                  ></div>
-                  <div 
-                    className="w-2 h-2 rounded-full animate-bounce" 
-                    style={{ 
-                      backgroundColor: 'hsl(var(--status-typing))',
-                      animationDelay: '0.1s'
-                    }}
-                  ></div>
-                  <div 
-                    className="w-2 h-2 rounded-full animate-bounce" 
-                    style={{ 
-                      backgroundColor: 'hsl(var(--status-typing))',
-                      animationDelay: '0.2s'
-                    }}
-                  ></div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-          <div ref={messagesEndRef} />
+          {isTyping && <TypingIndicator />}
         </div>
+        <div ref={messagesEndRef} />
+      </div>
 
-        {/* Professional Input Area */}
-        <div 
-          className="p-3 border-t-2 flex-shrink-0" 
-          style={{
-            borderTopColor: 'hsl(var(--chat-border))',
-            background: 'hsl(var(--chat-surface))'
-          }}
-          role="form"
-          aria-label="Message input"
+      <InputBar
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        currentMode={currentMode}
+        setCurrentMode={setCurrentMode}
+        handleSendMessage={handleSendMessage}
+        isTyping={isTyping}
+      />
+
+      {/* Task Modal */}
+      <AnimatePresence>
+        {showTaskModal && (
+          <TaskModal
+            isOpen={showTaskModal}
+            onClose={() => {
+              setShowTaskModal(false);
+              setTaskToCreate(null);
+            }}
+            onSave={handleSaveTask}
+            initialText={taskToCreate?.text || ''}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Tasks Counter (UI only) */}
+      {tasks.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed bottom-6 right-6 bg-slate-800/90 backdrop-blur border border-slate-700/40 rounded-full px-4 py-2 text-slate-300 text-sm"
         >
-          {/* Mode Selector with Sharp Design */}
-          <div className="flex space-x-2 mb-3">
-            {['work', 'ask'].map((mode) => (
-              <motion.button
-                key={mode}
-                variants={animations ? buttonVariants : {}}
-                whileHover={animations ? "hover" : {}}
-                whileTap={animations ? "tap" : {}}
-                onClick={() => setCurrentMode(mode as 'work' | 'ask')}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setCurrentMode(mode as 'work' | 'ask');
-                  }
-                }}
-                className={`mode-button flex-1 py-2 px-3 sm:py-3 sm:px-4 font-semibold text-sm transition-all duration-200 flex items-center justify-center space-x-2 ${
-                  currentMode === mode
-                    ? mode === 'work'
-                      ? 'active work'
-                      : 'active ask'
-                    : ''
-                }`}
-                style={{
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                  minHeight: '44px' // Touch-friendly minimum
-                }}
-                aria-pressed={currentMode === mode}
-                aria-label={`Switch to ${mode} mode`}
-                tabIndex={0}
-              >
-                {mode === 'work' ? <Zap size={16} /> : <HelpCircle size={16} />}
-                <span>{mode.charAt(0).toUpperCase() + mode.slice(1)}</span>
-              </motion.button>
-            ))}
+          <div className="flex items-center space-x-2">
+            <CheckSquare className="w-4 h-4 text-emerald-400" />
+            <span>{tasks.length} görev kaydedildi</span>
           </div>
-
-          {/* Input Field and Send Button */}
-          <div className="flex space-x-2">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setInputValue('');
-                }
-              }}
-              placeholder={currentMode === 'work' ? 'Describe your task...' : 'Ask a question...'}
-              className="flex-1 px-4 py-2 sm:py-3 text-sm transition-all border-2 focus:outline-none"
-              style={{
-                background: 'hsl(var(--chat-background))',
-                color: 'hsl(var(--text-primary))',
-                borderColor: 'hsl(var(--chat-border))',
-                borderRadius: '2px',
-                fontSize: '14px',
-                minHeight: '44px' // Touch-friendly minimum
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = 'hsl(var(--chat-accent))';
-                e.target.style.boxShadow = '0 0 0 1px hsl(var(--chat-accent))';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'hsl(var(--chat-border))';
-                e.target.style.boxShadow = 'none';
-              }}
-              aria-label={`Type your ${currentMode} message here`}
-              aria-describedby="input-instructions"
-              autoComplete="off"
-            />
-            <motion.button
-              variants={animations ? buttonVariants : {}}
-              whileHover={animations ? "hover" : {}}
-              whileTap={animations ? "tap" : {}}
-              onClick={() => handleSendMessage()}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              disabled={!inputValue.trim()}
-              className="px-4 py-2 sm:py-3 text-white transition-all duration-200 flex items-center justify-center border-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                background: inputValue.trim() 
-                  ? 'linear-gradient(135deg, hsl(var(--chat-accent)) 0%, hsl(var(--chat-accent-hover)) 100%)'
-                  : 'hsl(var(--ai-message-bg))',
-                borderColor: inputValue.trim() ? 'hsl(var(--chat-accent))' : 'hsl(var(--chat-border))',
-                borderRadius: '2px',
-                minWidth: '44px',
-                minHeight: '44px'
-              }}
-              aria-label={`Send ${currentMode} message`}
-              tabIndex={0}
-            >
-              <Send size={16} />
-            </motion.button>
-          </div>
-          
-          {/* Hidden accessibility instructions */}
-          <div id="input-instructions" className="sr-only">
-            Press Enter to send message, Escape to clear input. Use Tab to navigate between mode buttons and input field.
-          </div>
-        </div>
-      </motion.div>
-    </>
+        </motion.div>
+      )}
+    </div>
   );
 }
