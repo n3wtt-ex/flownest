@@ -186,7 +186,7 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
   const isMainInputValid = mainPageInput && !isNaN(Number(mainPageInput)) && Number(mainPageInput) > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8 w-full">
       {/* Progress Bar - Exactly like the image */}
       <div className="w-full max-w-2xl mb-8 sm:mb-16">
         <div className="flex items-center justify-center">
@@ -222,7 +222,7 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
 
       {/* Main Content Area */}
       {!openSection ? (
-        <div className="text-center max-w-2xl w-full">
+        <div className="text-center max-w-2xl w-full flex flex-col items-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
             {stepTitles[currentStep as keyof typeof stepTitles] || "Süreç Tamamlandı"}
           </h1>
@@ -231,7 +231,7 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
           </p>
           
           {/* Ana sayfa input alanları - her adım için */}
-          <div className="mb-8">
+          <div className="w-full mb-8">
             {currentStep <= 4 && !completedSteps.has(currentStep) && (
               <div className="mb-8">
                 {/* 1. Adım - Sayı Input */}
@@ -611,9 +611,9 @@ function StepFormContent({ stepNumber, initialData, onSave, onClose, stepTitle, 
   };
 
   return (
-    <div className="min-h-screen bg-white w-full">
+    <div className="min-h-screen bg-white w-full flex flex-col">
       {/* Close button */}
-      <div className="absolute top-4 right-4 sm:top-8 sm:right-8">
+      <div className="absolute top-4 right-4 sm:top-8 sm:right-8 z-10">
         <button
           onClick={onClose}
           className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
@@ -624,7 +624,7 @@ function StepFormContent({ stepNumber, initialData, onSave, onClose, stepTitle, 
         </button>
       </div>
 
-      <div className="pt-16 sm:pt-20 pb-8 sm:pb-16 px-4 sm:px-6">
+      <div className="flex flex-col items-center justify-center flex-grow pt-16 sm:pt-20 pb-8 sm:pb-16 px-4 sm:px-6">
         {/* Progress Bar */}
         <div className="w-full max-w-lg mx-auto mb-8 sm:mb-16">
           <div className="flex items-center justify-center">
@@ -659,7 +659,7 @@ function StepFormContent({ stepNumber, initialData, onSave, onClose, stepTitle, 
         </div>
 
         {/* Title */}
-        <div className="text-center mb-8 sm:mb-12">
+        <div className="text-center mb-8 sm:mb-12 w-full max-w-2xl">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
             {stepTitle}
           </h1>
@@ -669,7 +669,7 @@ function StepFormContent({ stepNumber, initialData, onSave, onClose, stepTitle, 
         </div>
 
         {/* Form Content */}
-        <div className="w-full max-w-2xl mx-auto">
+        <div className="w-full max-w-2xl">
           {renderFormFields()}
         </div>
       </div>
