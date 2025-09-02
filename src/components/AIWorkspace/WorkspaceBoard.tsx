@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HexIcon } from './HexIcon';
 import { ConnectionLines } from './ConnectionLines';
-import { ChatBox } from './ChatBox';
+import { ChatBox } from '@/components/workspace/ChatBox';
 import { AgentHeader } from './AgentHeader';
 import { RightSidebar } from './RightSidebar';
 import { SelectionRow } from './SelectionRow';
