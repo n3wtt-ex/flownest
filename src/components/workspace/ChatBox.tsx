@@ -26,29 +26,29 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-gray-900 p-4 rounded-lg">
       <div className="flex-1 space-y-2 overflow-auto pr-1">
         {messages.map((m) => (
           <div key={m.id} className={m.role === "user" ? "text-right" : "text-left"}>
             <span
               className={
                 m.role === "user"
-                  ? "inline-block px-3 py-2 rounded-full bg-card/40 border text-sm"
-                  : "inline-block px-3 py-2 rounded-2xl bg-secondary/30 border text-sm"
+                  ? "inline-block px-3 py-2 rounded-full bg-blue-600 text-white text-sm"
+                  : "inline-block px-3 py-2 rounded-2xl bg-gray-800 text-white border border-gray-700 text-sm"
               }
             >
               {m.text}
               {m.mode && m.role === "user" && (
-                <span className="ml-2 text-[10px] opacity-60">{m.mode.toUpperCase()}</span>
+                <span className="ml-2 text-[10px] text-blue-300">{m.mode.toUpperCase()}</span>
               )}
             </span>
           </div>
         ))}
         {typing && (
-          <div className="flex items-center gap-1 text-muted-foreground">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-pulse [animation-delay:120ms]" />
-            <span className="w-1.5 h-1.5 rounded-full bg-primary/40 animate-pulse [animation-delay:240ms]" />
+          <div className="flex items-center gap-1 text-gray-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:120ms]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:240ms]" />
           </div>
         )}
       </div>
@@ -58,8 +58,9 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
+          className="bg-gray-800 text-white border-gray-700 focus:border-blue-500"
         />
-        <Button onClick={send}>Gönder</Button>
+        <Button onClick={send} className="bg-blue-600 hover:bg-blue-700">Gönder</Button>
       </div>
       <div className="mt-2 flex items-center gap-2">
         <Button
@@ -68,7 +69,7 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
             setMode("work");
             onModeChange("work");
           }}
-          className="rounded-full"
+          className="rounded-full bg-blue-600 hover:bg-blue-700"
         >
           Work
         </Button>
@@ -78,7 +79,7 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
             setMode("ask");
             onModeChange("ask");
           }}
-          className="rounded-full"
+          className="rounded-full border border-gray-600 text-white hover:bg-gray-800"
         >
           Ask
         </Button>

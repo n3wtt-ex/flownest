@@ -186,9 +186,9 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
   const isMainInputValid = mainPageInput && !isNaN(Number(mainPageInput)) && Number(mainPageInput) > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8">
       {/* Progress Bar - Exactly like the image */}
-      <div className="w-full max-w-2xl mb-16">
+      <div className="w-full max-w-2xl mb-8 sm:mb-16">
         <div className="flex items-center justify-center">
           {[1, 2, 3, 4].map((step, index) => (
             <React.Fragment key={step}>
@@ -222,183 +222,187 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
 
       {/* Main Content Area */}
       {!openSection ? (
-        <div className="text-center max-w-2xl">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+        <div className="text-center max-w-2xl w-full">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
             {stepTitles[currentStep as keyof typeof stepTitles] || "Süreç Tamamlandı"}
           </h1>
-          <p className="text-xl text-gray-600 mb-12">
+          <p className="text-lg sm:text-xl text-gray-600 mb-8 sm:mb-12">
             {stepDescriptions[currentStep as keyof typeof stepDescriptions] || "Tüm adımları tamamladınız"}
           </p>
           
           {/* Ana sayfa input alanları - her adım için */}
-          {currentStep <= 4 && !completedSteps.has(currentStep) && (
-            <div className="mb-8">
-              {/* 1. Adım - Sayı Input */}
-              {currentStep === 1 && (
-                <div className="flex items-center max-w-lg mx-auto">
-                  <div className="flex-1">
-                    <input
-                      type="number"
+          <div className="mb-8">
+            {currentStep <= 4 && !completedSteps.has(currentStep) && (
+              <div className="mb-8">
+                {/* 1. Adım - Sayı Input */}
+                {currentStep === 1 && (
+                  <div className="flex items-center max-w-lg mx-auto">
+                    <div className="flex-1">
+                      <input
+                        type="number"
+                        value={mainPageInput}
+                        onChange={(e) => setMainPageInput(e.target.value)}
+                        placeholder="Örn: 100"
+                        className="w-full px-6 py-4 text-lg border-2 border-teal-500 rounded-l-full focus:outline-none focus:border-teal-600 transition-colors duration-200"
+                      />
+                    </div>
+                    <button
+                      onClick={handleStartClick}
+                      disabled={!isMainInputValid}
+                      className={`px-8 py-4 text-lg font-semibold text-white rounded-r-full transition-all duration-200 ${
+                        isMainInputValid
+                          ? 'bg-teal-600 hover:bg-teal-700'
+                          : 'bg-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      Başla →
+                    </button>
+                  </div>
+                )}
+
+                {/* 2. Adım - Textarea */}
+                {currentStep === 2 && (
+                  <div className="max-w-2xl mx-auto space-y-6">
+                    <textarea
                       value={mainPageInput}
                       onChange={(e) => setMainPageInput(e.target.value)}
-                      placeholder="Örn: 100"
-                      className="w-full px-6 py-4 text-lg border-2 border-teal-500 rounded-l-full focus:outline-none focus:border-teal-600 transition-colors duration-200"
+                      placeholder="Hedef kitlenizi detaylı olarak tanımlayın..."
+                      className="w-full h-32 px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200 resize-none"
+                      maxLength={1000}
                     />
-                  </div>
-                  <button
-                    onClick={handleStartClick}
-                    disabled={!isMainInputValid}
-                    className={`px-8 py-4 text-lg font-semibold text-white rounded-r-full transition-all duration-200 ${
-                      isMainInputValid
-                        ? 'bg-teal-600 hover:bg-teal-700'
-                        : 'bg-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    Başla →
-                  </button>
-                </div>
-              )}
-
-              {/* 2. Adım - Textarea */}
-              {currentStep === 2 && (
-                <div className="max-w-2xl mx-auto space-y-6">
-                  <textarea
-                    value={mainPageInput}
-                    onChange={(e) => setMainPageInput(e.target.value)}
-                    placeholder="Hedef kitlenizi detaylı olarak tanımlayın..."
-                    className="w-full h-32 px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200 resize-none"
-                    maxLength={1000}
-                  />
-                  <div className="text-center">
-                    <button
-                      onClick={handleStartClick}
-                      disabled={!mainPageInput || mainPageInput.trim().length === 0}
-                      className={`px-12 py-4 text-lg font-semibold text-white rounded-full transition-all duration-200 ${
-                        mainPageInput && mainPageInput.trim().length > 0
-                          ? 'bg-teal-600 hover:bg-teal-700 transform hover:scale-105'
-                          : 'bg-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      Devam Et →
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* 3. Adım - Çoklu Input */}
-              {currentStep === 3 && (
-                <div className="max-w-xl mx-auto space-y-6">
-                  <input
-                    type="text"
-                    value={formData[3]?.name || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, 3: { ...prev[3], name: e.target.value } }))}
-                    placeholder="Adınızı girin"
-                    className="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200"
-                  />
-                  
-                  <input
-                    type="text"
-                    value={formData[3]?.companyName || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, 3: { ...prev[3], companyName: e.target.value } }))}
-                    placeholder="Şirket adınızı girin"
-                    className="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200"
-                  />
-                  
-                  <textarea
-                    value={formData[3]?.companyInfo || ''}
-                    onChange={(e) => setFormData(prev => ({ ...prev, 3: { ...prev[3], companyInfo: e.target.value } }))}
-                    placeholder="Şirketiniz hakkında kısa bir açıklama..."
-                    className="w-full h-24 px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200 resize-none"
-                    maxLength={300}
-                  />
-                  
-                  <div className="text-center">
-                    <button
-                      onClick={handleStartClick}
-                      disabled={!formData[3]?.name || !formData[3]?.companyName || !formData[3]?.companyInfo}
-                      className={`px-12 py-4 text-lg font-semibold text-white rounded-full transition-all duration-200 ${
-                        formData[3]?.name && formData[3]?.companyName && formData[3]?.companyInfo
-                          ? 'bg-teal-600 hover:bg-teal-700 transform hover:scale-105'
-                          : 'bg-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      Devam Et →
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* 4. Adım - Event Selection */}
-              {currentStep === 4 && (
-                <div className="max-w-4xl mx-auto space-y-6">
-                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                    {Object.entries(eventOptions).map(([key, label]) => (
+                    <div className="text-center">
                       <button
-                        key={key}
-                        onClick={() => setFormData(prev => ({ 
-                          ...prev, 
-                          4: { 
-                            ...prev[4], 
-                            eventType: key, 
-                            eventContent: eventContents[key as keyof typeof eventContents] || '' 
-                          } 
-                        }))}
-                        className={`px-4 py-3 text-base font-medium rounded-full border-2 transition-all duration-200 ${
-                          formData[4]?.eventType === key
-                            ? 'bg-teal-600 text-white border-teal-600'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-teal-500'
+                        onClick={handleStartClick}
+                        disabled={!mainPageInput || mainPageInput.trim().length === 0}
+                        className={`px-12 py-4 text-lg font-semibold text-white rounded-full transition-all duration-200 ${
+                          mainPageInput && mainPageInput.trim().length > 0
+                            ? 'bg-teal-600 hover:bg-teal-700 transform hover:scale-105'
+                            : 'bg-gray-400 cursor-not-allowed'
                         }`}
                       >
-                        {label}
+                        Devam Et →
                       </button>
-                    ))}
+                    </div>
                   </div>
+                )}
 
-                  <div className="max-w-2xl mx-auto">
-                    <textarea
-                      value={formData[4]?.eventContent || ''}
-                      onChange={(e) => setFormData(prev => ({ ...prev, 4: { ...prev[4], eventContent: e.target.value } }))}
-                      placeholder="Event detaylarını açıklayın..."
-                      className="w-full h-24 px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200 resize-none"
-                      maxLength={500}
+                {/* 3. Adım - Çoklu Input */}
+                {currentStep === 3 && (
+                  <div className="max-w-xl mx-auto space-y-6">
+                    <input
+                      type="text"
+                      value={formData[3]?.name || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, 3: { ...prev[3], name: e.target.value } }))}
+                      placeholder="Adınızı girin"
+                      className="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200"
                     />
+                    
+                    <input
+                      type="text"
+                      value={formData[3]?.companyName || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, 3: { ...prev[3], companyName: e.target.value } }))}
+                      placeholder="Şirket adınızı girin"
+                      className="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200"
+                    />
+                    
+                    <textarea
+                      value={formData[3]?.companyInfo || ''}
+                      onChange={(e) => setFormData(prev => ({ ...prev, 3: { ...prev[3], companyInfo: e.target.value } }))}
+                      placeholder="Şirketiniz hakkında kısa bir açıklama..."
+                      className="w-full h-24 px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200 resize-none"
+                      maxLength={300}
+                    />
+                    
+                    <div className="text-center">
+                      <button
+                        onClick={handleStartClick}
+                        disabled={!formData[3]?.name || !formData[3]?.companyName || !formData[3]?.companyInfo}
+                        className={`px-12 py-4 text-lg font-semibold text-white rounded-full transition-all duration-200 ${
+                          formData[3]?.name && formData[3]?.companyName && formData[3]?.companyInfo
+                            ? 'bg-teal-600 hover:bg-teal-700 transform hover:scale-105'
+                            : 'bg-gray-400 cursor-not-allowed'
+                        }`}
+                      >
+                        Devam Et →
+                      </button>
+                    </div>
                   </div>
-                  
-                  <div className="text-center">
-                    <button
-                      onClick={handleStartClick}
-                      disabled={!formData[4]?.eventType || !formData[4]?.eventContent}
-                      className={`px-12 py-4 text-lg font-semibold text-white rounded-full transition-all duration-200 ${
-                        formData[4]?.eventType && formData[4]?.eventContent
-                          ? 'bg-teal-600 hover:bg-teal-700 transform hover:scale-105'
-                          : 'bg-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      Tamamla →
-                    </button>
+                )}
+
+                {/* 4. Adım - Event Selection */}
+                {currentStep === 4 && (
+                  <div className="max-w-4xl mx-auto space-y-6">
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                      {Object.entries(eventOptions).map(([key, label]) => (
+                        <button
+                          key={key}
+                          onClick={() => setFormData(prev => ({ 
+                            ...prev, 
+                            4: { 
+                              ...prev[4], 
+                              eventType: key, 
+                              eventContent: eventContents[key as keyof typeof eventContents] || '' 
+                            } 
+                          }))}
+                          className={`px-4 py-3 text-base font-medium rounded-full border-2 transition-all duration-200 ${
+                            formData[4]?.eventType === key
+                              ? 'bg-teal-600 text-white border-teal-600'
+                              : 'bg-white text-gray-700 border-gray-200 hover:border-teal-500'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="max-w-2xl mx-auto">
+                      <textarea
+                        value={formData[4]?.eventContent || ''}
+                        onChange={(e) => setFormData(prev => ({ ...prev, 4: { ...prev[4], eventContent: e.target.value } }))}
+                        placeholder="Event detaylarını açıklayın..."
+                        className="w-full h-24 px-6 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:border-teal-500 transition-colors duration-200 resize-none"
+                        maxLength={500}
+                      />
+                    </div>
+                    
+                    <div className="text-center">
+                      <button
+                        onClick={handleStartClick}
+                        disabled={!formData[4]?.eventType || !formData[4]?.eventContent}
+                        className={`px-12 py-4 text-lg font-semibold text-white rounded-full transition-all duration-200 ${
+                          formData[4]?.eventType && formData[4]?.eventContent
+                            ? 'bg-teal-600 hover:bg-teal-700 transform hover:scale-105'
+                            : 'bg-gray-400 cursor-not-allowed'
+                        }`}
+                      >
+                        Tamamla →
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
+          </div>
           
-          {completedSteps.size === 4 ? (
-            <button
-              onClick={handleStartClick}
-              className="bg-teal-600 hover:bg-teal-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg"
-            >
-              Başlat →
-            </button>
-          ) : (
-            completedSteps.has(currentStep) && currentStep < 4 && (
+          <div className="mt-8">
+            {completedSteps.size === 4 ? (
               <button
-                onClick={() => setOpenSection(currentStep)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg"
+                onClick={handleStartClick}
+                className="bg-teal-600 hover:bg-teal-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg"
               >
-                Düzenle
+                Başlat →
               </button>
-            )
-          )}
+            ) : (
+              completedSteps.has(currentStep) && currentStep < 4 && (
+                <button
+                  onClick={() => setOpenSection(currentStep)}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-lg font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg"
+                >
+                  Düzenle
+                </button>
+              )
+            )}
+          </div>
         </div>
       ) : (
         <StepFormContent
@@ -607,22 +611,22 @@ function StepFormContent({ stepNumber, initialData, onSave, onClose, stepTitle, 
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white w-full">
       {/* Close button */}
-      <div className="absolute top-8 right-8">
+      <div className="absolute top-4 right-4 sm:top-8 sm:right-8">
         <button
           onClick={onClose}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+          className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
         >
-          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
-      <div className="pt-20 pb-16 px-4">
+      <div className="pt-16 sm:pt-20 pb-8 sm:pb-16 px-4 sm:px-6">
         {/* Progress Bar */}
-        <div className="w-full max-w-lg mx-auto mb-16">
+        <div className="w-full max-w-lg mx-auto mb-8 sm:mb-16">
           <div className="flex items-center justify-center">
             {[1, 2, 3, 4].map((step, index) => (
               <React.Fragment key={step}>
@@ -655,17 +659,17 @@ function StepFormContent({ stepNumber, initialData, onSave, onClose, stepTitle, 
         </div>
 
         {/* Title */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight">
             {stepTitle}
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600">
             {stepDescription}
           </p>
         </div>
 
         {/* Form Content */}
-        <div className="w-full">
+        <div className="w-full max-w-2xl mx-auto">
           {renderFormFields()}
         </div>
       </div>

@@ -18,6 +18,7 @@ import Support from './pages/Support';
 import Landing from './pages/Landing';
 import EmailConfirmation from './pages/EmailConfirmation';
 import AuthError from './pages/AuthError';
+import MultiStepFormPage from './pages/MultiStepFormPage';
 import { CampaignsProvider } from './contexts/CampaignsContext';
 import { OrganizationProvider } from './contexts/OrganizationContext';
 
@@ -75,6 +76,7 @@ function App() {
             <Route path="/register" element={<LoginRegister />} />
             <Route path="/auth/confirm" element={<EmailConfirmation />} />
             <Route path="/auth/error" element={<AuthError />} />
+            <Route path="/multistep-form" element={<MultiStepFormPage />} />
             {user ? (
               <Route path="/" element={<Layout />}>
                 <Route index element={<Navigate to="/ui-bot" replace />} />
