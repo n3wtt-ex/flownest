@@ -18,11 +18,6 @@ interface Task {
   createdAt: string;
 }
 
-interface ChatBoxProps {
-  messages: Message[];
-  workspaceId: string;
-}
-
 // Header Component
 const Header = () => (
   <div className="bg-slate-900/40 backdrop-blur p-4 rounded-2xl flex items-center justify-between mb-4">
@@ -46,41 +41,6 @@ const Header = () => (
   </div>
 );
 
-// Mode Selector Component
-const ModeSelector = ({ currentMode, setCurrentMode }) => (
-  <div className="flex justify-center mb-6">
-    <div className="bg-slate-800/30 backdrop-blur p-1 rounded-full border border-slate-700/30">
-      {(['work', 'ask'] as const).map((mode) => (
-        <motion.button
-          key={mode}
-          onClick={() => setCurrentMode(mode)}
-          className={`px-5 py-2 font-semibold text-sm transition-all duration-200 flex items-center space-x-2 rounded-full ${
-            currentMode === mode
-              ? mode === 'work'
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg'
-                : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
-              : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
-          }`}
-          whileScale={{ scale: currentMode === mode ? 1.05 : 1 }}
-          whileTap={{ scale: 0.95 }}
-          aria-pressed={currentMode === mode}
-          aria-label={`Switch to ${mode} mode`}
-        >
-          <motion.div
-            animate={currentMode === mode ? { scale: [1, 1.1, 1] } : { scale: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {mode === 'work' ? <Zap className="w-4 h-4" /> : <HelpCircle className="w-4 h-4" />}
-          </motion.div>
-          <span className="uppercase tracking-wide font-semibold">
-            {mode === 'work' ? 'Work' : 'Ask'}
-          </span>
-        </motion.button>
-      ))}
-    </div>
-  </div>
-);
-
 // Message Item Component
 const MessageItem = ({ message, onCopy, onConvertToTask }) => {
   const [showActions, setShowActions] = useState(false);
@@ -95,7 +55,7 @@ const MessageItem = ({ message, onCopy, onConvertToTask }) => {
         onMouseEnter={() => setShowActions(true)}
         onMouseLeave={() => setShowActions(false)}
       >
-        <div className="group max-w-[70%] p-4 rounded-2xl shadow-lg bg-slate-800/70 border border-slate-700/40 backdrop-blur">
+        <div className="group max-w-[70%] p-4 rounded-2xl shadow-lg bg-slate-800/70 border border-slate-700/40 backdrop-blur relative">
           <div className="flex items-center space-x-2 mb-2">
             <Sparkles className="w-4 h-4 text-purple-400" />
             <span className="text-xs text-amber-300 font-semibold">AI Workspace</span>
@@ -110,21 +70,6 @@ const MessageItem = ({ message, onCopy, onConvertToTask }) => {
                 minute: '2-digit'
               })}
             </span>
-            
-            <div className="flex space-x-2">
-              <button
-                onClick={() => onConvertToTask(message)}
-                className="px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded-full border border-emerald-500/30 hover:bg-emerald-500/30 transition-colors"
-              >
-                Save as task
-              </button>
-              <button
-                onClick={() => console.log('Export:', message.text)}
-                className="px-3 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-full border border-purple-500/30 hover:bg-purple-500/30 transition-colors"
-              >
-                Export
-              </button>
-            </div>
           </div>
 
           {/* Message Actions */}
@@ -346,9 +291,9 @@ const TypingIndicator = () => (
 );
 
 // Input Bar Component
-const InputBar = ({ inputValue, setInputValue, currentMode, handleSendMessage, isTyping }) => (
+const InputBar = ({ inputValue, setInputValue, currentMode, setCurrentMode, handleSendMessage, isTyping }) => (
   <div className="bg-slate-900/40 backdrop-blur border border-slate-700/30 rounded-2xl p-4">
-    <div className="flex space-x-3">
+    <div className="flex space-x-3 mb-3">
       <input
         type="text"
         value={inputValue}
@@ -387,28 +332,69 @@ const InputBar = ({ inputValue, setInputValue, currentMode, handleSendMessage, i
       </motion.button>
     </div>
     
-    {/* Quick Actions */}
-    <div className="mt-3 flex items-center space-x-2 text-xs">
-      <span className="text-slate-500">Hızlı:</span>
-      {[
-        { label: 'Analiz', text: 'Proje durumunu analiz et' },
-        { label: 'Rapor', text: 'Rapor oluştur' },
-        { label: 'Yardım', text: 'Yardıma ihtiyacım var' }
-      ].map((action) => (
-        <button
-          key={action.label}
-          className="px-2 py-1 bg-slate-800/30 border border-slate-700/30 rounded-full text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
-          onClick={() => setInputValue(action.text)}
-        >
-          {action.label}
-        </button>
-      ))}
+    <div className="flex justify-between items-center">
+      {/* Quick Actions */}
+      <div className="flex items-center space-x-2 text-xs">
+        <span className="text-slate-500">Hızlı:</span>
+        {[
+          { label: 'Analiz', text: 'Proje durumunu analiz et' },
+          { label: 'Rapor', text: 'Rapor oluştur' },
+          { label: 'Yardım', text: 'Yardıma ihtiyacım var' }
+        ].map((action) => (
+          <button
+            key={action.label}
+            className="px-2 py-1 bg-slate-800/30 border border-slate-700/30 rounded-full text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+            onClick={() => setInputValue(action.text)}
+          >
+            {action.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Mode Selector */}
+      <div className="bg-slate-800/30 backdrop-blur p-1 rounded-full border border-slate-700/30">
+        {(['work', 'ask'] as const).map((mode) => (
+          <motion.button
+            key={mode}
+            onClick={() => setCurrentMode(mode)}
+            className={`px-3 py-1 font-semibold text-xs transition-all duration-200 flex items-center space-x-1 rounded-full ${
+              currentMode === mode
+                ? mode === 'work'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg'
+                  : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
+                : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+            }`}
+            whileScale={{ scale: currentMode === mode ? 1.05 : 1 }}
+            whileTap={{ scale: 0.95 }}
+            aria-pressed={currentMode === mode}
+            aria-label={`Switch to ${mode} mode`}
+          >
+            <motion.div
+              animate={currentMode === mode ? { scale: [1, 1.1, 1] } : { scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {mode === 'work' ? <Zap className="w-3 h-3" /> : <HelpCircle className="w-3 h-3" />}
+            </motion.div>
+            <span className="uppercase tracking-wide font-semibold">
+              {mode === 'work' ? 'Work' : 'Ask'}
+            </span>
+          </motion.button>
+        ))}
+      </div>
     </div>
   </div>
 );
 
 // Main Component
-export default function ModernAIChatbot({ messages: initialMessages, workspaceId }: ChatBoxProps) {
+export default function ModernAIChatbot() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: 'AI Workspace\'e hoş geldiniz! Size nasıl yardımcı olabilirim?',
+      sender: 'ai',
+      timestamp: new Date().toISOString()
+    }
+  ]);
   const [inputValue, setInputValue] = useState('');
   const [currentMode, setCurrentMode] = useState<'work' | 'ask'>('work');
   const [isTyping, setIsTyping] = useState(false);
@@ -416,7 +402,6 @@ export default function ModernAIChatbot({ messages: initialMessages, workspaceId
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [taskToCreate, setTaskToCreate] = useState<Message | null>(null);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -542,7 +527,7 @@ export default function ModernAIChatbot({ messages: initialMessages, workspaceId
       }}
     >
       <Header />
-      
+
       {/* Chat Window */}
       <div className="flex-1 overflow-y-auto space-y-6 mb-6 relative">
         <div role="list" aria-label="Chat messages">
@@ -572,34 +557,12 @@ export default function ModernAIChatbot({ messages: initialMessages, workspaceId
         isTyping={isTyping}
       />
 
-      {/* Task Modal */}
-      <AnimatePresence>
-        {showTaskModal && (
-          <TaskModal
-            isOpen={showTaskModal}
-            onClose={() => {
-              setShowTaskModal(false);
-              setTaskToCreate(null);
-            }}
-            onSave={handleSaveTask}
-            initialText={taskToCreate?.text || ''}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Tasks Counter (UI only) */}
-      {tasks.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="fixed bottom-6 right-6 bg-slate-800/90 backdrop-blur border border-slate-700/40 rounded-full px-4 py-2 text-slate-300 text-sm"
-        >
-          <div className="flex items-center space-x-2">
-            <CheckSquare className="w-4 h-4 text-emerald-400" />
-            <span>{tasks.length} görev kaydedildi</span>
-          </div>
-        </motion.div>
-      )}
+      <TaskModal
+        isOpen={showTaskModal}
+        onClose={() => setShowTaskModal(false)}
+        onSave={handleSaveTask}
+        initialText={taskToCreate?.text || ''}
+      />
     </div>
   );
 }
