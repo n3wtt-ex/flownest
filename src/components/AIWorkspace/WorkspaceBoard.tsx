@@ -8,6 +8,7 @@ import { RightSidebar } from './RightSidebar';
 import { SelectionRow } from './SelectionRow';
 import { OnboardingFlow } from './OnboardingFlow';
 import { supabase } from '../../lib/supabaseClient';
+import MultiStepForm from './multistep_form_fixed'; // MultiStepForm importunu ekliyoruz
 
 interface WorkspaceSelection {
   [key: string]: string;
@@ -58,6 +59,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [containerDimensions, setContainerDimensions] = useState({ width: 800, height: 480 });
   const [workspaceData, setWorkspaceData] = useState<any>(null);
+  const [showMultiStepForm, setShowMultiStepForm] = useState(false); // Multistep form durumu için yeni state
   
   const workspaceRef = useRef<HTMLDivElement>(null);
 
@@ -272,6 +274,19 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
     }, 300); // Animasyon tamamlandıktan sonra güncelle
   };
 
+  // Multistep form completion handler
+  const handleMultiStepFormComplete = (data: any) => {
+    console.log('Multistep form completed with data:', data);
+    // Burada form verileriyle ilgili işlemleri yapabilirsiniz
+    // Örneğin, verileri bir API'ye gönderebilir veya state'e kaydedebilirsiniz
+    
+    // Formu kapat
+    setShowMultiStepForm(false);
+    
+    // Gerekirse workspace'i güncelleyin
+    // onUpdateWorkspace({ ...workspace, ...data });
+  };
+
   // If onboarding is not completed, show the onboarding flow
   if (!workspace.onboardingCompleted) {
     return (
@@ -316,6 +331,15 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       
       insertWorkspaceData();
     }, [workspace.id]);
+
+  // Multistep formu göster
+  if (showMultiStepForm) {
+    return (
+      <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+        <MultiStepForm onComplete={handleMultiStepFormComplete} />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
@@ -401,6 +425,16 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
             </AnimatePresence>
 
             {/* Start Button kaldırıldı - Otomasyon devrede */}
+            
+            {/* Multistep formu başlatmak için bir buton ekleyebiliriz */}
+            <div className="absolute top-4 right-4 z-30">
+              <button
+                onClick={() => setShowMultiStepForm(true)}
+                className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-all duration-200"
+              >
+                Multistep Formu Aç
+              </button>
+            </div>
           </div>
         </div>
       </div>
