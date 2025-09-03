@@ -20,7 +20,7 @@ interface Task {
 
 // Header Component
 const Header = () => (
-  <div className="bg-slate-900/40 backdrop-blur p-4 rounded-2xl flex items-center justify-between mb-4">
+  <div className="bg-slate-900/40 backdrop-blur p-4 flex items-center justify-between mb-4">
     <div className="flex items-center space-x-3">
       <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full">
         <Bot className="w-5 h-5 text-white" />
@@ -292,7 +292,7 @@ const TypingIndicator = () => (
 
 // Input Bar Component
 const InputBar = ({ inputValue, setInputValue, currentMode, setCurrentMode, handleSendMessage, isTyping }) => (
-  <div className="bg-slate-900/40 backdrop-blur border border-slate-700/30 rounded-2xl p-4">
+  <div className="bg-slate-900/40 backdrop-blur border border-slate-700/30 p-4">
     <div className="flex space-x-3 mb-3">
       <input
         type="text"
@@ -529,7 +529,7 @@ export default function ModernAIChatbot() {
       <Header />
 
       {/* Chat Window */}
-      <div className="flex-1 overflow-y-auto space-y-6 mb-6 relative">
+      <div className="flex-1 overflow-y-auto space-y-6 mb-6 relative scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent scrollbar-thumb-rounded-full">
         <div role="list" aria-label="Chat messages">
           <AnimatePresence>
             {messages.map((message) => (
