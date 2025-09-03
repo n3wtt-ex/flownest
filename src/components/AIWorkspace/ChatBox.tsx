@@ -293,7 +293,7 @@ const TypingIndicator = () => (
 // Input Bar Component
 const InputBar = ({ inputValue, setInputValue, currentMode, setCurrentMode, handleSendMessage, isTyping }) => (
   <div className="bg-slate-900/40 backdrop-blur border border-slate-700/30 rounded-2xl p-4">
-    <div className="flex space-x-3 mb-3">
+    <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 mb-3">
       <input
         type="text"
         value={inputValue}
@@ -309,19 +309,19 @@ const InputBar = ({ inputValue, setInputValue, currentMode, setCurrentMode, hand
             ? 'Görevinizi açıklayın...' 
             : 'Sorunuzu sorun...'
         }
-        className="flex-1 bg-slate-800/50 border border-slate-600/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all duration-200"
+        className="flex-1 bg-slate-800/50 border border-slate-600/30 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all duration-200 min-w-0"
         disabled={isTyping}
         aria-label={`Type your ${currentMode} message here`}
       />
       <motion.button
         onClick={handleSendMessage}
         disabled={!inputValue.trim() || isTyping}
-        className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 ${
+        className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${
           !inputValue.trim() || isTyping
             ? 'bg-slate-800/50 border border-slate-700/30 text-slate-500 cursor-not-allowed'
             : currentMode === 'work'
               ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-emerald-500/25'
-              : 'bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-500 text-white shadow-lg hover:shadow-blue-500/25'
+              : 'bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg hover:shadow-blue-500/25'
         }`}
         whileHover={{ scale: inputValue.trim() && !isTyping ? 1.02 : 1 }}
         whileTap={{ scale: inputValue.trim() && !isTyping ? 0.98 : 1 }}
@@ -332,10 +332,10 @@ const InputBar = ({ inputValue, setInputValue, currentMode, setCurrentMode, hand
       </motion.button>
     </div>
     
-    <div className="flex justify-between items-center">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
       {/* Quick Actions */}
-      <div className="flex items-center space-x-2 text-xs">
-        <span className="text-slate-500">Hızlı:</span>
+      <div className="flex items-center space-x-2 text-xs flex-wrap">
+        <span className="text-slate-500 whitespace-nowrap">Hızlı:</span>
         {[
           { label: 'Analiz', text: 'Proje durumunu analiz et' },
           { label: 'Rapor', text: 'Rapor oluştur' },
@@ -343,7 +343,7 @@ const InputBar = ({ inputValue, setInputValue, currentMode, setCurrentMode, hand
         ].map((action) => (
           <button
             key={action.label}
-            className="px-2 py-1 bg-slate-800/30 border border-slate-700/30 rounded-full text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+            className="px-2 py-1 bg-slate-800/30 border border-slate-700/30 rounded-full text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors whitespace-nowrap"
             onClick={() => setInputValue(action.text)}
           >
             {action.label}
@@ -526,10 +526,8 @@ export default function ModernAIChatbot() {
         background: 'linear-gradient(180deg, #071026 0%, #051428 100%)'
       }}
     >
-      <Header />
-
       {/* Chat Window */}
-      <div className="flex-1 overflow-y-auto space-y-6 mb-6 relative">
+      <div className="flex-1 overflow-y-auto space-y-6 mb-6 relative scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent">
         <div role="list" aria-label="Chat messages">
           <AnimatePresence>
             {messages.map((message) => (
@@ -563,6 +561,98 @@ export default function ModernAIChatbot() {
         onSave={handleSaveTask}
         initialText={taskToCreate?.text || ''}
       />
+    </div>
+  );
+}
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+export type ChatMessage = { id: string; role: "user" | "bot"; text: string; mode?: "work" | "ask" };
+
+export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask") => void }) {
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { id: "1", role: "user", text: "NYC AI SaaS leadleri bul ve kampanya hazırla" },
+    { id: "2", role: "bot", text: "Filtreleniyor… 32 sonuç bulundu." },
+  ]);
+  const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
+  const [mode, setMode] = useState<"work" | "ask">("work");
+
+  const send = () => {
+    if (!input.trim()) return;
+    const msg: ChatMessage = { id: String(Date.now()), role: "user", text: input, mode };
+    setMessages((m) => [...m, msg]);
+    setInput("");
+    setTyping(true);
+    setTimeout(() => {
+      setMessages((m) => [...m, { id: String(Date.now() + 1), role: "bot", text: "(demo) Görev kuyruğa alındı." }]);
+      setTyping(false);
+    }, 600);
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-gray-900 p-4 rounded-lg">
+      <div className="flex-1 space-y-2 overflow-auto pr-1 scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent">
+        {messages.map((m) => (
+          <div key={m.id} className={m.role === "user" ? "text-right" : "text-left"}>
+            <span
+              className={
+                m.role === "user"
+                  ? "inline-block px-3 py-2 rounded-full bg-blue-600 text-white text-sm"
+                  : "inline-block px-3 py-2 rounded-2xl bg-gray-800 text-white border border-gray-700 text-sm"
+              }
+            >
+              {m.text}
+              {m.mode && m.role === "user" && (
+                <span className="ml-2 text-[10px] text-blue-300">{m.mode.toUpperCase()}</span>
+              )}
+            </span>
+          </div>
+        ))}
+        {typing && (
+          <div className="flex items-center gap-1 text-gray-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:120ms]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse [animation-delay:240ms]" />
+          </div>
+        )}
+      </div>
+      <div className="mt-3 flex flex-col sm:flex-row gap-2">
+        <Input
+          placeholder={`${mode === "work" ? "Work" : "Ask"}…`}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && send()}
+          className="bg-gray-800 text-white border-gray-700 focus:border-blue-500 flex-1 min-w-0"
+        />
+        <Button onClick={send} className="bg-blue-600 hover:bg-blue-700 whitespace-nowrap">
+          Gönder
+        </Button>
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <Button
+          variant="hero"
+          onClick={() => {
+            setMode("work");
+            onModeChange("work");
+          }}
+          className="rounded-full bg-blue-600 hover:bg-blue-700"
+        >
+          Work
+        </Button>
+        <Button
+          variant="outlineGlow"
+          onClick={() => {
+            setMode("ask");
+            onModeChange("ask");
+          }}
+          className="rounded-full border border-gray-600 text-white hover:bg-gray-800"
+        >
+          Ask
+        </Button>
+      </div>
     </div>
   );
 }

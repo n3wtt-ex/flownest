@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HexIcon } from './HexIcon';
 import { ConnectionLines } from './ConnectionLines';
-import ChatBox from '@/components/AIWorkspace/ChatBox';
+import { ChatBox } from '@/components/AIWorkspace/ChatBox';
 import { AgentHeader } from './AgentHeader';
 import { RightSidebar } from './RightSidebar';
 import { SelectionRow } from './SelectionRow';
@@ -381,7 +381,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   }
 
   return (
-    <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+    <div className="w-full h-full min-h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
       
       <AgentHeader agents={agents} />
       
@@ -389,8 +389,8 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
 
       <div className="flex h-[480px]">
         {/* Left Chat Panel */}
-        <div className="w-1/3 p-3 flex items-center justify-center">
-          <div className="w-full h-full flex items-center justify-center">
+        <div className="w-1/3 p-3">
+          <div className="w-full h-full">
             <ChatBox />
           </div>
         </div>

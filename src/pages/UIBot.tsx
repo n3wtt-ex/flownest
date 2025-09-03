@@ -103,7 +103,7 @@ export function UIBot() {
             />
           ) : (
             /* Active Workspace */
-            <div className="h-[800px]">
+            <div className="h-full min-h-[800px]">
               <div className="p-4 border-b border-gray-200 flex items-center justify-between dark:border-slate-700 bg-[#0f172a]">
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">{currentWorkspace.name}</h2>
