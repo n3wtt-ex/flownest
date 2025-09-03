@@ -186,7 +186,7 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
   const isMainInputValid = mainPageInput && !isNaN(Number(mainPageInput)) && Number(mainPageInput) > 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8 w-full">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8 w-full absolute inset-0 z-[100]">
       {/* Progress Bar - Exactly like the image */}
       <div className="w-full max-w-2xl mb-8 sm:mb-16">
         <div className="flex items-center justify-center">

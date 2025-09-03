@@ -13,8 +13,12 @@ export default function MultiStepFormPage() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 w-full h-full bg-gray-50 overflow-auto">
-      <MultiStepForm onComplete={handleComplete} />
+    <div className="fixed inset-0 z-[100] w-full h-full bg-gray-50 overflow-auto">
+      <div className="min-h-screen w-full flex items-center justify-center p-4">
+        <div className="w-full max-w-4xl">
+          <MultiStepForm onComplete={handleComplete} />
+        </div>
+      </div>
     </div>
   );
 }
