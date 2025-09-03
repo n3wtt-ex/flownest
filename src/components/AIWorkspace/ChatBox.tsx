@@ -364,7 +364,7 @@ const InputBar = ({ inputValue, setInputValue, currentMode, setCurrentMode, hand
                   : 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-lg'
                 : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
             }`}
-            whileScale={{ scale: currentMode === mode ? 1.05 : 1 }}
+            whileHover={{ scale: currentMode === mode ? 1.05 : 1 }}
             whileTap={{ scale: 0.95 }}
             aria-pressed={currentMode === mode}
             aria-label={`Switch to ${mode} mode`}
@@ -521,7 +521,7 @@ export default function ModernAIChatbot() {
 
   return (
     <div 
-      className="h-screen w-full flex flex-col p-6"
+      className="h-full w-full flex flex-col p-6"
       style={{
         background: 'linear-gradient(180deg, #071026 0%, #051428 100%)'
       }}
