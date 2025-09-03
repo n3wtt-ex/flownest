@@ -611,7 +611,7 @@ function StepFormContent({ stepNumber, initialData, onSave, onClose, stepTitle, 
   };
 
   return (
-    <div className="min-h-screen bg-white w-full flex flex-col">
+    <div className="min-h-screen bg-white w-full flex flex-col absolute inset-0 z-[100]">
       {/* Close button */}
       <div className="absolute top-4 right-4 sm:top-8 sm:right-8 z-10">
         <button
