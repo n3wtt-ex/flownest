@@ -18,6 +18,11 @@ interface Task {
   createdAt: string;
 }
 
+interface ChatBoxProps {
+  messages: Message[];
+  workspaceId: string;
+}
+
 // Header Component
 const Header = () => (
   <div className="bg-slate-900/40 backdrop-blur p-4 rounded-2xl flex items-center justify-between mb-4">
@@ -403,15 +408,7 @@ const InputBar = ({ inputValue, setInputValue, currentMode, handleSendMessage, i
 );
 
 // Main Component
-export default function ModernAIChatbot() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'AI Workspace\'e hoş geldiniz! Size nasıl yardımcı olabilirim?',
-      sender: 'ai',
-      timestamp: new Date().toISOString()
-    }
-  ]);
+export default function ModernAIChatbot({ messages: initialMessages, workspaceId }: ChatBoxProps) {
   const [inputValue, setInputValue] = useState('');
   const [currentMode, setCurrentMode] = useState<'work' | 'ask'>('work');
   const [isTyping, setIsTyping] = useState(false);
@@ -419,6 +416,7 @@ export default function ModernAIChatbot() {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [taskToCreate, setTaskToCreate] = useState<Message | null>(null);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

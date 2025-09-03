@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HexIcon } from './HexIcon';
 import { ConnectionLines } from './ConnectionLines';
-import { ChatBox } from '@/components/workspace/ChatBox';
+import ChatBox from '@/components/workspace/ChatBox';
 import { AgentHeader } from './AgentHeader';
 import { RightSidebar } from './RightSidebar';
 import { SelectionRow } from './SelectionRow';
@@ -392,7 +392,10 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         {/* Left Chat Panel */}
         <div className="w-1/3 p-3 border-r border-slate-700/50 flex items-center justify-center">
           <div className="w-full h-full flex items-center justify-center">
-            <ChatBox messages={workspace.messages} workspaceId={workspace.id} />
+            <ChatBox 
+              messages={workspace.messages} 
+              workspaceId={workspace.id} 
+            />
           </div>
         </div>
 
