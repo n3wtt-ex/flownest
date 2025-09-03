@@ -275,16 +275,56 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   };
 
   // Multistep form completion handler
-  const handleMultiStepFormComplete = (data: any) => {
+  const handleMultiStepFormComplete = async (data: any) => {
     console.log('Multistep form completed with data:', data);
-    // Burada form verileriyle ilgili işlemleri yapabilirsiniz
-    // Örneğin, verileri bir API'ye gönderebilir veya state'e kaydedebilirsiniz
     
     // Formu kapat
     setShowMultiStepForm(false);
     
-    // Gerekirse workspace'i güncelleyin
-    // onUpdateWorkspace({ ...workspace, ...data });
+    // Workspace'i güncelle
+    const updatedWorkspace = { ...workspace, ...data };
+    onUpdateWorkspace(updatedWorkspace);
+    
+    // Webhook çağrıları
+    try {
+      // Tüm verileri birleştir
+      const combinedData = {
+        target_count: data.targetCustomers,
+        target_audience: data.targetAudience,
+        name: data.name,
+        company: data.companyName,
+        info: data.companyInfo,
+        event_type: data.eventType,
+        event: data.eventContent
+      };
+
+      // Webhook URL'leri
+      const webhooks = [
+        'https://n8n.flownests.org/webhook/c42236c9-e0a7-4d2e-bbdb-46940c0f91c5',
+        'https://n8n.flownests.org/webhook/40bb5e2c-741f-4586-8c11-7659bd1cc874',
+        'https://n8n.flownests.org/webhook/541cdb39-b379-4f91-a6d6-90435b58d0a0',
+        'https://n8n.flownests.org/webhook/156450b8-a366-4648-8fad-eef1a1a3e5b5'
+      ];
+
+      // Tüm webhook'ları sırayla çağır
+      for (const webhook of webhooks) {
+        const response = await fetch(webhook, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(combinedData),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Webhook error: ${response.status}`);
+        }
+      }
+      
+      console.log('All webhooks sent successfully');
+      alert('Form başarıyla tamamlandı ve verileriniz gönderildi!');
+    } catch (error) {
+      console.error('Webhook error:', error);
+      alert('Veriler gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+    }
   };
 
   // If onboarding is not completed, show the onboarding flow
@@ -430,9 +470,9 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
             <div className="absolute top-4 right-4 z-30">
               <button
                 onClick={() => setShowMultiStepForm(true)}
-                className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-all duration-200"
+                className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-all duration-200 text-sm font-medium"
               >
-                Multistep Formu Aç
+                Formu Aç
               </button>
             </div>
           </div>
