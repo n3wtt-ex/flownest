@@ -522,7 +522,7 @@ export function TicketManagement() {
   const getPriorityBadge = (priority: string) => {
     const variants = {
       low: 'secondary priority-low',
-      medium: 'secondary priority-medium',
+      medium: 'secondary priority-medium', // Using secondary variant for better contrast
       high: 'destructive priority-high',
       urgent: 'destructive priority-urgent'
     };
@@ -533,6 +533,18 @@ export function TicketManagement() {
       high: language === 'tr' ? 'Yüksek' : 'High',
       urgent: language === 'tr' ? 'Acil' : 'Urgent'
     };
+
+    // Special handling for medium priority to ensure blue color
+    if (priority === 'medium') {
+      return (
+        <Badge 
+          variant="secondary" 
+          className="bg-blue-100 text-blue-800 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-100"
+        >
+          {labels.medium}
+        </Badge>
+      );
+    }
 
     return (
       <Badge variant={variants[priority as keyof typeof variants] as any} className={variants[priority as keyof typeof variants]}>
