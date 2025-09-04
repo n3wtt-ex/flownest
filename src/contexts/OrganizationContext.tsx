@@ -48,6 +48,7 @@ export function OrganizationProvider({ children }: OrganizationProviderProps) {
         `)
         .eq('user_id', user?.id)
         .eq('is_active', true)
+        .eq('approval_status', 'approved') // Only load approved organizations
         .order('joined_at', { ascending: false });
 
       if (userOrgsError) throw userOrgsError;

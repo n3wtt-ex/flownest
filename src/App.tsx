@@ -57,7 +57,7 @@ function DashboardWrapper() {
 
 function App() {
   const { user, loading, approvalStatus } = useAuth();
-  const [redirected, setRedirected] = useState(false); // Track if user has been redirected
+  const [checkedApproval, setCheckedApproval] = useState(false); // Track if we've checked approval status
 
   if (loading) {
     return (
@@ -70,12 +70,19 @@ function App() {
   // Check if user is logged in but not approved
   // Only redirect if we have a valid approval status that is explicitly not 'approved'
   // This prevents blocking existing users during the transition
-  // Only redirect once to prevent infinite loops
-  if (user && approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null && !redirected) {
+  // Only check and redirect once to prevent infinite loops
+  if (user && approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null && !checkedApproval) {
+    // Mark that we've checked the approval status to prevent infinite loops
+    setCheckedApproval(true);
+    
     // Redirect to auth error page with the approval status message
-    setRedirected(true); // Mark as redirected to prevent infinite loops
     window.location.href = `/auth/error?message=${encodeURIComponent(approvalStatus)}`;
     return null;
+  }
+
+  // If we've already checked approval status and the user is approved, mark as checked
+  if (user && approvalStatus === 'approved' && !checkedApproval) {
+    setCheckedApproval(true);
   }
 
   return (

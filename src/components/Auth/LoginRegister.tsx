@@ -12,7 +12,7 @@ export function LoginRegister() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const [redirected, setRedirected] = useState(false); // Track if user has been redirected
+  const [checkedApproval, setCheckedApproval] = useState(false); // Track if we've checked approval status
   const { signIn, signUp, approvalStatus } = useAuth();
   const navigate = useNavigate();
 
@@ -20,6 +20,7 @@ export function LoginRegister() {
     setIsLogin(!isLogin);
     setError('');
     setSuccess(false);
+    setCheckedApproval(false); // Reset approval check when toggling forms
     // Form değişiminde alanları temizle
     setEmail('');
     setPassword('');
@@ -30,13 +31,20 @@ export function LoginRegister() {
   useEffect(() => {
     // Only redirect if we have a valid approval status that is explicitly not 'approved'
     // This prevents blocking existing users during the transition
-    // Only redirect once to prevent infinite loops
-    if (approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null && !redirected) {
+    // Only check and redirect once to prevent infinite loops
+    if (approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null && !checkedApproval) {
+      // Mark that we've checked the approval status to prevent infinite loops
+      setCheckedApproval(true);
+      
       // User is logged in but not approved, redirect to auth error
-      setRedirected(true); // Mark as redirected to prevent infinite loops
       navigate(`/auth/error?message=${encodeURIComponent(approvalStatus)}`);
     }
-  }, [approvalStatus, navigate, redirected]);
+    
+    // If user is approved, mark as checked
+    if (approvalStatus === 'approved' && !checkedApproval) {
+      setCheckedApproval(true);
+    }
+  }, [approvalStatus, navigate, checkedApproval]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

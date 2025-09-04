@@ -7,6 +7,7 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
   const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
   const checkingStatusRef = useRef(false); // Ref to prevent concurrent status checks
+  const checkedStatusRef = useRef(false); // Ref to prevent repeated status checks
 
   useEffect(() => {
     // Get initial session
@@ -14,8 +15,8 @@ export function useAuth() {
       setUser(session?.user ?? null);
       setLoading(false);
       
-      // Check approval status if user is logged in
-      if (session?.user) {
+      // Check approval status if user is logged in and we haven't checked yet
+      if (session?.user && !checkedStatusRef.current) {
         checkUserApprovalStatus(session.user.id);
       }
     });
@@ -27,11 +28,12 @@ export function useAuth() {
       setUser(session?.user ?? null);
       setLoading(false);
       
-      // Check approval status if user is logged in
-      if (session?.user) {
+      // Check approval status if user is logged in and we haven't checked yet
+      if (session?.user && !checkedStatusRef.current) {
         checkUserApprovalStatus(session.user.id);
-      } else {
+      } else if (!session?.user) {
         setApprovalStatus(null);
+        checkedStatusRef.current = false; // Reset when user logs out
       }
     });
 
@@ -41,6 +43,11 @@ export function useAuth() {
   const checkUserApprovalStatus = async (userId: string) => {
     // Prevent concurrent status checks
     if (checkingStatusRef.current) {
+      return;
+    }
+    
+    // Prevent repeated status checks
+    if (checkedStatusRef.current) {
       return;
     }
     
@@ -65,6 +72,7 @@ export function useAuth() {
         // Otherwise, we need to check the specific status
         if (isApproved) {
           setApprovalStatus('approved');
+          checkedStatusRef.current = true; // Mark as checked since user is approved
         } else {
           // Try to get the specific approval status message
           try {
@@ -81,11 +89,13 @@ export function useAuth() {
               }
             } else {
               setApprovalStatus(statusMessage);
+              checkedStatusRef.current = true; // Mark as checked
             }
           } catch (messageError) {
             console.error('Error getting user approval status message:', messageError);
             // Default to approved to prevent blocking existing users
             setApprovalStatus('approved');
+            checkedStatusRef.current = true; // Mark as checked
           }
         }
       }
@@ -93,6 +103,7 @@ export function useAuth() {
       console.error('Error checking user approval status:', error);
       // Default to approved to prevent blocking existing users
       setApprovalStatus('approved');
+      checkedStatusRef.current = true; // Mark as checked
     } finally {
       checkingStatusRef.current = false;
     }
@@ -106,6 +117,7 @@ export function useAuth() {
     
     // If sign in is successful, check approval status
     if (data?.user && !error) {
+      checkedStatusRef.current = false; // Reset the check status for new sign in
       await checkUserApprovalStatus(data.user.id);
     }
     
@@ -129,6 +141,7 @@ export function useAuth() {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     setApprovalStatus(null);
+    checkedStatusRef.current = false; // Reset when user logs out
     return { error };
   };
 
