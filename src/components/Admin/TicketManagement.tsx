@@ -46,8 +46,7 @@ export function TicketManagement() {
     try {
       setLoading(true);
 
-      // Load all tickets with user and organization info
-      // Using separate queries to avoid parser errors with auth.users
+      // Load all tickets with organization info
       const { data: ticketsData, error } = await supabase
         .from('support_tickets')
         .select(`
@@ -58,15 +57,14 @@ export function TicketManagement() {
 
       if (error) throw error;
 
-      // Extract user IDs and organization IDs
+      // Extract user IDs
       const userIds = ticketsData?.map(ticket => ticket.user_id).filter(Boolean) || [];
-      const orgIds = ticketsData?.map(ticket => ticket.organization_id).filter(Boolean) || [];
 
-      // Get user details
+      // Get user details from auth.users
       let usersData: any[] = [];
       if (userIds.length > 0) {
         const { data, error: userError } = await supabase
-          .from('users')
+          .from('auth.users')
           .select('id, email, raw_user_meta_data')
           .in('id', userIds);
         
@@ -125,9 +123,9 @@ export function TicketManagement() {
         const senderIds = [...new Set(messagesData.map(msg => msg.sender_id))].filter(Boolean);
         
         if (senderIds.length > 0) {
-          // Get user details for all senders
+          // Get user details for all senders from auth.users
           const { data: usersData, error: usersError } = await supabase
-            .from('users')
+            .from('auth.users')
             .select('id, email, raw_user_meta_data')
             .in('id', senderIds);
 
