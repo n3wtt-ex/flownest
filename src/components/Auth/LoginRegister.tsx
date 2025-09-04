@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Bot, Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
@@ -12,7 +12,7 @@ export function LoginRegister() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, approvalStatus } = useAuth();
   const navigate = useNavigate();
 
   const toggleForm = () => {
@@ -25,6 +25,14 @@ export function LoginRegister() {
     setFullName('');
   };
 
+  // Check approval status after login
+  useEffect(() => {
+    if (approvalStatus && approvalStatus !== 'approved') {
+      // User is logged in but not approved, redirect to auth error
+      navigate(`/auth/error?message=${encodeURIComponent(approvalStatus)}`);
+    }
+  }, [approvalStatus, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -36,7 +44,8 @@ export function LoginRegister() {
       if (error) {
         setError(error.message);
       } else {
-        navigate('/');
+        // Navigation will be handled by the useEffect above
+        // or by the App component's approval status check
       }
     } else {
       const { error } = await signUp(email, password, fullName);

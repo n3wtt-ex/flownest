@@ -39,9 +39,9 @@ BEGIN
     )
     RETURNING id INTO new_org_id;
     
-    -- Add user as owner of the organization with pending approval status
-    INSERT INTO public.user_organizations (user_id, organization_id, role, approval_status)
-    VALUES (NEW.id, new_org_id, 'owner', 'pending');
+    -- Add user as owner of the organization with pending approval status and inactive
+    INSERT INTO public.user_organizations (user_id, organization_id, role, approval_status, is_active)
+    VALUES (NEW.id, new_org_id, 'owner', 'pending', false);
     
     RETURN NEW;
 EXCEPTION
@@ -80,6 +80,7 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Ensure the get_current_user_organization_id function is correct
+-- This function now checks both is_active and approval_status
 CREATE OR REPLACE FUNCTION get_current_user_organization_id()
 RETURNS UUID AS $$
 DECLARE
@@ -89,6 +90,7 @@ BEGIN
     FROM user_organizations uo
     WHERE uo.user_id = auth.uid()
     AND uo.is_active = true
+    AND uo.approval_status = 'approved'
     LIMIT 1;
     
     RETURN org_id;

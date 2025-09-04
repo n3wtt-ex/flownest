@@ -56,7 +56,7 @@ function DashboardWrapper() {
 }
 
 function App() {
-  const { user, loading } = useAuth();
+  const { user, loading, approvalStatus } = useAuth();
 
   if (loading) {
     return (
@@ -64,6 +64,13 @@ function App() {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
+  }
+
+  // Check if user is logged in but not approved
+  if (user && approvalStatus && approvalStatus !== 'approved') {
+    // Redirect to auth error page with the approval status message
+    window.location.href = `/auth/error?message=${encodeURIComponent(approvalStatus)}`;
+    return null;
   }
 
   return (

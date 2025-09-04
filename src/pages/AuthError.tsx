@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { XCircle, AlertTriangle } from 'lucide-react';
+import { XCircle, AlertTriangle, Clock, UserX } from 'lucide-react';
 
 export function AuthError() {
   const navigate = useNavigate();
@@ -9,21 +9,43 @@ export function AuthError() {
   const errorMessage = new URLSearchParams(location.search).get('error') || 'An authentication error occurred.';
   const message = new URLSearchParams(location.search).get('message') || '';
 
+  // Determine which icon to show based on the message
+  const getIcon = () => {
+    if (message.includes('pending')) {
+      return <Clock className="w-8 h-8 text-white" />;
+    } else if (message.includes('rejected')) {
+      return <UserX className="w-8 h-8 text-white" />;
+    } else if (message) {
+      return <AlertTriangle className="w-8 h-8 text-white" />;
+    } else {
+      return <XCircle className="w-8 h-8 text-white" />;
+    }
+  };
+
+  // Determine the title based on the message
+  const getTitle = () => {
+    if (message.includes('pending')) {
+      return 'Application Pending';
+    } else if (message.includes('rejected')) {
+      return 'Application Rejected';
+    } else if (message) {
+      return 'Authentication Update';
+    } else {
+      return 'Authentication Error';
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
             <div className="w-16 h-16 bg-red-600 rounded-xl flex items-center justify-center">
-              {message ? (
-                <AlertTriangle className="w-8 h-8 text-white" />
-              ) : (
-                <XCircle className="w-8 h-8 text-white" />
-              )}
+              {getIcon()}
             </div>
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            {message ? 'Authentication Update' : 'Authentication Error'}
+            {getTitle()}
           </h2>
           <p className="mt-2 text-gray-600">
             {message || errorMessage}

@@ -60,6 +60,33 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## User Approval System
+
+This project implements a user approval system where new users must be approved by an administrator before they can access the platform.
+
+### How it works:
+
+1. When a new user registers, they are automatically assigned to an organization with:
+   - `approval_status = 'pending'`
+   - `is_active = false`
+
+2. Pending users cannot access the site and will see a message indicating their application is pending approval.
+
+3. Administrators can review pending users in the Admin Panel and either:
+   - Approve the user (sets `approval_status = 'approved'` and `is_active = true`)
+   - Reject the user (sets `approval_status = 'rejected'` and `is_active = false`)
+
+4. Rejected users cannot access the site and will see a specific rejection message when they try to log in.
+
+### Implementation Details:
+
+- Database functions handle user approval/rejection logic
+- Authentication flow checks user approval status
+- Admin Panel provides UI for managing user approvals
+- Custom messages are displayed to users based on their approval status
+
+For detailed implementation information, see [USER_APPROVAL_IMPLEMENTATION.md](USER_APPROVAL_IMPLEMENTATION.md)
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/861048aa-1e66-4b03-9015-974211fc951d) and click on Share -> Publish.
