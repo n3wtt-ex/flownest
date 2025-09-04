@@ -52,7 +52,7 @@ export function TicketManagement() {
         .from('support_tickets')
         .select(`
           *,
-          user:users(id, email, raw_user_meta_data),
+          user:auth.users(id, email, raw_user_meta_data),
           organization:organizations(id, name, subscription_plan)
         `)
         .order('created_at', { ascending: false });
@@ -118,7 +118,7 @@ export function TicketManagement() {
         if (senderIds.length > 0) {
           // Get user details for all senders from auth.users
           const { data: usersData, error: usersError } = await supabase
-            .from('users')
+            .from('auth.users')
             .select('id, email, raw_user_meta_data')
             .in('id', senderIds);
 
