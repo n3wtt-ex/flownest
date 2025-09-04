@@ -25,7 +25,9 @@ export function LoginRegister() {
     setFullName('');
   };
 
+  // TEMPORARY FIX: Bypass approval check for existing users
   // Check approval status after login
+  /*
   useEffect(() => {
     // Only redirect if we have a valid approval status that is not 'approved'
     if (approvalStatus && approvalStatus !== 'approved') {
@@ -33,6 +35,7 @@ export function LoginRegister() {
       navigate(`/auth/error?message=${encodeURIComponent(approvalStatus)}`);
     }
   }, [approvalStatus, navigate]);
+  */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,8 +48,8 @@ export function LoginRegister() {
       if (error) {
         setError(error.message);
       } else {
-        // Navigation will be handled by the useEffect above
-        // or by the App component's approval status check
+        // TEMPORARY FIX: Navigate to home page directly
+        navigate('/');
       }
     } else {
       const { error } = await signUp(email, password, fullName);
