@@ -1213,8 +1213,8 @@ import { Zap, HelpCircle } from 'lucide-react';
 
 export type ChatMessage = { id: string; role: "user" | "bot"; text: string; mode?: "work" | "ask" };
 
-// Header Bileşeni
-const Header = ({ mode, setMode, onModeChange }: { mode: "work" | "ask", setMode: (mode: "work" | "ask") => void, onModeChange: (mode: "work" | "ask") => void }) => {
+// ChatHeader Bileşeni
+const ChatHeader = ({ mode, setMode, onModeChange }: { mode: "work" | "ask", setMode: (mode: "work" | "ask") => void, onModeChange: (mode: "work" | "ask") => void }) => {
   return (
     <div className="bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-4 mb-4 shadow-lg">
       <div className="flex items-center justify-between">
@@ -1286,7 +1286,7 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
       transition={{ duration: 0.5 }}
       className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-gray-950 p-4 rounded-xl"
     >
-      <Header mode={mode} setMode={setMode} onModeChange={onModeChange} />
+      <ChatHeader mode={mode} setMode={setMode} onModeChange={onModeChange} />
       <div className="flex-1 space-y-3 overflow-auto pr-1 scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent">
         {messages.map((m) => (
           <motion.div 
