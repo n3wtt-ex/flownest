@@ -75,24 +75,41 @@ export function TicketManagement() {
         // Get all users one by one (since our function takes a single user ID)
         for (let i = 0; i < userIds.length; i++) {
           console.log('Fetching user data for ID:', userIds[i]);
-          const { data: userData, error: userError } = await supabaseAdmin
+          const rpcResult = await supabaseAdmin
             .rpc('get_user_info_for_admin', { user_uuid: userIds[i] });
           
-          console.log(`RPC result for user ${userIds[i]}:`, { data: userData, error: userError });
+          console.log(`Full RPC result for user ${userIds[i]}:`, JSON.stringify(rpcResult, null, 2));
           
-          if (userError) {
-            console.error('Error fetching user data:', userError);
-          } else if (userData) {
-            // RPC functions return a single object, not an array
-            console.log('User data received:', userData);
-            usersData.push({
-              id: userData.id,
-              email: userData.email,
-              full_name: userData.full_name,
-              raw_user_meta_data: userData.raw_user_meta_data
-            });
+          if (rpcResult.error) {
+            console.error('Error fetching user data:', rpcResult.error);
+          } else if (rpcResult.data) {
+            // Handle different possible response formats
+            let userData = null;
+            
+            // If it's an array, take the first element
+            if (Array.isArray(rpcResult.data)) {
+              if (rpcResult.data.length > 0) {
+                userData = rpcResult.data[0];
+              }
+            } else {
+              // If it's a single object
+              userData = rpcResult.data;
+            }
+            
+            // Check if userData has the expected properties
+            if (userData && userData.id) {
+              console.log('Valid user data received:', userData);
+              usersData.push({
+                id: userData.id,
+                email: userData.email,
+                full_name: userData.full_name,
+                raw_user_meta_data: userData.raw_user_meta_data
+              });
+            } else {
+              console.log('Invalid or empty user data for ID:', userIds[i], 'Data:', userData);
+            }
           } else {
-            console.log('No user data found for ID:', userIds[i]);
+            console.log('No user data returned for ID:', userIds[i]);
           }
         }
       }
@@ -104,23 +121,40 @@ export function TicketManagement() {
         // Get all organizations one by one
         for (let i = 0; i < orgIds.length; i++) {
           console.log('Fetching organization data for ID:', orgIds[i]);
-          const { data: orgData, error: orgError } = await supabaseAdmin
+          const rpcResult = await supabaseAdmin
             .rpc('get_organization_info_for_admin', { org_uuid: orgIds[i] });
           
-          console.log(`RPC result for organization ${orgIds[i]}:`, { data: orgData, error: orgError });
+          console.log(`Full RPC result for organization ${orgIds[i]}:`, JSON.stringify(rpcResult, null, 2));
           
-          if (orgError) {
-            console.error('Error fetching organization data:', orgError);
-          } else if (orgData) {
-            // RPC functions return a single object, not an array
-            console.log('Organization data received:', orgData);
-            orgsData.push({
-              id: orgData.id,
-              name: orgData.name,
-              subscription_plan: orgData.subscription_plan
-            });
+          if (rpcResult.error) {
+            console.error('Error fetching organization data:', rpcResult.error);
+          } else if (rpcResult.data) {
+            // Handle different possible response formats
+            let orgData = null;
+            
+            // If it's an array, take the first element
+            if (Array.isArray(rpcResult.data)) {
+              if (rpcResult.data.length > 0) {
+                orgData = rpcResult.data[0];
+              }
+            } else {
+              // If it's a single object
+              orgData = rpcResult.data;
+            }
+            
+            // Check if orgData has the expected properties
+            if (orgData && orgData.id) {
+              console.log('Valid organization data received:', orgData);
+              orgsData.push({
+                id: orgData.id,
+                name: orgData.name,
+                subscription_plan: orgData.subscription_plan
+              });
+            } else {
+              console.log('Invalid or empty organization data for ID:', orgIds[i], 'Data:', orgData);
+            }
           } else {
-            console.log('No organization data found for ID:', orgIds[i]);
+            console.log('No organization data returned for ID:', orgIds[i]);
           }
         }
       }
@@ -203,23 +237,40 @@ export function TicketManagement() {
           // Get all senders one by one
           for (let i = 0; i < senderIds.length; i++) {
             console.log('Fetching sender data for ID:', senderIds[i]);
-            const { data: userData, error: userError } = await supabaseAdmin
+            const rpcResult = await supabaseAdmin
               .rpc('get_user_info_for_admin', { user_uuid: senderIds[i] });
             
-            console.log(`Sender RPC result for ${senderIds[i]}:`, { data: userData, error: userError });
+            console.log(`Full Sender RPC result for ${senderIds[i]}:`, JSON.stringify(rpcResult, null, 2));
             
-            if (userError) {
-              console.error('Error fetching sender data:', userError);
-            } else if (userData) {
-              // RPC functions return a single object, not an array
-              console.log('Sender data received:', userData);
-              usersData.push({
-                id: userData.id,
-                email: userData.email,
-                user_metadata: userData.raw_user_meta_data
-              });
+            if (rpcResult.error) {
+              console.error('Error fetching sender data:', rpcResult.error);
+            } else if (rpcResult.data) {
+              // Handle different possible response formats
+              let userData = null;
+              
+              // If it's an array, take the first element
+              if (Array.isArray(rpcResult.data)) {
+                if (rpcResult.data.length > 0) {
+                  userData = rpcResult.data[0];
+                }
+              } else {
+                // If it's a single object
+                userData = rpcResult.data;
+              }
+              
+              // Check if userData has the expected properties
+              if (userData && userData.id) {
+                console.log('Valid sender data received:', userData);
+                usersData.push({
+                  id: userData.id,
+                  email: userData.email,
+                  user_metadata: userData.raw_user_meta_data
+                });
+              } else {
+                console.log('Invalid or empty sender data for ID:', senderIds[i], 'Data:', userData);
+              }
             } else {
-              console.log('No sender data found for ID:', senderIds[i]);
+              console.log('No sender data returned for ID:', senderIds[i]);
             }
           }
 
@@ -276,23 +327,40 @@ export function TicketManagement() {
       let userData: any = null;
       if (ticketData.user_id) {
         console.log('Fetching user data for ticket user ID:', ticketData.user_id);
-        const { data, error: userError } = await supabaseAdmin
+        const rpcResult = await supabaseAdmin
           .rpc('get_user_info_for_admin', { user_uuid: ticketData.user_id });
         
-        console.log('User RPC result:', { data, error: userError });
+        console.log('Full User RPC result:', JSON.stringify(rpcResult, null, 2));
         
-        if (userError) {
-          console.error('Error fetching user data:', userError);
-        } else if (data) {
-          // RPC functions return a single object, not an array
-          console.log('User data received:', data);
-          userData = {
-            id: data.id,
-            email: data.email,
-            user_metadata: data.raw_user_meta_data
-          };
+        if (rpcResult.error) {
+          console.error('Error fetching user data:', rpcResult.error);
+        } else if (rpcResult.data) {
+          // Handle different possible response formats
+          let userDataResult = null;
+          
+          // If it's an array, take the first element
+          if (Array.isArray(rpcResult.data)) {
+            if (rpcResult.data.length > 0) {
+              userDataResult = rpcResult.data[0];
+            }
+          } else {
+            // If it's a single object
+            userDataResult = rpcResult.data;
+          }
+          
+          // Check if userDataResult has the expected properties
+          if (userDataResult && userDataResult.id) {
+            console.log('Valid user data received:', userDataResult);
+            userData = {
+              id: userDataResult.id,
+              email: userDataResult.email,
+              user_metadata: userDataResult.raw_user_meta_data
+            };
+          } else {
+            console.log('Invalid or empty user data for ticket user ID:', ticketData.user_id, 'Data:', userDataResult);
+          }
         } else {
-          console.log('No user data found for ticket user ID:', ticketData.user_id);
+          console.log('No user data returned for ticket user ID:', ticketData.user_id);
         }
       }
 
@@ -300,23 +368,40 @@ export function TicketManagement() {
       let orgData: any = null;
       if (ticketData.organization_id) {
         console.log('Fetching organization data for ticket organization ID:', ticketData.organization_id);
-        const { data, error: orgError } = await supabaseAdmin
+        const rpcResult = await supabaseAdmin
           .rpc('get_organization_info_for_admin', { org_uuid: ticketData.organization_id });
         
-        console.log('Organization RPC result:', { data, error: orgError });
+        console.log('Full Organization RPC result:', JSON.stringify(rpcResult, null, 2));
         
-        if (orgError) {
-          console.error('Error fetching organization data:', orgError);
-        } else if (data) {
-          // RPC functions return a single object, not an array
-          console.log('Organization data received:', data);
-          orgData = {
-            id: data.id,
-            name: data.name,
-            subscription_plan: data.subscription_plan
-          };
+        if (rpcResult.error) {
+          console.error('Error fetching organization data:', rpcResult.error);
+        } else if (rpcResult.data) {
+          // Handle different possible response formats
+          let orgDataResult = null;
+          
+          // If it's an array, take the first element
+          if (Array.isArray(rpcResult.data)) {
+            if (rpcResult.data.length > 0) {
+              orgDataResult = rpcResult.data[0];
+            }
+          } else {
+            // If it's a single object
+            orgDataResult = rpcResult.data;
+          }
+          
+          // Check if orgDataResult has the expected properties
+          if (orgDataResult && orgDataResult.id) {
+            console.log('Valid organization data received:', orgDataResult);
+            orgData = {
+              id: orgDataResult.id,
+              name: orgDataResult.name,
+              subscription_plan: orgDataResult.subscription_plan
+            };
+          } else {
+            console.log('Invalid or empty organization data for ticket organization ID:', ticketData.organization_id, 'Data:', orgDataResult);
+          }
         } else {
-          console.log('No organization data found for ticket organization ID:', ticketData.organization_id);
+          console.log('No organization data returned for ticket organization ID:', ticketData.organization_id);
         }
       }
 
