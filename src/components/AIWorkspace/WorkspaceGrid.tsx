@@ -76,6 +76,41 @@ export function WorkspaceGrid({
       fetchAllWorkspaceTools();
     }
   }, [workspaces]);
+  
+  // Component mount edildiğinde araç verilerini çek
+  useEffect(() => {
+    const fetchAllWorkspaceTools = async () => {
+      try {
+        const tools: {[key: string]: {[agent: string]: string}} = {};
+        
+        for (const workspace of workspaces) {
+          const { data, error } = await supabase
+            .from('workspace')
+            .select('*')
+            .eq('workspace_id', workspace.id)
+            .single();
+            
+          if (!error && data) {
+            const workspaceTools: {[agent: string]: string} = {};
+            Object.keys(data).forEach(agent => {
+              if (agent !== 'workspace_id' && data[agent]) {
+                workspaceTools[agent] = data[agent];
+              }
+            });
+            tools[workspace.id] = workspaceTools;
+          }
+        }
+        
+        setWorkspaceTools(tools);
+      } catch (error) {
+        console.error('Error fetching workspace tools on mount:', error);
+      }
+    };
+    
+    if (workspaces.length > 0) {
+      fetchAllWorkspaceTools();
+    }
+  }, []); // Sadece component mount edildiğinde çalıştır
 
   const handleEditStart = (workspace: WorkspaceData, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -111,8 +146,19 @@ export function WorkspaceGrid({
   };
 
   const getSelectedToolsCount = (workspaceId: string) => {
-    const tools = workspaceTools[workspaceId];
-    return tools ? Object.keys(tools).length : 0;
+    // workspaceTools state'inde veri varsa onu kullan
+    if (workspaceTools[workspaceId]) {
+      return Object.keys(workspaceTools[workspaceId]).length;
+    }
+    
+    // workspaceTools state'inde veri yoksa, workspaces prop'undan kontrol et
+    const workspace = workspaces.find(w => w.id === workspaceId);
+    if (workspace && workspace.selections) {
+      return Object.keys(workspace.selections).length;
+    }
+    
+    // Hiçbir veri yoksa 0 döndür
+    return 0;
   };
 
   const formatDate = (dateString: string) => {

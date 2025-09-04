@@ -1231,16 +1231,84 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
   const [typing, setTyping] = useState(false);
   const [mode, setMode] = useState<"work" | "ask">("work");
 
-  const send = () => {
+  const send = async () => {
     if (!input.trim()) return;
-    const msg: ChatMessage = { id: String(Date.now()), role: "user", text: input, mode };
-    setMessages((m) => [...m, msg]);
+    
+    // Kullanıcı mesajını ekle
+    const userMsg: ChatMessage = { id: String(Date.now()), role: "user", text: input, mode };
+    setMessages((m) => [...m, userMsg]);
     setInput("");
     setTyping(true);
-    setTimeout(() => {
-      setMessages((m) => [...m, { id: String(Date.now() + 1), role: "bot", text: "(demo) Görev kuyruğa alındı." }]);
+
+    try {
+      // Webhook payload'ını hazırla
+      const payload: any = {
+        timestamp: new Date().toISOString()
+      };
+      
+      if (mode === 'work') {
+        payload.work = `work:${input}`;
+      } else {
+        payload.ask = `ask:${input}`;
+      }
+
+      // Webhook çağrısı yap
+      const response = await fetch('https://n8n.flownests.org/webhook-test/8caf5ac6-9fb5-4e68-9741-3d452248a95e', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Workspace-ID': 'workspace-id'
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const responseData = await response.json();
+      
+      // Yanıtı işle
+      let responseText = 'Mesajınız alındı, teşekkürler!';
+      
+      if (typeof responseData === 'string') {
+        responseText = responseData;
+      } else if (responseData.response) {
+        responseText = responseData.response;
+      } else if (responseData.message) {
+        responseText = responseData.message;
+      } else if (responseData.text) {
+        responseText = responseData.text;
+      } else if (responseData.answer) {
+        responseText = responseData.answer;
+      } else if (responseData.reply) {
+        responseText = responseData.reply;
+      } else if (responseData.output) {
+        responseText = responseData.output;
+      } else {
+        responseText = JSON.stringify(responseData, null, 2);
+      }
+      
+      // Bot yanıtını ekle
+      const botMsg: ChatMessage = { 
+        id: String(Date.now() + 1), 
+        role: "bot", 
+        text: responseText 
+      };
+      setMessages((m) => [...m, botMsg]);
+    } catch (error) {
+      console.error('Webhook error:', error);
+      
+      // Hata mesajını ekle
+      const errorMsg: ChatMessage = { 
+        id: String(Date.now() + 1), 
+        role: "bot", 
+        text: 'Üzgünüm, mesajınız işlenirken bir hata oluştu. Lütfen tekrar deneyin.' 
+      };
+      setMessages((m) => [...m, errorMsg]);
+    } finally {
       setTyping(false);
-    }, 600);
+    }
   };
 
   return (
