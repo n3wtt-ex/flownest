@@ -1319,7 +1319,7 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
       className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-gray-950 p-4 rounded-xl"
     >
       <ChatHeader mode={mode} setMode={setMode} onModeChange={onModeChange} />
-      <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent">
+      <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900/50">
         {messages.map((m) => (
           <motion.div 
             key={m.id} 

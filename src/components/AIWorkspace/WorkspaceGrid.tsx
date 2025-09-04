@@ -40,7 +40,19 @@ export function WorkspaceGrid({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [deleteDialogId, setDeleteDialogId] = useState<string | null>(null);
-  const [workspaceTools, setWorkspaceTools] = useState<{[key: string]: {[agent: string]: string}}>({});
+  
+  // workspaceTools state'ini workspaces prop'undan türet
+  const workspaceTools = useMemo(() => {
+    const tools: {[key: string]: {[agent: string]: string}} = {};
+    
+    workspaces.forEach(workspace => {
+      if (workspace.selections) {
+        tools[workspace.id] = workspace.selections;
+      }
+    });
+    
+    return tools;
+  }, [workspaces]);
   
   // Her workspace için araç verilerini çek
   useEffect(() => {
@@ -66,7 +78,9 @@ export function WorkspaceGrid({
           }
         }
         
-        setWorkspaceTools(tools);
+        // Bu kısım artık gerekli olmayabilir çünkü workspaceTools state'ini workspaces prop'undan türettik
+        // Ancak, Supabase'den gelen veriler workspaces prop'unda olmayabilirse bu hala faydalı olabilir
+        // setWorkspaceTools(tools);
       } catch (error) {
         console.error('Error fetching workspace tools:', error);
       }
@@ -76,41 +90,6 @@ export function WorkspaceGrid({
       fetchAllWorkspaceTools();
     }
   }, [workspaces]);
-  
-  // Component mount edildiğinde araç verilerini çek
-  useEffect(() => {
-    const fetchAllWorkspaceTools = async () => {
-      try {
-        const tools: {[key: string]: {[agent: string]: string}} = {};
-        
-        for (const workspace of workspaces) {
-          const { data, error } = await supabase
-            .from('workspace')
-            .select('*')
-            .eq('workspace_id', workspace.id)
-            .single();
-            
-          if (!error && data) {
-            const workspaceTools: {[agent: string]: string} = {};
-            Object.keys(data).forEach(agent => {
-              if (agent !== 'workspace_id' && data[agent]) {
-                workspaceTools[agent] = data[agent];
-              }
-            });
-            tools[workspace.id] = workspaceTools;
-          }
-        }
-        
-        setWorkspaceTools(tools);
-      } catch (error) {
-        console.error('Error fetching workspace tools on mount:', error);
-      }
-    };
-    
-    if (workspaces.length > 0) {
-      fetchAllWorkspaceTools();
-    }
-  }, []); // Sadece component mount edildiğinde çalıştır
 
   const handleEditStart = (workspace: WorkspaceData, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -146,15 +125,9 @@ export function WorkspaceGrid({
   };
 
   const getSelectedToolsCount = (workspaceId: string) => {
-    // workspaceTools state'inde veri varsa onu kullan
+    // workspaceTools doğrudan workspaces prop'undan türetildiği için burada doğrudan erişebiliriz
     if (workspaceTools[workspaceId]) {
       return Object.keys(workspaceTools[workspaceId]).length;
-    }
-    
-    // workspaceTools state'inde veri yoksa, workspaces prop'undan kontrol et
-    const workspace = workspaces.find(w => w.id === workspaceId);
-    if (workspace && workspace.selections) {
-      return Object.keys(workspace.selections).length;
     }
     
     // Hiçbir veri yoksa 0 döndür
