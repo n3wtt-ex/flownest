@@ -39,24 +39,52 @@ export function useAuth() {
 
   const checkUserApprovalStatus = async (userId: string) => {
     try {
-      // Call the RPC function to get user approval status message
-      const { data, error } = await supabase.rpc('get_user_approval_status_message', { user_uuid: userId });
+      // First check if user is approved and active using the simpler function
+      const { data: isApproved, error: approvalError } = await supabase.rpc('is_user_approved_and_active', { user_uuid: userId });
       
-      if (error) {
-        // If the function doesn't exist yet, we assume the user is approved
-        if (error.message.includes('Could not find the function')) {
-          console.warn('User approval function not found, assuming user is approved');
+      if (approvalError) {
+        // If the function doesn't exist or has an error, we assume the user is approved for backward compatibility
+        if (approvalError.message.includes('Could not find the function') || approvalError.message.includes('function is_user_approved_and_active(uuid) does not exist')) {
+          console.warn('User approval function not found, assuming user is approved for backward compatibility');
           setApprovalStatus('approved');
         } else {
-          console.error('Error checking user approval status:', error);
-          setApprovalStatus(null);
+          console.error('Error checking user approval status:', approvalError);
+          // Still assume approved to prevent blocking existing users
+          setApprovalStatus('approved');
         }
       } else {
-        setApprovalStatus(data);
+        // If the user is approved and active, set status to approved
+        // Otherwise, we need to check the specific status
+        if (isApproved) {
+          setApprovalStatus('approved');
+        } else {
+          // Try to get the specific approval status message
+          try {
+            const { data: statusMessage, error: messageError } = await supabase.rpc('get_user_approval_status_message', { user_uuid: userId });
+            
+            if (messageError) {
+              if (messageError.message.includes('Could not find the function')) {
+                console.warn('User approval status message function not found, assuming user is approved');
+                setApprovalStatus('approved');
+              } else {
+                console.error('Error getting user approval status message:', messageError);
+                // Default to approved to prevent blocking existing users
+                setApprovalStatus('approved');
+              }
+            } else {
+              setApprovalStatus(statusMessage);
+            }
+          } catch (messageError) {
+            console.error('Error getting user approval status message:', messageError);
+            // Default to approved to prevent blocking existing users
+            setApprovalStatus('approved');
+          }
+        }
       }
     } catch (error) {
       console.error('Error checking user approval status:', error);
-      setApprovalStatus(null);
+      // Default to approved to prevent blocking existing users
+      setApprovalStatus('approved');
     }
   };
 

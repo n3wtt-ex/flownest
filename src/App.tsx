@@ -67,8 +67,9 @@ function App() {
   }
 
   // Check if user is logged in but not approved
-  // Only redirect if we have a valid approval status that is not 'approved'
-  if (user && approvalStatus && approvalStatus !== 'approved') {
+  // Only redirect if we have a valid approval status that is explicitly not 'approved'
+  // This prevents blocking existing users during the transition
+  if (user && approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null) {
     // Redirect to auth error page with the approval status message
     window.location.href = `/auth/error?message=${encodeURIComponent(approvalStatus)}`;
     return null;

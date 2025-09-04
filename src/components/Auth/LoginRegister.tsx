@@ -27,8 +27,9 @@ export function LoginRegister() {
 
   // Check approval status after login
   useEffect(() => {
-    // Only redirect if we have a valid approval status that is not 'approved'
-    if (approvalStatus && approvalStatus !== 'approved') {
+    // Only redirect if we have a valid approval status that is explicitly not 'approved'
+    // This prevents blocking existing users during the transition
+    if (approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null) {
       // User is logged in but not approved, redirect to auth error
       navigate(`/auth/error?message=${encodeURIComponent(approvalStatus)}`);
     }
