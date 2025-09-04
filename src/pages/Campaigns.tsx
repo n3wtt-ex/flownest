@@ -1172,7 +1172,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                     <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{selectedCampaign.sent}</div>
                     <div className="text-sm text-muted-foreground">Sequence Started</div>
                   </div>
-                  <div className="text-center p-4 bg-muted rounded-lg">
+                  <div className="text-center p-4 bg-green-50 rounded-lg dark:bg-green-900/30">
                     <div className="text-2xl font-bold text-green-600 dark:text-green-400">{selectedCampaign.open_rate}%</div>
                     <div className="text-sm text-muted-foreground">Open Rate</div>
                   </div>
@@ -1246,7 +1246,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-card-foreground">Performance Over Time</h3>
                   <div className="relative">
-                    <select className="pl-3 pr-8 py-1 border border-input rounded-lg text-sm bg-background text-foreground appearance-none cursor-pointer min-w-[140px]">
+                    <select className="pl-3 pr-8 py-1 border border-input rounded-lg text-sm bg-background text-foreground cursor-pointer min-w-[140px]">
                       <option>Last 4 weeks</option>
                       <option>Last 8 weeks</option>
                       <option>Last 12 weeks</option>
