@@ -58,15 +58,23 @@ export function TicketManagement() {
       const userIds = ticketsData?.map(ticket => ticket.user_id).filter(Boolean) || [];
       const orgIds = ticketsData?.map(ticket => ticket.organization_id).filter(Boolean) || [];
 
+      console.log('Ticket user IDs:', userIds);
+      console.log('Ticket organization IDs:', orgIds);
+
       // Get user details using our admin function
       let usersData: any[] = [];
       if (userIds.length > 0) {
         // Get all users one by one (since our function takes a single user ID)
         for (let i = 0; i < userIds.length; i++) {
+          console.log('Fetching user data for ID:', userIds[i]);
           const { data: userData, error: userError } = await supabase
             .rpc('get_user_info_for_admin', { user_uuid: userIds[i] });
           
-          if (!userError && userData) {
+          if (userError) {
+            console.error('Error fetching user data:', userError);
+          } else if (userData) {
+            // RPC functions return a single object, not an array
+            console.log('User data received:', userData);
             usersData.push({
               id: userData.id,
               email: userData.email,
@@ -82,10 +90,15 @@ export function TicketManagement() {
       if (orgIds.length > 0) {
         // Get all organizations one by one
         for (let i = 0; i < orgIds.length; i++) {
+          console.log('Fetching organization data for ID:', orgIds[i]);
           const { data: orgData, error: orgError } = await supabase
             .rpc('get_organization_info_for_admin', { org_uuid: orgIds[i] });
           
-          if (!orgError && orgData) {
+          if (orgError) {
+            console.error('Error fetching organization data:', orgError);
+          } else if (orgData) {
+            // RPC functions return a single object, not an array
+            console.log('Organization data received:', orgData);
             orgsData.push({
               id: orgData.id,
               name: orgData.name,
@@ -95,10 +108,14 @@ export function TicketManagement() {
         }
       }
 
+      console.log('Users data collected:', usersData);
+      console.log('Organizations data collected:', orgsData);
+
       // Process tickets with user and organization data
       const processedTickets = ticketsData?.map(ticket => {
         const user = usersData.find(u => u.id === ticket.user_id);
         const org = orgsData.find(o => o.id === ticket.organization_id);
+        console.log(`Processing ticket ${ticket.id}: user=${user?.email}, org=${org?.name}`);
         return {
           ...ticket,
           user: user ? {
@@ -109,6 +126,8 @@ export function TicketManagement() {
           organization: org || undefined
         };
       }) || [];
+
+      console.log('Processed tickets:', processedTickets);
 
       setTickets(processedTickets);
 
@@ -133,6 +152,8 @@ export function TicketManagement() {
 
   const loadTicketMessages = async (ticketId: string) => {
     try {
+      console.log('Loading messages for ticket ID:', ticketId);
+      
       // First get the messages
       const { data: messagesData, error: messagesError } = await supabase
         .from('ticket_messages')
@@ -141,11 +162,13 @@ export function TicketManagement() {
         .order('created_at', { ascending: true });
 
       if (messagesError) throw messagesError;
+      console.log('Messages data fetched:', messagesData);
 
       // If we have messages, get the sender information for each message
       if (messagesData && Array.isArray(messagesData) && messagesData.length > 0) {
         // Get unique sender IDs
         const senderIds = [...new Set(messagesData.map(msg => msg.sender_id))].filter(Boolean);
+        console.log('Sender IDs found in messages:', senderIds);
         
         if (senderIds.length > 0) {
           // Get user details for all senders using our admin function
@@ -153,10 +176,15 @@ export function TicketManagement() {
           
           // Get all senders one by one
           for (let i = 0; i < senderIds.length; i++) {
+            console.log('Fetching sender data for ID:', senderIds[i]);
             const { data: userData, error: userError } = await supabase
               .rpc('get_user_info_for_admin', { user_uuid: senderIds[i] });
             
-            if (!userError && userData) {
+            if (userError) {
+              console.error('Error fetching sender data:', userError);
+            } else if (userData) {
+              // RPC functions return a single object, not an array
+              console.log('Sender data received:', userData);
               usersData.push({
                 id: userData.id,
                 email: userData.email,
@@ -165,9 +193,12 @@ export function TicketManagement() {
             }
           }
 
+          console.log('All sender data collected:', usersData);
+
           // Map messages with sender information
           const messagesWithSenders = messagesData.map(message => {
             const sender = usersData?.find(user => user.id === message.sender_id);
+            console.log(`Mapping message ${message.id}: sender=${sender?.email}`);
             return {
               ...message,
               sender: sender ? {
@@ -193,6 +224,8 @@ export function TicketManagement() {
 
   const openTicketDialog = async (ticket: SupportTicket) => {
     try {
+      console.log('Opening ticket dialog for ticket:', ticket);
+      
       // Fetch fresh ticket data
       const { data: ticketData, error: ticketError } = await supabase
         .from('support_tickets')
@@ -201,14 +234,20 @@ export function TicketManagement() {
         .single();
 
       if (ticketError) throw ticketError;
+      console.log('Ticket data fetched:', ticketData);
 
       // Get user details using our admin function
       let userData: any = null;
       if (ticketData.user_id) {
+        console.log('Fetching user data for ticket user ID:', ticketData.user_id);
         const { data, error: userError } = await supabase
           .rpc('get_user_info_for_admin', { user_uuid: ticketData.user_id });
         
-        if (!userError && data) {
+        if (userError) {
+          console.error('Error fetching user data:', userError);
+        } else if (data) {
+          // RPC functions return a single object, not an array
+          console.log('User data received:', data);
           userData = {
             id: data.id,
             email: data.email,
@@ -220,10 +259,15 @@ export function TicketManagement() {
       // Get organization details using our admin function
       let orgData: any = null;
       if (ticketData.organization_id) {
+        console.log('Fetching organization data for ticket organization ID:', ticketData.organization_id);
         const { data, error: orgError } = await supabase
           .rpc('get_organization_info_for_admin', { org_uuid: ticketData.organization_id });
         
-        if (!orgError && data) {
+        if (orgError) {
+          console.error('Error fetching organization data:', orgError);
+        } else if (data) {
+          // RPC functions return a single object, not an array
+          console.log('Organization data received:', data);
           orgData = {
             id: data.id,
             name: data.name,
@@ -238,6 +282,8 @@ export function TicketManagement() {
         user: userData || undefined,
         organization: orgData || undefined
       };
+
+      console.log('Complete ticket object:', completeTicket);
 
       setSelectedTicket(completeTicket);
       setNewStatus(completeTicket.status);
