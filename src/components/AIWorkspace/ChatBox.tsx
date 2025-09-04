@@ -1214,46 +1214,10 @@ import { Zap, HelpCircle } from 'lucide-react';
 export type ChatMessage = { id: string; role: "user" | "bot"; text: string; mode?: "work" | "ask" };
 
 // ChatHeader Bileşeni
-const ChatHeader = ({ mode, setMode, onModeChange }: { mode: "work" | "ask", setMode: (mode: "work" | "ask") => void, onModeChange: (mode: "work" | "ask") => void }) => {
+const ChatHeader = () => {
   return (
-    <div className="bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-4 mb-4 shadow-lg">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-white">AI Workspace</h1>
-        <div className="flex space-x-2">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              setMode("work");
-              onModeChange("work");
-            }}
-            className={`rounded-full flex items-center space-x-2 px-4 py-2 transition-all duration-200 ${
-              mode === "work"
-                ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg shadow-blue-500/30"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-            }`}
-          >
-            <Zap className="w-4 h-4" />
-            <span className="font-medium">Work</span>
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              setMode("ask");
-              onModeChange("ask");
-            }}
-            className={`rounded-full flex items-center space-x-2 px-4 py-2 transition-all duration-200 ${
-              mode === "ask"
-                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30"
-                : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-            }`}
-          >
-            <HelpCircle className="w-4 h-4" />
-            <span className="font-medium">Ask</span>
-          </motion.button>
-        </div>
-      </div>
+    <div className="bg-transparent p-1 mb-2">
+      <h1 className="text-sm font-semibold text-gray-300">AI Asistan</h1>
     </div>
   );
 };
@@ -1284,10 +1248,10 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-gray-950 p-4 rounded-xl"
+      className="flex flex-col h-[calc(100vh-2rem)] bg-gradient-to-b from-gray-900 to-gray-950 p-4 rounded-xl"
     >
       <ChatHeader mode={mode} setMode={setMode} onModeChange={onModeChange} />
-      <div className="flex-1 space-y-3 overflow-auto pr-1 scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent">
+      <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent" style={{ maxHeight: 'calc(100% - 80px)' }}>
         {messages.map((m) => (
           <motion.div 
             key={m.id} 
@@ -1334,25 +1298,61 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="mt-4 flex flex-col sm:flex-row gap-3"
+        className="mt-2 flex flex-col"
       >
-        <div className="relative flex-1">
-          <Input
-            placeholder={`${mode === "work" ? "Work" : "Ask"}…`}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && send()}
-            className="bg-gray-800 text-white border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none flex-1 min-w-0 rounded-xl px-4 py-3 shadow-md transition-all duration-200"
-          />
+        <div className="relative flex items-center gap-2">
+          <div className="relative flex-1">
+            <Input
+              placeholder={`${mode === "work" ? "Work" : "Ask"}…`}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && send()}
+              className="bg-gray-800 text-white border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none flex-1 min-w-0 rounded-xl px-4 py-2 text-sm shadow-md transition-all duration-200"
+            />
+          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={send} 
+            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+          >
+            Gönder
+          </motion.button>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={send} 
-          className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white whitespace-nowrap rounded-xl px-6 py-3 font-semibold shadow-md hover:shadow-lg transition-all duration-200"
-        >
-          Gönder
-        </motion.button>
+        <div className="flex justify-end mt-1">
+          <div className="flex space-x-1">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setMode("work");
+                onModeChange("work");
+              }}
+              className={`rounded-full flex items-center justify-center w-6 h-6 text-xs transition-all duration-200 ${
+                mode === "work"
+                  ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm"
+                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
+            >
+              <Zap className="w-3 h-3" />
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                setMode("ask");
+                onModeChange("ask");
+              }}
+              className={`rounded-full flex items-center justify-center w-6 h-6 text-xs transition-all duration-200 ${
+                mode === "ask"
+                  ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-sm"
+                  : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+              }`}
+            >
+              <HelpCircle className="w-3 h-3" />
+            </motion.button>
+          </div>
+        </div>
       </motion.div>
     </motion.div>
   );
