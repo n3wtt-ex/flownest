@@ -522,7 +522,7 @@ export function TicketManagement() {
   const getPriorityBadge = (priority: string) => {
     const variants = {
       low: 'secondary priority-low',
-      medium: 'default priority-medium',
+      medium: 'secondary priority-medium',
       high: 'destructive priority-high',
       urgent: 'destructive priority-urgent'
     };
