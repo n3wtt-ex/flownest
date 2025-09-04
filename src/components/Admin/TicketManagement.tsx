@@ -47,11 +47,12 @@ export function TicketManagement() {
       setLoading(true);
 
       // Load all tickets with user and organization info
-      // Fixed the query syntax to properly join auth.users table
+      // Fixed the query to properly join auth.users table to get user information
       const { data: ticketsData, error } = await supabase
         .from('support_tickets')
         .select(`
           *,
+          user:users(id, email, raw_user_meta_data),
           organization:organizations(id, name, subscription_plan)
         `)
         .order('created_at', { ascending: false });
@@ -63,7 +64,20 @@ export function TicketManagement() {
         console.error('Parser error:', ticketsData);
         setTickets([]);
       } else {
-        setTickets(ticketsData || []);
+        // Process the user metadata to match the expected format
+        const processedTickets = Array.isArray(ticketsData) ? ticketsData.map(ticket => {
+          if (ticket.user && ticket.user.raw_user_meta_data) {
+            return {
+              ...ticket,
+              user: {
+                ...ticket.user,
+                user_metadata: ticket.user.raw_user_meta_data
+              }
+            };
+          }
+          return ticket;
+        }) : [];
+        setTickets(processedTickets);
       }
 
       // Calculate stats
@@ -102,10 +116,10 @@ export function TicketManagement() {
         const senderIds = [...new Set(messagesData.map(msg => msg.sender_id))].filter(Boolean);
         
         if (senderIds.length > 0) {
-          // Get user details for all senders
+          // Get user details for all senders from auth.users
           const { data: usersData, error: usersError } = await supabase
             .from('users')
-            .select('id, email, user_metadata')
+            .select('id, email, raw_user_meta_data')
             .in('id', senderIds);
 
           if (usersError) {
@@ -119,7 +133,10 @@ export function TicketManagement() {
             const sender = usersData?.find(user => user.id === message.sender_id);
             return {
               ...message,
-              sender: sender ? sender : undefined
+              sender: sender ? {
+                ...sender,
+                user_metadata: sender.raw_user_meta_data
+              } : undefined
             };
           });
 
