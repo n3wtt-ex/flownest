@@ -1248,10 +1248,10 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col h-[calc(100vh-2rem)] bg-gradient-to-b from-gray-900 to-gray-950 p-4 rounded-xl"
+      className="flex flex-col h-full bg-gradient-to-b from-gray-900 to-gray-950 p-4 rounded-xl"
     >
       <ChatHeader mode={mode} setMode={setMode} onModeChange={onModeChange} />
-      <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent" style={{ maxHeight: 'calc(100% - 80px)' }}>
+      <div className="flex-1 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent">
         {messages.map((m) => (
           <motion.div 
             key={m.id} 
