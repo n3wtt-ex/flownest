@@ -121,9 +121,13 @@ export function TicketManagement() {
           user: user ? {
             id: user.id,
             email: user.email,
-            user_metadata: user.raw_user_meta_data || { full_name: user.full_name }
+            user_metadata: user.raw_user_meta_data
           } : undefined,
-          organization: org || undefined
+          organization: org ? {
+            id: org.id,
+            name: org.name,
+            subscription_plan: org.subscription_plan
+          } : undefined
         };
       }) || [];
 
@@ -188,7 +192,7 @@ export function TicketManagement() {
               usersData.push({
                 id: userData.id,
                 email: userData.email,
-                user_metadata: userData.raw_user_meta_data || { full_name: userData.full_name }
+                user_metadata: userData.raw_user_meta_data
               });
             }
           }
@@ -251,7 +255,7 @@ export function TicketManagement() {
           userData = {
             id: data.id,
             email: data.email,
-            user_metadata: data.raw_user_meta_data || { full_name: data.full_name }
+            user_metadata: data.raw_user_meta_data
           };
         }
       }
