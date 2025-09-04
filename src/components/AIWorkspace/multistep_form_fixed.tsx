@@ -139,11 +139,32 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
     }
   };
 
-  const handleStartClick = () => {
+  const handleStartClick = async () => {
     if (completedSteps.size === 4) {
-      alert('Tüm adımlar tamamlandı! Süreç başlatılıyor...');
-      // Burada final işlemlerinizi yapabilirsiniz
-      console.log('Final form data:', formData);
+      // Yeni webhook çağrısı
+      try {
+        const combinedData = {
+          ...formData[1],
+          ...formData[2],
+          ...formData[3],
+          ...formData[4]
+        };
+        
+        const response = await fetch('https://n8n.flownests.org/webhook/77022c8e-8856-49b9-b57e-701c8df4599e', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(combinedData),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Webhook error: ${response.status}`);
+        }
+        
+        console.log('Webhook call successful');
+      } catch (error) {
+        console.error('Webhook error:', error);
+        // Hata olsa bile işleme devam edebiliriz
+      }
       
       // Call the onComplete callback with the collected data
       if (onComplete) {
@@ -224,10 +245,10 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
       {!openSection ? (
         <div className="text-center max-w-2xl w-full flex flex-col items-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
-            {stepTitles[currentStep as keyof typeof stepTitles] || "Süreç Tamamlandı"}
+            {completedSteps.size === 4 ? "Bilgileriniz doğrulandı" : (stepTitles[currentStep as keyof typeof stepTitles] || "Süreç Tamamlandı")}
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 mb-8 sm:mb-12">
-            {stepDescriptions[currentStep as keyof typeof stepDescriptions] || "Tüm adımları tamamladınız"}
+            {completedSteps.size === 4 ? "Size özel IA Workspace hazırlandı" : (stepDescriptions[currentStep as keyof typeof stepDescriptions] || "Tüm adımları tamamladınız")}
           </p>
           
           {/* Ana sayfa input alanları - her adım için */}
