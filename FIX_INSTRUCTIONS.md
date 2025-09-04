@@ -4,7 +4,7 @@ This document provides step-by-step instructions to fix the issue with existing 
 
 ## Problem Summary
 
-The issue occurs because the `get_user_approval_status_message` function hasn't been created in your database yet, which causes a 404 error when the frontend tries to call it. This prevents existing users from logging in.
+The issue occurs because the `get_user_approval_status_message` function hasn't been created in your database yet, which causes a 404 error when the frontend tries to call it. Additionally, the `get_current_user_organization_id` function was updated to check for `approval_status = 'approved'`, which may prevent existing users from accessing the site.
 
 ## Solution Overview
 
@@ -21,8 +21,8 @@ We'll apply a quick fix to resolve the immediate issue, then implement the full 
 
 This will:
 - Create a simplified version of the `get_user_approval_status_message` function
-- Update the organization creation trigger
-- Update the organization lookup function
+- Update the organization creation function to set new users as inactive with pending status
+- Update the organization lookup function to be more lenient with existing users
 
 ### Step 2: Test Existing Account Access
 
@@ -54,7 +54,7 @@ This will:
 ### quick_fix_migrations.sql
 - Creates a simple version of `get_user_approval_status_message` that assumes all users are approved
 - Updates the organization creation function to set new users as inactive with pending status
-- Updates the organization lookup function to check approval status
+- Updates the organization lookup function to be more lenient with existing users (allows access to any active organization if no approved one is found)
 
 ### apply_user_approval_migrations.sql
 - Contains the complete implementation with proper logic for all approval statuses

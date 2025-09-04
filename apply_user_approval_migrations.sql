@@ -51,18 +51,28 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 2. Update the get_current_user_organization_id function
+-- 2. Update the get_current_user_organization_id function to be more lenient with existing users
 CREATE OR REPLACE FUNCTION get_current_user_organization_id()
 RETURNS UUID AS $$
 DECLARE
     org_id UUID;
 BEGIN
+    -- First try to find an organization where the user is approved
     SELECT uo.organization_id INTO org_id
     FROM user_organizations uo
     WHERE uo.user_id = auth.uid()
     AND uo.is_active = true
     AND uo.approval_status = 'approved'
     LIMIT 1;
+    
+    -- If no approved organization is found, try to find any active organization (for existing users)
+    IF org_id IS NULL THEN
+        SELECT uo.organization_id INTO org_id
+        FROM user_organizations uo
+        WHERE uo.user_id = auth.uid()
+        AND uo.is_active = true
+        LIMIT 1;
+    END IF;
     
     RETURN org_id;
 END;

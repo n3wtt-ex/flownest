@@ -14,15 +14,25 @@ INSERT INTO public.user_organizations (user_id, organization_id, role, approval_
 VALUES (NEW.id, new_org_id, 'owner', 'pending', false);
 ```
 
-Also updated the `get_current_user_organization_id` function to check both `is_active` and `approval_status`:
+Also updated the `get_current_user_organization_id` function to check both `is_active` and `approval_status`, but be more lenient with existing users:
 
 ```sql
+-- First try to find an organization where the user is approved
 SELECT uo.organization_id INTO org_id
 FROM user_organizations uo
 WHERE uo.user_id = auth.uid()
 AND uo.is_active = true
 AND uo.approval_status = 'approved'
 LIMIT 1;
+
+-- If no approved organization is found, try to find any active organization (for existing users)
+IF org_id IS NULL THEN
+    SELECT uo.organization_id INTO org_id
+    FROM user_organizations uo
+    WHERE uo.user_id = auth.uid()
+    AND uo.is_active = true
+    LIMIT 1;
+END IF;
 ```
 
 ### 2. Added User Approval Check Functions (015_add_user_approval_check_function.sql)
@@ -148,13 +158,17 @@ Enhanced the component to display appropriate icons and messages based on the ap
      - Pending users see: "Your application is pending approval. Please wait for an administrator to review your application."
      - Rejected users see: "Your application has been rejected. Please contact our support team via email."
 
+6. Existing users (created before the approval system) can still access the site:
+   - The `get_current_user_organization_id` function has a fallback that allows access to any active organization
+   - This ensures existing users aren't locked out by the new system
+
 ## Quick Fix for Existing Users
 
 If you're experiencing issues with existing accounts after implementing these changes, you can apply the quick fix migrations in `quick_fix_migrations.sql`:
 
 1. This creates a simplified version of the `get_user_approval_status_message` function that assumes existing users are approved
 2. Updates the organization creation trigger to only affect new users
-3. Updates the organization lookup function to check approval status
+3. Updates the organization lookup function to be more lenient with existing users
 
 ## Manual Database Migration Steps
 
