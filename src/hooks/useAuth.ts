@@ -140,6 +140,7 @@ export function useAuth() {
 
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
+    setUser(null);
     setApprovalStatus(null);
     checkedStatusRef.current = false; // Reset when user logs out
     return { error };

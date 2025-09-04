@@ -13,7 +13,7 @@ export function LoginRegister() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [checkedApproval, setCheckedApproval] = useState(false); // Track if we've checked approval status
-  const { signIn, signUp, approvalStatus } = useAuth();
+  const { signIn, signUp, approvalStatus, user } = useAuth();
   const navigate = useNavigate();
 
   const toggleForm = () => {
@@ -29,10 +29,14 @@ export function LoginRegister() {
 
   // Check approval status after login
   useEffect(() => {
+    // If user is logged in and approved, navigate to dashboard
+    if (user && approvalStatus === 'approved') {
+      navigate('/ui-bot');
+    }
     // Only redirect if we have a valid approval status that is explicitly not 'approved'
     // This prevents blocking existing users during the transition
     // Only check and redirect once to prevent infinite loops
-    if (approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null && !checkedApproval) {
+    else if (approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null && !checkedApproval) {
       // Mark that we've checked the approval status to prevent infinite loops
       setCheckedApproval(true);
       
@@ -44,7 +48,7 @@ export function LoginRegister() {
     if (approvalStatus === 'approved' && !checkedApproval) {
       setCheckedApproval(true);
     }
-  }, [approvalStatus, navigate, checkedApproval]);
+  }, [approvalStatus, navigate, checkedApproval, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

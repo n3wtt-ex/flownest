@@ -80,7 +80,7 @@ function App() {
     return null;
   }
 
-  // If we've already checked approval status and the user is approved, mark as checked
+  // If user is approved, mark as checked
   if (user && approvalStatus === 'approved' && !checkedApproval) {
     setCheckedApproval(true);
   }
