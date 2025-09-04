@@ -39,9 +39,9 @@ BEGIN
     )
     RETURNING id INTO new_org_id;
     
-    -- Add user as owner of the organization
-    INSERT INTO public.user_organizations (user_id, organization_id, role)
-    VALUES (NEW.id, new_org_id, 'owner');
+    -- Add user as owner of the organization with pending approval status
+    INSERT INTO public.user_organizations (user_id, organization_id, role, approval_status)
+    VALUES (NEW.id, new_org_id, 'owner', 'pending');
     
     RETURN NEW;
 EXCEPTION

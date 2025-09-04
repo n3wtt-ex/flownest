@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
 import { useOrganization } from '../contexts/OrganizationContext';
 import {
-  Users, Settings, Shield, Ban, CheckCircle, Edit, Search, MoreHorizontal, Mail, Calendar, Building, MessageSquare
+  Users, Settings, Shield, Ban, CheckCircle, Edit, Search, MoreHorizontal, Mail, Calendar, Building, MessageSquare, XCircle
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -26,7 +26,7 @@ interface AdminUser {
   created_at: string;
   user_metadata?: { full_name?: string; };
   organization?: { id: string; name: string; subscription_plan: string; is_active: boolean; };
-  user_organization?: { role: string; joined_at: string; is_active: boolean; };
+  user_organization?: { role: string; joined_at: string; is_active: boolean; approval_status?: string; };
 }
 
 interface UserStats {
@@ -34,6 +34,7 @@ interface UserStats {
   active_users: number;
   blocked_users: number;
   developer_users: number;
+  pending_users: number;  // Add this line
 }
 
 export function AdminPanel() {
@@ -41,10 +42,11 @@ export function AdminPanel() {
   const { currentOrganization } = useOrganization();
   const { language } = useLanguage();
   const [users, setUsers] = useState<AdminUser[]>([]);
-  const [stats, setStats] = useState<UserStats>({ total_users: 0, active_users: 0, blocked_users: 0, developer_users: 0 });
+  const [stats, setStats] = useState<UserStats>({ total_users: 0, active_users: 0, blocked_users: 0, developer_users: 0, pending_users: 0 });
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPlan, setFilterPlan] = useState('all');
+  const [filterApproval, setFilterApproval] = useState('all');
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [newSubscriptionPlan, setNewSubscriptionPlan] = useState('');
@@ -77,7 +79,8 @@ export function AdminPanel() {
           user_organization: {
             role: adminUser.role,
             joined_at: adminUser.joined_at,
-            is_active: adminUser.is_active
+            is_active: adminUser.is_active,
+            approval_status: adminUser.approval_status
           }
         };
       }) || [];
@@ -89,8 +92,9 @@ export function AdminPanel() {
       const activeUsers = usersWithOrgs.filter(u => u.user_organization?.is_active).length;
       const blockedUsers = usersWithOrgs.filter(u => !u.user_organization?.is_active).length;
       const developerUsers = usersWithOrgs.filter(u => u.organization?.subscription_plan === 'developer').length;
+      const pendingUsers = usersWithOrgs.filter(u => u.user_organization?.approval_status === 'pending').length;
       
-      setStats({ total_users: totalUsers, active_users: activeUsers, blocked_users: blockedUsers, developer_users: developerUsers });
+      setStats({ total_users: totalUsers, active_users: activeUsers, blocked_users: blockedUsers, developer_users: developerUsers, pending_users: pendingUsers });
     } catch (error) {
       console.error('Error loading users:', error);
     } finally {
@@ -104,7 +108,7 @@ export function AdminPanel() {
     }
   }, [isDeveloper, loadUsers]);
 
-  const handleUserAction = async (userId: string, action: 'block' | 'activate' | 'change_plan') => {
+  const handleUserAction = async (userId: string, action: 'block' | 'activate' | 'change_plan' | 'approve' | 'reject') => {
     try {
       if (action === 'block') {
         // Prevent self-blocking
@@ -154,6 +158,18 @@ export function AdminPanel() {
         setIsEditDialogOpen(false);
         setNewSubscriptionPlan('');
         setSelectedUser(null);
+      } else if (action === 'approve') {
+        // Approve the user
+        const { error } = await supabase
+          .rpc('approve_user', { user_uuid: userId });
+        
+        if (error) throw error;
+      } else if (action === 'reject') {
+        // Reject the user
+        const { error } = await supabase
+          .rpc('reject_user', { user_uuid: userId });
+        
+        if (error) throw error;
       }
       
       // Show success message
@@ -173,11 +189,15 @@ export function AdminPanel() {
       user.user_metadata?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.organization?.name?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesFilter = 
+    const matchesPlanFilter = 
       filterPlan === 'all' || 
       user.organization?.subscription_plan === filterPlan;
+      
+    const matchesApprovalFilter = 
+      filterApproval === 'all' || 
+      user.user_organization?.approval_status === filterApproval;
     
-    return matchesSearch && matchesFilter;
+    return matchesSearch && matchesPlanFilter && matchesApprovalFilter;
   });
 
   if (!isDeveloper) {
@@ -216,7 +236,7 @@ export function AdminPanel() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <Card className="admin-stats-card admin-stats-total">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -226,6 +246,18 @@ export function AdminPanel() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.total_users}</div>
+            </CardContent>
+          </Card>
+          
+          <Card className="admin-stats-card admin-stats-pending">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {language === 'tr' ? 'Kullanıcı Başvurusu' : 'User Applications'}
+              </CardTitle>
+              <Users className="h-4 w-4 text-yellow-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.pending_users}</div>
             </CardContent>
           </Card>
           
@@ -314,6 +346,17 @@ export function AdminPanel() {
                   <SelectItem value="developer">Developer</SelectItem>
                 </SelectContent>
               </Select>
+              <Select value={filterApproval} onValueChange={setFilterApproval}>
+                <SelectTrigger className="admin-input-field w-48">
+                  <SelectValue placeholder={language === 'tr' ? 'Onay durumu' : 'Approval status'} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{language === 'tr' ? 'Tüm Durumlar' : 'All Status'}</SelectItem>
+                  <SelectItem value="pending">{language === 'tr' ? 'Beklemede' : 'Pending'}</SelectItem>
+                  <SelectItem value="approved">{language === 'tr' ? 'Onaylandı' : 'Approved'}</SelectItem>
+                  <SelectItem value="rejected">{language === 'tr' ? 'Reddedildi' : 'Rejected'}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Users Table */}
@@ -375,15 +418,32 @@ export function AdminPanel() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge 
-                            variant={user.user_organization?.is_active ? 'default' : 'destructive'}
-                          >
-                            {user.user_organization?.is_active ? (
-                              language === 'tr' ? 'Aktif' : 'Active'
-                            ) : (
-                              language === 'tr' ? 'Engelli' : 'Blocked'
+                          <div className="flex flex-col gap-1">
+                            <Badge 
+                              variant={user.user_organization?.is_active ? 'default' : 'destructive'}
+                            >
+                              {user.user_organization?.is_active ? (
+                                language === 'tr' ? 'Aktif' : 'Active'
+                              ) : (
+                                language === 'tr' ? 'Engelli' : 'Blocked'
+                              )}
+                            </Badge>
+                            {user.user_organization?.approval_status === 'pending' && (
+                              <Badge variant="secondary">
+                                {language === 'tr' ? 'Beklemede' : 'Pending'}
+                              </Badge>
                             )}
-                          </Badge>
+                            {user.user_organization?.approval_status === 'rejected' && (
+                              <Badge variant="destructive">
+                                {language === 'tr' ? 'Reddedildi' : 'Rejected'}
+                              </Badge>
+                            )}
+                            {user.user_organization?.approval_status === 'approved' && (
+                              <Badge variant="default">
+                                {language === 'tr' ? 'Onaylandı' : 'Approved'}
+                              </Badge>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1 text-sm text-gray-500">
@@ -433,6 +493,26 @@ export function AdminPanel() {
                                     {language === 'tr' ? 'Aktifleştir' : 'Activate'}
                                   </DropdownMenuItem>
                                 )
+                              )}
+                              
+                              {/* Show approve/reject options for pending users */}
+                              {user.user_organization?.approval_status === 'pending' && (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() => handleUserAction(user.id, 'approve')}
+                                    className="text-green-600"
+                                  >
+                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                    {language === 'tr' ? 'Onayla' : 'Approve'}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleUserAction(user.id, 'reject')}
+                                    className="text-red-600"
+                                  >
+                                    <XCircle className="mr-2 h-4 w-4" />
+                                    {language === 'tr' ? 'Reddet' : 'Reject'}
+                                  </DropdownMenuItem>
+                                </>
                               )}
                             </DropdownMenuContent>
                           </DropdownMenu>
