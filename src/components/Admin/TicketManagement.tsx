@@ -46,53 +46,67 @@ export function TicketManagement() {
     try {
       setLoading(true);
 
-      // Load all tickets with organization info
+      // Load all tickets
       const { data: ticketsData, error: ticketsError } = await supabase
         .from('support_tickets')
-        .select(`
-          *,
-          organization:organizations(id, name, subscription_plan)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (ticketsError) throw ticketsError;
 
-      // Extract user IDs
+      // Extract user IDs and organization IDs
       const userIds = ticketsData?.map(ticket => ticket.user_id).filter(Boolean) || [];
+      const orgIds = ticketsData?.map(ticket => ticket.organization_id).filter(Boolean) || [];
 
-      // Get user details from auth.users
+      // Get user details using our admin function
       let usersData: any[] = [];
       if (userIds.length > 0) {
-        // Try a simpler query approach
-        const { data, error: userError } = await supabase
-          .from('auth.users')
-          .select('id, email, raw_user_meta_data')
-          .in('id', userIds);
-        
-        if (userError) {
-          console.error('Error fetching user data:', userError);
-          // Try alternative approach - fetch all users and filter
-          const { data: allUsers, error: allUsersError } = await supabase
-            .from('auth.users')
-            .select('id, email, raw_user_meta_data');
+        // Get all users one by one (since our function takes a single user ID)
+        for (let i = 0; i < userIds.length; i++) {
+          const { data: userData, error: userError } = await supabase
+            .rpc('get_user_info_for_admin', { user_uuid: userIds[i] });
           
-          if (!allUsersError && allUsers) {
-            usersData = allUsers.filter(user => userIds.includes(user.id));
+          if (!userError && userData) {
+            usersData.push({
+              id: userData.id,
+              email: userData.email,
+              full_name: userData.full_name,
+              raw_user_meta_data: userData.raw_user_meta_data
+            });
           }
-        } else if (data) {
-          usersData = data;
+        }
+      }
+
+      // Get organization details using our admin function
+      let orgsData: any[] = [];
+      if (orgIds.length > 0) {
+        // Get all organizations one by one
+        for (let i = 0; i < orgIds.length; i++) {
+          const { data: orgData, error: orgError } = await supabase
+            .rpc('get_organization_info_for_admin', { org_uuid: orgIds[i] });
+          
+          if (!orgError && orgData) {
+            orgsData.push({
+              id: orgData.id,
+              name: orgData.name,
+              subscription_plan: orgData.subscription_plan
+            });
+          }
         }
       }
 
       // Process tickets with user and organization data
       const processedTickets = ticketsData?.map(ticket => {
         const user = usersData.find(u => u.id === ticket.user_id);
+        const org = orgsData.find(o => o.id === ticket.organization_id);
         return {
           ...ticket,
           user: user ? {
-            ...user,
-            user_metadata: user.raw_user_meta_data
-          } : undefined
+            id: user.id,
+            email: user.email,
+            user_metadata: user.raw_user_meta_data || { full_name: user.full_name }
+          } : undefined,
+          organization: org || undefined
         };
       }) || [];
 
@@ -134,16 +148,21 @@ export function TicketManagement() {
         const senderIds = [...new Set(messagesData.map(msg => msg.sender_id))].filter(Boolean);
         
         if (senderIds.length > 0) {
-          // Get user details for all senders from auth.users
-          const { data: usersData, error: usersError } = await supabase
-            .from('auth.users')
-            .select('id, email, raw_user_meta_data')
-            .in('id', senderIds);
-
-          if (usersError) {
-            console.error('Error loading user data:', usersError);
-            setTicketMessages(messagesData);
-            return;
+          // Get user details for all senders using our admin function
+          const usersData: any[] = [];
+          
+          // Get all senders one by one
+          for (let i = 0; i < senderIds.length; i++) {
+            const { data: userData, error: userError } = await supabase
+              .rpc('get_user_info_for_admin', { user_uuid: senderIds[i] });
+            
+            if (!userError && userData) {
+              usersData.push({
+                id: userData.id,
+                email: userData.email,
+                user_metadata: userData.raw_user_meta_data || { full_name: userData.full_name }
+              });
+            }
           }
 
           // Map messages with sender information
@@ -152,8 +171,9 @@ export function TicketManagement() {
             return {
               ...message,
               sender: sender ? {
-                ...sender,
-                user_metadata: sender.raw_user_meta_data
+                id: sender.id,
+                email: sender.email,
+                user_metadata: sender.user_metadata
               } : undefined
             };
           });
@@ -172,12 +192,69 @@ export function TicketManagement() {
   };
 
   const openTicketDialog = async (ticket: SupportTicket) => {
-    setSelectedTicket(ticket);
-    setNewStatus(ticket.status);
-    setNewPriority(ticket.priority);
-    setResponseMessage('');
-    await loadTicketMessages(ticket.id);
-    setIsTicketDialogOpen(true);
+    try {
+      // Fetch fresh ticket data
+      const { data: ticketData, error: ticketError } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .eq('id', ticket.id)
+        .single();
+
+      if (ticketError) throw ticketError;
+
+      // Get user details using our admin function
+      let userData: any = null;
+      if (ticketData.user_id) {
+        const { data, error: userError } = await supabase
+          .rpc('get_user_info_for_admin', { user_uuid: ticketData.user_id });
+        
+        if (!userError && data) {
+          userData = {
+            id: data.id,
+            email: data.email,
+            user_metadata: data.raw_user_meta_data || { full_name: data.full_name }
+          };
+        }
+      }
+
+      // Get organization details using our admin function
+      let orgData: any = null;
+      if (ticketData.organization_id) {
+        const { data, error: orgError } = await supabase
+          .rpc('get_organization_info_for_admin', { org_uuid: ticketData.organization_id });
+        
+        if (!orgError && data) {
+          orgData = {
+            id: data.id,
+            name: data.name,
+            subscription_plan: data.subscription_plan
+          };
+        }
+      }
+
+      // Create the complete ticket object with user and organization data
+      const completeTicket: SupportTicket = {
+        ...ticketData,
+        user: userData || undefined,
+        organization: orgData || undefined
+      };
+
+      setSelectedTicket(completeTicket);
+      setNewStatus(completeTicket.status);
+      setNewPriority(completeTicket.priority);
+      setResponseMessage('');
+      await loadTicketMessages(ticket.id);
+      setIsTicketDialogOpen(true);
+    } catch (error) {
+      console.error('Error opening ticket dialog:', error);
+      // Fallback to original approach if there's an error
+      setSelectedTicket(ticket);
+      setNewStatus(ticket.status);
+      setNewPriority(ticket.priority);
+      setResponseMessage('');
+      await loadTicketMessages(ticket.id);
+      setIsTicketDialogOpen(true);
+    }
   };
 
   const updateTicket = async () => {
