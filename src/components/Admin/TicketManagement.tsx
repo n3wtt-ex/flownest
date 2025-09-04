@@ -47,7 +47,7 @@ export function TicketManagement() {
       setLoading(true);
 
       // Load all tickets with organization info
-      const { data: ticketsData, error } = await supabase
+      const { data: ticketsData, error: ticketsError } = await supabase
         .from('support_tickets')
         .select(`
           *,
@@ -55,7 +55,7 @@ export function TicketManagement() {
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (ticketsError) throw ticketsError;
 
       // Extract user IDs
       const userIds = ticketsData?.map(ticket => ticket.user_id).filter(Boolean) || [];
@@ -63,12 +63,23 @@ export function TicketManagement() {
       // Get user details from auth.users
       let usersData: any[] = [];
       if (userIds.length > 0) {
+        // Try a simpler query approach
         const { data, error: userError } = await supabase
           .from('auth.users')
           .select('id, email, raw_user_meta_data')
           .in('id', userIds);
         
-        if (!userError && data) {
+        if (userError) {
+          console.error('Error fetching user data:', userError);
+          // Try alternative approach - fetch all users and filter
+          const { data: allUsers, error: allUsersError } = await supabase
+            .from('auth.users')
+            .select('id, email, raw_user_meta_data');
+          
+          if (!allUsersError && allUsers) {
+            usersData = allUsers.filter(user => userIds.includes(user.id));
+          }
+        } else if (data) {
           usersData = data;
         }
       }
