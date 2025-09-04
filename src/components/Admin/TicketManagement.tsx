@@ -47,44 +47,53 @@ export function TicketManagement() {
       setLoading(true);
 
       // Load all tickets with user and organization info
-      // Fixed the query to properly join auth.users table to get user information
+      // Using separate queries to avoid parser errors with auth.users
       const { data: ticketsData, error } = await supabase
         .from('support_tickets')
         .select(`
           *,
-          user:auth.users(id, email, raw_user_meta_data),
           organization:organizations(id, name, subscription_plan)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      // Fix TypeScript error by checking if data is a ParserError
-      if (ticketsData && !Array.isArray(ticketsData) && 'error' in ticketsData) {
-        console.error('Parser error:', ticketsData);
-        setTickets([]);
-      } else {
-        // Process the user metadata to match the expected format
-        const processedTickets = Array.isArray(ticketsData) ? ticketsData.map(ticket => {
-          if (ticket.user && ticket.user.raw_user_meta_data) {
-            return {
-              ...ticket,
-              user: {
-                ...ticket.user,
-                user_metadata: ticket.user.raw_user_meta_data
-              }
-            };
-          }
-          return ticket;
-        }) : [];
-        setTickets(processedTickets);
+      // Extract user IDs and organization IDs
+      const userIds = ticketsData?.map(ticket => ticket.user_id).filter(Boolean) || [];
+      const orgIds = ticketsData?.map(ticket => ticket.organization_id).filter(Boolean) || [];
+
+      // Get user details
+      let usersData: any[] = [];
+      if (userIds.length > 0) {
+        const { data, error: userError } = await supabase
+          .from('users')
+          .select('id, email, raw_user_meta_data')
+          .in('id', userIds);
+        
+        if (!userError && data) {
+          usersData = data;
+        }
       }
 
+      // Process tickets with user and organization data
+      const processedTickets = ticketsData?.map(ticket => {
+        const user = usersData.find(u => u.id === ticket.user_id);
+        return {
+          ...ticket,
+          user: user ? {
+            ...user,
+            user_metadata: user.raw_user_meta_data
+          } : undefined
+        };
+      }) || [];
+
+      setTickets(processedTickets);
+
       // Calculate stats
-      const totalTickets = Array.isArray(ticketsData) ? ticketsData.length : 0;
-      const openTickets = Array.isArray(ticketsData) ? ticketsData.filter(t => t.status === 'open').length : 0;
-      const inProgressTickets = Array.isArray(ticketsData) ? ticketsData.filter(t => t.status === 'in_progress').length : 0;
-      const resolvedTickets = Array.isArray(ticketsData) ? ticketsData.filter(t => t.status === 'resolved' || t.status === 'closed').length : 0;
+      const totalTickets = ticketsData?.length || 0;
+      const openTickets = ticketsData?.filter(t => t.status === 'open').length || 0;
+      const inProgressTickets = ticketsData?.filter(t => t.status === 'in_progress').length || 0;
+      const resolvedTickets = ticketsData?.filter(t => t.status === 'resolved' || t.status === 'closed').length || 0;
 
       setStats({
         total_tickets: totalTickets,
@@ -116,9 +125,9 @@ export function TicketManagement() {
         const senderIds = [...new Set(messagesData.map(msg => msg.sender_id))].filter(Boolean);
         
         if (senderIds.length > 0) {
-          // Get user details for all senders from auth.users
+          // Get user details for all senders
           const { data: usersData, error: usersError } = await supabase
-            .from('auth.users')
+            .from('users')
             .select('id, email, raw_user_meta_data')
             .in('id', senderIds);
 
