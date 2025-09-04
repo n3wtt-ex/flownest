@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Calendar, Users, Edit2, Trash2, Check, X } from 'lucide-react';
 import { WorkspaceBoard } from './WorkspaceBoard';
