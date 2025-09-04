@@ -13,11 +13,9 @@ export function useAuth() {
       setUser(session?.user ?? null);
       setLoading(false);
       
-      // For existing users, we assume they are approved to prevent login issues
-      // Only check approval status for new implementations
+      // Check approval status if user is logged in
       if (session?.user) {
-        // Temporarily assume existing users are approved to prevent login issues
-        setApprovalStatus('approved');
+        checkUserApprovalStatus(session.user.id);
       }
     });
 
@@ -28,10 +26,9 @@ export function useAuth() {
       setUser(session?.user ?? null);
       setLoading(false);
       
-      // For existing users, we assume they are approved to prevent login issues
+      // Check approval status if user is logged in
       if (session?.user) {
-        // Temporarily assume existing users are approved to prevent login issues
-        setApprovalStatus('approved');
+        checkUserApprovalStatus(session.user.id);
       } else {
         setApprovalStatus(null);
       }
@@ -40,15 +37,38 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const checkUserApprovalStatus = async (userId: string) => {
+    try {
+      // Call the RPC function to get user approval status message
+      const { data, error } = await supabase.rpc('get_user_approval_status_message', { user_uuid: userId });
+      
+      if (error) {
+        // If the function doesn't exist yet, we assume the user is approved
+        if (error.message.includes('Could not find the function')) {
+          console.warn('User approval function not found, assuming user is approved');
+          setApprovalStatus('approved');
+        } else {
+          console.error('Error checking user approval status:', error);
+          setApprovalStatus(null);
+        }
+      } else {
+        setApprovalStatus(data);
+      }
+    } catch (error) {
+      console.error('Error checking user approval status:', error);
+      setApprovalStatus(null);
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
     
-    // If sign in is successful, temporarily assume user is approved
+    // If sign in is successful, check approval status
     if (data?.user && !error) {
-      setApprovalStatus('approved');
+      await checkUserApprovalStatus(data.user.id);
     }
     
     return { data, error };

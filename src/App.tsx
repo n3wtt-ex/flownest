@@ -66,9 +66,6 @@ function App() {
     );
   }
 
-  // TEMPORARY FIX: Allow all users to access the app while we resolve the database issue
-  // This bypasses the approval check to prevent existing users from being locked out
-  /*
   // Check if user is logged in but not approved
   // Only redirect if we have a valid approval status that is not 'approved'
   if (user && approvalStatus && approvalStatus !== 'approved') {
@@ -76,7 +73,6 @@ function App() {
     window.location.href = `/auth/error?message=${encodeURIComponent(approvalStatus)}`;
     return null;
   }
-  */
 
   return (
     <Router>
