@@ -69,18 +69,18 @@ export function AdminPanel() {
           id: adminUser.user_id,
           email: adminUser.user_email || '',
           created_at: adminUser.user_created_at,
-          user_metadata: adminUser.user_metadata || {},
+          user_metadata: { full_name: adminUser.user_full_name || '' },
           organization: {
             id: adminUser.organization_id,
-            name: adminUser.organization_name,
-            subscription_plan: adminUser.subscription_plan,
-            is_active: adminUser.organization_is_active
+            name: adminUser.organization_name || '',
+            subscription_plan: adminUser.organization_subscription_plan || 'starter',
+            is_active: adminUser.organization_is_active || false
           },
           user_organization: {
-            role: adminUser.role,
+            role: adminUser.role || 'member',
             joined_at: adminUser.joined_at,
-            is_active: adminUser.is_active,
-            approval_status: adminUser.approval_status
+            is_active: adminUser.user_is_active,
+            approval_status: adminUser.user_approval_status
           }
         };
       }) || [];
@@ -185,9 +185,9 @@ export function AdminPanel() {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.user_metadata?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.organization?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      (user.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.user_metadata?.full_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.organization?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesPlanFilter = 
       filterPlan === 'all' || 
@@ -392,14 +392,18 @@ export function AdminPanel() {
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                               <span className="text-sm font-semibold text-blue-600 dark:text-blue-300">
-                                {user.user_metadata?.full_name?.[0] || user.email[0].toUpperCase()}
+                                {/* Fixed the error by adding proper null checks */}
+                                {user.user_metadata?.full_name?.[0] || 
+                                 (user.email && user.email[0] ? user.email[0].toUpperCase() : 'U')}
                               </span>
                             </div>
                             <div>
-                              <div className="font-medium">{user.user_metadata?.full_name || 'No Name'}</div>
+                              <div className="font-medium">
+                                {user.user_metadata?.full_name || 'No Name'}
+                              </div>
                               <div className="text-sm text-gray-500 flex items-center gap-1">
                                 <Mail className="h-3 w-3" />
-                                {user.email}
+                                {user.email || 'No Email'}
                               </div>
                             </div>
                           </div>
