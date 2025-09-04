@@ -329,7 +329,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   // If onboarding is not completed, show the onboarding flow
   if (!workspace.onboardingCompleted) {
     return (
-      <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+      <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-none border border-slate-700/50 overflow-hidden relative mt-[-1px]">
         <OnboardingFlow onComplete={handleOnboardingComplete} />
       </div>
     );
@@ -374,14 +374,14 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   // Multistep formu göster
   if (showMultiStepForm) {
     return (
-      <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+      <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-none border border-slate-700/50 overflow-hidden relative mt-[-1px]">
         <MultiStepForm onComplete={handleMultiStepFormComplete} />
       </div>
     );
   }
 
   return (
-    <div className="w-full h-full min-h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative">
+    <div className="w-full h-full min-h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-none border border-slate-700/50 overflow-hidden relative mt-[-1px]">
       
       <AgentHeader agents={agents} />
       
@@ -492,7 +492,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   } catch (error) {
     console.error('Error rendering WorkspaceBoard:', error);
     return (
-      <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl border border-slate-700/50 overflow-hidden relative flex items-center justify-center">
+      <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-none border border-slate-700/50 overflow-hidden relative flex items-center justify-center mt-[-1px]">
         <div className="text-white text-center p-4">
           <h3 className="text-xl font-bold mb-2">Bir hata oluştu</h3>
           <p className="text-slate-300">Workspace yüklenirken bir hata meydana geldi.</p>

@@ -13,7 +13,7 @@ interface AgentHeaderProps {
 
 export function AgentHeader({ agents }: AgentHeaderProps) {
   return (
-    <div className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700/50 p-4">
+    <div className="bg-slate-800/50 backdrop-blur-sm p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-6">
           {agents.map((agent, index) => (
