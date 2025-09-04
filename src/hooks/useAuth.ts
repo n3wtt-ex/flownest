@@ -43,8 +43,14 @@ export function useAuth() {
       const { data, error } = await supabase.rpc('get_user_approval_status_message', { user_uuid: userId });
       
       if (error) {
-        console.error('Error checking user approval status:', error);
-        setApprovalStatus(null);
+        // If the function doesn't exist yet, we assume the user is approved
+        if (error.message.includes('Could not find the function')) {
+          console.warn('User approval function not found, assuming user is approved');
+          setApprovalStatus('approved');
+        } else {
+          console.error('Error checking user approval status:', error);
+          setApprovalStatus(null);
+        }
       } else {
         setApprovalStatus(data);
       }

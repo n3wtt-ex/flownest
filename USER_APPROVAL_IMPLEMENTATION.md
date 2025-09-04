@@ -85,6 +85,7 @@ Added approval status checking functionality:
 - Added `checkUserApprovalStatus` function to call the RPC function
 - Updated `signIn` function to check approval status after successful login
 - Added `useEffect` to check approval status on auth state changes
+- Added error handling for when the RPC function doesn't exist yet
 
 ### 2. Updated App Component (src/App.tsx)
 
@@ -92,6 +93,7 @@ Added logic to redirect users with non-approved status to the auth error page:
 
 ```typescript
 // Check if user is logged in but not approved
+// Only redirect if we have a valid approval status that is not 'approved'
 if (user && approvalStatus && approvalStatus !== 'approved') {
     // Redirect to auth error page with the approval status message
     window.location.href = `/auth/error?message=${encodeURIComponent(approvalStatus)}`;
@@ -106,6 +108,7 @@ Added useEffect to check approval status and redirect appropriately:
 ```typescript
 // Check approval status after login
 useEffect(() => {
+    // Only redirect if we have a valid approval status that is not 'approved'
     if (approvalStatus && approvalStatus !== 'approved') {
         // User is logged in but not approved, redirect to auth error
         navigate(`/auth/error?message=${encodeURIComponent(approvalStatus)}`);
@@ -145,14 +148,20 @@ Enhanced the component to display appropriate icons and messages based on the ap
      - Pending users see: "Your application is pending approval. Please wait for an administrator to review your application."
      - Rejected users see: "Your application has been rejected. Please contact our support team via email."
 
+## Quick Fix for Existing Users
+
+If you're experiencing issues with existing accounts after implementing these changes, you can apply the quick fix migrations in `quick_fix_migrations.sql`:
+
+1. This creates a simplified version of the `get_user_approval_status_message` function that assumes existing users are approved
+2. Updates the organization creation trigger to only affect new users
+3. Updates the organization lookup function to check approval status
+
 ## Manual Database Migration Steps
 
-If you're unable to use the Supabase CLI to apply these migrations, you can manually apply them through the Supabase SQL editor:
+If you're unable to use the Supabase CLI to apply these migrations, you can manually apply them through the Supabase dashboard:
 
-1. Apply the changes to the `create_default_organization_for_user` function in `007_fix_organization_creation_triggers.sql`
-2. Apply the changes to the `get_current_user_organization_id` function in `007_fix_organization_creation_triggers.sql`
-3. Apply the new functions in `015_add_user_approval_check_function.sql`
-4. Make sure the `approve_user` and `reject_user` functions in `013_add_approve_user_function.sql` are correctly set (they should already be correct)
+1. Apply the changes in `quick_fix_migrations.sql` first to resolve immediate issues
+2. Then apply the full migrations in `apply_user_approval_migrations.sql` for complete functionality
 
 ## Testing
 
