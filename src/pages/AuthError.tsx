@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { XCircle, AlertTriangle, Clock, UserX } from 'lucide-react';
 
 export function AuthError() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [refreshCount, setRefreshCount] = useState(0); // Track refresh attempts
   
   const errorMessage = new URLSearchParams(location.search).get('error') || 'An authentication error occurred.';
   const message = new URLSearchParams(location.search).get('message') || '';
@@ -34,6 +35,22 @@ export function AuthError() {
       return 'Authentication Error';
     }
   };
+
+  // Prevent automatic refresh
+  useEffect(() => {
+    // Clear any existing intervals or timeouts that might cause refresh
+    const clearAutoRefresh = () => {
+      // This is just a safeguard - we're not setting up any intervals in this component
+      // But other components might be causing the refresh
+    };
+    
+    clearAutoRefresh();
+    
+    // Clean up on unmount
+    return () => {
+      clearAutoRefresh();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

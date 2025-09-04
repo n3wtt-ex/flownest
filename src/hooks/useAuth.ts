@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
@@ -6,6 +6,7 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
+  const checkingStatusRef = useRef(false); // Ref to prevent concurrent status checks
 
   useEffect(() => {
     // Get initial session
@@ -38,6 +39,13 @@ export function useAuth() {
   }, []);
 
   const checkUserApprovalStatus = async (userId: string) => {
+    // Prevent concurrent status checks
+    if (checkingStatusRef.current) {
+      return;
+    }
+    
+    checkingStatusRef.current = true;
+    
     try {
       // First check if user is approved and active using the simpler function
       const { data: isApproved, error: approvalError } = await supabase.rpc('is_user_approved_and_active', { user_uuid: userId });
@@ -85,6 +93,8 @@ export function useAuth() {
       console.error('Error checking user approval status:', error);
       // Default to approved to prevent blocking existing users
       setApprovalStatus('approved');
+    } finally {
+      checkingStatusRef.current = false;
     }
   };
 

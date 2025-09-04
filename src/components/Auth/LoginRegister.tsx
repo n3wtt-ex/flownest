@@ -12,6 +12,7 @@ export function LoginRegister() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [redirected, setRedirected] = useState(false); // Track if user has been redirected
   const { signIn, signUp, approvalStatus } = useAuth();
   const navigate = useNavigate();
 
@@ -29,11 +30,13 @@ export function LoginRegister() {
   useEffect(() => {
     // Only redirect if we have a valid approval status that is explicitly not 'approved'
     // This prevents blocking existing users during the transition
-    if (approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null) {
+    // Only redirect once to prevent infinite loops
+    if (approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null && !redirected) {
       // User is logged in but not approved, redirect to auth error
+      setRedirected(true); // Mark as redirected to prevent infinite loops
       navigate(`/auth/error?message=${encodeURIComponent(approvalStatus)}`);
     }
-  }, [approvalStatus, navigate]);
+  }, [approvalStatus, navigate, redirected]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

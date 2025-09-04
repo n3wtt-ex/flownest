@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import { Layout } from './components/Layout/Layout';
@@ -57,6 +57,7 @@ function DashboardWrapper() {
 
 function App() {
   const { user, loading, approvalStatus } = useAuth();
+  const [redirected, setRedirected] = useState(false); // Track if user has been redirected
 
   if (loading) {
     return (
@@ -69,8 +70,10 @@ function App() {
   // Check if user is logged in but not approved
   // Only redirect if we have a valid approval status that is explicitly not 'approved'
   // This prevents blocking existing users during the transition
-  if (user && approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null) {
+  // Only redirect once to prevent infinite loops
+  if (user && approvalStatus && approvalStatus !== 'approved' && approvalStatus !== null && !redirected) {
     // Redirect to auth error page with the approval status message
+    setRedirected(true); // Mark as redirected to prevent infinite loops
     window.location.href = `/auth/error?message=${encodeURIComponent(approvalStatus)}`;
     return null;
   }
