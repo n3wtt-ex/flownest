@@ -1929,7 +1929,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                           setHasUnsavedChanges(true);
                         }}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
-                          openTracking ? 'bg-indigo-600' : 'bg-muted'
+                          openTracking ? 'bg-indigo-600' : 'bg-gray-300'
                         }`}
                       >
                         <span 
@@ -1951,7 +1951,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                           setHasUnsavedChanges(true);
                         }}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
-                          clickTracking ? 'bg-indigo-600' : 'bg-muted'
+                          clickTracking ? 'bg-indigo-600' : 'bg-gray-300'
                         }`}
                       >
                         <span 
@@ -1974,7 +1974,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                               setHasUnsavedChanges(true);
                             }}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
-                              onlyText ? 'bg-indigo-600' : 'bg-muted'
+                              onlyText ? 'bg-indigo-600' : 'bg-gray-300'
                             }`}
                           >
                             <span 
@@ -1992,7 +1992,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
                               setHasUnsavedChanges(true);
                             }}
                             className={`relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors duration-200 ease-in-out ${
-                              stopOnReply ? 'bg-indigo-600' : 'bg-muted'
+                              stopOnReply ? 'bg-indigo-600' : 'bg-gray-300'
                             }`}
                           >
                             <span 
