@@ -59,29 +59,22 @@ Deno.serve(async (req: Request) => {
       const { data: { user }, error: userError } = await supabaseClient.auth.getUser(userToken);
       
       if (!userError && user) {
-        // Get user's organization_id from user metadata or user_organizations table
-        // First try to get from user metadata
-        if (user.app_metadata?.organization_id) {
-          organizationId = user.app_metadata.organization_id;
+        // Use the database function to get the current user's organization ID
+        const { data: orgData, error: orgError } = await supabaseClient.rpc('get_current_user_organization_id');
+        
+        if (!orgError && orgData) {
+          organizationId = orgData;
         } else {
-          // If not in metadata, query the user_organizations table
-          const { data: orgData, error: orgError } = await supabaseClient
-            .from('user_organizations')
-            .select('organization_id')
-            .eq('user_id', user.id)
-            .limit(1)
-            .single();
-
-          if (!orgError && orgData) {
-            organizationId = orgData.organization_id;
-          }
+          console.error('Error fetching user organization via RPC:', orgError?.message || 'No organization found');
         }
+      } else {
+        console.error('Error fetching user:', userError?.message || 'No user found');
       }
     }
 
     // If we still don't have an organization ID, return an error
     if (!organizationId) {
-      return new Response(JSON.stringify({ error: 'User organization not found' }, null, 2), {
+      return new Response(JSON.stringify({ error: 'User organization not found or user not authenticated' }, null, 2), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });

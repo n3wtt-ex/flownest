@@ -82,23 +82,59 @@ Deno.serve(async (req: Request) => {
       // For now, we'll use a placeholder or derive if possible. If not, it will be 0 or needs clarification.
       const positiveReplyRate = reply_count > 0 ? (reply_count / reply_count) * 100 : 0; // Placeholder, needs actual logic if different
 
+      // First, check if the campaign already exists to get its organization_id
+      let organizationId: string | null = null;
+      
+      const { data: existingCampaign, error: selectError } = await supabaseClient
+        .from('campaigns')
+        .select('organization_id')
+        .eq('webhook_campaign_id', campaign_id)
+        .limit(1)
+        .single();
+      
+      if (!selectError && existingCampaign) {
+        // Campaign exists, use its organization_id
+        organizationId = existingCampaign.organization_id;
+      } else {
+        // Campaign doesn't exist, try to get a default organization
+        // This is a webhook so we don't have user context
+        // We'll use the first organization as a fallback
+        const { data: defaultOrg, error: orgError } = await supabaseClient
+          .from('organizations')
+          .select('id')
+          .limit(1)
+          .single();
+          
+        if (!orgError && defaultOrg) {
+          organizationId = defaultOrg.id;
+        }
+      }
+
+      // Prepare the upsert data
+      const upsertData: any = {
+        webhook_campaign_id: campaign_id, // Match by this unique ID for upsert
+        name: data.campaign_name, // Include name for new inserts
+        status: statusString,
+        sent: emails_sent_count,
+        clicks: link_click_count,
+        replied: reply_count,
+        open_rate: parseFloat(openRate.toFixed(1)), // Corrected to snake_case
+        click_rate: parseFloat(clickRate.toFixed(1)), // Corrected to snake_case
+        reply_rate: parseFloat(replyRate.toFixed(1)), // Corrected to snake_case
+        positive_reply_rate: parseFloat(positiveReplyRate.toFixed(1)), // Corrected to snake_case
+        opportunities: total_opportunities,
+        revenue: total_opportunity_value,
+        // progress: (emails_sent_count / total_leads_in_campaign) * 100, // Requires total_leads_in_campaign
+      };
+      
+      // Add organization_id if we have one
+      if (organizationId) {
+        upsertData.organization_id = organizationId;
+      }
+
       const { data: updatedCampaign, error } = await supabaseClient
-        .from('campaigns') // Assuming your table name is 'campaigns'
-        .upsert({
-          webhook_campaign_id: campaign_id, // Match by this unique ID for upsert
-          name: data.campaign_name, // Include name for new inserts
-          status: statusString,
-          sent: emails_sent_count,
-          clicks: link_click_count,
-          replied: reply_count,
-          open_rate: parseFloat(openRate.toFixed(1)), // Corrected to snake_case
-          click_rate: parseFloat(clickRate.toFixed(1)), // Corrected to snake_case
-          reply_rate: parseFloat(replyRate.toFixed(1)), // Corrected to snake_case
-          positive_reply_rate: parseFloat(positiveReplyRate.toFixed(1)), // Corrected to snake_case
-          opportunities: total_opportunities,
-          revenue: total_opportunity_value,
-          // progress: (emails_sent_count / total_leads_in_campaign) * 100, // Requires total_leads_in_campaign
-        }, { onConflict: 'webhook_campaign_id' }) // Specify the conflict column for upsert
+        .from('campaigns')
+        .upsert(upsertData, { onConflict: 'webhook_campaign_id' })
         .select();
 
       if (error) {

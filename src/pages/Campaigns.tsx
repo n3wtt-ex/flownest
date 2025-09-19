@@ -123,9 +123,30 @@ export function Campaigns() {
     setLoadingCampaigns(true);
     setErrorCampaigns(null);
     try {
+      // First get the current user's organization
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      // Get user's organization_id
+      const { data: userOrgData, error: userOrgError } = await supabase
+        .from('user_organizations')
+        .select('organization_id')
+        .eq('user_id', session.user.id)
+        .eq('is_active', true)
+        .limit(1)
+        .single();
+
+      if (userOrgError) {
+        throw new Error(`Error fetching user organization: ${userOrgError.message}`);
+      }
+
+      // Fetch campaigns for this organization
       const { data, error } = await supabase
         .from('campaigns')
-        .select('id, name, status, progress, sent, clicks, replied, open_rate, click_rate, reply_rate, positive_reply_rate, opportunities, conversions, revenue, created_at, webhook_campaign_id'); // Sadece UI'da kullanılan sütunları çekiyoruz
+        .select('id, name, status, progress, sent, clicks, replied, open_rate, click_rate, reply_rate, positive_reply_rate, opportunities, conversions, revenue, created_at, webhook_campaign_id')
+        .eq('organization_id', userOrgData.organization_id);
 
       if (error) {
         console.error('Error fetching campaigns:', error);
@@ -286,6 +307,25 @@ export function Campaigns() {
     }
 
     try {
+      // Get the current user's organization
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      // Get user's organization_id
+      const { data: userOrgData, error: userOrgError } = await supabase
+        .from('user_organizations')
+        .select('organization_id')
+        .eq('user_id', session.user.id)
+        .eq('is_active', true)
+        .limit(1)
+        .single();
+
+      if (userOrgError) {
+        throw new Error(`Error fetching user organization: ${userOrgError.message}`);
+      }
+
       const { data: createdCampaign, error } = await supabase
         .from('campaigns')
         .insert({
@@ -302,6 +342,7 @@ export function Campaigns() {
           opportunities: 0,
           conversions: 0,
           revenue: 0,
+          organization_id: userOrgData.organization_id, // Add organization_id
           webhook_campaign_id: webhookCampaignId, // Save the ID from the webhook
         })
         .select();
