@@ -76,6 +76,7 @@ export function Campaigns() {
   const { language } = useLanguage();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
+  const [syncingCampaigns, setSyncingCampaigns] = useState(false);
   const [errorCampaigns, setErrorCampaigns] = useState<string | null>(null);
 
   const [leads, setLeads] = useLocalStorage<Lead[]>('leads', mockLeads);
@@ -164,6 +165,93 @@ export function Campaigns() {
   // Sayfa yüklendiğinde kampanyaları çek
   useEffect(() => {
     fetchCampaigns();
+    
+    // Also sync campaigns
+    const syncCampaigns = async () => {
+      setSyncingCampaigns(true);
+      try {
+        // Get the user's session token
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.warn('No active session for campaign sync');
+          return;
+        }
+
+        // Call the sync endpoint
+        const response = await fetch('/api/campaigns/sync', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Campaign sync failed:', response.status, errorData);
+          return;
+        }
+
+        const remoteCampaigns = await response.json();
+        
+        // Merge remote campaigns with existing campaigns
+        setCampaigns(prev => {
+          const byId = new Map(prev.map(c => [c.id, c]));
+          
+          for (const remote of remoteCampaigns) {
+            if (!byId.has(remote.id)) {
+              // Add new campaign with minimal fields
+              byId.set(remote.id, { 
+                id: remote.id, 
+                name: remote.name, 
+                status: remote.status === 1 ? 'active' : 'paused',
+                // Default values for other required fields
+                progress: 0,
+                sent: 0,
+                clicks: 0,
+                replied: 0,
+                open_rate: 0,
+                click_rate: 0,
+                reply_rate: 0,
+                positive_reply_rate: 0,
+                opportunities: 0,
+                conversions: 0,
+                revenue: 0,
+                created_at: new Date().toISOString(),
+              });
+            } else {
+              // Update minimal fields if missing
+              const existing = byId.get(remote.id);
+              if (existing) {
+                byId.set(remote.id, { 
+                  ...existing, 
+                  name: existing.name || remote.name, 
+                  status: existing.status === undefined ? (remote.status === 1 ? 'active' : 'paused') : existing.status 
+                });
+              }
+            }
+          }
+          
+          return Array.from(byId.values());
+        });
+        
+      } catch (err: any) {
+        console.error('Unexpected error during campaign sync:', err);
+      } finally {
+        setSyncingCampaigns(false);
+      }
+    };
+    
+    syncCampaigns();
+    
+    // Set up interval for periodic sync (every 30 seconds)
+    const interval = setInterval(() => {
+      syncCampaigns();
+    }, 30000);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(interval);
   }, []);
 
   const createCampaign = async () => {
@@ -2043,6 +2131,15 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
               className="text-muted-foreground"
             >
               {campaigns.filter(c => c.status === 'active').length} active, {campaigns.filter(c => c.status === 'paused').length} paused campaigns
+              {syncingCampaigns && (
+                <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  <svg className="animate-spin -ml-1 mr-2 h-3 w-3 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Syncing...
+                </span>
+              )}
             </motion.p>
           </div>
           
