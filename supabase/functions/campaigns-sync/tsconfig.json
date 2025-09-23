@@ -7,8 +7,7 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "types": ["jsr:@supabase/functions-js/edge-runtime.d.ts"]
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["./index.ts"]
 }
