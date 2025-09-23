@@ -1205,16 +1205,12 @@ export default function ModernAIChatbot({ workspaceId }: { workspaceId?: string 
   );
 }
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { motion } from 'framer-motion';
-import { Zap, HelpCircle } from 'lucide-react';
+
 
 export type ChatMessage = { id: string; role: "user" | "bot"; text: string; mode?: "work" | "ask" };
 
 // ChatHeader Bileşeni
-const ChatHeader = () => {
+const ChatHeader = ({ mode, setMode, onModeChange }: { mode: "work" | "ask"; setMode: React.Dispatch<React.SetStateAction<"work" | "ask">>; onModeChange: (mode: "work" | "ask") => void; }) => {
   return (
     <div className="bg-transparent p-1 mb-2">
       <h1 className="text-sm font-semibold text-gray-300">AI Asistan</h1>
@@ -1370,7 +1366,8 @@ export function ChatBox({ onModeChange, workspaceId }: { onModeChange: (mode: "w
       >
         <div className="relative flex items-center gap-2">
           <div className="relative flex-1">
-            <Input
+            <input
+              type="text"
               placeholder={`${mode === "work" ? "Work" : "Ask"}…`}
               value={input}
               onChange={(e) => setInput(e.target.value)}
