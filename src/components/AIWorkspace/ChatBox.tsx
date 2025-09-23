@@ -1026,7 +1026,7 @@ const InputBar = ({ inputValue, setInputValue, currentMode, setCurrentMode, hand
 };
 
 // Main Component
-export default function ModernAIChatbot() {
+export default function ModernAIChatbot({ workspaceId }: { workspaceId?: string }) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -1077,7 +1077,7 @@ export default function ModernAIChatbot() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Workspace-ID': 'workspace-id'
+          'X-Workspace-ID': workspaceId && workspaceId.trim() !== '' ? workspaceId : 'workspace-id'
         },
         body: JSON.stringify(payload),
       });
@@ -1222,7 +1222,7 @@ const ChatHeader = () => {
   );
 };
 
-export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask") => void }) {
+export function ChatBox({ onModeChange, workspaceId }: { onModeChange: (mode: "work" | "ask") => void; workspaceId?: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: "1", role: "user", text: "NYC AI SaaS leadleri bul ve kampanya hazırla" },
     { id: "2", role: "bot", text: "Filtreleniyor… 32 sonuç bulundu." },
@@ -1257,7 +1257,7 @@ export function ChatBox({ onModeChange }: { onModeChange: (mode: "work" | "ask")
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Workspace-ID': 'workspace-id'
+          'X-Workspace-ID': workspaceId && workspaceId.trim() !== '' ? workspaceId : 'workspace-id'
         },
         body: JSON.stringify(payload),
       });

@@ -391,7 +391,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
         {/* Left Chat Panel */}
         <div className="w-1/3 p-3">
           <div className="w-full h-full">
-            <ChatBox />
+            <ChatBox workspaceId={workspace.id} onModeChange={() => {}} />
           </div>
         </div>
 
