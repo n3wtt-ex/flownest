@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MessageSquare, 
@@ -19,6 +19,7 @@ import {
   Star,
   Archive
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface EmailCard {
   id: string;
@@ -29,59 +30,9 @@ interface EmailCard {
   subject?: string;
 }
 
-const mockEmails: EmailCard[] = [
-  {
-    id: '1',
-    sender: 'john@techcorp.com',
-    subject: 'Re: Your insights on cold calling, Nazma',
-    content: 'Merhaba, ürününüz hakkında daha fazla bilgi almak istiyorum. Fiyatlandırma konusunda görüşebilir miyiz?',
-    tag: 'İlgili',
-    timestamp: '2024-01-15T10:30:00Z'
-  },
-  {
-    id: '2',
-    sender: 'sarah@innovate.io',
-    subject: 'Re: Your insights on cold calling, Nazma',
-    content: 'Teşekkürler ama şu anda böyle bir çözüme ihtiyacımız yok. İyi günler.',
-    tag: 'İlgisiz',
-    timestamp: '2024-01-15T11:45:00Z'
-  },
-  {
-    id: '3',
-    sender: 'mike@startup.co',
-    subject: 'Re: Your insights on cold calling, Nazma',
-    content: 'İlginç görünüyor. Kaç kullanıcıya kadar destekliyor? Entegrasyon süreci nasıl işliyor?',
-    tag: 'Soru Soruyor',
-    timestamp: '2024-01-15T14:20:00Z'
-  },
-  {
-    id: '4',
-    sender: 'lisa@company.com',
-    subject: 'Re: Your insights on cold calling, Nazma',
-    content: 'Demo talep ediyorum. Bu hafta müsait olduğunuz bir zaman var mı?',
-    tag: 'İlgili',
-    timestamp: '2024-01-15T15:10:00Z'
-  },
-  {
-    id: '5',
-    sender: 'david@business.net',
-    subject: 'Re: Your insights on cold calling, Nazma',
-    content: 'Şu anda başka bir çözüm kullanıyoruz ve memnunuz. Teşekkürler.',
-    tag: 'İlgisiz',
-    timestamp: '2024-01-15T16:30:00Z'
-  },
-  {
-    id: '6',
-    sender: 'anna@enterprise.org',
-    subject: 'Re: Your insights on cold calling, Nazma',
-    content: 'Güvenlik sertifikalarınız neler? GDPR uyumluluğu var mı?',
-    tag: 'Soru Soruyor',
-    timestamp: '2024-01-15T17:15:00Z'
-  }
-];
-
 export function Responses() {
-  const [emails, setEmails] = useState<EmailCard[]>(mockEmails);
+  const [emails, setEmails] = useState<EmailCard[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedEmail, setSelectedEmail] = useState<EmailCard | null>(null);
   const [activeCategory, setActiveCategory] = useState<'İlgili' | 'İlgisiz' | 'Soru Soruyor'>('İlgili');
   const [draggedEmail, setDraggedEmail] = useState<EmailCard | null>(null);
@@ -92,6 +43,40 @@ export function Responses() {
   const [crmTransferLoading, setCrmTransferLoading] = useState<Set<string>>(new Set());
   const [isEditingReply, setIsEditingReply] = useState(false);
   const [replyText, setReplyText] = useState('');
+
+  // Fetch emails from Supabase
+  useEffect(() => {
+    fetchEmails();
+  }, []);
+
+  const fetchEmails = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('emails')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      // Transform data to match EmailCard interface
+      const emailCards: EmailCard[] = data.map((email: any) => ({
+        id: email.id,
+        sender: email.sender,
+        content: email.content,
+        tag: email.tag,
+        timestamp: email.created_at,
+        subject: email.subject || `Re: Your insights on cold calling, Nazma`
+      }));
+      
+      setEmails(emailCards);
+    } catch (error) {
+      console.error('Error fetching emails:', error);
+      showNotification('Veriler yüklenirken bir hata oluştu.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const showNotification = (message: string, type: 'success' | 'error') => {
     setNotification({ message, type });
@@ -141,16 +126,29 @@ export function Responses() {
   const handleDrop = async (e: React.DragEvent, targetTag: EmailCard['tag']) => {
     e.preventDefault();
     if (draggedEmail && draggedEmail.tag !== targetTag) {
-      // Update email tag
-      const updatedEmails = emails.map(email => 
-        email.id === draggedEmail.id ? { ...email, tag: targetTag } : email
-      );
-      setEmails(updatedEmails);
-      showNotification(`E-posta "${targetTag}" kategorisine taşındı!`, 'success');
-      
-      // If currently selected email was moved and we're not viewing its new category
-      if (selectedEmail?.id === draggedEmail.id && activeCategory !== targetTag) {
-        setSelectedEmail(null);
+      try {
+        // Update email tag in the database
+        const { error } = await supabase
+          .from('emails')
+          .update({ tag: targetTag })
+          .eq('id', draggedEmail.id);
+
+        if (error) throw error;
+
+        // Update email tag in the state
+        const updatedEmails = emails.map(email => 
+          email.id === draggedEmail.id ? { ...email, tag: targetTag } : email
+        );
+        setEmails(updatedEmails);
+        showNotification(`E-posta "${targetTag}" kategorisine taşındı!`, 'success');
+        
+        // If currently selected email was moved and we're not viewing its new category
+        if (selectedEmail?.id === draggedEmail.id && activeCategory !== targetTag) {
+          setSelectedEmail(null);
+        }
+      } catch (error) {
+        console.error('Error updating email tag:', error);
+        showNotification('Etiket güncellenirken bir hata oluştu.', 'error');
       }
     }
     setDraggedEmail(null);
@@ -233,6 +231,17 @@ export function Responses() {
     return colors[index % colors.length];
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-foreground">Yanıtlar yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Notification */}
@@ -308,7 +317,7 @@ export function Responses() {
                     setIsEditingReply(false);
                   }}
                   onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, category.key)}
+                  onDrop={(e: any) => handleDrop(e, category.key)}
                   style={{
                     zIndex: activeCategory === category.key ? 20 : 10 - index
                   }}
@@ -383,7 +392,7 @@ export function Responses() {
                       : 'border-border hover:shadow-sm hover:border-gray-300'
                   } ${draggedEmail?.id === email.id ? 'opacity-50 scale-95' : ''}`}
                   draggable
-                  onDragStart={(e) => handleDragStart(e, email)}
+                  onDragStart={(e: any) => handleDragStart(e, email)}
                   onClick={() => {
                     setSelectedEmail(email);
                     setExpandedCard(expandedCard === email.id ? null : email.id);
@@ -667,7 +676,12 @@ export function Responses() {
                               <textarea
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}
-                                placeholder={`Merhaba ${selectedEmail?.sender},\n\nTeşekkür ederiz. Sorularınızla ilgili detaylı bilgi vermek isterim...\n\nEn iyi dileklerimle,\nNazma`}
+                                placeholder={`Merhaba ${selectedEmail?.sender},
+
+Teşekkür ederiz. Sorularınızla ilgili detaylı bilgi vermek isterim...
+
+En iyi dileklerimle,
+Nazma`}
                                 className="w-full h-32 px-4 py-3 border border-gray-200 dark:border-slate-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
                                 autoFocus
                               />
@@ -684,7 +698,12 @@ export function Responses() {
                                   Temizle
                                 </button>
                                 <button
-                                  onClick={() => setReplyText(`Merhaba ${selectedEmail?.sender},\n\nTeşekkür ederiz. Sorularınızla ilgili detaylı bilgi vermek isterim...\n\nEn iyi dileklerimle,\nNazma`)}
+                                  onClick={() => setReplyText(`Merhaba ${selectedEmail?.sender},
+
+Teşekkür ederiz. Sorularınızla ilgili detaylı bilgi vermek isterim...
+
+En iyi dileklerimle,
+Nazma`)}
                                   className="text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
                                 >
                                   Şablon Yükle
@@ -739,7 +758,7 @@ export function Responses() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;
