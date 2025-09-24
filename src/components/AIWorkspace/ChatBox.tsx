@@ -1073,7 +1073,7 @@ export default function ModernAIChatbot({ workspaceId }: { workspaceId?: string 
         payload.ask = `ask:${inputValue}`;
       }
 
-      const response = await fetch('https://n8n.flownests.org/webhook-test/8caf5ac6-9fb5-4e68-9741-3d452248a95e', {
+      const response = await fetch('https://n8n.flownests.org/webhook/8caf5ac6-9fb5-4e68-9741-3d452248a95e', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1249,7 +1249,7 @@ export function ChatBox({ onModeChange, workspaceId }: { onModeChange: (mode: "w
       }
 
       // Webhook çağrısı yap
-      const response = await fetch('https://n8n.flownests.org/webhook-test/8caf5ac6-9fb5-4e68-9741-3d452248a95e', {
+      const response = await fetch('https://n8n.flownests.org/webhook/8caf5ac6-9fb5-4e68-9741-3d452248a95e', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
