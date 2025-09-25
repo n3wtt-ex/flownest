@@ -36,9 +36,10 @@ const eventContents = {
 
 interface MultiStepFormProps {
   onComplete?: (data: any) => void;
+  workspaceId?: string;
 }
 
-export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
+export default function MultiStepForm({ onComplete, workspaceId }: MultiStepFormProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [openSection, setOpenSection] = useState<number | null>(null);
@@ -48,7 +49,10 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
 
   const handleSectionClick = (stepNumber: number) => {
     // Sadece tamamlanmış veya mevcut adıma tıklanabilir
-    if (stepNumber <= Math.max(...Array.from(completedSteps), currentStep)) {
+    const maxCompletedStep = completedSteps.size > 0 
+      ? Math.max(...Array.from(completedSteps).map(s => Number(s))) 
+      : 0;
+    if (stepNumber <= Math.max(maxCompletedStep, currentStep)) {
       setOpenSection(openSection === stepNumber ? null : stepNumber);
     }
   };
@@ -85,7 +89,10 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
       if (webhooks[stepNumber as keyof typeof webhooks]) {
         const response = await fetch(webhooks[stepNumber as keyof typeof webhooks], {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Workspace-ID': workspaceId || 'workspace-id'
+          },
           body: JSON.stringify(payloads[stepNumber as keyof typeof payloads]),
         });
         
@@ -152,7 +159,10 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
         
         const response = await fetch('https://n8n.flownests.org/webhook/77022c8e-8856-49b9-b57e-701c8df4599e', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Workspace-ID': workspaceId || 'workspace-id'
+          },
           body: JSON.stringify(combinedData),
         });
         
@@ -183,7 +193,10 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
   };
 
   const isStepAccessible = (stepNumber: number) => {
-    return stepNumber <= Math.max(...Array.from(completedSteps), currentStep);
+    const maxCompletedStep = completedSteps.size > 0 
+      ? Math.max(...Array.from(completedSteps).map(s => Number(s))) 
+      : 0;
+    return stepNumber <= Math.max(maxCompletedStep, currentStep);
   };
 
   const isStepCompleted = (stepNumber: number) => {
@@ -215,13 +228,13 @@ export default function MultiStepForm({ onComplete }: MultiStepFormProps) {
             <React.Fragment key={step}>
               {/* Node */}
               <button
-                onClick={() => handleSectionClick(step)}
-                disabled={!isStepAccessible(step)}
+                onClick={() => handleSectionClick(step as number)}
+                disabled={!(step <= Math.max(...Array.from(completedSteps).map(s => Number(s)), currentStep))}
                 className={`w-4 h-4 rounded-full transition-all duration-300 focus:outline-none ${
-                  isStepCompleted(step) || (isStepAccessible(step) && currentStep >= step)
-                    ? 'bg-teal-500 hover:bg-teal-600'
-                    : 'bg-gray-300'
-                } ${isStepAccessible(step) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                  completedSteps.has(step as number) || (step <= Math.max(...Array.from(completedSteps).map(s => Number(s)), currentStep) && currentStep >= (step as number))
+                      ? 'bg-teal-500 hover:bg-teal-600'
+                      : 'bg-gray-300'
+                  } ${(step as number) <= Math.max(...Array.from(completedSteps).map(s => Number(s)), currentStep) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
               />
               
               {/* Connection Line */}
@@ -653,13 +666,13 @@ function StepFormContent({ stepNumber, initialData, onSave, onClose, stepTitle, 
               <React.Fragment key={step}>
                 {/* Node */}
                 <button
-                  onClick={() => handleSectionClick(step)}
-                  disabled={!(step <= Math.max(...Array.from(completedSteps), currentStep))}
+                  onClick={() => handleSectionClick(step as number)}
+                  disabled={!(step <= Math.max(...Array.from(completedSteps).map(s => Number(s)), currentStep))}
                   className={`w-4 h-4 rounded-full transition-all duration-300 focus:outline-none ${
-                    completedSteps.has(step) || (step <= Math.max(...Array.from(completedSteps), currentStep) && currentStep >= step)
+                    completedSteps.has(step as number) || (step <= Math.max(...Array.from(completedSteps).map(s => Number(s)), currentStep) && currentStep >= (step as number))
                       ? 'bg-teal-500 hover:bg-teal-600'
                       : 'bg-gray-300'
-                  } ${step <= Math.max(...Array.from(completedSteps), currentStep) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                  } ${(step as number) <= Math.max(...Array.from(completedSteps).map(s => Number(s)), currentStep) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
                 />
                 
                 {/* Connection Line */}

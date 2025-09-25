@@ -375,7 +375,7 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
   if (showMultiStepForm) {
     return (
       <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-none border border-slate-700/50 overflow-hidden relative mt-[-1px]">
-        <MultiStepForm onComplete={handleMultiStepFormComplete} />
+        <MultiStepForm onComplete={handleMultiStepFormComplete} workspaceId={workspace.id} />
       </div>
     );
   }
