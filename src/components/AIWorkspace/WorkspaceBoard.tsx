@@ -378,9 +378,18 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
 
   // Multistep formu göster
   if (showMultiStepForm) {
+    // Debug: log workspace.id before passing to MultiStepForm
+    console.log('WorkspaceBoard - About to render MultiStepForm');
+    console.log('WorkspaceBoard - workspace object:', workspace);
+    console.log('WorkspaceBoard - workspace.id:', workspace.id);
+    console.log('WorkspaceBoard - workspace.id type:', typeof workspace.id);
+    
     return (
       <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-none border border-slate-700/50 overflow-hidden relative mt-[-1px]">
-        <MultiStepForm onComplete={handleMultiStepFormComplete} workspaceId={workspace.id} />
+        <MultiStepForm 
+          onComplete={handleMultiStepFormComplete} 
+          workspaceId={workspace?.id || ''} 
+        />
       </div>
     );
   }
