@@ -55,6 +55,12 @@ const agents = [
 ];
 
 export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
+  // CRITICAL DEBUG: Log workspace immediately when component receives it
+  console.log('=== WorkspaceBoard Component Mounted ===');
+  console.log('workspace prop received:', workspace);
+  console.log('workspace.id:', workspace?.id);
+  console.log('workspace keys:', workspace ? Object.keys(workspace) : 'workspace is null/undefined');
+  
   const { currentOrganization } = useOrganization();
   const [selectedTools, setSelectedTools] = useState<{ [key: string]: { tool: string; position: { x: number; y: number } } }>({});
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
@@ -482,7 +488,12 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
             {/* Multistep formu başlatmak için bir buton ekleyebiliriz */}
             <div className="absolute top-4 right-4 z-30">
               <button
-                onClick={() => setShowMultiStepForm(true)}
+                onClick={() => {
+                  console.log('=== Formu Aç Button Clicked ===');
+                  console.log('Current workspace when button clicked:', workspace);
+                  console.log('Current workspace.id when button clicked:', workspace?.id);
+                  setShowMultiStepForm(true);
+                }}
                 className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:shadow-lg transition-all duration-200 text-sm font-medium"
               >
                 Formu Aç
