@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useOrganization } from '@/contexts/OrganizationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Settings, Shield, Zap, Plus, ChevronDown, Upload, Sparkles, Edit3, Save, FileText, RefreshCw } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -47,6 +48,7 @@ const eventLabels = {
 
 export function Email() {
   const { language } = useLanguage();
+  const { currentOrganization } = useOrganization();
   const [emailAccounts, setEmailAccounts] = useState<EmailAccount[]>(mockEmailAccounts);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState('demo');
@@ -361,6 +363,7 @@ export function Email() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify({
           name: introName,
@@ -386,6 +389,7 @@ export function Email() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify({
           content: editContent,

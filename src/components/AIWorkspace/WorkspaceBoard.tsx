@@ -8,6 +8,7 @@ import { RightSidebar } from './RightSidebar';
 import { SelectionRow } from './SelectionRow';
 import { OnboardingFlow } from './OnboardingFlow';
 import { supabase } from '../../lib/supabaseClient';
+import { useOrganization } from '@/contexts/OrganizationContext';
 import MultiStepForm from './multistep_form_fixed'; // MultiStepForm importunu ekliyoruz
 
 interface WorkspaceSelection {
@@ -54,6 +55,7 @@ const agents = [
 ];
 
 export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardProps) {
+  const { currentOrganization } = useOrganization();
   const [selectedTools, setSelectedTools] = useState<{ [key: string]: { tool: string; position: { x: number; y: number } } }>({});
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [containerDimensions, setContainerDimensions] = useState({ width: 800, height: 480 });
@@ -309,7 +311,10 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
       for (const webhook of webhooks) {
         const response = await fetch(webhook, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-Organization-ID': currentOrganization?.id || 'default-org'
+          },
           body: JSON.stringify(combinedData),
         });
         

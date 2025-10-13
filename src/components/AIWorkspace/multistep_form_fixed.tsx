@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useOrganization } from '@/contexts/OrganizationContext';
 
 const SECTION_FIELDS = {
   "1": [
@@ -40,6 +41,7 @@ interface MultiStepFormProps {
 }
 
 export default function MultiStepForm({ onComplete, workspaceId }: MultiStepFormProps) {
+  const { currentOrganization } = useOrganization();
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [openSection, setOpenSection] = useState<number | null>(null);
@@ -91,7 +93,8 @@ export default function MultiStepForm({ onComplete, workspaceId }: MultiStepForm
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'X-Workspace-ID': workspaceId || 'workspace-id'
+            'X-Workspace-ID': workspaceId || 'workspace-id',
+            'X-Organization-ID': currentOrganization?.id || 'default-org'
           },
           body: JSON.stringify(payloads[stepNumber as keyof typeof payloads]),
         });
@@ -161,7 +164,8 @@ export default function MultiStepForm({ onComplete, workspaceId }: MultiStepForm
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'X-Workspace-ID': workspaceId || 'workspace-id'
+            'X-Workspace-ID': workspaceId || 'workspace-id',
+            'X-Organization-ID': currentOrganization?.id || 'default-org'
           },
           body: JSON.stringify(combinedData),
         });

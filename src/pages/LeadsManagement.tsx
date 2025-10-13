@@ -5,6 +5,7 @@ import { Lead as LeadType } from '../types';
 import { supabase } from '../lib/supabase';
 import { useCampaigns } from '../contexts/CampaignsContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useOrganization } from '../contexts/OrganizationContext';
 
 // Refresh icon component
 const RefreshIcon = () => (
@@ -15,6 +16,7 @@ const RefreshIcon = () => (
 
 export function Leads() {
   const { language } = useLanguage();
+  const { currentOrganization } = useOrganization();
   const [leads, setLeads] = useState<LeadType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +67,7 @@ export function Leads() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify({
           campaign_id: campaignId,
@@ -595,6 +598,7 @@ export function Leads() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-Organization-ID': currentOrganization?.id || 'default-org'
           },
           body: JSON.stringify({
             message: searchQuery,
@@ -814,6 +818,7 @@ export function Leads() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-Organization-ID': currentOrganization?.id || 'default-org'
           },
           body: JSON.stringify({
             query: searchQuery,

@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Switch } from '../components/ui/switch';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useOrganization } from '../contexts/OrganizationContext';
 
 
 interface Campaign {
@@ -74,6 +75,7 @@ const initialPersonalizationData: Record<string, LeadPersonalization> = {};
 
 export function Campaigns() {
   const { language } = useLanguage();
+  const { currentOrganization } = useOrganization();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(true);
   const [syncingCampaigns, setSyncingCampaigns] = useState(false);
@@ -286,6 +288,7 @@ export function Campaigns() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify({ message: newCampaignName }),
       });
@@ -594,6 +597,7 @@ export function Campaigns() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify({ 
           campaign_id: campaignId,
@@ -735,6 +739,7 @@ export function Campaigns() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify({
           campaign_name: editName,
@@ -847,6 +852,7 @@ export function Campaigns() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify({
           email: leadEmail,
@@ -916,6 +922,7 @@ export function Campaigns() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify({
           campaign_id: selectedCampaign?.webhook_campaign_id,
@@ -1173,6 +1180,7 @@ const deleteSequenceStep = async (stepId: string, position: number) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify(payload)
       });

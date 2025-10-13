@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, Zap, HelpCircle, Bot, User, Sparkles, Copy, Reply, CheckSquare, X, Save, Download, MessageCircle, MoreHorizontal, Star, Bookmark, Edit3, Share, Mic, MicOff, Paperclip, Smile } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useOrganization } from '@/contexts/OrganizationContext';
 
 interface Message {
   id: string;
@@ -1027,6 +1028,7 @@ const InputBar = ({ inputValue, setInputValue, currentMode, setCurrentMode, hand
 
 // Main Component
 export default function ModernAIChatbot({ workspaceId }: { workspaceId?: string }) {
+  const { currentOrganization } = useOrganization();
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -1077,7 +1079,8 @@ export default function ModernAIChatbot({ workspaceId }: { workspaceId?: string 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Workspace-ID': workspaceId && workspaceId.trim() !== '' ? workspaceId : 'workspace-id'
+          'X-Workspace-ID': workspaceId && workspaceId.trim() !== '' ? workspaceId : 'workspace-id',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify(payload),
       });
@@ -1219,6 +1222,7 @@ const ChatHeader = ({ mode, setMode, onModeChange }: { mode: "work" | "ask"; set
 };
 
 export function ChatBox({ onModeChange, workspaceId }: { onModeChange: (mode: "work" | "ask") => void; workspaceId?: string }) {
+  const { currentOrganization } = useOrganization();
   const [messages, setMessages] = useState<ChatMessage[]>([
     { id: "1", role: "user", text: "NYC AI SaaS leadleri bul ve kampanya hazırla" },
     { id: "2", role: "bot", text: "Filtreleniyor… 32 sonuç bulundu." },
@@ -1253,7 +1257,8 @@ export function ChatBox({ onModeChange, workspaceId }: { onModeChange: (mode: "w
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Workspace-ID': workspaceId && workspaceId.trim() !== '' ? workspaceId : 'workspace-id'
+          'X-Workspace-ID': workspaceId && workspaceId.trim() !== '' ? workspaceId : 'workspace-id',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify(payload),
       });

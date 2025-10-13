@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useOrganization } from '@/contexts/OrganizationContext';
 
 const eventLabels = {
   'demo': 'Demo',
@@ -50,6 +51,7 @@ interface Step4CardProps {
 }
 
 export function Step4Card({ onSave, initialData }: Step4CardProps) {
+  const { currentOrganization } = useOrganization();
   const [selectedEvent, setSelectedEvent] = useState(initialData.eventType || 'demo');
   const [eventContent, setEventContent] = useState(initialData.eventContent || eventContents[selectedEvent as keyof typeof eventContents] || '');
   const [isValid, setIsValid] = useState(true);
@@ -67,6 +69,7 @@ export function Step4Card({ onSave, initialData }: Step4CardProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
         },
         body: JSON.stringify({
           event_type: data.eventType,
