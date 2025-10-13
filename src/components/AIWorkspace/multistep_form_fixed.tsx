@@ -160,11 +160,19 @@ export default function MultiStepForm({ onComplete, workspaceId }: MultiStepForm
           ...formData[4]
         };
         
+        // Debug log to check workspaceId value
+        console.log('MultiStepForm workspaceId:', workspaceId);
+        console.log('Headers to be sent:', {
+          'Content-Type': 'application/json',
+          'X-Workspace-ID': workspaceId || 'workspace-id',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
+        });
+        
         const response = await fetch('https://n8n.flownests.org/webhook/77022c8e-8856-49b9-b57e-701c8df4599e', {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
-            'X-Workspace-ID': workspaceId || 'workspace-id',
+            'X-Workspace-ID': workspaceId && workspaceId.trim() !== '' ? workspaceId : 'workspace-id',
             'X-Organization-ID': currentOrganization?.id || 'default-org'
           },
           body: JSON.stringify(combinedData),
