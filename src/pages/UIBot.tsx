@@ -34,6 +34,11 @@ export function UIBot() {
       createdAt: new Date().toISOString()
     };
 
+    console.log('=== UIBot: Creating new workspace ===');
+    console.log('New workspace object:', newWorkspace);
+    console.log('New workspace.id:', newWorkspace.id);
+    console.log('New workspace.id type:', typeof newWorkspace.id);
+
     setWorkspaces(prev => [...prev, newWorkspace]);
     setCurrentWorkspace(newWorkspace);
     setNewWorkspaceName('');
@@ -48,6 +53,10 @@ export function UIBot() {
   };
 
   const openWorkspace = (workspace: WorkspaceData) => {
+    console.log('=== UIBot: Opening existing workspace ===');
+    console.log('Workspace object:', workspace);
+    console.log('Workspace.id:', workspace.id);
+    console.log('Workspace.id type:', typeof workspace.id);
     setCurrentWorkspace(workspace);
   };
 
@@ -119,10 +128,18 @@ export function UIBot() {
                 </button>
               </div>
               
-              <WorkspaceBoard
-                workspace={currentWorkspace}
-                onUpdateWorkspace={updateWorkspace}
-              />
+              {(() => {
+                console.log('=== UIBot: Rendering WorkspaceBoard ===');
+                console.log('currentWorkspace:', currentWorkspace);
+                console.log('currentWorkspace.id:', currentWorkspace?.id);
+                console.log('currentWorkspace.id type:', typeof currentWorkspace?.id);
+                return (
+                  <WorkspaceBoard
+                    workspace={currentWorkspace}
+                    onUpdateWorkspace={updateWorkspace}
+                  />
+                );
+              })()}
             </div>
           )}
         </div>
