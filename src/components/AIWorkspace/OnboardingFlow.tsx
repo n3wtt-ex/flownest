@@ -14,9 +14,10 @@ interface OnboardingData {
 
 interface OnboardingFlowProps {
   onComplete: (data: OnboardingData) => void;
+  workspaceId?: string;
 }
 
-export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
+export function OnboardingFlow({ onComplete, workspaceId }: OnboardingFlowProps) {
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({});
 
   // Handle completion from the multistep form
@@ -24,11 +25,14 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     onComplete(data);
   };
 
+  console.log('=== OnboardingFlow Rendering ===');
+  console.log('OnboardingFlow workspaceId prop:', workspaceId);
+
   return (
     <div className="w-full h-[618px] flex items-center justify-center">
       <div className="w-full h-full flex items-center justify-center">
         <div className="w-full max-w-4xl h-full">
-          <MultiStepForm onComplete={handleComplete} />
+          <MultiStepForm onComplete={handleComplete} workspaceId={workspaceId} />
         </div>
       </div>
     </div>

@@ -339,9 +339,12 @@ export function WorkspaceBoard({ workspace, onUpdateWorkspace }: WorkspaceBoardP
 
   // If onboarding is not completed, show the onboarding flow
   if (!workspace.onboardingCompleted) {
+    console.log('=== WorkspaceBoard: Showing Onboarding Flow ===');
+    console.log('WorkspaceBoard workspace.id for onboarding:', workspace.id);
+    
     return (
       <div className="w-full h-[618px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-none border border-slate-700/50 overflow-hidden relative mt-[-1px]">
-        <OnboardingFlow onComplete={handleOnboardingComplete} />
+        <OnboardingFlow onComplete={handleOnboardingComplete} workspaceId={workspace.id} />
       </div>
     );
   }

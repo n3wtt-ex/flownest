@@ -165,20 +165,18 @@ export default function MultiStepForm({ onComplete, workspaceId }: MultiStepForm
         };
         
         // Debug log to check workspaceId value
+        console.log('=== MultiStepForm handleStartClick ===');
         console.log('MultiStepForm workspaceId:', workspaceId);
         console.log('MultiStepForm workspace.id type:', typeof workspaceId);
         console.log('MultiStepForm workspace.id length:', workspaceId?.length);
-        console.log('Headers to be sent:', {
-          'Content-Type': 'application/json',
-          'X-Workspace-ID': workspaceId || 'workspace-id',
-          'X-Organization-ID': currentOrganization?.id || 'default-org'
-        });
-        
-        // Also alert for immediate visibility
-        alert(`Debug: workspaceId = "${workspaceId}" (type: ${typeof workspaceId}, length: ${workspaceId?.length})`);
         
         const finalWorkspaceId = workspaceId && workspaceId.trim() !== '' ? workspaceId : 'workspace-id';
         console.log('Final workspace ID to be sent:', finalWorkspaceId);
+        console.log('Headers to be sent:', {
+          'Content-Type': 'application/json',
+          'X-Workspace-ID': finalWorkspaceId,
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
+        });
         
         const response = await fetch('https://n8n.flownests.org/webhook/77022c8e-8856-49b9-b57e-701c8df4599e', {
           method: 'POST',
