@@ -470,7 +470,7 @@ export function Email() {
   }, []);
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:bg-slate-900">
+    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -485,7 +485,7 @@ export function Email() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl font-bold text-foreground mb-2"
+            className="text-4xl font-bold text-gray-900 dark:text-white mb-2"
           >
             Email Hesabı
           </motion.h1>
@@ -493,7 +493,7 @@ export function Email() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-muted-foreground text-lg"
+            className="text-gray-600 dark:text-gray-300 text-lg"
           >
             E-posta hesaplarınızı yönetin ve kampanyalarınızı optimize edin
           </motion.p>
@@ -503,25 +503,25 @@ export function Email() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-card rounded-2xl shadow-sm border border-border mb-6 overflow-hidden"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden"
         >
           <div className={`flex ${!isSettingsOpen ? 'h-[76px]' : ''}`}>
             {/* Left Side - Settings Panel (Half Width) */}
-            <div className="w-1/2 border-r border-border">
+            <div className="w-1/2 border-r border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                className="w-full p-6 flex items-center justify-center hover:bg-muted/50 transition-colors"
+                className="w-full p-6 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
               >
                 <div className="flex items-center space-x-3">
                   <Settings className="w-6 h-6 text-blue-600" />
-                  <h2 className="text-xl font-semibold text-foreground">{language === 'tr' ? 'Müşteri Toplantısı Ayarları' : 'Customer Meeting Settings'}</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{language === 'tr' ? 'Müşteri Toplantısı Ayarları' : 'Customer Meeting Settings'}</h2>
                 </div>
                 <motion.div
                   animate={{ rotate: isSettingsOpen ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
                   className="ml-4"
                 >
-                  <ChevronDown className="w-5 h-5 text-muted-foreground" />
+                  <ChevronDown className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                 </motion.div>
               </button>
 
@@ -532,12 +532,12 @@ export function Email() {
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="border-t border-border"
+                    className="border-t border-gray-200 dark:border-gray-700"
                   >
                     <div className="p-6 space-y-6">
                       {/* Event Type Section */}
                       <div>
-                        <label className="block text-sm font-medium text-foreground mb-2">
+                        <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                           Content Type
                         </label>
                         <div className="space-y-3">
@@ -545,24 +545,24 @@ export function Email() {
                             onClick={handleEventModeClick}
                             className={`w-full p-3 text-left rounded-lg border-2 transition-all ${
                               !isIntroductionMode 
-                                ? 'border-blue-500 bg-blue-50 text-blue-900' 
-                                : 'border-border hover:border-muted-foreground'
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-900 dark:text-blue-200' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
                             }`}
                           >
-                            <div className="font-medium">Event Content</div>
-                            <div className="text-sm text-muted-foreground">Demo, E-book, Loom, etc.</div>
+                            <div className="font-medium text-gray-900 dark:text-white">Event Content</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">Demo, E-book, Loom, etc.</div>
                           </button>
                           
                           <button
                             onClick={handleIntroductionClick}
                             className={`w-full p-3 text-left rounded-lg border-2 transition-all ${
                               isIntroductionMode 
-                                ? 'border-blue-500 bg-blue-50 text-blue-900' 
-                                : 'border-border hover:border-muted-foreground'
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 text-blue-900 dark:text-blue-200' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
                             }`}
                           >
-                            <div className="font-medium">Kendini Tanıt</div>
-                            <div className="text-sm text-muted-foreground">Kişisel ve şirket bilgileri</div>
+                            <div className="font-medium text-gray-900 dark:text-white">Kendini Tanıt</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">Kişisel ve şirket bilgileri</div>
                           </button>
                         </div>
                       </div>
@@ -570,7 +570,7 @@ export function Email() {
                       {/* Event Dropdown - Only show when not in introduction mode */}
                       {!isIntroductionMode && (
                         <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">
+                          <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                             {language === 'tr' ? 'Etkinlik Türü' : 'Event Type'}
                           </label>
                           <select
@@ -582,7 +582,7 @@ export function Email() {
                                 setEditContent(eventContents[e.target.value]);
                               }
                             }}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                           >
                             <option value="e-book">E-book</option>
                             <option value="demo">Demo</option>
@@ -596,7 +596,7 @@ export function Email() {
                       {/* Import Section - Only show when not in introduction mode */}
                       {!isIntroductionMode && (
                         <div>
-                          <label className="block text-sm font-medium text-foreground mb-3">
+                          <label className="block text-sm font-medium text-gray-900 dark:text-white mb-3">
                             Import Options
                           </label>
                           <div className="flex space-x-3">
@@ -637,17 +637,17 @@ export function Email() {
                     className="h-full"
                   >
                     {/* Content Editor Header */}
-                    <div className="p-6 border-b border-border">
+                    <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
                             <Edit3 className="w-5 h-5 text-white" />
                           </div>
                           <div>
-                            <h3 className="text-lg font-semibold text-foreground">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                               {isIntroductionMode ? 'Introduction Editor' : 'Content Editor'}
                             </h3>
-                            <p className="text-sm text-muted-foreground capitalize">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
                               Editing: {isIntroductionMode ? 'Kendini Tanıt' : selectedEvent}
                             </p>
                           </div>
@@ -670,7 +670,7 @@ export function Email() {
                           <div className="space-y-4">
                             <div>
                               <label 
-                                className="block text-sm font-medium text-foreground mb-2"
+                                className="block text-sm font-medium text-gray-900 dark:text-white mb-2"
                                 title={language === 'tr' ? 'Emailler kimin adina gonderilsin' : 'Who should emails be sent from'}
                               >
                                 {language === 'tr' ? 'Isim' : 'Name'}
@@ -679,14 +679,14 @@ export function Email() {
                                 type="text"
                                 value={introName}
                                 onChange={(e) => handleIntroNameChange(e.target.value)}
-                                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring transition-all"
+                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                                 placeholder={language === 'tr' ? 'Adinizi girin...' : 'Enter your name...'}
                               />
                             </div>
                             
                             <div>
                               <label 
-                                className="block text-sm font-medium text-foreground mb-2"
+                                className="block text-sm font-medium text-gray-900 dark:text-white mb-2"
                                 title={language === 'tr' ? 'Sirketinizin adi' : 'Your company name'}
                               >
                                 {language === 'tr' ? 'Sirket Adi' : 'Company Name'}
@@ -695,14 +695,14 @@ export function Email() {
                                 type="text"
                                 value={introCompanyName}
                                 onChange={(e) => handleIntroCompanyNameChange(e.target.value)}
-                                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring transition-all"
+                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                                 placeholder={language === 'tr' ? 'Sirket adinizi girin...' : 'Enter your company name...'}
                               />
                             </div>
                             
                             <div>
                               <label 
-                                className="block text-sm font-medium text-foreground mb-2"
+                                className="block text-sm font-medium text-gray-900 dark:text-white mb-2"
                                 title="Şirketiniz ve sunduğunuz hizmet hakkında bilgi verin"
                               >
                                 İşletmeni Tanıt
@@ -710,14 +710,14 @@ export function Email() {
                               <textarea
                                 value={introCompany}
                                 onChange={(e) => handleIntroCompanyChange(e.target.value)}
-                                className="w-full h-32 p-4 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-ring transition-all resize-none"
+                                className="w-full h-32 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
                                 placeholder={language === 'tr' ? 'Sirketiniz ve hizmetleriniz hakkinda bilgi girin...' : 'Enter information about your company and services...'}
                               />
                             </div>
                           </div>
                           
                           <div className="flex items-center justify-between">
-                            <div className="text-sm text-muted-foreground">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
                               {introName.length + introCompanyName.length + introCompany.length} {language === 'tr' ? 'karakter' : 'characters'}
                             </div>
                             <motion.button
@@ -728,7 +728,7 @@ export function Email() {
                               className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
                                 isIntroModified
                                   ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg'
-                                  : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                  : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                               }`}
                             >
                               <Save className="w-4 h-4 mr-2" />
@@ -755,16 +755,16 @@ export function Email() {
                             <textarea
                               value={editContent}
                               onChange={(e) => handleContentChange(e.target.value)}
-                              className="w-full h-48 p-4 border-2 border-dashed border-border rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all resize-none bg-muted hover:bg-card"
+                              className="w-full h-48 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all resize-none bg-gray-50 dark:bg-gray-800 hover:bg-white dark:hover:bg-gray-700 text-gray-900 dark:text-white"
                               placeholder="Enter your content here..."
                             />
                             <div className="absolute top-3 right-3">
-                              <FileText className="w-5 h-5 text-muted-foreground" />
+                              <FileText className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                             </div>
                           </div>
 
                           <div className="flex items-center justify-between">
-                            <div className="text-sm text-muted-foreground">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
                               {editContent.length} {language === 'tr' ? 'karakter' : 'characters'}
                             </div>
                             <motion.button
@@ -775,7 +775,7 @@ export function Email() {
                               className={`flex items-center px-6 py-2 rounded-lg font-medium transition-all ${
                                 isContentModified
                                   ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-lg'
-                                  : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                  : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                               }`}
                             >
                               <Save className="w-4 h-4 mr-2" />
@@ -803,7 +803,7 @@ export function Email() {
 
               {/* Placeholder when settings are closed */}
               {!isSettingsOpen && (
-                <div className="h-full flex items-center justify-center p-6 text-muted-foreground">
+                <div className="h-full flex items-center justify-center p-6 text-gray-400 dark:text-gray-500">
                   <div className="text-center">
                     <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p className="text-sm">Open settings to edit content</p>
@@ -819,21 +819,21 @@ export function Email() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
         >
           {/* Table Header */}
-          <div className="p-6 border-b border-border flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-foreground">Email Accounts</h2>
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Email Accounts</h2>
             <div className="flex items-center space-x-2">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={fetchEmailAccounts}
                 disabled={isLoading}
-                className="flex items-center justify-center p-2 bg-muted text-muted-foreground rounded-lg hover:bg-accent transition-colors"
+                className="flex items-center justify-center p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 {isLoading ? (
-                  <div className="w-5 h-5 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
+                  <div className="w-5 h-5 border-2 border-gray-600 dark:border-gray-300 border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <RefreshCw className="w-5 h-5" />
                 )}
@@ -852,37 +852,37 @@ export function Email() {
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-muted">
+              <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Health Score
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Daily Limit
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-card divide-y divide-border">
+              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {emailAccounts.map((account, index) => (
                   <motion.tr
                       key={account.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="hover:bg-muted transition-colors"
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                     >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
                           <Mail className="w-5 h-5 text-white" />
                         </div>
-                        <div className="text-sm font-medium text-foreground">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           {account.email}
                         </div>
                       </div>
@@ -898,7 +898,7 @@ export function Email() {
                          account.status === 'warming' ? 'Warming' : 'Paused'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {account.dailyLimit}
                     </td>
                   </motion.tr>
@@ -922,27 +922,27 @@ export function Email() {
             <div className="text-2xl font-bold text-foreground">
               {emailAccounts.filter(acc => acc.status === 'active').length}
             </div>
-            <div className="text-sm text-muted-foreground">Active Accounts</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Active Accounts</div>
           </div>
           
-          <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center">
               <Mail className="w-8 h-8 text-blue-600 mb-2" />
             </div>
-            <div className="text-2xl font-bold text-foreground">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {emailAccounts.length}
             </div>
-            <div className="text-sm text-muted-foreground">Total Accounts</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Total Accounts</div>
           </div>
           
-          <div className="bg-card p-6 rounded-xl shadow-sm border border-border">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
             <div className="flex items-center">
               <Zap className="w-8 h-8 text-purple-600 mb-2" />
             </div>
-            <div className="text-2xl font-bold text-foreground">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {emailAccounts.length > 0 ? Math.round(emailAccounts.reduce((sum, acc) => sum + acc.healthScore, 0) / emailAccounts.length) : 0}%
             </div>
-            <div className="text-sm text-muted-foreground">Average Health Score</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">Average Health Score</div>
           </div>
         </motion.div>
       </div>
