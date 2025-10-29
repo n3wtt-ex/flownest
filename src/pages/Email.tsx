@@ -470,7 +470,7 @@ export function Email() {
   }, []);
 
   return (
-    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="p-6 min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-gray-950">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
