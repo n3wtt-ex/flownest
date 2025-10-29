@@ -1516,7 +1516,7 @@ export function Leads() {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="px-3 py-1 pr-8 border border-border rounded-lg text-sm focus:ring-2 focus:ring-ring focus:border-transparent min-w-[120px] bg-background text-foreground"
+                    className="px-3 py-1 pr-8 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[120px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   >
                     <option value="all">{language === 'tr' ? 'Tüm Durumlar' : 'All Status'}</option>
                     <option value="New">{language === 'tr' ? 'Yeni' : 'New'}</option>
@@ -1567,7 +1567,7 @@ export function Leads() {
                   <p className="text-muted-foreground">{language === 'tr' ? 'Potansiyel lead bulmak için bir arama yapın.' : 'Run a search to find potential leads.'}</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500 scrollbar-thumb-rounded-full">
                   <table className="w-full">
                     <thead className="bg-muted sticky top-0">
                       <tr>
@@ -1662,13 +1662,13 @@ export function Leads() {
               <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 {/* Search Input */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                   <input
                     type="text"
                     placeholder="Search leads..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent w-full sm:w-64 bg-background text-foreground"
+                    className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent w-full sm:w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                   />
                 </div>
                 
@@ -1676,7 +1676,7 @@ export function Leads() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value as any)}
-                  className="px-3 py-2 pr-8 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent min-w-[140px] bg-background text-foreground"
+                  className="px-3 py-2 pr-8 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   <option value="all">All Status</option>
                   <option value="New">New</option>
@@ -1689,7 +1689,7 @@ export function Leads() {
                 <select
                   value={sectorFilter}
                   onChange={(e) => setSectorFilter(e.target.value as any)}
-                  className="px-3 py-2 pr-8 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent min-w-[140px] bg-background text-foreground"
+                  className="px-3 py-2 pr-8 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-w-[140px] bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 >
                   <option value="all">All Sectors</option>
                   <option value="Technology">Technology</option>
@@ -1700,7 +1700,7 @@ export function Leads() {
                 </select>
               </div>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500 scrollbar-thumb-rounded-full">
               <table className="w-full">
                 <thead className="bg-muted sticky top-0">
                   <tr>
