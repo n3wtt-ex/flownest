@@ -127,20 +127,20 @@ export function Sidebar() {
                   onMouseLeave={handleMouseLeave}
                   className={({ isActive }) =>
                     clsx(
-                      'group flex items-center px-3 py-2.5 text-sm rounded-lg transition-colors duration-150',
+                      'group flex items-center px-3 py-2.5 text-sm rounded-lg transition-all duration-200',
                       isCollapsed ? "justify-center" : "",
                       isActive
-                        ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
-                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground font-medium'
+                        ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 font-semibold shadow-md shadow-cyan-500/10 border border-cyan-500/30 transform scale-105'
+                        : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground font-medium hover:scale-[1.02]'
                     )
                   }
                 >
                   {({ isActive }) => (
                     <>
                       <item.icon className={clsx(
-                        "flex-shrink-0", 
+                        "flex-shrink-0 transition-all duration-200", 
                         isCollapsed ? "h-5 w-5" : "mr-3 h-5 w-5",
-                        isActive ? "text-sidebar-primary" : "text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70"
+                        isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" : "text-sidebar-foreground/50 group-hover:text-sidebar-foreground/70"
                       )} />
                       {!isCollapsed && (
                         <div className="flex-1">
@@ -171,20 +171,24 @@ export function Sidebar() {
                   onMouseLeave={handleMouseLeave}
                   className={({ isActive }) =>
                     clsx(
-                      'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors',
+                      'group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
                       isCollapsed ? "justify-center" : "",
                       isActive
-                        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                        : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
+                        ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 font-semibold shadow-md shadow-cyan-500/10 border border-cyan-500/30 transform scale-105'
+                        : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:scale-[1.02]'
                     )
                   }
                 >
-                  <item.icon className={clsx(
-                    "flex-shrink-0",
-                    isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4",
-                    "text-sidebar-foreground/40 group-hover:text-sidebar-foreground/60"
-                  )} />
-                  {!isCollapsed && item.name[language]}
+                  {({ isActive }) => (
+                    <>
+                      <item.icon className={clsx(
+                        "flex-shrink-0 transition-all duration-200",
+                        isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4",
+                        isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" : "text-sidebar-foreground/40 group-hover:text-sidebar-foreground/60"
+                      )} />
+                      {!isCollapsed && item.name[language]}
+                    </>
+                  )}
                 </NavLink>
               ))}
             </div>
@@ -199,26 +203,52 @@ export function Sidebar() {
               to="/admin"
               onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Admin Panel" : "Admin Panel")}
               onMouseLeave={handleMouseLeave}
-              className="flex items-center px-3 py-2 text-sm font-medium text-sidebar-foreground/60 rounded-lg hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+              className={({ isActive }) =>
+                clsx(
+                  'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+                  isCollapsed ? "justify-center" : "",
+                  isActive
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 font-semibold shadow-md shadow-cyan-500/10 border border-cyan-500/30 transform scale-105'
+                    : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:scale-[1.02]'
+                )
+              }
             >
-              <Shield className={clsx(
-                "flex-shrink-0",
-                isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4"
-              )} />
-              {!isCollapsed && (language === 'tr' ? "Admin Panel" : "Admin Panel")}
+              {({ isActive }) => (
+                <>
+                  <Shield className={clsx(
+                    "flex-shrink-0 transition-all duration-200",
+                    isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4",
+                    isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" : "text-sidebar-foreground/50"
+                  )} />
+                  {!isCollapsed && (language === 'tr' ? "Admin Panel" : "Admin Panel")}
+                </>
+              )}
             </NavLink>
           ) : (
             <NavLink
               to="/support"
               onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Destek" : "Support")}
               onMouseLeave={handleMouseLeave}
-              className="flex items-center px-3 py-2 text-sm font-medium text-sidebar-foreground/60 rounded-lg hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+              className={({ isActive }) =>
+                clsx(
+                  'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+                  isCollapsed ? "justify-center" : "",
+                  isActive
+                    ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 font-semibold shadow-md shadow-cyan-500/10 border border-cyan-500/30 transform scale-105'
+                    : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:scale-[1.02]'
+                )
+              }
             >
-              <HelpCircle className={clsx(
-                "flex-shrink-0",
-                isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4"
-              )} />
-              {!isCollapsed && (language === 'tr' ? "Destek" : "Support")}
+              {({ isActive }) => (
+                <>
+                  <HelpCircle className={clsx(
+                    "flex-shrink-0 transition-all duration-200",
+                    isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4",
+                    isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" : "text-sidebar-foreground/50"
+                  )} />
+                  {!isCollapsed && (language === 'tr' ? "Destek" : "Support")}
+                </>
+              )}
             </NavLink>
           )}
           
@@ -226,13 +256,26 @@ export function Sidebar() {
             to="/settings"
             onMouseEnter={(e) => handleMouseEnter(e, language === 'tr' ? "Ayarlar" : "Settings")}
             onMouseLeave={handleMouseLeave}
-            className="flex items-center px-3 py-2 text-sm font-medium text-sidebar-foreground/60 rounded-lg hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
+            className={({ isActive }) =>
+              clsx(
+                'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200',
+                isCollapsed ? "justify-center" : "",
+                isActive
+                  ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400 font-semibold shadow-md shadow-cyan-500/10 border border-cyan-500/30 transform scale-105'
+                  : 'text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:scale-[1.02]'
+              )
+            }
           >
-            <Settings className={clsx(
-              "flex-shrink-0",
-              isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4"
-            )} />
-            {!isCollapsed && (language === 'tr' ? "Ayarlar" : "Settings")}
+            {({ isActive }) => (
+              <>
+                <Settings className={clsx(
+                  "flex-shrink-0 transition-all duration-200",
+                  isCollapsed ? "h-4 w-4" : "mr-3 h-4 w-4",
+                  isActive ? "text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,0.4)]" : "text-sidebar-foreground/50"
+                )} />
+                {!isCollapsed && (language === 'tr' ? "Ayarlar" : "Settings")}
+              </>
+            )}
           </NavLink>
           <button
             onClick={handleSignOut}
@@ -268,7 +311,7 @@ export function Sidebar() {
       {/* Tooltip */}
       {tooltip && (
         <div
-          className="fixed z-50 px-3 py-2 text-sm font-medium text-primary-foreground bg-popover border border-border rounded-lg shadow-sm"
+          className="fixed z-50 px-3 py-2 text-sm font-medium text-white bg-slate-800/95 backdrop-blur-sm border border-slate-700/50 rounded-lg shadow-lg"
           style={{
             left: `${tooltip.x}px`,
             top: `${tooltip.y}px`,
@@ -276,7 +319,7 @@ export function Sidebar() {
           }}
         >
           {tooltip.name}
-          <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-popover"></div>
+          <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-r-4 border-r-slate-800/95"></div>
         </div>
       )}
     </>
