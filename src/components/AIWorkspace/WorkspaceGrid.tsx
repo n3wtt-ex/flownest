@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Calendar, Users, Edit2, Trash2, Check, X } from 'lucide-react';
 import { WorkspaceBoard } from './WorkspaceBoard';
@@ -40,19 +40,7 @@ export function WorkspaceGrid({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
   const [deleteDialogId, setDeleteDialogId] = useState<string | null>(null);
-  
-  // workspaceTools state'ini workspaces prop'undan türet
-  const workspaceTools = useMemo(() => {
-    const tools: {[key: string]: {[agent: string]: string}} = {};
-    
-    workspaces.forEach(workspace => {
-      if (workspace.selections) {
-        tools[workspace.id] = workspace.selections;
-      }
-    });
-    
-    return tools;
-  }, [workspaces]);
+  const [workspaceTools, setWorkspaceTools] = useState<{[key: string]: {[agent: string]: string}}>({});
   
   // Her workspace için araç verilerini çek
   useEffect(() => {
@@ -75,12 +63,13 @@ export function WorkspaceGrid({
               }
             });
             tools[workspace.id] = workspaceTools;
+          } else {
+            // Eğer Supabase'de kayıt yoksa, boş obje ekle
+            tools[workspace.id] = {};
           }
         }
         
-        // Bu kısım artık gerekli olmayabilir çünkü workspaceTools state'ini workspaces prop'undan türettik
-        // Ancak, Supabase'den gelen veriler workspaces prop'unda olmayabilirse bu hala faydalı olabilir
-        // setWorkspaceTools(tools);
+        setWorkspaceTools(tools);
       } catch (error) {
         console.error('Error fetching workspace tools:', error);
       }
@@ -88,6 +77,10 @@ export function WorkspaceGrid({
     
     if (workspaces.length > 0) {
       fetchAllWorkspaceTools();
+      
+      // Her 3 saniyede bir güncelle
+      const interval = setInterval(fetchAllWorkspaceTools, 3000);
+      return () => clearInterval(interval);
     }
   }, [workspaces]);
 
@@ -127,9 +120,15 @@ export function WorkspaceGrid({
   const getSelectedToolsCount = (workspaceId: string) => {
     // workspaceTools doğrudan workspaces prop'undan türetildiği için burada doğrudan erişebiliriz
     if (workspaceTools[workspaceId]) {
-      return Object.keys(workspaceTools[workspaceId]).length;
+      // Sadece null olmayan araçları say
+      const tools = Object.values(workspaceTools[workspaceId]).filter(tool => tool !== null && tool !== undefined && tool !== '');
+      console.log(`[WorkspaceGrid] Workspace ${workspaceId} tools:`, workspaceTools[workspaceId]);
+      console.log(`[WorkspaceGrid] Workspace ${workspaceId} filtered tools:`, tools);
+      console.log(`[WorkspaceGrid] Workspace ${workspaceId} tool count: ${tools.length}`);
+      return tools.length;
     }
     
+    console.log(`[WorkspaceGrid] No tools found for workspace ${workspaceId}`);
     // Hiçbir veri yoksa 0 döndür
     return 0;
   };
