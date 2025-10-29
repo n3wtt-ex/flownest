@@ -35,7 +35,7 @@ export function Layout() {
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto bg-transparent">
             <AnimatePresence mode="wait">
               <motion.div
                 key={location.pathname}
@@ -43,6 +43,7 @@ export function Layout() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
+                className="bg-transparent"
               >
                 <Outlet />
               </motion.div>

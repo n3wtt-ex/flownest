@@ -59,7 +59,7 @@ export default function AIWorkspacePage() {
 
   return (
     <Layout>
-      <section aria-labelledby="aiws-title" className="container mx-auto">
+      <section aria-labelledby="aiws-title" className="container mx-auto bg-transparent">
         <h1 id="aiws-title" className="sr-only">AI Work Space</h1>
 
         <Card className="bg-white/70 dark:bg-gray-800/70 border-gray-200/60 dark:border-gray-700/60 backdrop-blur overflow-hidden">
