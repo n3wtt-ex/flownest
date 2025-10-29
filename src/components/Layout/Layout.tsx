@@ -31,7 +31,7 @@ export function Layout() {
 
   return (
     <SidebarProvider>
-      <div className={`flex h-screen ${isCrmPage ? 'bg-muted' : 'bg-background'} text-foreground`}>
+      <div className={`flex h-screen ${isCrmPage ? 'bg-gray-50 dark:bg-gray-900' : 'bg-white dark:bg-gray-950'} text-gray-900 dark:text-white`}>
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />
