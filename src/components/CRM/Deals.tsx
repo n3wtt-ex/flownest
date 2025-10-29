@@ -412,7 +412,7 @@ export function Deals() {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors border border-primary/20 dark:bg-primary dark:hover:bg-primary/90 dark:border-primary/30"
+          className="flex items-center px-4 py-2 bg-gradient-to-r from-cyan-500/80 to-blue-500/80 hover:from-cyan-600/90 hover:to-blue-600/90 text-white rounded-lg transition-all duration-200 border border-cyan-400/30 dark:from-cyan-600/70 dark:to-blue-600/70 dark:hover:from-cyan-700/80 dark:hover:to-blue-700/80 dark:border-cyan-500/20 shadow-sm hover:shadow-md"
         >
           <Plus className="w-4 h-4 mr-2" />
           {t('crm.deals.addNew')}
@@ -421,36 +421,36 @@ export function Deals() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+        <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/80 dark:from-blue-950/30 dark:to-indigo-950/30 p-6 rounded-lg shadow-sm border border-blue-200/50 dark:border-blue-800/30 hover:shadow-md transition-all duration-200">
           <div className="flex items-center">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+            <div className="p-3 bg-blue-500/20 dark:bg-blue-500/30 rounded-lg backdrop-blur-sm">
               <DollarSign className="w-6 h-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-muted-foreground">{t('crm.deals.stats.totalValue')}</p>
-              <p className="text-2xl font-bold text-card-foreground">${totalValue.toLocaleString()}</p>
+              <p className="text-sm font-medium text-blue-700 dark:text-blue-300">{t('crm.deals.stats.totalValue')}</p>
+              <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">${totalValue.toLocaleString()}</p>
             </div>
           </div>
         </div>
-        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+        <div className="bg-gradient-to-br from-emerald-50/80 to-green-50/80 dark:from-emerald-950/30 dark:to-green-950/30 p-6 rounded-lg shadow-sm border border-emerald-200/50 dark:border-emerald-800/30 hover:shadow-md transition-all duration-200">
           <div className="flex items-center">
-            <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-              <DollarSign className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="p-3 bg-emerald-500/20 dark:bg-emerald-500/30 rounded-lg backdrop-blur-sm">
+              <DollarSign className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-muted-foreground">{t('crm.deals.stats.active')}</p>
-              <p className="text-2xl font-bold text-card-foreground">{openDeals.length}</p>
+              <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{t('crm.deals.stats.active')}</p>
+              <p className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{openDeals.length}</p>
             </div>
           </div>
         </div>
-        <div className="bg-card p-6 rounded-lg shadow-sm border border-border">
+        <div className="bg-gradient-to-br from-purple-50/80 to-pink-50/80 dark:from-purple-950/30 dark:to-pink-950/30 p-6 rounded-lg shadow-sm border border-purple-200/50 dark:border-purple-800/30 hover:shadow-md transition-all duration-200">
           <div className="flex items-center">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+            <div className="p-3 bg-purple-500/20 dark:bg-purple-500/30 rounded-lg backdrop-blur-sm">
               <DollarSign className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-muted-foreground">{t('crm.deals.stats.won')}</p>
-              <p className="text-2xl font-bold text-card-foreground">{wonDeals.length}</p>
+              <p className="text-sm font-medium text-purple-700 dark:text-purple-300">{t('crm.deals.stats.won')}</p>
+              <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{wonDeals.length}</p>
             </div>
           </div>
         </div>
