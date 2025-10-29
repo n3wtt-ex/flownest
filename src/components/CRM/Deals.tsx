@@ -412,7 +412,7 @@ export function Deals() {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors dark:bg-primary dark:hover:bg-primary/90"
+          className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors border border-primary/20 dark:bg-primary dark:hover:bg-primary/90 dark:border-primary/30"
         >
           <Plus className="w-4 h-4 mr-2" />
           {t('crm.deals.addNew')}
@@ -465,14 +465,14 @@ export function Deals() {
             placeholder={t('crm.deals.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground dark:bg-gray-800 dark:border-gray-600"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground dark:bg-gray-800"
           />
         </div>
         <div className="relative">
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="appearance-none w-full px-4 py-2 pr-10 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground dark:bg-gray-800 dark:border-gray-600"
+            className="appearance-none w-full px-4 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground dark:bg-gray-800"
           >
             <option value="all">{t('crm.deals.allStatuses')}</option>
             <option value="open">{t('crm.deals.status.open')}</option>
