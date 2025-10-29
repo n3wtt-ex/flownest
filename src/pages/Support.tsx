@@ -236,7 +236,7 @@ export function Support() {
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="support-new-ticket-button">
+              <Button className="bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90">
                 <Plus className="h-4 w-4 mr-2" />
                 {language === 'tr' ? 'Yeni Talep' : 'New Ticket'}
               </Button>
@@ -299,7 +299,7 @@ export function Support() {
                   <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
                     {language === 'tr' ? 'İptal' : 'Cancel'}
                   </Button>
-                  <Button className="support-new-ticket-button" onClick={createTicket}>
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90" onClick={createTicket}>
                     {language === 'tr' ? 'Talep Oluştur' : 'Create Ticket'}
                   </Button>
                 </div>
@@ -525,7 +525,7 @@ export function Support() {
                         rows={3}
                         className="support-input-field flex-1"
                       />
-                      <Button className="support-new-ticket-button" onClick={sendMessage} disabled={!newMessage.trim()}>
+                      <Button className="bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90" onClick={sendMessage} disabled={!newMessage.trim()}>
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>

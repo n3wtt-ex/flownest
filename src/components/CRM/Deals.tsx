@@ -214,10 +214,10 @@ export function Deals() {
 
   // Kanban için temel durumlar
   const kanbanColumns = [
-    { id: 'interested', title: 'Interested', color: 'bg-blue-50 border-blue-200', deals: deals.filter(d => ['1', '2'].includes(d.stage_id || '')) },
-    { id: 'meeting_booked', title: 'Meeting booked', color: 'bg-orange-50 border-orange-200', deals: deals.filter(d => d.stage_id === '3') },
-    { id: 'meeting_completed', title: 'Meeting completed', color: 'bg-purple-50 border-purple-200', deals: deals.filter(d => d.stage_id === '4') },
-    { id: 'won', title: 'Won', color: 'bg-green-50 border-green-200', deals: deals.filter(d => d.status === 'won') }
+    { id: 'interested', title: 'Interested', color: 'bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800', deals: deals.filter(d => ['1', '2'].includes(d.stage_id || '')) },
+    { id: 'meeting_booked', title: 'Meeting booked', color: 'bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-800', deals: deals.filter(d => d.stage_id === '3') },
+    { id: 'meeting_completed', title: 'Meeting completed', color: 'bg-purple-50 border-purple-200 dark:bg-purple-950/30 dark:border-purple-800', deals: deals.filter(d => d.stage_id === '4') },
+    { id: 'won', title: 'Won', color: 'bg-green-50 border-green-200 dark:bg-green-950/30 dark:border-green-800', deals: deals.filter(d => d.status === 'won') }
   ];
 
   const handleDragStart = (e: React.DragEvent, dealId: string) => {
@@ -412,7 +412,7 @@ export function Deals() {
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+          className="flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors border-2 border-primary dark:bg-primary dark:border-primary dark:hover:bg-primary/90"
         >
           <Plus className="w-4 h-4 mr-2" />
           {t('crm.deals.addNew')}
@@ -465,14 +465,14 @@ export function Deals() {
             placeholder={t('crm.deals.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+            className="w-full pl-10 pr-4 py-2 border-2 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground dark:bg-gray-800 dark:border-gray-600"
           />
         </div>
         <div className="relative">
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="appearance-none w-full px-4 py-2 pr-8 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground [&::-webkit-appearance]:none [&::-moz-appearance]:none"
+            className="appearance-none w-full px-4 py-2 pr-8 border-2 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground dark:bg-gray-800 dark:border-gray-600 [&::-webkit-appearance]:none [&::-moz-appearance]:none"
           >
             <option value="all">{t('crm.deals.allStatuses')}</option>
             <option value="open">{t('crm.deals.status.open')}</option>
@@ -785,7 +785,7 @@ export function Deals() {
           </p>
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors border-2 border-primary dark:bg-primary dark:border-primary dark:hover:bg-primary/90"
           >
             <Plus className="w-4 h-4 mr-2" />
             {t('crm.deals.addFirst')}
