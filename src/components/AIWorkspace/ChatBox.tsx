@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Send, Zap, HelpCircle, Bot, User, Sparkles, Copy, Reply, CheckSquare, X, Save, Download, MessageCircle, MoreHorizontal, Star, Bookmark, Edit3, Share, Mic, MicOff, Paperclip, Smile } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -19,6 +20,33 @@ interface Task {
   mode: 'work' | 'ask';
   createdAt: string;
 }
+
+// Mesaj formatını temizleme fonksiyonu - JSON formatındaki mesajları parse et
+const parseMessageText = (text: string): string => {
+  if (!text) return '';
+  
+  // Mesajın JSON formatında olup olmadığını kontrol et
+  try {
+    // {"message":"..."} veya {'message':'...'} formatını kontrol et
+    const trimmedText = text.trim();
+    if (trimmedText.startsWith('{') && trimmedText.endsWith('}')) {
+      const parsed = JSON.parse(trimmedText);
+      
+      // Eğer 'message' anahtarı varsa, sadece o değeri döndür
+      if (parsed.message !== undefined && parsed.message !== null) {
+        return String(parsed.message);
+      }
+      
+      // Başka bir anahtar varsa, tüm JSON'u döndür (ama güzel formatlanmış)
+      return JSON.stringify(parsed, null, 2);
+    }
+  } catch (error) {
+    // JSON parse hatası - orijinal metni döndür
+  }
+  
+  // JSON değilse veya parse edilemezse, orijinal metni döndür
+  return text;
+};
 
 // Enhanced Header Component with improved aesthetics
 const Header = () => (
@@ -155,12 +183,12 @@ const MessageItem = ({ message, onCopy, onConvertToTask }) => {
               
               {/* Message Text */}
               <motion.p 
-                className="text-text-primary text-sm leading-relaxed font-medium"
+                className="text-text-primary text-sm leading-relaxed font-medium whitespace-pre-wrap break-words"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                {message.text}
+                {parseMessageText(message.text)}
               </motion.p>
 
               {/* Message Actions */}
@@ -279,12 +307,12 @@ const MessageItem = ({ message, onCopy, onConvertToTask }) => {
         >
           <div className="flex flex-col space-y-2">
             <motion.p 
-              className="text-sm leading-relaxed font-medium"
+              className="text-sm leading-relaxed font-medium whitespace-pre-wrap break-words"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
             >
-              {message.text}
+              {parseMessageText(message.text)}
             </motion.p>
             
             <div className="flex items-center justify-between">

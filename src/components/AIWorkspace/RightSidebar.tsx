@@ -77,6 +77,33 @@ const formatTimestamp = (timestamp: string) => {
   return `${month}/${day} ${hours}.${minutes}`;
 };
 
+// Mesaj formatını temizleme fonksiyonu - JSON formatındaki mesajları parse et
+const parseMessageText = (text: string): string => {
+  if (!text) return '';
+  
+  // Mesajın JSON formatında olup olmadığını kontrol et
+  try {
+    // {"message":"..."} veya {'message':'...'} formatını kontrol et
+    const trimmedText = text.trim();
+    if (trimmedText.startsWith('{') && trimmedText.endsWith('}')) {
+      const parsed = JSON.parse(trimmedText);
+      
+      // Eğer 'message' anahtarı varsa, sadece o değeri döndür
+      if (parsed.message !== undefined && parsed.message !== null) {
+        return String(parsed.message);
+      }
+      
+      // Başka bir anahtar varsa, tüm JSON'u döndür (ama güzel formatlanmış)
+      return JSON.stringify(parsed, null, 2);
+    }
+  } catch (error) {
+    // JSON parse hatası - orijinal metni döndür
+  }
+  
+  // JSON değilse veya parse edilemezse, orijinal metni döndür
+  return text;
+};
+
 export function RightSidebar({ isOpen, onToggle, onToolMention, workspaceId }: RightSidebarProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedTools, setSelectedTools] = useState<{[key: string]: string}>({});
@@ -258,7 +285,7 @@ export function RightSidebar({ isOpen, onToggle, onToolMention, workspaceId }: R
                       <span className="text-cyan-400 text-sm font-medium">{message.agent}</span>
                       <span className="text-slate-500 text-xs">{message.timestamp}</span>
                     </div>
-                    <p className="text-slate-200 text-sm mb-2">{message.text}</p>
+                    <p className="text-slate-200 text-sm mb-2 whitespace-pre-wrap break-words">{parseMessageText(message.text)}</p>
                     
                     {message.mentionedTools && (
                       <div className="flex flex-wrap gap-1">
