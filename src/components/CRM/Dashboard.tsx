@@ -232,6 +232,12 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       value: stats.totalContacts.toLocaleString(),
       icon: Users,
       color: 'bg-blue-500',
+      gradient: 'bg-gradient-to-br from-blue-50/80 to-cyan-50/80 dark:from-blue-950/30 dark:to-cyan-950/30',
+      border: 'border-blue-200/50 dark:border-blue-800/30',
+      iconBg: 'bg-blue-500/20 dark:bg-blue-500/30',
+      iconColor: 'text-blue-600 dark:text-blue-400',
+      textColor: 'text-blue-700 dark:text-blue-300',
+      valueColor: 'text-blue-900 dark:text-blue-100',
       change: '+12%',
       onClick: () => handleQuickAction('contacts'),
     },
@@ -240,6 +246,12 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       value: stats.totalCompanies.toLocaleString(),
       icon: Building2,
       color: 'bg-green-500',
+      gradient: 'bg-gradient-to-br from-emerald-50/80 to-teal-50/80 dark:from-emerald-950/30 dark:to-teal-950/30',
+      border: 'border-emerald-200/50 dark:border-emerald-800/30',
+      iconBg: 'bg-emerald-500/20 dark:bg-emerald-500/30',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      textColor: 'text-emerald-700 dark:text-emerald-300',
+      valueColor: 'text-emerald-900 dark:text-emerald-100',
       change: '+8%',
       onClick: () => handleQuickAction('companies'),
     },
@@ -248,6 +260,12 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       value: stats.openDeals.toLocaleString(),
       icon: Handshake,
       color: 'bg-orange-500',
+      gradient: 'bg-gradient-to-br from-orange-50/80 to-amber-50/80 dark:from-orange-950/30 dark:to-amber-950/30',
+      border: 'border-orange-200/50 dark:border-orange-800/30',
+      iconBg: 'bg-orange-500/20 dark:bg-orange-500/30',
+      iconColor: 'text-orange-600 dark:text-orange-400',
+      textColor: 'text-orange-700 dark:text-orange-300',
+      valueColor: 'text-orange-900 dark:text-orange-100',
       change: '+15%',
       onClick: () => handleQuickAction('deals'),
     },
@@ -256,6 +274,12 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       value: `${stats.totalValue.toLocaleString()}`,
       icon: DollarSign,
       color: 'bg-purple-500',
+      gradient: 'bg-gradient-to-br from-purple-50/80 to-fuchsia-50/80 dark:from-purple-950/30 dark:to-fuchsia-950/30',
+      border: 'border-purple-200/50 dark:border-purple-800/30',
+      iconBg: 'bg-purple-500/20 dark:bg-purple-500/30',
+      iconColor: 'text-purple-600 dark:text-purple-400',
+      textColor: 'text-purple-700 dark:text-purple-300',
+      valueColor: 'text-purple-900 dark:text-purple-100',
       change: '+23%',
       onClick: () => handleQuickAction('deals'),
     },
@@ -364,17 +388,17 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         {statCards.map((card, index) => (
           <div 
             key={index} 
-            className="bg-card p-6 rounded-lg shadow-sm border border-border cursor-pointer hover:shadow-md hover:scale-105 transition-all duration-200"
+            className={`${card.gradient} p-6 rounded-lg shadow-sm border ${card.border} cursor-pointer hover:shadow-md hover:scale-105 transition-all duration-200`}
             onClick={card.onClick}
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">{card.title}</p>
-                <p className="text-2xl font-bold text-foreground">{card.value}</p>
-                <p className="text-sm text-green-600 font-medium">{card.change}</p>
+                <p className={`text-sm font-medium ${card.textColor}`}>{card.title}</p>
+                <p className={`text-2xl font-bold ${card.valueColor}`}>{card.value}</p>
+                <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">{card.change}</p>
               </div>
-              <div className={`p-3 rounded-lg ${card.color}`}>
-                <card.icon className="w-6 h-6 text-white" />
+              <div className={`p-3 rounded-lg ${card.iconBg} backdrop-blur-sm`}>
+                <card.icon className={`w-6 h-6 ${card.iconColor}`} />
               </div>
             </div>
           </div>
