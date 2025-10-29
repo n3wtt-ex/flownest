@@ -1407,7 +1407,7 @@ export function Leads() {
                         ? (language === 'tr' ? 'örn., lokasyon: Istanbul anahtar kelimeler: kafe' : 'e.g., location: Istanbul keywords: cafe')
                         : (language === 'tr' ? 'Arama sorgusunu girin' : 'Enter search query')
                   }
-                  className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent bg-background text-foreground"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 <motion.button
@@ -1567,7 +1567,7 @@ export function Leads() {
                   <p className="text-muted-foreground">{language === 'tr' ? 'Potansiyel lead bulmak için bir arama yapın.' : 'Run a search to find potential leads.'}</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500 scrollbar-thumb-rounded-full">
+                <div className="overflow-x-auto scrollbar-thin">
                   <table className="w-full">
                     <thead className="bg-muted sticky top-0">
                       <tr>
@@ -1700,7 +1700,7 @@ export function Leads() {
                 </select>
               </div>
             </div>
-            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500 scrollbar-thumb-rounded-full">
+            <div className="overflow-x-auto scrollbar-thin">
               <table className="w-full">
                 <thead className="bg-muted sticky top-0">
                   <tr>
