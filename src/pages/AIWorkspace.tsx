@@ -62,9 +62,9 @@ export default function AIWorkspacePage() {
       <section aria-labelledby="aiws-title" className="container mx-auto">
         <h1 id="aiws-title" className="sr-only">AI Work Space</h1>
 
-        <Card className="bg-card/70 border-border/60 backdrop-blur overflow-hidden">
+        <Card className="bg-white/70 dark:bg-gray-800/70 border-gray-200/60 dark:border-gray-700/60 backdrop-blur overflow-hidden">
           <CardHeader className="flex items-center justify-between">
-            <CardTitle>AI Work Space</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">AI Work Space</CardTitle>
             <div className="flex items-center gap-2">
               <RightPanelSlideOver />
               <Button variant="hero" onClick={() => setOpenCreate(true)}>Create</Button>
@@ -75,7 +75,7 @@ export default function AIWorkspacePage() {
               <div className="h-[60vh] grid place-items-center">
                 <button
                   onClick={() => setOpenCreate(true)}
-                  className="rounded-full px-6 py-4 border bg-background/60 hover:bg-accent/20 transition shadow-glow"
+                  className="rounded-full px-6 py-4 border border-gray-300 dark:border-gray-600 bg-white/60 dark:bg-gray-800/60 hover:bg-gray-100/20 dark:hover:bg-gray-700/20 transition shadow-glow text-gray-900 dark:text-white"
                 >
                   AI Work Space — Create
                 </button>
@@ -149,9 +149,9 @@ function WorkspaceBoard({ workspace, list, onUpdate, onSwitch }: {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <AgentHeader onClick={() => { /* open panel via RightPanelSlideOver button */ }} />
-        <div className="flex items-center gap-2 text-sm text-foreground">
+        <div className="flex items-center gap-2 text-sm text-gray-900 dark:text-white">
           <span>Open:</span>
-          <select className="bg-background border-border text-foreground rounded px-2 py-1" value={workspace.id} onChange={(e) => onSwitch(e.target.value)}>
+          <select className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded px-2 py-1" value={workspace.id} onChange={(e) => onSwitch(e.target.value)}>
             {list.map((w) => (
               <option key={w.id} value={w.id}>{w.name}</option>
             ))}
@@ -159,7 +159,7 @@ function WorkspaceBoard({ workspace, list, onUpdate, onSwitch }: {
         </div>
       </div>
 
-      <div ref={containerRef} className="relative rounded-2xl border-border/60 bg-card/70 backdrop-blur overflow-hidden">
+      <div ref={containerRef} className="relative rounded-2xl border-gray-200/60 dark:border-gray-700/60 bg-white/70 dark:bg-gray-800/70 backdrop-blur overflow-hidden">
         <div className="grid grid-cols-6 gap-2 p-6 min-h-[48vh]">
           {(Object.keys(workspace.selections) as (keyof Selection)[]).map((k, i) => {
             const optList = SECTION_OPTIONS[k];
@@ -195,21 +195,21 @@ function WorkspaceBoard({ workspace, list, onUpdate, onSwitch }: {
       <SelectionRow value={workspace.selections} onChange={setSel as any} />
 
       <div className="grid md:grid-cols-[320px,1fr] gap-6 mt-4">
-        <Card className="bg-card/70 border-border/60 backdrop-blur">
+        <Card className="bg-white/70 dark:bg-gray-800/70 border-gray-200/60 dark:border-gray-700/60 backdrop-blur">
           <CardHeader>
-            <CardTitle>Chat</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">Chat</CardTitle>
           </CardHeader>
           <CardContent className="h-[280px]">
             <ChatBox onModeChange={() => {}} />
           </CardContent>
         </Card>
 
-        <Card className="bg-card/70 border-border/60 backdrop-blur">
+        <Card className="bg-white/70 dark:bg-gray-800/70 border-gray-200/60 dark:border-gray-700/60 backdrop-blur">
           <CardHeader>
-            <CardTitle>Results (placeholder)</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">Results (placeholder)</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[280px] grid place-items-center text-sm text-muted-foreground">Task results will appear here.</div>
+            <div className="h-[280px] grid place-items-center text-sm text-gray-500 dark:text-gray-400">Task results will appear here.</div>
           </CardContent>
         </Card>
       </div>

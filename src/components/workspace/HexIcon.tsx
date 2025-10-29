@@ -17,16 +17,16 @@ export function HexIcon({ selected, glow, title, Icon, className, ...props }: He
       aria-label={title}
       className={cn(
         "relative isolate grid place-items-center w-16 h-16 rounded-[12%] [clip-path:polygon(25%_0,75%_0,100%_50%,75%_100%,25%_100%,0_50%)]",
-        "border bg-card/30 backdrop-blur",
-        "border-[hsl(var(--brand-yellow,46_100%_65%))]",
-        selected ? "ring-2 ring-primary" : "ring-0",
+        "border bg-white/30 dark:bg-gray-800/30 backdrop-blur",
+        "border-[hsl(var(--brand-yellow,46_100%_65%))] dark:border-yellow-500/50",
+        selected ? "ring-2 ring-primary dark:ring-cyan-400" : "ring-0",
         glow ? "shadow-glow" : "",
         className
       )}
       {...props}
     >
-      <div className="absolute inset-0 -z-10 rounded-[12%] [clip-path:inherit] bg-secondary/20" />
-      <Icon className="w-6 h-6 text-foreground" />
+      <div className="absolute inset-0 -z-10 rounded-[12%] [clip-path:inherit] bg-gray-200/20 dark:bg-gray-700/20" />
+      <Icon className="w-6 h-6 text-gray-900 dark:text-white" />
     </motion.button>
   );
 }

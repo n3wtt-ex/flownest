@@ -35,7 +35,7 @@ export function SelectionRow({ value, onChange }: { value: Selection; onChange: 
     <div className="mt-4 space-y-3" role="list" aria-label="Selection rows">
       {(Object.keys(SECTION_OPTIONS) as SectionKey[]).map((sk) => (
         <div key={sk} className="flex items-center gap-3" role="listitem">
-          <div className="w-16 text-xs text-muted-foreground">{sk.toUpperCase()}</div>
+          <div className="w-16 text-xs text-gray-500 dark:text-gray-400">{sk.toUpperCase()}</div>
           <div className="flex gap-2">
             {SECTION_OPTIONS[sk].map(({ key, label, Icon }) => (
               <HexIcon
