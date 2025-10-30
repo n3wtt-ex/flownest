@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
@@ -7,24 +7,6 @@ import { SidebarProvider } from '../../contexts/SidebarContext';
 
 export function Layout() {
   const location = useLocation();
-
-  // Tema değişikliğini uygulamak için useEffect
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    console.log('Layout - Saved theme from localStorage:', savedTheme);
-    if (savedTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-      console.log('Layout - Dark theme applied');
-    } else {
-      document.documentElement.classList.remove('dark');
-      console.log('Layout - Light theme applied');
-    }
-    
-    // Tema değişikliğinin uygulandığını kontrol et
-    setTimeout(() => {
-      console.log('Layout - Current theme class:', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-    }, 0);
-  }, []);
 
   // CRM sayfaları için farklı arka plan rengi
   const isCrmPage = location.pathname.startsWith('/crm');
