@@ -8,7 +8,7 @@ export function Header() {
   const { user } = useAuth();
 
   return (
-    <header className="bg-background border-b border-border px-6 py-4">
+    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <OrganizationSelector />
@@ -16,19 +16,19 @@ export function Header() {
 
         <div className="flex items-center space-x-4">
           <ThemeToggle />
-          <button className="p-2 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted transition-colors">
+          <button className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
             <Bell className="h-5 w-5" />
           </button>
           
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-muted-foreground" />
+            <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+              <User className="w-4 h-4 text-gray-600 dark:text-gray-300" />
             </div>
             <div className="text-sm">
-              <div className="font-medium text-foreground">
+              <div className="font-medium text-gray-900 dark:text-white">
                 {user?.user_metadata?.full_name || user?.email}
               </div>
-              <div className="text-muted-foreground">Admin</div>
+              <div className="text-gray-500 dark:text-gray-400">Admin</div>
             </div>
           </div>
         </div>
