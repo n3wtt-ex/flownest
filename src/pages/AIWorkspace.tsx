@@ -28,10 +28,30 @@ type Workspace = {
 const DEFAULT_SELECTIONS: Selection = { s1: null, s2: null, s3: null, s4: null, s5: null, s6: null };
 
 export default function AIWorkspacePage() {
+  const [isDark, setIsDark] = useState(false);
+
   useEffect(() => {
     document.title = "AI Work Space | Premium Dashboard";
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute("content", "AI Work Space — seç, bağla, çalıştır. Mock verilerle demo.");
+
+    // Dark mode'u kontrol et
+    const checkDarkMode = () => {
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      setIsDark(isDarkMode);
+    };
+
+    // İlk kontrol
+    checkDarkMode();
+
+    // MutationObserver ile html class değişikliklerini izle
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const [workspaces, setWorkspaces] = useLocalStorage<Workspace[]>("ai_workspaces", []);
@@ -59,7 +79,13 @@ export default function AIWorkspacePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-white dark:bg-gray-950">
+      <div 
+        className="min-h-screen"
+        style={{ 
+          backgroundColor: isDark ? '#020617' : '#ffffff',
+          transition: 'background-color 0.3s ease'
+        }}
+      >
         <section aria-labelledby="aiws-title" className="container mx-auto py-6">
         <h1 id="aiws-title" className="sr-only">AI Work Space</h1>
 
