@@ -60,7 +60,7 @@ export default function AIWorkspacePage() {
 
   return (
     <Layout>
-      <div className="min-h-screen !bg-white dark:!bg-slate-950 py-6">
+      <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 dark:from-slate-950 dark:to-gray-950 py-6">
         <section aria-labelledby="aiws-title" className="container mx-auto">
         <h1 id="aiws-title" className="sr-only">AI Work Space</h1>
 
