@@ -297,14 +297,14 @@ export function Sidebar() {
         ref={collapseButtonRef}
         onClick={toggleSidebar}
         className={clsx(
-          "fixed top-1/2 transform -translate-y-1/2 bg-sidebar-background border border-sidebar-border rounded-r-lg shadow-md hover:bg-sidebar-accent/30 transition-all duration-200 flex items-center justify-center z-50",
+          "fixed top-1/2 transform -translate-y-1/2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 rounded-r-lg shadow-md hover:bg-gray-50 dark:hover:bg-slate-700 transition-all duration-200 flex items-center justify-center z-50",
           isCollapsed ? "left-16 w-6 h-10" : "left-64 w-4 h-8"
         )}
       >
         {isCollapsed ? (
-          <ChevronRight className="w-4 h-4 text-sidebar-foreground/50" />
+          <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
         ) : (
-          <ChevronLeft className="w-3 h-3 text-sidebar-foreground/50" />
+          <ChevronLeft className="w-3 h-3 text-gray-700 dark:text-gray-300" />
         )}
       </button>
 
