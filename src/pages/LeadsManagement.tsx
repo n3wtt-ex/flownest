@@ -1958,7 +1958,18 @@ export function Leads() {
 
         {/* Lead Details Section */}
         <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 dark:bg-slate-800 dark:border-slate-700">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4 dark:text-white">Lead Details</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Lead Details</h2>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.open('https://n8n.flownests.org/form/6ca74979-f5a4-4925-9ef5-0f1af28abf8c', '_blank')}
+              className="flex items-center justify-center w-8 h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              title="Add New Lead"
+            >
+              <Plus className="w-5 h-5" />
+            </motion.button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-blue-50 p-4 rounded-lg dark:bg-blue-900/30">
               <div className="text-sm text-blue-800 dark:text-blue-200">Total Leads</div>
