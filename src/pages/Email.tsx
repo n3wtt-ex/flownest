@@ -803,11 +803,8 @@ export function Email() {
 
               {/* Placeholder when settings are closed */}
               {!isSettingsOpen && (
-                <div className="h-full flex items-center justify-center p-6 text-gray-400 dark:text-gray-500">
-                  <div className="text-center">
-                    <Settings className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-sm">Open settings to edit content</p>
-                  </div>
+                <div className="h-full flex items-center justify-center p-6">
+                  {/* Empty placeholder */}
                 </div>
               )}
             </div>
