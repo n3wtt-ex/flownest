@@ -69,7 +69,7 @@ export function Email() {
   const [isEventModified, setIsEventModified] = useState(false);
 
   // Webhook state
-  const [dailyLimit, setDailyLimit] = useState<number>(0);
+  const [dailyLimit, setDailyLimit] = useState<number>(30);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [updatingAccount, setUpdatingAccount] = useState<string | null>(null);
 
