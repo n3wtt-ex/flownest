@@ -504,17 +504,26 @@ export function Email() {
         }
       }
       
-      const accounts: EmailAccount[] = data.map((item: any, index: number) => ({
-        id: `${index + 1}`, // Basit bir ID oluşturma
-        email: item.email,
-        emailsSent: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
-        warmupEmails: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
-        healthScore: parseInt(item.stat_warmup_score) || 0, // Sayıya çevir
-        status: item.warmup_status === 1 ? 'active' : 'paused',
-        dailyLimit: parseInt(item.warmup && item.warmup.limit ? item.warmup.limit : fetchedDailyLimit), // Sayıya çevir veya global değeri kullan
-        warmup_status: item.warmup_status || 0,
-        account_status: item.status || 1
-      }));
+      const accounts: EmailAccount[] = data.map((item: any, index: number) => {
+        // Daily limit değerini belirle: webhook'tan gelen değer varsa kullan, yoksa 30 kullan
+        let itemDailyLimit = 30; // Varsayılan değer 30
+        if (item.warmup && item.warmup.limit) {
+          // Webhook'tan gelen değeri kullan (ancak 30'dan küçükse 30 yap)
+          itemDailyLimit = Math.max(parseInt(item.warmup.limit), 30);
+        }
+        
+        return {
+          id: `${index + 1}`, // Basit bir ID oluşturma
+          email: item.email,
+          emailsSent: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
+          warmupEmails: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
+          healthScore: parseInt(item.stat_warmup_score) || 0, // Sayıya çevir
+          status: item.warmup_status === 1 ? 'active' : 'paused',
+          dailyLimit: itemDailyLimit,
+          warmup_status: item.warmup_status || 0,
+          account_status: item.status || 1
+        };
+      });
       
       console.log('Processed accounts:', accounts); // İşlenmiş hesapları console'a yazdır
       setEmailAccounts(accounts);
