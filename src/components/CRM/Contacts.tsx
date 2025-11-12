@@ -170,9 +170,13 @@ export function Contacts() {
     const matchesSearch = 
       contact.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       contact.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      contact.companies?.name?.toLowerCase().includes(searchTerm.toLowerCase());
+      (contact as any).companies?.name?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStage = selectedStage === 'all' || contact.lifecycle_stage === selectedStage;
+    // Backward compatibility: MQL -> interested_25, SQL -> interested_50
+    const normalizedStage = contact.lifecycle_stage === 'MQL' ? 'interested_25' : 
+                           contact.lifecycle_stage === 'SQL' ? 'interested_50' : 
+                           contact.lifecycle_stage;
+    const matchesStage = selectedStage === 'all' || normalizedStage === selectedStage;
     
     return matchesSearch && matchesStage;
   });
@@ -180,9 +184,12 @@ export function Contacts() {
   const getStageColor = (stage: string) => {
     switch (stage) {
       case 'lead': return 'bg-gray-100 text-gray-800';
+      case 'interested_25': return 'bg-blue-100 text-blue-800';
+      case 'interested_50': return 'bg-yellow-100 text-yellow-800';
+      case 'customer': return 'bg-green-100 text-green-800';
+      // Backward compatibility
       case 'MQL': return 'bg-blue-100 text-blue-800';
       case 'SQL': return 'bg-yellow-100 text-yellow-800';
-      case 'customer': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -190,9 +197,12 @@ export function Contacts() {
   const getStageLabel = (stage: string) => {
     switch (stage) {
       case 'lead': return t('crm.contacts.lead');
-      case 'MQL': return t('crm.contacts.mql');
-      case 'SQL': return t('crm.contacts.sql');
+      case 'interested_25': return 'Ilımlı İlgi (%25)';
+      case 'interested_50': return 'Güçlü İlgi (%50)';
       case 'customer': return t('crm.contacts.customer');
+      // Backward compatibility
+      case 'MQL': return 'Ilımlı İlgi (%25)';
+      case 'SQL': return 'Güçlü İlgi (%50)';
       default: return stage;
     }
   };
@@ -244,12 +254,18 @@ export function Contacts() {
         <select
           value={selectedStage}
           onChange={(e) => setSelectedStage(e.target.value)}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+          className="px-4 py-2 pr-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white appearance-none cursor-pointer"
+          style={{
+            backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'right 0.5rem center',
+            backgroundSize: '1.5em 1.5em'
+          }}
         >
           <option value="all">{t('crm.contacts.allStages')}</option>
           <option value="lead">{t('crm.contacts.lead')}</option>
-          <option value="MQL">{t('crm.contacts.mql')}</option>
-          <option value="SQL">{t('crm.contacts.sql')}</option>
+          <option value="interested_25">Ilımlı İlgi (%25)</option>
+          <option value="interested_50">Güçlü İlgi (%50)</option>
           <option value="customer">{t('crm.contacts.customer')}</option>
         </select>
       </div>
@@ -298,7 +314,7 @@ export function Contacts() {
                     <div className="flex items-center">
                       <Building2 className="w-4 h-4 text-gray-400 mr-2 dark:text-gray-300" />
                       <span className="text-sm text-gray-900 dark:text-white">
-                        {contact.companies?.name || 'Belirtilmemiş'}
+                        {(contact as any).companies?.name || 'Belirtilmemiş'}
                       </span>
                     </div>
                   </td>
@@ -451,8 +467,8 @@ export function Contacts() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
                   <option value="lead">{t('crm.contacts.lead')}</option>
-                  <option value="MQL">{t('crm.contacts.mql')}</option>
-                  <option value="SQL">{t('crm.contacts.sql')}</option>
+                  <option value="interested_25">Ilımlı İlgi (%25)</option>
+                  <option value="interested_50">Güçlü İlgi (%50)</option>
                   <option value="customer">{t('crm.contacts.customer')}</option>
                 </select>
               </div>
@@ -582,8 +598,8 @@ export function Contacts() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 >
                   <option value="lead">{t('crm.contacts.lead')}</option>
-                  <option value="MQL">{t('crm.contacts.mql')}</option>
-                  <option value="SQL">{t('crm.contacts.sql')}</option>
+                  <option value="interested_25">Ilımlı İlgi (%25)</option>
+                  <option value="interested_50">Güçlü İlgi (%50)</option>
                   <option value="customer">{t('crm.contacts.customer')}</option>
                 </select>
               </div>
