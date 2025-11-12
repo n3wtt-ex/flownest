@@ -267,24 +267,22 @@ export function Responses() {
         </motion.div>
       )}
 
-      {/* Page Title */}
-      <div className="bg-card border-b border-border px-6 py-3">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-            <MessageSquare className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-foreground">
-              Unibox
-            </h1>
-            <p className="text-xs text-muted-foreground">Yanıt Takibi</p>
+      <div className="flex h-screen relative">
+        {/* Page Title - Top Left Corner */}
+        <div className="absolute top-6 left-6 z-10">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+              <MessageSquare className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">
+                Yanıt Takibi
+              </h1>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="flex h-[calc(100vh-80px)] relative">
         {/* Main Container - Shifted Left */}
-        <div className="flex-1 flex relative ml-6">
+        <div className="flex-1 flex relative ml-6 pt-20">
           {/* Vertical Tabs - Left Side - Smaller Size & Better Positioning */}
           <div className="flex flex-col justify-start pt-16 space-y-1 mr-2">
             {categories.map((category, index) => (
