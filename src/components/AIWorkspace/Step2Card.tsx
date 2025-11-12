@@ -1,4 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+interface Toast {
+  show: boolean;
+  message: string;
+  type: 'success' | 'error';
+}
 
 interface Step2CardProps {
   onSave: (data: { targetAudience: string }) => void;
@@ -8,6 +15,14 @@ interface Step2CardProps {
 export function Step2Card({ onSave, initialData }: Step2CardProps) {
   const [targetAudience, setTargetAudience] = useState(initialData.targetAudience || '');
   const [isValid, setIsValid] = useState(false);
+  const [toast, setToast] = useState<Toast>({ show: false, message: '', type: 'success' });
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: 'success' });
+    }, 3000);
+  };
 
   useEffect(() => {
     setIsValid(targetAudience.length > 0);
@@ -31,19 +46,51 @@ export function Step2Card({ onSave, initialData }: Step2CardProps) {
         
         if (response.ok) {
           console.log('Target audience sent to webhook successfully');
-          alert('Veriler başarıyla gönderildi!');
+          showToast('✨ Veriler başarıyla gönderildi!', 'success');
         } else {
           throw new Error(`Webhook error: ${response.status}`);
         }
       } catch (error) {
         console.error('Error sending target audience to webhook:', error);
-        alert('Veriler webhook\'a gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+        showToast('⚠️ Bir hata oluştu. Lütfen tekrar deneyin.', 'error');
       }
     }
   };
 
   return (
     <div className="w-full max-w-md mx-auto">
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast.show && (
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+          >
+            <div className={`px-6 py-4 rounded-2xl shadow-2xl backdrop-blur-md border ${
+              toast.type === 'success' 
+                ? 'bg-emerald-500/90 border-emerald-400/50 text-white' 
+                : 'bg-red-500/90 border-red-400/50 text-white'
+            }`}>
+              <div className="flex items-center space-x-3">
+                {toast.type === 'success' ? (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                )}
+                <span className="font-semibold text-lg">{toast.message}</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl shadow-2xl border border-blue-700/30 overflow-hidden backdrop-blur-sm">
         {/* Header */}
         <div className="px-8 pt-8 pb-6">
