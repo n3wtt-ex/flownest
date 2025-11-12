@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useOrganization } from '@/contexts/OrganizationContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Settings, Shield, Zap, Plus, ChevronDown, Upload, Sparkles, Edit3, Save, FileText, RefreshCw } from 'lucide-react';
+import { Mail, Settings, Shield, Zap, Plus, ChevronDown, Upload, Sparkles, Edit3, Save, FileText, RefreshCw, Flame } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -13,6 +13,8 @@ interface EmailAccount {
   healthScore: number;
   status: 'active' | 'warming' | 'paused';
   dailyLimit: number;
+  warmup_status: number;
+  account_status: number;
 }
 
 // Supabase company_info tablosu için interface
@@ -69,6 +71,7 @@ export function Email() {
   // Webhook state
   const [dailyLimit, setDailyLimit] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [updatingAccount, setUpdatingAccount] = useState<string | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -83,6 +86,64 @@ export function Email() {
     if (score >= 90) return 'text-green-600';
     if (score >= 70) return 'text-yellow-600';
     return 'text-red-600';
+  };
+
+  // Toggle warmup status
+  const toggleWarmupStatus = async (email: string, currentStatus: number) => {
+    setUpdatingAccount(email);
+    try {
+      const newStatus = currentStatus === 1 ? 0 : 1;
+      const response = await fetch('https://n8n.flownests.org/webhook/instantly-webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
+        },
+        body: JSON.stringify({
+          email: email,
+          warmup_status: newStatus
+        })
+      });
+      
+      if (response.ok) {
+        // Refresh accounts after update
+        await fetchEmailAccounts();
+      }
+    } catch (error) {
+      console.error('Error toggling warmup status:', error);
+    } finally {
+      setUpdatingAccount(null);
+    }
+  };
+
+  // Toggle account status (Active/Paused)
+  const toggleAccountStatus = async (email: string, currentStatus: number) => {
+    setUpdatingAccount(email);
+    try {
+      // If paused (2), set to active (1)
+      // If active (1), set to paused (2)
+      const newStatus = currentStatus === 1 ? 2 : 1;
+      const response = await fetch('https://n8n.flownests.org/webhook/instantly-webhook', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Organization-ID': currentOrganization?.id || 'default-org'
+        },
+        body: JSON.stringify({
+          email: email,
+          status: newStatus
+        })
+      });
+      
+      if (response.ok) {
+        // Refresh accounts after update
+        await fetchEmailAccounts();
+      }
+    } catch (error) {
+      console.error('Error toggling account status:', error);
+    } finally {
+      setUpdatingAccount(null);
+    }
   };
 
   const handleEventChange = async (event: string) => {
@@ -450,7 +511,9 @@ export function Email() {
         warmupEmails: 0, // Bu veriler webhook'tan gelmiyor, varsayılan değer
         healthScore: parseInt(item.stat_warmup_score) || 0, // Sayıya çevir
         status: item.warmup_status === 1 ? 'active' : 'paused',
-        dailyLimit: parseInt(item.warmup && item.warmup.limit ? item.warmup.limit : fetchedDailyLimit) // Sayıya çevir veya global değeri kullan
+        dailyLimit: parseInt(item.warmup && item.warmup.limit ? item.warmup.limit : fetchedDailyLimit), // Sayıya çevir veya global değeri kullan
+        warmup_status: item.warmup_status || 0,
+        account_status: item.status || 1
       }));
       
       console.log('Processed accounts:', accounts); // İşlenmiş hesapları console'a yazdır
@@ -860,6 +923,9 @@ export function Email() {
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Status
                   </th>
+                  <th className="px-6 py-4 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <Flame className="w-5 h-5 inline-block" />
+                  </th>
                   <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Daily Limit
                   </th>
@@ -890,10 +956,46 @@ export function Email() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(account.status)}`}>
-                        {account.status === 'active' ? 'Active' : 
-                         account.status === 'warming' ? 'Warming' : 'Paused'}
-                      </span>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => toggleAccountStatus(account.email, account.account_status)}
+                        disabled={updatingAccount === account.email}
+                        className={`inline-flex px-3 py-1 text-xs font-medium rounded-full transition-all cursor-pointer ${
+                          account.account_status === 1 
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800' 
+                            : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        } ${updatingAccount === account.email ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        {updatingAccount === account.email ? (
+                          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          account.account_status === 1 ? 'Active' : 'Paused'
+                        )}
+                      </motion.button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => toggleWarmupStatus(account.email, account.warmup_status)}
+                        disabled={updatingAccount === account.email}
+                        className={`p-2 rounded-lg transition-all ${
+                          updatingAccount === account.email ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                        }`}
+                      >
+                        {updatingAccount === account.email ? (
+                          <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Flame 
+                            className={`w-5 h-5 transition-colors ${
+                              account.warmup_status === 1 
+                                ? 'text-orange-500 fill-orange-500' 
+                                : 'text-gray-300 dark:text-gray-600'
+                            }`} 
+                          />
+                        )}
+                      </motion.button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                       {account.dailyLimit}
