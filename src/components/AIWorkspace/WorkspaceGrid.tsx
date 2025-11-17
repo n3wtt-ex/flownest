@@ -57,8 +57,10 @@ export function WorkspaceGrid({
             
           if (!error && data) {
             const workspaceTools: {[agent: string]: string} = {};
-            Object.keys(data).forEach(agent => {
-              if (agent !== 'workspace_id' && data[agent]) {
+            // Sadece geçerli agent kolonlarını işle
+            const validAgents = ['leo', 'mike', 'sophie', 'clara', 'tom', 'ash'];
+            validAgents.forEach(agent => {
+              if (data[agent]) {
                 workspaceTools[agent] = data[agent];
               }
             });
@@ -120,12 +122,18 @@ export function WorkspaceGrid({
   const getSelectedToolsCount = (workspaceId: string) => {
     // workspaceTools doğrudan workspaces prop'undan türetildiği için burada doğrudan erişebiliriz
     if (workspaceTools[workspaceId]) {
-      // Sadece null olmayan araçları say
-      const tools = Object.values(workspaceTools[workspaceId]).filter(tool => tool !== null && tool !== undefined && tool !== '');
-      console.log(`[WorkspaceGrid] Workspace ${workspaceId} tools:`, workspaceTools[workspaceId]);
-      console.log(`[WorkspaceGrid] Workspace ${workspaceId} filtered tools:`, tools);
-      console.log(`[WorkspaceGrid] Workspace ${workspaceId} tool count: ${tools.length}`);
-      return tools.length;
+      // Sadece geçerli agent isimleri için araçları say (eva hariç, çünkü eva'nın aracı yok)
+      const validAgents = ['leo', 'mike', 'sophie', 'clara', 'tom', 'ash'];
+      const selectedTools = validAgents.filter(agent => {
+        const tool = workspaceTools[workspaceId][agent];
+        return tool !== null && tool !== undefined && tool !== '';
+      });
+      
+      console.log(`[WorkspaceGrid] Workspace ${workspaceId} all data:`, workspaceTools[workspaceId]);
+      console.log(`[WorkspaceGrid] Workspace ${workspaceId} valid agents with tools:`, selectedTools);
+      console.log(`[WorkspaceGrid] Workspace ${workspaceId} tool count: ${selectedTools.length}/6`);
+      
+      return selectedTools.length;
     }
     
     console.log(`[WorkspaceGrid] No tools found for workspace ${workspaceId}`);
@@ -251,7 +259,7 @@ export function WorkspaceGrid({
                 <div className="space-y-3 mb-4">
                   <div className="flex items-center text-slate-300">
                     <Users className="w-4 h-4 mr-2 text-cyan-400" />
-                    <span className="text-sm">{getSelectedToolsCount(workspace.id)}/7 Araç Seçili</span>
+                    <span className="text-sm">{getSelectedToolsCount(workspace.id)}/6 Araç Seçili</span>
                   </div>
                   <div className="flex items-center text-slate-300">
                     <Calendar className="w-4 h-4 mr-2 text-purple-400" />
@@ -263,18 +271,18 @@ export function WorkspaceGrid({
                 <div className="w-full bg-slate-700 rounded-full h-2 mb-4">
                   <div 
                     className="bg-gradient-to-r from-cyan-500 to-purple-500 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${(getSelectedToolsCount(workspace.id) / 7) * 100}%` }}
+                    style={{ width: `${(getSelectedToolsCount(workspace.id) / 6) * 100}%` }}
                   />
                 </div>
 
                 {/* Status */}
                 <div className="flex items-center justify-between">
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    getSelectedToolsCount(workspace.id) === 7 
+                    getSelectedToolsCount(workspace.id) === 6 
                       ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                       : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                   }`}>
-                    {getSelectedToolsCount(workspace.id) === 7 ? 'Hazır' : 'Yapılandırılıyor'}
+                    {getSelectedToolsCount(workspace.id) === 6 ? 'Hazır' : 'Yapılandırılıyor'}
                   </span>
                 </div>
               </div>
